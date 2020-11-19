@@ -1,0 +1,20 @@
+
+
+<ConsoleOutput>:
+    readonly: True
+    padding: 6, 6
+    size_hint: (1, None)
+
+<LoggingConsole>:
+    console_output: console_output
+    scroll_view: scroll_view
+    ScrollView:
+        id: scroll_view
+        bar_width: 10
+        ConsoleOutput:
+            id: console_output
+            height: max(self.parent.height, self.minimum_height)
+            font_name: root.font_name
+            font_size: root.font_size
+            foreground_color: root.foreground_color
+            background_color: root.background_color
