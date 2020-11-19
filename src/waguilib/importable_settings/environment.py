@@ -9,13 +9,6 @@ from plyer import storagepath
 ACTIVITY_CLASS = "org.kivy.android.PythonActivity"
 SERVICE_START_ARGUMENT = ""
 
-DEFAULT_REQUESTED_PERMISSIONS_MAPPER = {
-    # Gyroscope needs no permissions
-    # "WRITE_EXTERNAL_STORAGE" => DELAYED PERMISSIONS
-    "record_microphone": "RECORD_AUDIO",
-    # TODO "CAMERA",
-    "record_gps": "ACCESS_FINE_LOCATION"
-}
 IS_ANDROID = (platform == "android")
 
 WACLIENT_TYPE = os.environ.get("WACLIENT_TYPE", "<UNKNOWN>")   # Typically "SERVICE" or "APPLICATION"
