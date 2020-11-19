@@ -6,7 +6,7 @@ def generate_and_send_crashdump(exc_info, target_url):
     import traceback
     import requests
 
-    WACLIENT_TYPE = os.environ.get("WACLIENT_TYPE", "<NOTFOUND>")
+    WACLIENT_TYPE = os.environ.get("WACLIENT_TYPE", "<UNKNOWN>")
 
     system_info = {"SOFTWARE": "WACLIENT", "WACLIENT_TYPE": WACLIENT_TYPE}
 
