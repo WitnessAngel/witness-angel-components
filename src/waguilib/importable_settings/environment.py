@@ -47,7 +47,6 @@ else:
 INTERNAL_APP_ROOT.mkdir(exist_ok=True)
 INTERNAL_CACHE_DIR.mkdir(exist_ok=True)
 
-APP_CONFIG_FILE = INTERNAL_APP_ROOT / "app_config.ini"  # Might no exist yet
 
 # Created/deleted by app, looked up by daemon service on boot/restart
 WIP_RECORDING_MARKER = INTERNAL_APP_ROOT / "recording_in_progress"  

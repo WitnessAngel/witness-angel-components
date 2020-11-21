@@ -59,16 +59,18 @@ class WAGuiApp(App):
 
     def load_config(self):
         # Hook here if needed
-        Path(self.get_application_config()).touch(exist_ok=True)  # For initial creation
+        ##Path(self.get_application_config()).touch(exist_ok=True)  # For initial creation
         config = super().load_config()
         return config
 
     def build_config(self, config):
         """Populate config with default values, before the loading of user preferences."""
         config.read(self.default_config_template)
+        '''
         config.filename = self.get_application_config()
         if not os.path.exists(config.filename):
             config.write()  # Initial user preferences file
+            '''
 
     def build_settings(self, settings):
         """Read the user settings schema and create a panel from it."""
@@ -76,6 +78,10 @@ class WAGuiApp(App):
         settings.add_json_panel(
             title=self.title, config=self.config, filename=settings_file
         )
+
+    def get_application_config(self, *args, **kwargs):
+        # IMPORTANT override of Kivy method
+        return self.app_config_file
 
     # APP LIFECYCLE AND RECORDING STATE #
 
