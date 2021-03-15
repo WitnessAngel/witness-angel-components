@@ -22,4 +22,4 @@ try:
     # import logging_tree
     # logging_tree.printout()
 except Exception as exc:
-    print(">>>>>>>> FAILED INITIALIZATION OF WACLIENT LOGGING: %r" % exc)
+    print(">>>>>>>> FAILED INITIALIZATION OF WA GUI LOGGING: %r" % exc)

@@ -1,22 +1,27 @@
-import atexit
+
+import os
 import subprocess
 import sys
 
 from kivy.logger import Logger as logger
 
 from .base_service_controller import ServiceControllerBase
-from waclient.common_config import SRC_ROOT_DIR
+
+
+WA_SERVICE_SCRIPT = os.getenv("WA_SERVICE_SCRIPT")
+
 
 class ServiceController(ServiceControllerBase):
 
     _subprocess = None
 
     def start_service(self):
+        assert WA_SERVICE_SCRIPT, WA_SERVICE_SCRIPT
         # "self._subprocess" might already exist but have crashed
         self._subprocess = subprocess.Popen(
-            [sys.executable, "service.py"],
+            [sys.executable, WA_SERVICE_SCRIPT],
             shell=False,
-            cwd=SRC_ROOT_DIR,
+            cwd=os.path.dirname(WA_SERVICE_SCRIPT),
         )
 
     def stop_service(self):

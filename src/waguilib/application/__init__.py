@@ -46,12 +46,13 @@ class WAGuiApp(App):
 
     language = None  # TO OVERRIDE at instance level
 
+    settings_cls = SettingsWithTabbedPanel
+
     def __init__(self, **kwargs):
         self._unanswered_service_state_requests = 0  # Used to detect a service not responding anymore to status requests
         print("STARTING INIT OF WitnessAngelClientApp")
         super(WAGuiApp, self).__init__(**kwargs)
         print("AFTER PARENT INIT OF WitnessAngelClientApp")
-        self.settings_cls = SettingsWithTabbedPanel
         osc_starter_callback()  # Opens server port
         print("FINISHED INIT OF WitnessAngelClientApp")
 

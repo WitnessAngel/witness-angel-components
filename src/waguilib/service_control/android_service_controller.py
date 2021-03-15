@@ -1,4 +1,4 @@
-from waclient.common_config import SERVICE_CLASS, ACTIVITY_CLASS, SERVICE_START_ARGUMENT
+from waguilib.importable_settings import SERVICE_CLASS, ACTIVITY_CLASS, SERVICE_START_ARGUMENT
 from .base_service_controller import ServiceControllerBase
 
 

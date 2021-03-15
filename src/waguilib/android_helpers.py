@@ -1,5 +1,7 @@
-from waclient.common_config import PACKAGE_NAME
 
+import os
+
+PACKAGE_NAME = os.getenv("WA_PACKAGE_NAME")  # Java package name here
 CHANNEL_ID = PACKAGE_NAME
 
 
