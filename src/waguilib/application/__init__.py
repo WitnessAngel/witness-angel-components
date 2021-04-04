@@ -6,12 +6,14 @@ import functools
 import logging
 import os
 
+from waguilib.common_app_support import WaRuntimeSupport
+
 os.environ["KIVY_NO_ARGS"] = "1"
 
 import kivy
-kivy.require("1.8.0")
+kivy.require("2.0.0")
 
-from kivy.app import App
+from kivymd.app import MDApp
 from kivy.clock import Clock
 from kivy.logger import Logger as logger
 from kivy.uix.filechooser import filesize_units
@@ -28,7 +30,7 @@ osc, osc_starter_callback = get_osc_server(is_master=True)
 
 
 @ServerClass
-class WAGuiApp(App):
+class WAGuiApp(WaRuntimeSupport, MDApp):  # FIXME WaGui instead?
     """
     Main GUI app, which controls the recording service (via OSC protocol), and
     exposes settings as well as existing containers.
@@ -36,9 +38,9 @@ class WAGuiApp(App):
 
     # CLASS VARIABLES TO BE OVERRIDEN #
     title: str = None
-    app_config_file: str = None
-    default_config_template: str = None
-    default_config_schema: str = None
+    #app_config_file: str = None
+    #default_config_template: str = None
+    #default_config_schema: str = None
     wip_recording_marker: str = None
 
     service_querying_interval = 1  # To check when service is ready, at app start
@@ -66,7 +68,8 @@ class WAGuiApp(App):
 
     def build_config(self, config):
         """Populate config with default values, before the loading of user preferences."""
-        config.read(self.default_config_template)
+        assert self.config_template_path.exists(), self.config_template_path
+        config.read(str(self.config_template_path))
         '''
         config.filename = self.get_application_config()
         if not os.path.exists(config.filename):
@@ -82,7 +85,7 @@ class WAGuiApp(App):
 
     def get_application_config(self, *args, **kwargs):
         # IMPORTANT override of Kivy method
-        return self.app_config_file
+        return self.config_file_path
 
     # APP LIFECYCLE AND RECORDING STATE #
 

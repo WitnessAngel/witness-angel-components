@@ -14,7 +14,9 @@ from configparser import ConfigParser, Error as ConfigParserError
 
 from oscpy.server import ServerClass
 
+from waguilib.common_app_support import WaRuntimeSupport
 from waguilib.importable_settings import IS_ANDROID, WIP_RECORDING_MARKER, CONTEXT, INTERNAL_KEYS_DIR
+from waguilib.utilities import InterruptableEvent
 
 '''
 from waclient.common_config import (
@@ -54,7 +56,7 @@ if IS_ANDROID:
 
 
 @ServerClass
-class WaBackgroundService:
+class WaBackgroundService(WaRuntimeSupport):
     """
     The background server automatically starts when service script is launched.
 
@@ -66,7 +68,7 @@ class WaBackgroundService:
     # CLASS VARIABLES TO BE OVERRIDEN #
     internal_keys_dir: str = None
     thread_pool_executor: ThreadPoolExecutor = None
-    app_config_file: Path = None
+    #app_config_file: Path = None
 
     _sock = None
     _recording_toolchain = None
@@ -81,7 +83,7 @@ class WaBackgroundService:
         logging.getLogger(None).addHandler(
             CallbackHandler(self._remote_logging_callback)
         )
-        self._termination_event = threading.Event()
+        self._termination_event = InterruptableEvent()
         logger.info("Service started")
 
         # Initial setup of service according to persisted config
@@ -109,7 +111,7 @@ class WaBackgroundService:
     def _load_config(self, filename=None):
 
         if not filename:
-            filename = self.app_config_file
+            filename = self.config_file_path
 
         logger.info(f"Reloading config file {filename}")
         config = (
@@ -154,7 +156,7 @@ class WaBackgroundService:
     @safe_catch_unhandled_exception
     def _offloaded_switch_daemonize_service(self, value):
         value = bool(value)  # Normalize from possible integer
-        logger.info("Switching service persistence to %s", value)
+        logger.info("Switching background service persistence to %s", value)
         if IS_ANDROID:
             from jnius import autoclass
             PythonService = autoclass('org.kivy.android.PythonService')
