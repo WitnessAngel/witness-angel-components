@@ -1,0 +1,69 @@
+
+<AuthenticationDeviceStoreScreen>:
+
+    canvas.before:
+        Color:
+            rgba: 0.1372, 0.2862, 0.5294, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: 10
+        padding: [0,20]
+
+        MDToolbar:
+            md_bg_color: (0.1372, 0.2862, 0.5294, 1)
+            title: "Witness Angel"
+            elevation: 10
+            left_action_items: [['menu', lambda x: app.nav_drawer.set_state("toggle")]]
+
+            ActionButton:
+                text: 'Home'
+
+                on_release:
+                    #app.screen_manager.transition.direction = "right"
+                    app.screen_manager.current = "MainMenu"
+
+        Label:
+            size_hint: None, None
+            size: 350, 40
+            text: 'Key management'
+            halign: "left"
+            theme_text_color: "Custom"
+            text_color: 1, 1, 1, 1
+            font_size: 24
+
+        ScrollView:
+            do_scroll_x: False
+            do_scroll_y: True
+            bar_width: 10
+            #bar_color: [1, 0, 1, 1]
+            scroll_type: ["bars", "content"]
+
+            GridLayout:
+                size_hint_y: None
+                id: device_table
+                cols: 2
+                row_default_height: 25
+                row_force_default: True
+                padding: 10
+                spacing: (0, 10)
+                height: self.minimum_height
+
+        AnchorLayout:
+            anchor_x: 'center'
+            anchor_y: 'bottom'
+            padding: [20, 20, 20, 20]
+            height: 100
+            size_hint_y: None
+            Button:
+                id: btn
+                background_color: (51, 23, 186.0, 1)
+                color: 0.1372, 0.2862, 0.5294, 1
+                text: "Import new keys"
+                size: 250, 50
+                size_hint: None, None
+                on_release:
+                    app.import_keys()

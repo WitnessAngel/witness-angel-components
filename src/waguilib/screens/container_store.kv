@@ -1,0 +1,101 @@
+
+
+<ContainerStoreScreen>:
+
+    on_pre_enter: app.get_detected_container()
+
+    canvas.before:
+        Color:
+            rgba: 0.1372, 0.2862, 0.5294, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: 20
+        padding: [0,20]
+
+        MDToolbar:
+            md_bg_color: (0.1372, 0.2862, 0.5294, 1)
+            title: "Witness Angel"
+            elevation: 10
+            left_action_items: [['menu', lambda x: app.nav_drawer.set_state("toggle")]]
+
+            ActionButton:
+                text: 'Home'
+
+                on_release:
+                    app.screen_manager.current = "MainMenu"
+                    #app.screen_manager.transition.direction = "right"
+
+        Label:
+            size_hint: None, None
+            size: 350, 40
+            text: 'Container management'
+            halign: "right"
+            theme_text_color: "Custom"
+            text_color: 1, 1, 1, 1
+            font_size: 24
+
+        ScrollView:
+            do_scroll_x: False
+            do_scroll_y: True
+            bar_width: 10
+            #bar_color: [1, 0, 1, 1]
+            scroll_type: ["bars", "content"]
+
+            GridLayout:
+                size_hint_y: None
+                id: container_table
+                cols: 2
+                row_default_height: 25
+                row_force_default: True
+                padding: 10
+                spacing: (0, 10)
+                height: self.minimum_height
+
+        AnchorLayout:
+            anchor_x: 'center'
+            anchor_y: 'bottom'
+            padding: [20, 60, 20, 0]
+            height: 50
+            size_hint_y: None
+
+            BoxLayout:
+
+                Button:
+                    id: delete
+                    background_color: (51, 23, 186.0, 1)
+                    color: 0.1372, 0.2862, 0.5294, 1
+                    text: "Refresh"
+                    #size: 200, 50
+                    size_hint: 0.3, None
+                    disabled: False
+                    height: 30
+                    on_release:
+                        app.get_detected_container()
+
+                Button:
+                    id: delete
+                    background_color: (51, 23, 186.0, 1)
+                    color: 0.1372, 0.2862, 0.5294, 1
+                    text: "Delete"
+                    #size: 200, 50
+                    size_hint: 0.3, None
+                    disabled: False
+                    height: 30
+                    on_release:
+                        app.open_dialog_delete_container()
+
+                Button:
+                    id: decipher
+                    background_color: (51, 23, 186.0, 1)
+                    color: 0.1372, 0.2862, 0.5294, 1
+                    text: "Decrypt"
+                    #size: 200, 50
+                    size_hint: 0.3, None
+                    disabled: False
+                    height: 30
+                    on_release:
+                        app.open_dialog_decipher_container()
