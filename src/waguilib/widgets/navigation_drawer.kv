@@ -1,0 +1,53 @@
+
+
+
+<WaNavigationDrawer>:
+    ContentNavigationDrawer:
+        id: content_drawer
+
+<ContentNavigationDrawer>:
+    orientation: "vertical"
+    padding: "8dp"
+    spacing: "8dp"
+
+    AnchorLayout:
+        size_hint_y: None
+        height: avatar.height
+        anchor_x: 'center'
+        anchor_y: 'center'
+
+        Image:
+            id: avatar
+            size_hint: None, None
+            size: "150dp", "150dp"
+            source: str(app.app_logo_path)
+
+#    MDLabel:
+#        text: "Witness Angel Ward NVR"
+#        font_style: "Button"
+#        size_hint_y: None
+#        height: self.texture_size[1]
+
+#    MDLabel:
+#        text: "WitnessWard"
+#        font_style: "Caption"
+#        size_hint_y: None
+#        height: self.texture_size[1]
+
+    ScrollView:
+
+        DrawerList:
+            id: md_list
+
+
+#FIXME BADLY NAMED
+<ItemDrawer>:
+    theme_text_color: "Custom"
+    on_release:
+        self.parent.set_color_item(self)
+
+    IconLeftWidget:
+        id: icon
+        icon: root.icon
+        theme_text_color: "Custom"
+        text_color: root.text_color
