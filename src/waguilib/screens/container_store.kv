@@ -1,8 +1,19 @@
 
 
+<PassphrasesDialogContent>:
+    orientation: "vertical"
+    spacing: "20"
+    size_hint_y: None
+    height: "120"
+    #id: passphrases_layout
+
+    #MDTextField:
+    #    hint_text: "Passphrase"
+
+
 <ContainerStoreScreen>:
 
-    on_pre_enter: app.get_detected_container()
+    on_pre_enter: root.get_detected_container()
 
     canvas.before:
         Color:
@@ -74,7 +85,7 @@
                     disabled: False
                     height: 30
                     on_release:
-                        app.get_detected_container()
+                        root.get_detected_container()
 
                 Button:
                     id: delete
@@ -86,7 +97,7 @@
                     disabled: False
                     height: 30
                     on_release:
-                        app.open_dialog_delete_container()
+                        root.open_dialog_delete_container()
 
                 Button:
                     id: decipher
@@ -98,4 +109,4 @@
                     disabled: False
                     height: 30
                     on_release:
-                        app.open_dialog_decipher_container()
+                        root.open_dialog_decipher_container()
