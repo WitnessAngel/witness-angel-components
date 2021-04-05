@@ -1,6 +1,8 @@
 
 <AuthenticationDeviceStoreScreen>:
 
+    on_pre_enter: root.get_detected_devices()
+
     canvas.before:
         Color:
             rgba: 0.1372, 0.2862, 0.5294, 1
@@ -66,4 +68,4 @@
                 size: 250, 50
                 size_hint: None, None
                 on_release:
-                    app.import_keys()
+                    root.import_keys()
