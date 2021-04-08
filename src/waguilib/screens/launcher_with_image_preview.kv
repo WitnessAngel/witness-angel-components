@@ -1,0 +1,55 @@
+
+
+
+<LauncherWithImagePreviewScreen>:
+
+    orientation: "vertical"
+    canvas.before:
+        Color:
+            rgba: 0.1372, 0.2862, 0.5294, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: 20
+        padding: [0,20]
+
+        MDToolbar:
+            md_bg_color: (0.1372, 0.2862, 0.5294, 1)
+            title: "Witness Angel Ward - NVR"
+            elevation: 5
+            left_action_items: [['menu', lambda x: app.nav_drawer.set_state("toggle")]]
+
+            ActionButton:
+                text: 'Settings'
+
+                on_release:
+                    app.open_settings()
+
+        BoxLayout:
+            size_hint: (1, None)
+            height: 50
+            spacing:  30
+            padding: [10,10]
+            Label:
+                text: 'Recording'
+                size: 150, 50
+            CheckBox:
+                size: 150, 50
+                #size_hint: 0.4, 0.3
+                id: switch
+                active: False
+                on_active:
+                    app.switch_callback(self, self.active)
+
+        Image:
+            id: preview_image
+            source: str(app.fallback_preview_image_path)
+            size: (10, 10)     #self.texture_size if self.texture else (10, 10)
+            allow_stretch: True
+            keep_ratio: True
+            nocache: True
+
+
