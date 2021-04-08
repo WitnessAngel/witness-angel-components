@@ -69,6 +69,7 @@ class WAGuiApp(WaRuntimeSupport, MDApp):  # FIXME WaGui instead?
     def build_config(self, config):
         """Populate config with default values, before the loading of user preferences."""
         assert self.config_template_path.exists(), self.config_template_path
+        #print(">>>>>>>>>>>>>>READING config_template_path"),
         config.read(str(self.config_template_path))
         '''
         config.filename = self.get_application_config()
@@ -83,9 +84,17 @@ class WAGuiApp(WaRuntimeSupport, MDApp):  # FIXME WaGui instead?
             title=self.title, config=self.config, filename=settings_file
         )
 
+    def save_config(self):
+        """Dump current config to local INI file."""
+        assert self.config.filename, self.config.filename
+        #print(">>>>>>>>>>>>>>WRITING save_config", self.config_file_path),
+        self.config.filename = self.config_file_path
+        self.config.write()
+
     def get_application_config(self, *args, **kwargs):
         # IMPORTANT override of Kivy method
-        return self.config_file_path
+        #print(">>>>>>>>>>>>>>READING get_application_config"),
+        return str(self.config_file_path)
 
     # APP LIFECYCLE AND RECORDING STATE #
 
