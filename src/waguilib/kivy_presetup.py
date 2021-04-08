@@ -23,3 +23,4 @@ try:
     # logging_tree.printout()
 except Exception as exc:
     print(">>>>>>>> FAILED INITIALIZATION OF WA GUI LOGGING: %r" % exc)
+
