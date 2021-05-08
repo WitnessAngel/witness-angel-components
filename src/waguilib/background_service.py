@@ -66,9 +66,7 @@ class WaBackgroundService(WaRuntimeSupportMixin):
     """
 
     # CLASS VARIABLES TO BE OVERRIDEN #
-    internal_keys_dir: str = None
     thread_pool_executor: ThreadPoolExecutor = None
-    #app_config_file: Path = None
 
     _sock = None
     _recording_toolchain = None
@@ -93,7 +91,8 @@ class WaBackgroundService(WaRuntimeSupportMixin):
         except ConfigParserError:
             daemonize_service = False  # Probably App is just initializing itself
         self.switch_daemonize_service(daemonize_service)
-        if WIP_RECORDING_MARKER.exists():
+
+        if True:  #  WIP_RECORDING_MARKER.exists():
             self.start_recording()  # Autorecord e.g. after a restart due to closing of main android Activity
 
     def _get_encryption_conf(self):
@@ -172,7 +171,7 @@ class WaBackgroundService(WaRuntimeSupportMixin):
     @safe_catch_unhandled_exception
     def _offloaded_start_recording(self, env):
         try:
-            encryption_conf = get_encryption_conf(env)
+            encryption_conf = self._get_encryption_conf(env)
             if self.is_recording:
                 #logger.debug("Ignoring redundant call to service.start_recording()")
                 return

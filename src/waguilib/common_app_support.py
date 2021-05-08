@@ -1,7 +1,8 @@
 import inspect
 from pathlib import Path
 
-from waguilib.importable_settings import INTERNAL_APP_ROOT
+from waguilib.importable_settings import INTERNAL_APP_ROOT, INTERNAL_CONTAINERS_DIR, INTERNAL_KEYS_DIR, \
+    INTERNAL_LOGS_DIR
 
 
 class WaRuntimeSupportMixin:
@@ -28,3 +29,17 @@ class WaRuntimeSupportMixin:
         """"Return the actual, runtime configuration file."""
         return INTERNAL_APP_ROOT / self._config_file_basename  # Might no exist yet
 
+    @property
+    def internal_keys_dir(self) -> str:  # FIXME switch to Path!
+        """For the pool of imported and local keys"""
+        return str(INTERNAL_KEYS_DIR)
+
+    @property
+    def internal_containers_dir(self) -> str:  # FIXME switch to Path!
+        """For all local containers"""
+        return str(INTERNAL_CONTAINERS_DIR)
+
+    @property
+    def internal_logs_dir(self) -> str:  # FIXME switch to Path!
+        """For all app logs"""
+        return str(INTERNAL_LOGS_DIR)

@@ -51,6 +51,9 @@ INTERNAL_CACHE_DIR.mkdir(exist_ok=True)
 # Created/deleted by app, looked up by daemon service on boot/restart
 WIP_RECORDING_MARKER = INTERNAL_APP_ROOT / "recording_in_progress"  
 
+INTERNAL_LOGS_DIR = INTERNAL_APP_ROOT / "Logs"
+INTERNAL_LOGS_DIR.mkdir(exist_ok=True)
+
 INTERNAL_KEYS_DIR = INTERNAL_APP_ROOT / "KeyStorage"
 INTERNAL_KEYS_DIR.mkdir(exist_ok=True)
 

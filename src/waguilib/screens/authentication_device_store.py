@@ -159,11 +159,11 @@ class AuthenticationDeviceStoreScreen(Screen):
         devices_display = Button(
             text="No imported autentication device found ",
             background_color=(1, 0, 0, 0.01),
-            font_size="28sp",
+            font_size="20sp",
             color=[0, 1, 0, 1],
         )
         keys_page_ids.device_table.clear_widgets()
-        Display_layout = boxlayout(orientation="horizontal", padding=[140, 0])
+        Display_layout = BoxLayout(orientation="horizontal", padding=[140, 0])
         Display_layout.add_widget(devices_display)
         keys_page_ids.device_table.add_widget(Display_layout)
 
