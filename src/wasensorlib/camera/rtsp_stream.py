@@ -5,9 +5,12 @@ from datetime import timezone, datetime
 from kivy.logger import Logger as logger
 
 from wacryptolib.sensor import TarfileRecordsAggregator
-from wacryptolib.utilities import PeriodicTaskHandler, synchronized, get_utc_now_date
+from wacryptolib.utilities import PeriodicTaskHandler, synchronized
 
-import io
+
+def get_utc_now_date():  # FIXME remove this
+    """Return current datetime with UTC timezone."""
+    return datetime.now(tz=timezone.utc)
 
 
 class PeriodicStreamPusher(PeriodicTaskHandler):
@@ -28,7 +31,8 @@ class PeriodicStreamPusher(PeriodicTaskHandler):
         super().__init__(interval_s=interval_s, runonstart=False)
         self._tarfile_aggregator = tarfile_aggregator
         assert self.sensor_name, self.sensor_name
-        #self._lock = threading.Lock() ??
+        assert not hasattr(self, "_lock")
+        self._lock = threading.Lock()
 
     @synchronized
     def start(self):
@@ -39,6 +43,8 @@ class PeriodicStreamPusher(PeriodicTaskHandler):
         super().start()
 
         logger.info(">>> Starting sensor %s" % self)
+
+        self._current_start_time = get_utc_now_date()
 
         self._do_start_recording()
 
@@ -67,13 +73,21 @@ class PeriodicStreamPusher(PeriodicTaskHandler):
 
     def _do_push_buffer_file_to_aggregator(self, data, from_datetime, to_datetime):
 
+        fn = "abcde_%s.ismv" % from_datetime.strftime("%H%M%S")
+
+        ''' TEMP
+        print("WRITING FILE", fn)
+        with open(fn, "wb") as f:
+            f.write(data)
+        '''
+
         assert from_datetime and to_datetime, (from_datetime, to_datetime)
 
         self._tarfile_aggregator.add_record(
             sensor_name=self.sensor_name,
             from_datetime=from_datetime,
             to_datetime=to_datetime,
-            extension=self.file_extension,
+            extension=self.record_extension,
             data=data,
         )
 
@@ -87,6 +101,8 @@ class PeriodicStreamPusher(PeriodicTaskHandler):
         to_datetime = datetime.now(tz=timezone.utc)
 
         data = self._do_stop_recording() # Renames target files
+
+        self._current_start_time = get_utc_now_date()  # RESET
         self._do_start_recording()  # Must be restarded imediately
 
         self._do_push_buffer_file_to_aggregator(data=data, from_datetime=from_datetime, to_datetime=to_datetime)
@@ -94,7 +110,10 @@ class PeriodicStreamPusher(PeriodicTaskHandler):
 
 
 
-class RtspCameraSensor(PeriodicStreamPusher):
+class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
+
+    sensor_name = "rtsp_camera"
+    record_extension = ".mp4"
 
     def __init__(self,
                  interval_s,
@@ -111,13 +130,20 @@ class RtspCameraSensor(PeriodicStreamPusher):
             "-y",  # Always say yes to questions
             "-rtsp_transport",
             "tcp"]
+        input = [
+            "-i",
+            self._video_stream_url]
         codec = [
             "-vcodec",
             "copy",
             "-acodec",
             "copy",
             "-map",
-            "0"]
+            "0",
+            "-f",
+            "ismv",  # https://ffmpeg.org/ffmpeg-formats.html#mov_002c-mp4_002c-ismv necessary for non-seekable output
+            "-movflags",
+            "empty_moov+delay_moov"]   # empty_moov is already implicit for ISMV, delay_moov is for "Non-monotonous DTS in output stream"
         logs = [
             "-loglevel",
             "warning"
@@ -126,7 +152,7 @@ class RtspCameraSensor(PeriodicStreamPusher):
             "pipe:1"  # Pipe to stdout
         ]
 
-        pipeline = exec + self.input + codec + self.recording_duration + self.format_params + logs + output
+        pipeline = exec + input + codec + logs + output
 
         logger.info("Calling RtspCameraSensor subprocess command: {}".format(" ".join(pipeline)))
         self._subprocess = subprocess.Popen(pipeline,
@@ -137,7 +163,7 @@ class RtspCameraSensor(PeriodicStreamPusher):
         self._stdout_buff = []
         self._stdout_thread = threading.Thread(target=self._subprocess._readerthread,
                                                 args=(self._subprocess.stdout, self._stdout_buff))
-
+        self._stdout_thread.start()
 
         #returncode = self.process.wait()
         #if returncode:
@@ -147,8 +173,8 @@ class RtspCameraSensor(PeriodicStreamPusher):
         self._launch_and_wait_ffmpeg_process()
 
     def _do_stop_recording(self):
-        self._subprocess.stdin.write("q")  # FFMPEG command to quit
-        self._subprocess.close()
+        self._subprocess.stdin.write(b"q")  # FFMPEG command to quit
+        self._subprocess.stdin.close()
         self._stdout_thread.join(timeout=10)
         return self._stdout_buff[0] if self._stdout_buff else b""
 
