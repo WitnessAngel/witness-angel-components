@@ -1,5 +1,8 @@
+from datetime import datetime
+
+import tempfile
 import time
-from random import random
+from ffprobe import FFProbe
 
 from wacryptolib.container import ContainerStorage
 from wacryptolib.sensor import TarfileRecordsAggregator
@@ -62,4 +65,23 @@ def check_periodic_stream_pusher_basic_behaviour(sensor_class: PeriodicStreamPus
     assert records, records  # At least one chunk is recorded
 
     return records
+
+
+
+
+##### FFPROBE MEDIA CHECKING UTILITIES #####
+
+
+def get_media_length_s(ffprobe_result: FFProbe) -> int:
+    duration_str = ffprobe_result.metadata["Duration"]
+    timedelta = datetime.strptime(duration_str, "%H:%M:%S.%f") - datetime.strptime("00:00", "%H:%M")
+    return timedelta.total_seconds()
+
+
+def get_ffprobe_result_from_buffer(buffer: bytes) -> FFProbe:
+    fd, filename = tempfile.mkstemp()
+    with open(fd, 'wb') as f:
+        f.write(buffer)  # fd is autoclosed after this
+    ffprobe_result = FFProbe(filename)
+    return ffprobe_result
 

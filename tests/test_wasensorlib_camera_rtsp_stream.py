@@ -1,25 +1,8 @@
-import tempfile
 
 import functools
-from datetime import datetime
 
-from _scaffolding_utilities import check_periodic_stream_pusher_basic_behaviour
+from _scaffolding_utilities import check_periodic_stream_pusher_basic_behaviour, get_ffprobe_result_from_buffer, get_media_length_s
 from wasensorlib.camera.rtsp_stream import RtspCameraSensor
-from ffprobe import FFProbe
-
-
-def get_media_length_s(ffprobe_result: FFProbe) -> int:
-    duration_str = ffprobe_result.metadata["Duration"]
-    timedelta = datetime.strptime(duration_str, "%H:%M:%S.%f") - datetime.strptime("00:00", "%H:%M")
-    return timedelta.total_seconds()
-
-
-def get_ffprobe_result_from_buffer(buffer: bytes) -> FFProbe:
-    fd, filename = tempfile.mkstemp()
-    with open(fd, 'wb') as f:
-        f.write(buffer)  # fd is autoclosed after this
-    ffprobe_result = FFProbe(filename)
-    return ffprobe_result
 
 
 def test_rtsp_stream_standard_workflow():
