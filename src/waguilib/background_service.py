@@ -14,7 +14,7 @@ from configparser import ConfigParser, Error as ConfigParserError
 
 from oscpy.server import ServerClass
 
-from waguilib.common_app_support import WaRuntimeSupport
+from waguilib.common_app_support import WaRuntimeSupportMixin
 from waguilib.importable_settings import IS_ANDROID, WIP_RECORDING_MARKER, CONTEXT, INTERNAL_KEYS_DIR
 from waguilib.utilities import InterruptableEvent
 
@@ -56,7 +56,7 @@ if IS_ANDROID:
 
 
 @ServerClass
-class WaBackgroundService(WaRuntimeSupport):
+class WaBackgroundService(WaRuntimeSupportMixin):
     """
     The background server automatically starts when service script is launched.
 
@@ -87,9 +87,9 @@ class WaBackgroundService(WaRuntimeSupport):
         logger.info("Service started")
 
         # Initial setup of service according to persisted config
-        config = self._load_config()
+        config = self.config
         try:
-            daemonize_service = config.getboolean("usersettings", "daemonize_service")
+            daemonize_service = config.getboolean("usersettings", "daemonize_service")  # FIXME is that really "usersettings" here?
         except ConfigParserError:
             daemonize_service = False  # Probably App is just initializing itself
         self.switch_daemonize_service(daemonize_service)
@@ -104,9 +104,10 @@ class WaBackgroundService(WaRuntimeSupport):
         """Return a valid recording toolchain"""
         raise NotImplementedError("_build_recording_toolchain()")
 
-    def _build_recording_toolchain(self):
-        """Return a valid recording toolchain"""
-        raise NotImplementedError("_build_recording_toolchain()")
+    @property
+    def config(self):
+        """We mimick Kivy App API, to simplify, even though this conf is reloaded at EACH access!"""
+        return self._load_config()
 
     def _load_config(self, filename=None):
 
@@ -177,7 +178,7 @@ class WaBackgroundService(WaRuntimeSupport):
                 return
             logger.info("Starting recording")
             if not self._recording_toolchain:
-                config = self._load_config()
+                config = self.config
                 self._recording_toolchain = build_recording_toolchain(
                     config,
                         key_storage_pool=self._key_storage_pool,

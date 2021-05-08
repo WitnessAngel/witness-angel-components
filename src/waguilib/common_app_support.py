@@ -4,7 +4,7 @@ from pathlib import Path
 from waguilib.importable_settings import INTERNAL_APP_ROOT
 
 
-class WaRuntimeSupport:
+class WaRuntimeSupportMixin:
 
     #: The actual basename of local configuration file, to be overridden
     _config_file_basename = None

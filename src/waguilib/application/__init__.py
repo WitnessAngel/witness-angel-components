@@ -6,7 +6,7 @@ import functools
 import logging
 import os
 
-from waguilib.common_app_support import WaRuntimeSupport
+from waguilib.common_app_support import WaRuntimeSupportMixin
 
 os.environ["KIVY_NO_ARGS"] = "1"
 
@@ -30,7 +30,7 @@ osc, osc_starter_callback = get_osc_server(is_master=True)
 
 
 @ServerClass
-class WAGuiApp(WaRuntimeSupport, MDApp):  # FIXME WaGui instead?
+class WAGuiApp(WaRuntimeSupportMixin, MDApp):  # FIXME WaGui instead?
     """
     Main GUI app, which controls the recording service (via OSC protocol), and
     exposes settings as well as existing containers.
@@ -92,7 +92,7 @@ class WAGuiApp(WaRuntimeSupport, MDApp):  # FIXME WaGui instead?
         self.config.write()
 
     def get_application_config(self, *args, **kwargs):
-        # IMPORTANT override of Kivy method
+        # IMPORTANT override of Kivy method #
         #print(">>>>>>>>>>>>>>READING get_application_config"),
         return str(self.config_file_path)
 
