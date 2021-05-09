@@ -19,14 +19,14 @@
             md_bg_color: (0.1372, 0.2862, 0.5294, 1)
             title: "Witness Angel"
             elevation: 10
-            left_action_items: [['menu', lambda x: app.nav_drawer.set_state("toggle")]]
+            left_action_items: [['menu', lambda x: app.navigation_drawer.set_state("toggle")]]
 
             ActionButton:
                 text: 'Home'
 
                 on_release:
                     #app.screen_manager.transition.direction = "right"
-                    app.screen_manager.current = "MainMenu"
+                    app.screen_manager.current = "MainPage"
 
         Label:
             size_hint: None, None
