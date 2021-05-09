@@ -74,7 +74,8 @@ class WaBackgroundService(WaRuntimeSupportMixin):
     _status_change_in_progress = False  # Set to True while recording is starting/stopping
 
     def __init__(self):
-        self._key_storage_pool = FilesystemKeyStoragePool(INTERNAL_KEYS_DIR)
+
+        ##self._key_storage_pool = FilesystemKeyStoragePool(INTERNAL_KEYS_DIR)
 
         logger.info("Starting service")  # Will not be sent to App (too early)
         osc_starter_callback()  # Opens server port
@@ -93,7 +94,8 @@ class WaBackgroundService(WaRuntimeSupportMixin):
             daemonize_service = False  # Probably App is just initializing itself
         self.switch_daemonize_service(daemonize_service)
 
-        if True:  #  WIP_RECORDING_MARKER.exists():
+        #import traceback; traceback.print_stack()
+        if WIP_RECORDING_MARKER.exists():
             self.start_recording()  # Autorecord e.g. after a restart due to closing of main android Activity
 
     def _get_encryption_conf(self):

@@ -100,7 +100,7 @@ class WAGuiApp(WaRuntimeSupportMixin, MDApp):  # FIXME WaGui instead?
 
     def set_recording_btn_state(self, pushed: bool=None, disabled: bool=None):
         assert pushed is not None or disabled is not None, (pushed, disabled)
-        recording_btn = self.root.ids.recording_btn
+        recording_btn = self.recording_button  # Must have been defined on subclass!
         if pushed is not None:
             recording_btn.state = "down" if pushed else "normal"
         if disabled is not None:
@@ -149,6 +149,9 @@ class WAGuiApp(WaRuntimeSupportMixin, MDApp):  # FIXME WaGui instead?
         if not self.get_daemonize_service():
             self.service_controller.stop_service()  # Will wait for termination, then kill it
 
+    def _check_recording_configuration(self):
+        raise NotImplementedError("_check_recording_configuration")
+
     def switch_to_recording_state(self, is_recording):
         """
         Might be called as a reaction to the service broadcasting a changed state.
@@ -157,6 +160,11 @@ class WAGuiApp(WaRuntimeSupportMixin, MDApp):  # FIXME WaGui instead?
         self.set_recording_btn_state(disabled=True)
         wip_recording_marker = Path(self.wip_recording_marker)
         if is_recording:
+
+            if not self._check_recording_configuration():
+                # Will automatically notify user if problems, for now
+                return
+
             wip_recording_marker.touch(exist_ok=True)
             self.service_controller.start_recording()
         else:
