@@ -1,15 +1,7 @@
 
 from kivy.logger import Logger as logger
 
-from oscpy.server import OSCThreadServer
-from waclient.common_config import (
-    INTERNAL_CONTAINERS_DIR,
-    PREGENERATED_KEY_TYPES,
-    IS_ANDROID,
-    warn_if_permission_missing)
-from waclient.sensors.gps import get_gps_sensor
-from waclient.sensors.gyroscope import get_gyroscope_sensor
-from waclient.sensors.microphone import get_microphone_sensor
+#from oscpy.server import OSCThreadServer
 from wacryptolib.container import ContainerStorage
 from wacryptolib.escrow import get_free_keys_generator_worker
 from wacryptolib.sensor import (
@@ -17,9 +9,9 @@ from wacryptolib.sensor import (
     JsonDataAggregator,
     SensorsManager,
 )
-from wacryptolib.utilities import TaskRunnerStateMachineBase
+from waguilib.importable_settings import IS_ANDROID
 
-osc = OSCThreadServer(encoding="utf8")
+#osc = OSCThreadServer(encoding="utf8")
 
 
 if IS_ANDROID:
@@ -35,6 +27,15 @@ def ___build_recording_toolchain(config, key_storage_pool, encryption_conf):
 
     Returns None if no toolchain is enabled by config.
     """
+
+    from waclient.common_config import (
+        INTERNAL_CONTAINERS_DIR,
+        PREGENERATED_KEY_TYPES,
+        IS_ANDROID,
+        warn_if_permission_missing)
+    from waclient.sensors.gps import get_gps_sensor
+    from waclient.sensors.gyroscope import get_gyroscope_sensor
+    from waclient.sensors.microphone import get_microphone_sensor
 
     # TODO make this part more resilient against exceptions
 

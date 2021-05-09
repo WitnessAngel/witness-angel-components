@@ -16,6 +16,7 @@ from oscpy.server import ServerClass
 
 from waguilib.common_app_support import WaRuntimeSupportMixin
 from waguilib.importable_settings import IS_ANDROID, WIP_RECORDING_MARKER, CONTEXT, INTERNAL_KEYS_DIR
+from waguilib.recording_toolchain import start_recording_toolchain, stop_recording_toolchain
 from waguilib.utilities import InterruptableEvent
 
 '''
@@ -171,30 +172,26 @@ class WaBackgroundService(WaRuntimeSupportMixin):
     @safe_catch_unhandled_exception
     def _offloaded_start_recording(self, env):
         try:
-            encryption_conf = self._get_encryption_conf(env)
             if self.is_recording:
                 #logger.debug("Ignoring redundant call to service.start_recording()")
                 return
             logger.info("Starting recording")
-            if not self._recording_toolchain:
-                config = self.config
-                self._recording_toolchain = build_recording_toolchain(
-                    config,
-                        key_storage_pool=self._key_storage_pool,
-                    encryption_conf=encryption_conf,
-                )
-            if self._recording_toolchain:  # Else we just let cancellation occur
-                start_recording_toolchain(self._recording_toolchain)
-                logger.info("Recording started")
 
-                if IS_ANDROID:
-                    from waguilib.android_helpers import build_notification_channel, build_notification
-                    build_notification_channel(CONTEXT, "Witness Angel Service")
-                    notification = build_notification(CONTEXT, title="Sensors are active",
-                                                      message="Click to manage Witness Angel state",
-                                                      ticker="Witness Angel sensors are active")
-                    notification_uid = 1
-                    CONTEXT.startForeground(notification_uid, notification)
+            if not self._recording_toolchain:
+                self._recording_toolchain = self._build_recording_toolchain()  # FIXME handle exceptions instead of None!
+
+            assert self._recording_toolchain
+            start_recording_toolchain(self._recording_toolchain)
+            logger.info("Recording started")
+
+            if IS_ANDROID:
+                from waguilib.android_helpers import build_notification_channel, build_notification
+                build_notification_channel(CONTEXT, "Witness Angel Service")
+                notification = build_notification(CONTEXT, title="Sensors are active",
+                                                  message="Click to manage Witness Angel state",
+                                                  ticker="Witness Angel sensors are active")
+                notification_uid = 1
+                CONTEXT.startForeground(notification_uid, notification)
 
         finally:
             self._status_change_in_progress = False
