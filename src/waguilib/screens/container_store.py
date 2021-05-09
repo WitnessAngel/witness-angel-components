@@ -281,6 +281,7 @@ class ContainerStoreScreen(Screen):
 
         for container_name in container_names:
             try:
+                # FIXME make this asynchronous, to avoid stalling the app!
                 result = self.filesystem_container_storage.decrypt_container_from_storage(container_name, passphrase_mapper=passphrase_mapper)
                 target_path = EXTERNAL_DATA_EXPORTS_DIR / (Path(container_name).with_suffix(""))
                 target_path.write_bytes(result)
@@ -298,6 +299,36 @@ class ContainerStoreScreen(Screen):
             font_size="12sp",
             duration=5,
         ).show()
+
+    @safe_catch_unhandled_exception
+    def __UNUSED_offloaded_attempt_container_decryption(self, container_filepath):  #FIXME move out of here
+        logger.info("Decryption requested for container %s", container_filepath)
+        target_directory = EXTERNAL_DATA_EXPORTS_DIR.joinpath(
+            os.path.basename(container_filepath)
+        )
+        target_directory.mkdir(
+            exist_ok=True
+        )  # Double exports would replace colliding files
+        container = load_container_from_filesystem(container_filepath, include_data_ciphertext=True)
+        tarfile_bytes = decrypt_data_from_container(
+            container, key_storage_pool=self._key_storage_pool
+        )
+        tarfile_bytesio = io.BytesIO(tarfile_bytes)
+        tarfile_obj = tarfile.open(
+            mode="r", fileobj=tarfile_bytesio  # TODO add gzip support here one day
+        )
+        # Beware, as root on unix systems it would apply chown/chmod
+        tarfile_obj.extractall(target_directory)
+        logger.info(
+            "Container content was successfully decrypted into folder %s",
+            target_directory,
+        )
+
+    ##@osc.address_method("/attempt_container_decryption")
+    @safe_catch_unhandled_exception
+    def __UNUSED_attempt_container_decryption(self, container_filepath: str):  #FIXME move out of here
+        container_filepath = Path(container_filepath)
+        return self._offload_task(self._offloaded_attempt_container_decryption, container_filepath=container_filepath)
 
         """
         print("The written sentence is passphrase : %s" % input)

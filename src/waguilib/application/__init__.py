@@ -38,10 +38,14 @@ class WAGuiApp(WaRuntimeSupportMixin, MDApp):  # FIXME WaGui instead?
 
     # CLASS VARIABLES TO BE OVERRIDEN #
     title: str = None
+    title_conf_panel: str = None
+
     #app_config_file: str = None
     #default_config_template: str = None
     #default_config_schema: str = None
     wip_recording_marker: str = None
+
+    dialog = None  # Any current modal dialog must be stored here
 
     service_querying_interval = 1  # To check when service is ready, at app start
     use_kivy_settings = False  # No need
@@ -79,9 +83,9 @@ class WAGuiApp(WaRuntimeSupportMixin, MDApp):  # FIXME WaGui instead?
 
     def build_settings(self, settings):
         """Read the user settings schema and create a panel from it."""
-        settings_file = self.default_config_schema
+        settings_file = self.config_schema_path
         settings.add_json_panel(
-            title=self.title, config=self.config, filename=settings_file
+            title=self.title_conf_panel, config=self.config, filename=settings_file
         )
 
     def save_config(self):

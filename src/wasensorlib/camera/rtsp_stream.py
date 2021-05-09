@@ -1,11 +1,14 @@
+import logging
 import subprocess
 import threading
 
 from datetime import timezone, datetime
-from kivy.logger import Logger as logger
 
 from wacryptolib.sensor import TarfileRecordsAggregator
 from wacryptolib.utilities import PeriodicTaskHandler, synchronized
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_utc_now_date():  # FIXME remove this
@@ -105,9 +108,8 @@ class PeriodicStreamPusher(PeriodicTaskHandler):
         self._current_start_time = get_utc_now_date()  # RESET
         self._do_start_recording()  # Must be restarded imediately
 
-        self._do_push_buffer_file_to_aggregator(data=data, from_datetime=from_datetime, to_datetime=to_datetime)
-
-
+        if data:
+            self._do_push_buffer_file_to_aggregator(data=data, from_datetime=from_datetime, to_datetime=to_datetime)
 
 
 class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
@@ -176,5 +178,31 @@ class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
         self._subprocess.stdin.write(b"q")  # FFMPEG command to quit
         self._subprocess.stdin.close()
         self._stdout_thread.join(timeout=10)
-        return self._stdout_buff[0] if self._stdout_buff else b""
+        buffer = self._stdout_buff[0] if self._stdout_buff else b""
+        return buffer
 
+    @staticmethod
+    def __BROKEN_extract_preview_image(buffer):  #FIXME -seems broken, only for jpeg stream
+        #stream = urllib.request.urlopen('http://192.168.0.51/video.cgi?resolution=1920x1080')
+        a = buffer.find(b'\xff\xd8')
+        b = buffer.find(b'\xff\xd9')
+        if a != -1 and b != -1 and b > a:
+            jpg = buffer[a:b+2]
+            filename = 'capture.jpeg'
+            import cv2, np
+            i = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8), cv2.IMREAD_COLOR)
+            cv2.imwrite(filename, i)
+            return filename
+        else:
+            print(">>>>>>>>", a, b, buffer)
+            logger.warning("Couldn't find a preview frame in RTSP buffer of length %s" % len(buffer))
+
+        """ SEE:
+        command = ["ffmpeg", "-i", str(path), "-r", "1", "-vframes", "1", str(preview_image_path), "-y"]  # "-f",  str(preview_image_path.parent) To rescale: -s WxH
+        logger.info("Calling preview extraction command: %s", str(command))
+        try:
+            res = subprocess.run(command, timeout=10)  # Process is killed brutally if timeout
+            logger.info("Preview extraction command exited with code %s", res.returncode)
+        except subprocess.TimeoutExpired:
+            logger.warning("Preview extraction failed with timeout")
+            """
