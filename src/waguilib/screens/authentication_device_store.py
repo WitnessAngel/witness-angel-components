@@ -1,3 +1,5 @@
+import logging
+import shutil
 import functools
 from pathlib import Path
 
@@ -76,10 +78,30 @@ class AuthenticationDeviceStoreScreen(Screen):
         display_info_toast(msg)
 
         # update the display of authentication_device saved in the local folder .keys_storage_ward
-        self.get_detected_devices()
+        self.list_imported_key_devices()
+
+    def delete_keys(self):
+
+        device_uids = self.selected_authentication_device_uids
+
+        if not device_uids:
+            msg = "Please select authentication devices to delete"
+        else:
+            # TODO move this to WACRYPTOLIB!
+            for device_uid in device_uids:
+                path = self.filesystem_key_storage_pool._get_imported_key_storage_path(device_uid)
+                try:
+                    shutil.rmtree(path)
+                except OSError as exc:
+                    logging.error("Failed deletion of imported authentication device %s: %r", device_uid, exc)
+            msg = "Selected imported authentication devices were deleted"
+
+        display_info_toast(msg)
+
+        self.list_imported_key_devices()
 
 
-    def get_detected_devices(self):
+    def list_imported_key_devices(self):
         """
         loop through the KEYS_ROOT / files, and read their metadata.json,
         to display in the interface their USER and the start of their UUID
@@ -87,7 +109,7 @@ class AuthenticationDeviceStoreScreen(Screen):
         KEYS_ROOT = “~/.keys_storage_ward/”
         """
         print(">> we refresh auth devices panel")
-        Keys_page_ids = self.ids
+        Keys_page_ids = self.ids  # FIXME rename this
 
         Keys_page_ids.device_table.clear_widgets()  # FIXME naming
 

@@ -1,7 +1,7 @@
 
 <AuthenticationDeviceStoreScreen>:
 
-    on_pre_enter: root.get_detected_devices()
+    on_pre_enter: root.list_imported_key_devices()
 
     canvas.before:
         Color:
@@ -58,14 +58,27 @@
             anchor_x: 'center'
             anchor_y: 'bottom'
             padding: [20, 20, 20, 20]
-            height: 100
+            height: 80
             size_hint_y: None
-            Button:
-                id: btn
-                background_color: (51, 23, 186.0, 1)
-                color: 0.1372, 0.2862, 0.5294, 1
-                text: "Import new keys"
-                size: 250, 50
-                size_hint: None, None
-                on_release:
-                    root.import_keys()
+            BoxLayout:
+                orientation: 'horizontal'
+                spacing: 10
+                #padding: [0,20]
+
+                Button:
+                    id: btn
+                    background_color: (51, 23, 186.0, 1)
+                    color: 0.1372, 0.2862, 0.5294, 1
+                    text: "Import new keys"
+                    size_hint: 0.5, 1
+                    on_release:
+                        root.import_keys()
+
+                Button:
+                    id: btn
+                    background_color: (51, 23, 186.0, 1)
+                    color: 0.1372, 0.2862, 0.5294, 1
+                    text: "Delete keys"
+                    size_hint: 0.5, 1
+                    on_release:
+                        root.delete_keys()
