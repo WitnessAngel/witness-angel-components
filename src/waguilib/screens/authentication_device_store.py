@@ -25,6 +25,7 @@ from kivymd.uix.snackbar import Snackbar
 
 from wacryptolib.authentication_device import list_available_authentication_devices, _get_key_storage_folder_path
 from wacryptolib.exceptions import KeyStorageAlreadyExists
+from waguilib.widgets.popups import display_info_toast
 
 Builder.load_file(str(Path(__file__).parent / 'authentication_device_store.kv'))
 
@@ -53,18 +54,26 @@ class AuthenticationDeviceStoreScreen(Screen):
         # for index, authentication_device in enumerate(list_devices):
         #print(">>>>>>>>>> import_keys started")
         authentication_devices = list_available_authentication_devices()
-
         print("DETECTED AUTH DEVICES", authentication_devices)
 
-        for authentication_device in authentication_devices:
-            #print(">>>>>>>>>> importing,", authentication_device)
-            if not authentication_device["is_initialized"]:
-                continue
-            key_storage_folder_path = _get_key_storage_folder_path(authentication_device)  # FIXME make it public?
-            try:
-                self.filesystem_key_storage_pool.import_key_storage_from_folder(key_storage_folder_path)
-            except KeyStorageAlreadyExists:
-                pass  # We tried anyway, since some "update" mevhanics might be setup one day
+        if not authentication_devices:
+            msg = "No connected authentication devices found"
+        else:
+            authentication_devices_initialized = [x for x in authentication_devices if x["is_initialized"]]
+
+            if not authentication_devices_initialized:
+                msg = "No initialized authentication devices found"
+            else:
+                for authentication_device in authentication_devices_initialized:
+                    #print(">>>>>>>>>> importing,", authentication_device)
+                    key_storage_folder_path = _get_key_storage_folder_path(authentication_device)  # FIXME make it public?
+                    try:
+                        self.filesystem_key_storage_pool.import_key_storage_from_folder(key_storage_folder_path)
+                    except KeyStorageAlreadyExists:
+                        pass  # We tried anyway, since some "update" mevhanics might be setup one day
+                msg = "%d authentication device(s) updated" % len(authentication_devices_initialized)
+
+        display_info_toast(msg)
 
         # update the display of authentication_device saved in the local folder .keys_storage_ward
         self.get_detected_devices()
