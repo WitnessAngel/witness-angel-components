@@ -41,5 +41,8 @@ try:
 
     from kivy.core.window import Window
     Window.minimum_width, Window.minimum_height = Window.size = (500, 380)
+
+    # Disable multitouch emulation red dots on right/middle clicks
+    Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
 except Exception as exc:
     print(">>>>>>>> FAILED INITIALIZATION OF WA GUI WINDOW: %r" % exc)
