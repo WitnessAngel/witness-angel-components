@@ -195,15 +195,18 @@ class WAGuiApp(WaRuntimeSupportMixin, MDApp):  # FIXME WaGui instead?
         else:
             self.service_controller.broadcast_recording_state()
 
+    def _receive_recording_state(self, is_recording, *args, **kwargs):
+        self._unanswered_service_state_requests = 0  # RESET
+        if is_recording == "":  # Special case (ternary value, since None is not supported by OSC)
+            self.set_recording_btn_state(disabled=True)
+        else:
+            self.set_recording_btn_state(pushed=is_recording, disabled=False)
+
     @osc.address_method("/receive_recording_state")
     @safe_catch_unhandled_exception
     def receive_recording_state(self, is_recording):
         #print(">>>>> app receive_recording_state", repr(is_recording))
-        self._unanswered_service_state_requests = 0  # RESET
-        if is_recording == "":  # Special case (ternary value, but None is not supported by OSC)
-            self.set_recording_btn_state(disabled=True)
-        else:
-            self.set_recording_btn_state(pushed=is_recording, disabled=False)
+        self._schedule_once(self._receive_recording_state, is_recording)
 
     # SERVICE FEEDBACKS AND DAEMONIZATION #
 
@@ -216,13 +219,17 @@ class WAGuiApp(WaRuntimeSupportMixin, MDApp):  # FIXME WaGui instead?
     @osc.address_method("/log_output")
     @safe_catch_unhandled_exception
     def _post_log_output(self, msg):
-        callback = functools.partial(self.log_output, msg)
-        Clock.schedule_once(callback)
+        self._schedule_once(self.log_output, msg)
 
     def log_output(self, msg, *args, **kwargs):  # OVERRIDE THIS TO DISPLAY OUTPUT
         pass  # Do nothing by default
 
     # MISC UTILITIES #
+
+    def _schedule_once(self, callable, *args, **kwargs):
+        """Schedule a task for single launch on main GUI thread."""
+        callback = functools.partial(callable, *args, **kwargs)
+        Clock.schedule_once(callback)
 
     @staticmethod
     def get_nice_size(size):
