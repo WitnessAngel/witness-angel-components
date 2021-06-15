@@ -130,22 +130,22 @@ class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
         exec = [
             "ffmpeg",
             "-y",  # Always say yes to questions
-            "-rtsp_transport",
-            "tcp"]
+            "-rtsp_transport", "tcp"
+        ]
         input = [
             "-i",
-            self._video_stream_url]
+            self._video_stream_url
+        ]
         codec = [
-            "-vcodec",
-            "copy",
-            "-acodec",
-            "copy",
-            "-map",
-            "0",
-            "-f",
-            "ismv",  # https://ffmpeg.org/ffmpeg-formats.html#mov_002c-mp4_002c-ismv necessary for non-seekable output
-            "-movflags",
-            "empty_moov+delay_moov"]   # empty_moov is already implicit for ISMV, delay_moov is for "Non-monotonous DTS in output stream"
+            "-vcodec", "copy",
+            "-an",  # NO AUDIO FOR NOW, codec pcm-mulaw not supported for Bluestork cameras...
+            # "-acodec", "copy",
+            "-map", "0",
+            "-f", "ismv",  # https://ffmpeg.org/ffmpeg-formats.html#mov_002c-mp4_002c-ismv necessary for non-seekable output
+            "-movflags", "empty_moov+delay_moov",  # empty_moov is already implicit for ISMV, delay_moov is for "Non-monotonous DTS in output stream"
+            "-probesize", "128",
+            "-analyzeduration", "500",
+        ]
         logs = [
             "-loglevel",
             "warning"
