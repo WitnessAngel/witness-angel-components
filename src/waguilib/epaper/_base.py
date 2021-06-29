@@ -7,10 +7,8 @@ THIS_DIR = Path(__file__).parent
 
 class EpaperStatusDisplayBase:
 
-    font_size = 18
-    line_height = 20  # Pixels
-
-    extended_mode = False
+    font_size = 16  # Pixels
+    line_height = 18  # Pixels
 
     def __init__(self, **options):
         pass
@@ -20,7 +18,7 @@ class EpaperStatusDisplayBase:
         return font
 
     def get_blank_frame(self):
-        image = Image.new('1', (self.PAPER_HEIGHT, self.PAPER_WIDTH), 255)  # Monochrome
+        image = Image.new('L', (self.PAPER_WIDTH, self.PAPER_HEIGHT), 255)  # Monochrome
         return image
 
     def _convert_to_preview_image(self, source_image_path, preview_image_dimensions, preview_image_path):
@@ -29,6 +27,20 @@ class EpaperStatusDisplayBase:
         img = img.resize(preview_image_dimensions)
         image_gray = img.convert('L')
         image_gray.save(preview_image_path)
+
+    def initialize_display(self):
+        self._initialize_display()
+
+    def release_display(self):
+        self._release_display()
+
+    def _initialize_display(self):
+        """Prepare e-parer for display"""
+        raise NotImplementedError("_initialize_display() not implemented")
+
+    def _release_display(self):
+        """Shutdown display, e.g. to avoid harming it by too long power-ON"""
+        raise NotImplementedError("_release_display() not implemented")
 
     def _display_image(self, screen_image):
         """Directly output image to device"""
