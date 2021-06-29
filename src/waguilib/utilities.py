@@ -1,4 +1,8 @@
 import threading
+from pathlib import Path
+
+
+ASSETS_PATH = Path(__file__).parents[1].joinpath("assets")
 
 
 class InterruptableEvent(threading.Event):
@@ -9,3 +13,7 @@ class InterruptableEvent(threading.Event):
             while not wait(0.1):  pass
         else:
             wait(timeout)
+
+
+def get_guilib_asset_path(*path_components):
+    return str(ASSETS_PATH.joinpath(*path_components))

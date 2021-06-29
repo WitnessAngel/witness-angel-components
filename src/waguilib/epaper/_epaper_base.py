@@ -3,7 +3,9 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
-THIS_DIR = Path(__file__).parent
+from waguilib.utilities import get_guilib_asset_path
+
+###THIS_DIR = Path(__file__).parent
 
 class EpaperStatusDisplayBase:
 
@@ -46,12 +48,12 @@ class EpaperStatusDisplayBase:
         """Directly output image to device"""
         raise NotImplementedError("_display_image() not implemented")
 
-    def display_status(self, status_obj, text_offset_x=None, text_offset_y=None, source_image_path=None, font_file_path=None):
+    def display_status(self, status_obj, source_image_path, text_offset_x=None, text_offset_y=None, font_file_path=None):
 
         text_offset_x = text_offset_x if text_offset_x is not None else self.TEXT_OFFSET_X
         text_offset_y = text_offset_y if text_offset_y is not None else self.TEXT_OFFSET_Y
-        source_image_path = source_image_path or str(THIS_DIR / "preview.png")
-        font_file_path = font_file_path or str(THIS_DIR / "Font.ttc")
+        #source_image_path = source_image_path or str(THIS_DIR / "preview.png")
+        font_file_path = font_file_path or get_guilib_asset_path("fonts", "epaper_font.ttc")
 
         preview_image_path = source_image_path + ".thumb.jpg"
         self._convert_to_preview_image(source_image_path, preview_image_dimensions=(self.PREVIEW_IMAGE_WIDTH, self.PREVIEW_IMAGE_HEIGHT), preview_image_path=preview_image_path)
@@ -69,7 +71,7 @@ class EpaperStatusDisplayBase:
         draw.text(((text_offset_x + 62), 0), status_obj["recording_status"], font = font, fill = 1)
 
         # Print bitmap wifi logo and status
-        wifi_logo = Image.open(str(THIS_DIR.joinpath('wifi.bmp')))
+        wifi_logo = Image.open(get_guilib_asset_path("images", 'wifi.bmp'))
         bmp = wifi_logo.resize((20, 15))
         framebuffer.paste(bmp, (text_offset_x, 20))
         draw.text(((text_offset_x + 25), 20), status_obj["wifi_status"], font = font, fill = 0)
@@ -83,7 +85,7 @@ class EpaperStatusDisplayBase:
         draw.text((text_offset_x, (40 + self.line_height)), now_hour, font = font, fill = 0)
 
         for idx, (key, value) in enumerate(status_obj["extra_stats"].items()):
-            print(">>>>", idx, key, value)
+            #print(">>>>", idx, key, value)
             label = key.replace("_", " ").title()
             draw.text((1, (text_offset_y + idx * self.line_height)), label, font = font, fill = 0)
             draw.text(((1 + 80), (text_offset_y + idx * self.line_height)), value, font = font, fill = 0)

@@ -1,4 +1,4 @@
-from waguilib.epaper._base import EpaperStatusDisplayBase
+from waguilib.epaper._epaper_base import EpaperStatusDisplayBase
 from devices import dfrobot_epaper
 
 class DfrobotEpaperStatusDisplay(EpaperStatusDisplayBase):
