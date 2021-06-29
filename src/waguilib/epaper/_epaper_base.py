@@ -9,7 +9,7 @@ from waguilib.utilities import get_guilib_asset_path
 
 class EpaperStatusDisplayBase:
 
-    font_size = 13  # Pixels
+    font_size = 14  # Pixels
     line_height = 15  # Pixels
 
     def __init__(self, **options):
@@ -68,7 +68,7 @@ class EpaperStatusDisplayBase:
         # Print recording status
         draw.text((text_offset_x, 0), "Recording", font = font, fill = 0)
         #draw.rectangle(((text_offset_x + 60), 1, (text_offset_x + 125), self.line_height), fill = 0)
-        draw.text(((text_offset_x + 62), 0), status_obj["recording_status"], font = font, fill = 1)
+        draw.text(((text_offset_x + 64), 0), status_obj["recording_status"], font = font, fill = 1)
 
         # Print bitmap wifi logo and status
         wifi_logo = Image.open(get_guilib_asset_path("images", 'wifi.bmp'))

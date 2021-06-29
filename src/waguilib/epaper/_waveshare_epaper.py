@@ -1,4 +1,4 @@
-from PIL import ImageFont
+
 from pathlib import Path
 from waguilib.epaper._epaper_base import EpaperStatusDisplayBase
 from waveshare_epd import epd2in7
@@ -19,7 +19,7 @@ class WaveshareEpaperStatusDisplay(EpaperStatusDisplayBase):
     PREVIEW_IMAGE_WIDTH = 140
     PREVIEW_IMAGE_HEIGHT = int(PREVIEW_IMAGE_WIDTH / (16/9))
 
-    def __init__(self, **options):
+    def __init__(self):
         self.epd = epd2in7.EPD()
 
     def _initialize_display(self):
