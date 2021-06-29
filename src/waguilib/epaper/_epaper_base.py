@@ -68,23 +68,28 @@ class EpaperStatusDisplayBase:
         # Print recording status
         draw.text((text_offset_x, 0), "Recording", font = font, fill = 0)
         #draw.rectangle(((text_offset_x + 60), 1, (text_offset_x + 125), self.line_height), fill = 0)
-        draw.text(((text_offset_x + 64), 0), status_obj["recording_status"], font = font, fill = 1)
+        draw.text(((text_offset_x + 68), 0), status_obj.pop("recording_status"), font = font, fill = 1)
 
         # Print bitmap wifi logo and status
         wifi_logo = Image.open(get_guilib_asset_path("images", 'wifi.bmp'))
         bmp = wifi_logo.resize((20, 15))
         framebuffer.paste(bmp, (text_offset_x, 20))
-        draw.text(((text_offset_x + 25), 20), status_obj["wifi_status"], font = font, fill = 0)
+        draw.text(((text_offset_x + 25), 20), status_obj.pop("wifi_status"), font = font, fill = 0)
+
+        ethernet_logo = Image.open(get_guilib_asset_path("images", 'ethernet_small.bmp'))
+        bmp = ethernet_logo.resize((20, 20))
+        framebuffer.paste(bmp, (text_offset_x + 60, 20))
+        draw.text(((text_offset_x + 85), 20), status_obj.pop("ethernet_status"), font = font, fill = 0)
 
         # Print datetime
-        now = datetime.datetime.now()
-        now_date = now.strftime("%Y/%m/%d")
-        now_hour = now.strftime("%H:%M:%S")
+        now_datetime = status_obj.pop("now_datetime")
+        now_date = now_datetime.strftime("%Y/%m/%d")
+        now_hour = now_datetime.strftime("%H:%M:%S")
 
         draw.text((text_offset_x, 40), now_date, font = font, fill = 0)
         draw.text((text_offset_x, (40 + self.line_height)), now_hour, font = font, fill = 0)
 
-        for idx, (key, value) in enumerate(status_obj["extra_stats"].items()):
+        for idx, (key, value) in enumerate(status_obj.items()):
             #print(">>>>", idx, key, value)
             label = key.replace("_", " ").title()
             draw.text((1, (text_offset_y + idx * self.line_height)), label, font = font, fill = 0)
