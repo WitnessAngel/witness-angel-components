@@ -13,8 +13,8 @@ class WaveshareEpaperStatusDisplay(EpaperStatusDisplayBase):
     PAPER_WIDTH = epd2in7.EPD_HEIGHT
     PAPER_HEIGHT = epd2in7.EPD_WIDTH
 
-    TEXT_OFFSET_X = 140
-    TEXT_OFFSET_Y = 60
+    TEXT_OFFSET_X = 141
+    TEXT_OFFSET_Y = 80
 
     PREVIEW_IMAGE_WIDTH = 140
     PREVIEW_IMAGE_HEIGHT = int(PREVIEW_IMAGE_WIDTH / (16/9))

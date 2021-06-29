@@ -7,8 +7,8 @@ THIS_DIR = Path(__file__).parent
 
 class EpaperStatusDisplayBase:
 
-    font_size = 16  # Pixels
-    line_height = 18  # Pixels
+    font_size = 13  # Pixels
+    line_height = 15  # Pixels
 
     def __init__(self, **options):
         pass
@@ -61,36 +61,43 @@ class EpaperStatusDisplayBase:
         framebuffer = self.get_blank_frame()
         framebuffer.paste(preview_image, (0,0))
         font = self.get_font(font_file_path, font_size=self.font_size)
+        draw = ImageDraw.Draw(framebuffer)
+
+        # Print recording status
+        draw.text((text_offset_x, 0), "Recording", font = font, fill = 0)
+        #draw.rectangle(((text_offset_x + 60), 1, (text_offset_x + 125), self.line_height), fill = 0)
+        draw.text(((text_offset_x + 62), 0), status_obj["recording_status"], font = font, fill = 1)
+
+        # Print bitmap wifi logo and status
+        wifi_logo = Image.open(str(THIS_DIR.joinpath('wifi.bmp')))
+        bmp = wifi_logo.resize((20, 15))
+        framebuffer.paste(bmp, (text_offset_x, 20))
+        draw.text(((text_offset_x + 25), 20), status_obj["wifi_status"], font = font, fill = 0)
 
         # Print datetime
         now = datetime.datetime.now()
         now_date = now.strftime("%Y/%m/%d")
         now_hour = now.strftime("%H:%M:%S")
-        draw = ImageDraw.Draw(framebuffer)
-        draw.text((1, (text_offset_y + self.line_height)), now_date, font = font, fill = 0)
-        draw.text((1, (text_offset_y + (self.line_height * 2))), now_hour, font = font, fill = 0)
 
-        # Print record status
-        draw.text((text_offset_x, 0), "Record", font = font, fill = 0)
-        draw.rectangle(((text_offset_x + 60), 1, (text_offset_x + 125), self.line_height), fill = 0)
-        draw.text(((text_offset_x + 61), 0), status_obj, font = font, fill = 1)
+        draw.text((text_offset_x, 40), now_date, font = font, fill = 0)
+        draw.text((text_offset_x, (40 + self.line_height)), now_hour, font = font, fill = 0)
 
-        # Print bitmap wifi logo and status
-        wifi_logo = Image.open(str(THIS_DIR.joinpath('wifi.bmp')))
-        bmp = wifi_logo.resize((20, 15))
-        framebuffer.paste(bmp, (text_offset_x, 28))
-        draw.text(((text_offset_x + 25), 30), status_obj, font = font, fill = 0)
-
-        # Print Disk status
-        draw.text((text_offset_x, text_offset_y), "Disk Left", font = font, fill = 0)
-        draw.text(((text_offset_x + 100), text_offset_y), status_obj, font = font, fill = 0)
-
-        # Print RAM status
-        draw.text((text_offset_x, (text_offset_y + self.line_height)), "RAM Left", font = font, fill = 0)
-        draw.text(((text_offset_x + 100), (text_offset_y + self.line_height)), status_obj, font = font, fill = 0)
-
-        # Print Containers status
-        draw.text((text_offset_x, (text_offset_y + (self.line_height * 2))), "Containers", font = font, fill = 0)
-        draw.text(((text_offset_x + 100), (text_offset_y + (self.line_height * 2))), status_obj, font = font, fill = 0)
-
+        for idx, (key, value) in enumerate(status_obj["extra_stats"].items()):
+            print(">>>>", idx, key, value)
+            label = key.replace("_", " ").title()
+            draw.text((1, (text_offset_y + idx * self.line_height)), label, font = font, fill = 0)
+            draw.text(((1 + 80), (text_offset_y + idx * self.line_height)), value, font = font, fill = 0)
+            """
+            # Print Disk status
+            draw.text((text_offset_x, text_offset_y), "Disk Left", font = font, fill = 0)
+            draw.text(((text_offset_x + 100), text_offset_y), status_obj, font = font, fill = 0)
+    
+            # Print RAM status
+            draw.text((text_offset_x, (text_offset_y + self.line_height)), "RAM Left", font = font, fill = 0)
+            draw.text(((text_offset_x + 100), (text_offset_y + self.line_height)), status_obj, font = font, fill = 0)
+    
+            # Print Containers status
+            draw.text((text_offset_x, (text_offset_y + (self.line_height * 2))), "Containers", font = font, fill = 0)
+            draw.text(((text_offset_x + 100), (text_offset_y + (self.line_height * 2))), status_obj, font = font, fill = 0)
+            """
         self._display_image(framebuffer)
