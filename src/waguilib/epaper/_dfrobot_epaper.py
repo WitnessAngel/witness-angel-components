@@ -13,14 +13,14 @@ class DfrobotEpaperStatusDisplay(EpaperStatusDisplayBase):
 
     epaper = dfrobot_epaper.DFRobot_Epaper_SPI(RASPBERRY_SPI_BUS, RASPBERRY_SPI_DEV, RASPBERRY_PIN_CS, RASPBERRY_PIN_CD, RASPBERRY_PIN_BUSY) # create epaper object
 
-    XDOT = 128
-    YDOT = 250
+    PAPER_WIDTH = 128
+    PAPER_HEIGHT = 250
 
-    Xbasic = 125
-    Ybasic = 60
+    TEXT_OFFSET_X = 125
+    TEXT_OFFSET_Y = 60
 
-    Ximage_size = 120
-    Yimage_size = 78
+    PREVIEW_IMAGE_WIDTH = 120
+    PREVIEW_IMAGE_HEIGHT = 78
 
     screen_image = ""
     finale_image = ""
@@ -36,6 +36,6 @@ class DfrobotEpaperStatusDisplay(EpaperStatusDisplayBase):
 
     def _display_image(self, pil_image):
         self.initialization()
-        Himage = self.display_status(self.screen_image, self.Ximage_size, self.Yimage_size, self.finale_image, self.epaper, self.YDOT, self.XDOT, self.fontFilePath, self.Ybasic, self.Xbasic, self.status_obj)
+        Himage = self.display_status(self.screen_image, self.PREVIEW_IMAGE_WIDTH, self.PREVIEW_IMAGE_HEIGHT, self.finale_image, self.epaper, self.PAPER_HEIGHT, self.PAPER_WIDTH, self.fontFilePath, self.TEXT_OFFSET_Y, self.TEXT_OFFSET_X, self.status_obj)
         Himage.save(pil_image)
         self.epaper.bitmapFile(0, 0, pil_image)
