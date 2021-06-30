@@ -19,6 +19,11 @@ class WaveshareEpaperStatusDisplay(EpaperStatusDisplayBase):
     PREVIEW_IMAGE_WIDTH = 140
     PREVIEW_IMAGE_HEIGHT = int(PREVIEW_IMAGE_WIDTH / (16/9))
 
+    BUTTON_PIN_1 = 5
+    BUTTON_PIN_2 = 6
+    BUTTON_PIN_3 = 13
+    BUTTON_PIN_4 = 19
+
     def __init__(self):
         self.epd = epd2in7.EPD()
 

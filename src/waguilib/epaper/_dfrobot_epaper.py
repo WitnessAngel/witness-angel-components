@@ -29,6 +29,10 @@ class DfrobotEpaperStatusDisplay(EpaperStatusDisplayBase):
 
     status_obj = "test"
 
+    BUTTON_PIN_1 = 21
+    BUTTON_PIN_2 = 20
+
+
     def initialization(self):
         self.epaper.begin()
         self.epaper.clearScreen()

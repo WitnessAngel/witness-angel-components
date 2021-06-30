@@ -3,6 +3,7 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
+
 from waguilib.utilities import get_guilib_asset_path
 
 ###THIS_DIR = Path(__file__).parent
@@ -11,6 +12,12 @@ class EpaperStatusDisplayBase:
 
     font_size = 14  # Pixels
     line_height = 15  # Pixels
+
+    # Override these in subclasses to enable GPIO-BCM buttons
+    BUTTON_PIN_1 = None
+    BUTTON_PIN_2 = None
+    BUTTON_PIN_3 = None
+    BUTTON_PIN_4 = None
 
     def __init__(self, **options):
         pass
