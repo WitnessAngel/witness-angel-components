@@ -298,7 +298,7 @@ class ContainerStoreScreen(Screen):
             text=message,
             font_size="12sp",
             duration=5,
-        ).show()
+        ).open()
 
     @safe_catch_unhandled_exception
     def __UNUSED_offloaded_attempt_container_decryption(self, container_filepath):  #FIXME move out of here
