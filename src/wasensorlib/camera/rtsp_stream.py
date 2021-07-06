@@ -130,7 +130,8 @@ class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
         exec = [
             "ffmpeg",
             "-y",  # Always say yes to questions
-            "-rtsp_transport", "tcp"
+            "-rtsp_flags", "prefer_tcp",  # Safer alternative to ("-rtsp_transport", "tcp")
+            "-stimeout", "2000",  # Force failure if input can't be joined anymore
         ]
         input = [
             "-i",
@@ -162,8 +163,12 @@ class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
                                         stdout=subprocess.PIPE,
                                         stderr=None)  # Stderr is left floating for now
 
+        def _readerthread(fh, buffer):
+            # Backported from Popen._readerthread of Python3.8
+            buffer.append(fh.read())
+            fh.close()
         self._stdout_buff = []
-        self._stdout_thread = threading.Thread(target=self._subprocess._readerthread,
+        self._stdout_thread = threading.Thread(target=_readerthread,
                                                 args=(self._subprocess.stdout, self._stdout_buff))
         self._stdout_thread.start()
 
@@ -175,9 +180,15 @@ class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
         self._launch_and_wait_ffmpeg_process()
 
     def _do_stop_recording(self):
-        self._subprocess.stdin.write(b"q")  # FFMPEG command to quit
-        self._subprocess.stdin.close()
-        self._stdout_thread.join(timeout=10)
+        try:
+            self._subprocess.stdin.write(b"q")  # FFMPEG command to quit
+            self._subprocess.stdin.close()
+            self._stdout_thread.join(timeout=10)
+        except Exception as exc:
+            logger.warning("Failed normal termination of ffmpeg subprocess: {}".format(exc))
+            if self._subprocess.poll() is None:  # It could be that Ffmpeg is just slow to quit, though...
+                logger.warning("Force-terminating dangling ffmpeg subprocess")
+                self._subprocess.terminate()
         buffer = self._stdout_buff[0] if self._stdout_buff else b""
         return buffer
 
