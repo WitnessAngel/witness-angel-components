@@ -38,13 +38,14 @@ if IS_ANDROID:
 
 else:
     CONTEXT = None  # Unused on Desktop
-    INTERNAL_APP_ROOT = Path(storagepath.get_home_dir()) / "WitnessAngelInternal"
-    _EXTERNAL_APP_ROOT = Path(storagepath.get_home_dir()) / "WitnessAngelExternal"
-    INTERNAL_CACHE_DIR = Path(storagepath.get_home_dir()) / "WitnessAngelCache"
+    _base_dir = Path(storagepath.get_home_dir()) / "WitnessAngel"
+    INTERNAL_APP_ROOT = _base_dir / "Internal"
+    _EXTERNAL_APP_ROOT = _base_dir / "External"
+    INTERNAL_CACHE_DIR = _base_dir / "Cache"
 
     PackageManager = None
 
-INTERNAL_APP_ROOT.mkdir(exist_ok=True)
+INTERNAL_APP_ROOT.mkdir(exist_ok=True, parents=True)  # Creates base directory too!
 INTERNAL_CACHE_DIR.mkdir(exist_ok=True)
 
 
