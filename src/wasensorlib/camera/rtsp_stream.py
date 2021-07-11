@@ -165,6 +165,12 @@ class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
         ]
         pipeline = exec + input + codec + logs + video_output + preview_image_output
 
+        # Cleanup dangling preview image
+        try:
+            self._preview_image_path.unlink()  # FIXME use "missing_ok" soon
+        except FileNotFoundError:
+            pass
+
         logger.info("Calling RtspCameraSensor subprocess command: {}".format(" ".join(pipeline)))
         self._subprocess = subprocess.Popen(pipeline,
                                         stdin=subprocess.PIPE,

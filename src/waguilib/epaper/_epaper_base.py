@@ -1,6 +1,7 @@
 import datetime
 from pathlib import Path
 
+import os
 from PIL import Image, ImageDraw, ImageFont
 
 
@@ -30,12 +31,19 @@ class EpaperStatusDisplayBase:
         image = Image.new('L', (self.PAPER_WIDTH, self.PAPER_HEIGHT), 255)  # Monochrome
         return image
 
-    def _convert_to_preview_image(self, source_image_path, preview_image_dimensions, preview_image_path):
+    def get_blank_thumbnail(self):
+        image = Image.new('L', (self.PREVIEW_IMAGE_WIDTH, self.PREVIEW_IMAGE_HEIGHT), 255)  # Monochrome
+        return image
+
+    def _convert_to_preview_image(self, preview_image_path, thumbnail_image_dimensions, thumbnail_image_path):
         """Convert source image to a Greyshade preview thumbnail stored on disk."""
-        img = Image.open(source_image_path)
-        img = img.resize(preview_image_dimensions)
-        image_gray = img.convert('L')
-        image_gray.save(preview_image_path)
+        try:
+            img = Image.open(preview_image_path)
+            img = img.resize(thumbnail_image_dimensions)
+            image_gray = img.convert('L')
+            image_gray.save(thumbnail_image_path)
+        except FileNotFoundError:
+            pass  # Preview image not (yet) generated, it's OK
 
     def initialize_display(self):
         self._initialize_display()
@@ -55,20 +63,33 @@ class EpaperStatusDisplayBase:
         """Directly output image to device"""
         raise NotImplementedError("_display_image() not implemented")
 
-    def display_status(self, status_obj, source_image_path, text_offset_x=None, text_offset_y=None, font_file_path=None):
+    def display_status(self, status_obj, preview_image_path, text_offset_x=None, text_offset_y=None, font_file_path=None):
+        assert isinstance(preview_image_path, str), preview_image_path
 
         text_offset_x = text_offset_x if text_offset_x is not None else self.TEXT_OFFSET_X
         text_offset_y = text_offset_y if text_offset_y is not None else self.TEXT_OFFSET_Y
         #source_image_path = source_image_path or str(THIS_DIR / "preview.png")
         font_file_path = font_file_path or get_guilib_asset_path("fonts", "epaper_font.ttc")
 
-        preview_image_path = source_image_path + ".thumb.jpg"
-        self._convert_to_preview_image(source_image_path, preview_image_dimensions=(self.PREVIEW_IMAGE_WIDTH, self.PREVIEW_IMAGE_HEIGHT), preview_image_path=preview_image_path)
-        preview_image = Image.open(preview_image_path)
+        thumbnail_image_path = preview_image_path + ".thumb.jpg"
+        try:
+            os.unlink(thumbnail_image_path)
+        except FileNotFoundError:
+            pass
+
+        self._convert_to_preview_image(preview_image_path,
+                                       thumbnail_image_dimensions=(self.PREVIEW_IMAGE_WIDTH, self.PREVIEW_IMAGE_HEIGHT),
+                                       thumbnail_image_path=thumbnail_image_path)
 
         # Create big image to display on EPaper
         framebuffer = self.get_blank_frame()
-        framebuffer.paste(preview_image, (0,0))
+
+        try:
+            thumbnail_image = Image.open(thumbnail_image_path)
+        except FileNotFoundError:
+            thumbnail_image = self.get_blank_thumbnail()
+
+        framebuffer.paste(thumbnail_image, (0,0))
         font = self.get_font(font_file_path, font_size=self.font_size)
         draw = ImageDraw.Draw(framebuffer)
 

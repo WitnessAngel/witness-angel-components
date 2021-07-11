@@ -16,6 +16,7 @@ class WaveshareEpaperStatusDisplay(EpaperStatusDisplayBase):
     TEXT_OFFSET_X = 141
     TEXT_OFFSET_Y = 80
 
+    # FIXME rename to "thumbnail" stuffs"
     PREVIEW_IMAGE_WIDTH = 140
     PREVIEW_IMAGE_HEIGHT = int(PREVIEW_IMAGE_WIDTH / (16/9))
 
