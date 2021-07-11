@@ -180,7 +180,7 @@ class WAGuiApp(WaRuntimeSupportMixin, MDApp):  # FIXME WaGui instead?
             self.service_controller.start_recording()
         else:
             try:
-                wip_recording_marker.unlink()
+                wip_recording_marker.unlink()  # TODO use "missing_ok" asap
             except FileNotFoundError:
                 pass
             self.service_controller.stop_recording()

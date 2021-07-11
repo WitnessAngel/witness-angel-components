@@ -136,7 +136,7 @@ class WaBackgroundService(WaRuntimeSupportMixin):
         return self._send_message("/log_output", "Service: " + msg)
 
     def _send_message(self, address, *values):
-        #print("Message sent from service to app: %s" % address)
+        #print("Message sent from service to app: %s %s" % (address, values))
         try:
             return self._osc_client.send_message(address, values=values)
         except OSError as exc:
@@ -220,7 +220,7 @@ class WaBackgroundService(WaRuntimeSupportMixin):
         (since OSC doesn't like None values...)
         """
         if self._status_change_in_progress:
-            is_recording = ""
+            is_recording = ""  # For ternary value, since None is not supported by OSC
         else:
             is_recording = self.is_recording
         #logger.debug("Broadcasting service state (is_recording=%r)" % is_recording)

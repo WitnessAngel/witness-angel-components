@@ -3,6 +3,7 @@ import subprocess
 import threading
 
 from datetime import timezone, datetime
+from pathlib import Path
 
 from wacryptolib.sensor import TarfileRecordsAggregator
 from wacryptolib.utilities import PeriodicTaskHandler, synchronized
@@ -16,9 +17,10 @@ def get_utc_now_date():  # FIXME remove this
     return datetime.now(tz=timezone.utc)
 
 
+# FIXME move this to wacryptolib!
 class PeriodicStreamPusher(PeriodicTaskHandler):
     """
-    This class launches an external sensor, and periodically pushes thecollected data
+    This class launches an external sensor, and periodically pushes the collected data
     to a tarfile aggregator.
     """
 
@@ -120,10 +122,12 @@ class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
     def __init__(self,
                  interval_s,
                  tarfile_aggregator,
-                 video_stream_url):
+                 video_stream_url: str,
+                 preview_image_path: Path):
         super().__init__(interval_s=interval_s, tarfile_aggregator=tarfile_aggregator)
-
+        assert video_stream_url and preview_image_path, (video_stream_url, preview_image_path)
         self._video_stream_url = video_stream_url
+        self._preview_image_path = preview_image_path
 
     def _launch_and_wait_ffmpeg_process(self):
 
@@ -151,11 +155,15 @@ class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
             "-loglevel",
             "warning"
         ]
-        output = [
-            "pipe:1"  # Pipe to stdout
-        ]
+        video_output = [
+            "pipe:1",  # Pipe to stdout
 
-        pipeline = exec + input + codec + logs + output
+            #"-vf", "fps=1/60", "img%03d.jpg"
+        ]
+        preview_image_output = [
+            "-frames:v",  "1", "-filter:v", "scale=140:-1,hue=s=0", str(self._preview_image_path),  # FIXME parametrize DIMENSIONS
+        ]
+        pipeline = exec + input + codec + logs + video_output + preview_image_output
 
         logger.info("Calling RtspCameraSensor subprocess command: {}".format(" ".join(pipeline)))
         self._subprocess = subprocess.Popen(pipeline,
