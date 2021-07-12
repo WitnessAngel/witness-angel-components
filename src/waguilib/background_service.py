@@ -35,9 +35,6 @@ from waclient.recording_toolchain import (
 '''
 from waguilib.logging.handlers import CallbackHandler, safe_catch_unhandled_exception
 from waguilib.service_control.osc_transport import get_osc_server, get_osc_client
-from wacryptolib.container import decrypt_data_from_container, load_container_from_filesystem
-from wacryptolib.key_storage import FilesystemKeyStorage, FilesystemKeyStoragePool
-from wacryptolib.utilities import load_from_json_file
 
 # os.environ["KIVY_NO_CONSOLELOG"] = "1"  # IMPORTANT
 
@@ -79,7 +76,7 @@ class WaBackgroundService(WaRuntimeSupportMixin):
 
         logger.info("Starting service")  # Will not be sent to App (too early)
         osc_starter_callback()  # Opens server port
-        self._osc_client = get_osc_client(to_master=True)
+        self._osc_client = get_osc_client(to_app=True)
         logging.getLogger(None).addHandler(
             CallbackHandler(self._remote_logging_callback)
         )
@@ -202,7 +199,9 @@ class WaBackgroundService(WaRuntimeSupportMixin):
     @osc.address_method("/start_recording")
     @safe_catch_unhandled_exception
     def start_recording(self, env=None):
+        # Fixme - remove "env" parameter if unused?
         self._status_change_in_progress = True
+        WIP_RECORDING_MARKER.touch(exist_ok=True)
         return self._offload_task(self._offloaded_start_recording, env=env)
 
     @property
@@ -250,6 +249,10 @@ class WaBackgroundService(WaRuntimeSupportMixin):
     @safe_catch_unhandled_exception
     def stop_recording(self):
         self._status_change_in_progress = True
+        try:
+            WIP_RECORDING_MARKER.unlink()  # TODO use "missing_ok" asap
+        except FileNotFoundError:
+            pass
         return self._offload_task(self._offloaded_stop_recording)
 
     @osc.address_method("/stop_server")

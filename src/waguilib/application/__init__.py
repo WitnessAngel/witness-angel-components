@@ -44,7 +44,6 @@ class WAGuiApp(WaRuntimeSupportMixin, MDApp):  # FIXME WaGui instead?
     #app_config_file: str = None
     #default_config_template: str = None
     #default_config_schema: str = None
-    wip_recording_marker: str = None
 
     dialog = None  # Any current modal dialog must be stored here
 
@@ -169,20 +168,14 @@ class WAGuiApp(WaRuntimeSupportMixin, MDApp):  # FIXME WaGui instead?
          Let it propagate anyway in this case, the service will just ignore the duplicated command.
         """
         self.set_recording_btn_state(disabled=True)
-        wip_recording_marker = Path(self.wip_recording_marker)
         if is_recording:
 
             if not self._check_recording_configuration():
                 # Will automatically notify user if problems, for now
                 return
 
-            wip_recording_marker.touch(exist_ok=True)
             self.service_controller.start_recording()
         else:
-            try:
-                wip_recording_marker.unlink()  # TODO use "missing_ok" asap
-            except FileNotFoundError:
-                pass
             self.service_controller.stop_recording()
 
     def _request_recording_state(self, *args, **kwargs):
