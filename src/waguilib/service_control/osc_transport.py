@@ -53,9 +53,9 @@ def get_osc_server(is_master=True):
     return server, starter_callback
 
 
-def get_osc_client(to_master=True):
+def get_osc_client(to_app):
 
-    socket_index = 0 if to_master else 1
+    socket_index = 0 if to_app else 1
     socket_options = _get_osc_socket_options(socket_index=socket_index)
 
     socket_family = socket_options.pop("family")

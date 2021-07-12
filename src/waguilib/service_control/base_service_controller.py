@@ -8,7 +8,7 @@ class ServiceControllerBase:
     _osc_client = None
 
     def __init__(self):
-        self._osc_client = get_osc_client(to_master=False)
+        self._osc_client = get_osc_client(to_app=False)
 
     def _send_message(self, address, *values):
         #print("Message sent from app to service: %s %s" % (address, values))
