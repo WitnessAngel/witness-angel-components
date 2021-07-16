@@ -4,6 +4,12 @@
 
 # Note that there's no libdrm because this lib cause errors
 
+
+# IF TROUBLES:
+# How do I get rid of ffmpeg `WARNING: library configuration mismatch` message?
+# ---> sudo apt install --reinstall libavcodec58 libavdevice58 libavfilter7 libavformat58 libavresample4 libavutil56 libpostproc55 libswresample3 libswscale5
+
+
 sudo apt update -y && sudo apt upgrade -y
 
 sudo apt-get -y install \
@@ -61,7 +67,8 @@ sudo apt-get -y install \
     texinfo \
     wget \
     yasm \
-    zlib1g-dev
+    zlib1g-dev \
+    libunistring-dev
 
 mkdir ~/ffmpeg-libraries
 
