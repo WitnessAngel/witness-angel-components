@@ -134,14 +134,19 @@ class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
         exec = [
             "ffmpeg",
             "-y",  # Always say yes to questions
-            "-rtsp_flags", "prefer_tcp",  # Safer alternative to ("-rtsp_transport", "tcp")
-            "-stimeout", "2000",  # Force failure if input can't be joined anymore
+            "-rtsp_flags", "prefer_tcp",  # Safer alternative to ( "-rtsp_transport", "tcp", )
+            #"-timeout", "10000",  # Force failure if input can't be joined anymore
         ]
         input = [
+          # These flags need a RECENT ffmpeg version (raspbian buster repos are not up-to-date enough)
+          #  "-fflags", "+igndts",  # Fix "non-monotonous DTS in output stream" error
+          #  "-reconnect", "1", "-reconnect_at_eof", "1", "-reconnect_streamed", "1",
+          # "-reconnect_delay_max", "10",  #  "-reconnect_on_network_error", "1",
             "-i",
-            self._video_stream_url
+            self._video_stream_url,
         ]
         codec = [
+            #"-copytb", "1", (doesn't work for timestamps)
             "-vcodec", "copy",
             "-an",  # NO AUDIO FOR NOW, codec pcm-mulaw not supported for Bluestork cameras...
             # "-acodec", "copy",
@@ -153,7 +158,7 @@ class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
         ]
         logs = [
             "-loglevel",
-            "warning"
+            "warning"  # Else, info, debug or trace
         ]
         video_output = [
             "pipe:1",  # Pipe to stdout
