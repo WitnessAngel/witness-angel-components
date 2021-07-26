@@ -281,12 +281,14 @@ class ContainerStoreScreen(Screen):
 
         for container_name in container_names:
             try:
+                EXTERNAL_DATA_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
                 # FIXME make this asynchronous, to avoid stalling the app!
                 result = self.filesystem_container_storage.decrypt_container_from_storage(container_name, passphrase_mapper=passphrase_mapper)
                 target_path = EXTERNAL_DATA_EXPORTS_DIR / (Path(container_name).with_suffix(""))
                 target_path.write_bytes(result)
                 print(">> Successfully exported data file to %s" % target_path)
             except Exception as exc:
+                print(">>>>> close_dialog_decipher_container() exception thrown:", exc)  # TEMPORARY
                 errors.append(exc)
 
         if errors:
