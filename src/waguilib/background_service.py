@@ -104,7 +104,7 @@ class WaBackgroundService(WaRuntimeSupportMixin):
         raise NotImplementedError("_build_recording_toolchain()")
 
     @property
-    def config(self):
+    def config(self):  # TODO ensure we don't reload file too often here!
         """We mimick Kivy App API, to simplify, even though this conf is reloaded at EACH access!"""
         return self._load_config()
 
@@ -192,6 +192,8 @@ class WaBackgroundService(WaRuntimeSupportMixin):
                 notification_uid = 1
                 CONTEXT.startForeground(notification_uid, notification)
 
+        except Exception as exc:
+            logger.error("Could not build recording toolchain: %r" % exc)
         finally:
             self._status_change_in_progress = False
             self.broadcast_recording_state()  # Even on error
