@@ -1,14 +1,18 @@
 
 
 <PassphrasesDialogContent>:
-    orientation: "vertical"
-    spacing: "20"
-    size_hint_y: None
+    do_scroll_x: False
+    do_scroll_y: True
     height: "120"
-    #id: passphrases_layout
 
-    #MDTextField:
-    #    hint_text: "Passphrase"
+    GridLayout:
+        ###orientation: "vertical"
+        height: self.minimum_height
+        cols: 1
+        spacing: 20
+        size_hint_x: 1
+        size_hint_y: None
+        id: passphrases_layout
 
 
 <ContainerStoreScreen>:

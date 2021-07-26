@@ -11,6 +11,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.screenmanager import ScreenManager
+from kivy.uix.scrollview import ScrollView
 from kivy.uix.textinput import TextInput
 from kivymd.uix.textfield import MDTextField
 from kivymd.app import MDApp
@@ -29,7 +30,7 @@ from wacryptolib.container import gather_escrow_dependencies
 Builder.load_file(str(Path(__file__).parent / 'container_store.kv'))
 
 
-class PassphrasesDialogContent(BoxLayout):
+class PassphrasesDialogContent(ScrollView):
     pass
 
 
@@ -236,12 +237,12 @@ class ContainerStoreScreen(Screen):
         print("--------------")
         pprint.pprint(relevant_key_storage_metadata)
 
-
-        content = PassphrasesDialogContent()
+        scroller = PassphrasesDialogContent()
+        content = scroller.ids.passphrases_layout
 
         for metadata in relevant_key_storage_metadata:
             hint_text="Passphrase for user %s (hint: %s)" % (metadata["user"], metadata["passphrase_hint"])
-            _widget = TextInput(hint_text=hint_text)
+            _widget = TextInput(hint_text=hint_text, size_hint=(1, 0), height=100)
 
             '''MDTextField(hint_text="S SSSSSSSS z z",
                               helper_text="Passphrase for user %s (hint: %s)" % (metadata["user"], metadata["passphrase_hint"]),
@@ -256,7 +257,7 @@ class ContainerStoreScreen(Screen):
         self.dialog = MDDialog(
             title=message,
             type="custom",
-            content_cls=content,
+            content_cls=scroller,
             #text=message,
             size_hint=(0.8, 1),
             buttons=[
