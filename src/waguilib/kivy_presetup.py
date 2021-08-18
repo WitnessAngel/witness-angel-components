@@ -1,5 +1,6 @@
 
 # WORKAROUND FOR LOGGING WEIRDNESS IN KIVY SETUP #
+
 try:
     # MUST BE ROBUST DUE TO NEED FOR RESILIENT "CRASH HANDLER" ACCESS #
 
@@ -31,18 +32,20 @@ except Exception as exc:
 
 # SETUP INITIAL STATE OF THE WINDOW
 try:
-    from kivy.config import Config
-    Config.set('graphics', 'top', '50')
-    Config.set('graphics', 'left', '50')
-    Config.set('graphics', 'position', 'custom')
-    # FIXME this happens too late I guess
-    #Config.set("graphics", "fullscreen", "0")
-    #Config.set("graphics", "show_cursor", "1")
+    from waguilib.importable_settings import WACLIENT_TYPE
+    if WACLIENT_TYPE == "APPLICATION":
+        from kivy.config import Config
+        Config.set('graphics', 'top', '50')
+        Config.set('graphics', 'left', '50')
+        Config.set('graphics', 'position', 'custom')
+        # FIXME this happens too late I guess
+        #Config.set("graphics", "fullscreen", "0")
+        #Config.set("graphics", "show_cursor", "1")
 
-    from kivy.core.window import Window
-    Window.minimum_width, Window.minimum_height = Window.size = (500, 380)
+        from kivy.core.window import Window
+        Window.minimum_width, Window.minimum_height = Window.size = (500, 380)
 
-    # Disable multitouch emulation red dots on right/middle clicks
-    Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
+        # Disable multitouch emulation red dots on right/middle clicks
+        Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
 except Exception as exc:
     print(">>>>>>>> FAILED INITIALIZATION OF WA GUI WINDOW: %r" % exc)
