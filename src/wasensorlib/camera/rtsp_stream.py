@@ -158,7 +158,7 @@ class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
         ]
         logs = [
             "-loglevel",
-            "warning"  # Else, info, debug or trace
+            "info"  # Else, info, debug or trace
         ]
         video_output = [
             "pipe:1",  # Pipe to stdout
@@ -176,20 +176,30 @@ class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
         except FileNotFoundError:
             pass
 
-        logger.info("Calling RtspCameraSensor subprocess command: {}".format(" ".join(pipeline)))
+        logger.warning("Calling RtspCameraSensor subprocess command: {}".format(" ".join(pipeline)))
         self._subprocess = subprocess.Popen(pipeline,
                                         stdin=subprocess.PIPE,
                                         stdout=subprocess.PIPE,
-                                        stderr=None)  # Stderr is left floating for now
+                                        stderr=subprocess.PIPE)  # Stderr is left floating for now
 
-        def _readerthread(fh, buffer):
+        def _stdoutreaderthread(fh, buffer):
             # Backported from Popen._readerthread of Python3.8
             buffer.append(fh.read())
             fh.close()
         self._stdout_buff = []
-        self._stdout_thread = threading.Thread(target=_readerthread,
+        self._stdout_thread = threading.Thread(target=_stdoutreaderthread,
                                                 args=(self._subprocess.stdout, self._stdout_buff))
         self._stdout_thread.start()
+
+        def _sytderrreaderthread(fh):
+            for line in fh:
+                ##print(b">>>>", repr(line).encode("ascii"))
+                line_str = repr(line)  #  line.decode("ascii", "ignore")
+                logger.warning("SUBPROCESS: %s" % line_str.rstrip("\n"))
+            fh.close()
+        self._stderr_thread = threading.Thread(target=_sytderrreaderthread,
+                                                args=(self._subprocess.stderr,))
+        self._stderr_thread.start()
 
         #returncode = self.process.wait()
         #if returncode:
