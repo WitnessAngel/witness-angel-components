@@ -19,7 +19,7 @@ GPIO.setwarnings(False)  # Other apps or previous crash might have left GPIOs in
 
 def register_button_callback(pin, callback):
     GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-    GPIO.add_event_detect(pin, GPIO.FALLING, callback=callback, bouncetime=300)
+    GPIO.add_event_detect(pin, GPIO.FALLING, callback=callback, bouncetime=1000)
 
 def unregister_button_callbacks(pin):
     GPIO.remove_event_detect(pin)
