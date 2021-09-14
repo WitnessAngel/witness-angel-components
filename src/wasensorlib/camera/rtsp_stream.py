@@ -53,7 +53,7 @@ class PeriodicStreamPusher(PeriodicTaskHandler):
 
         self._do_start_recording()
 
-        logger.info(">>> Starting sensor %s" % self)
+        logger.info(">>> Started sensor %s" % self)
 
     def _do_start_recording(self):
         raise NotImplementedError("%s -> _do_start_recording" % self.sensor_name)
@@ -62,7 +62,7 @@ class PeriodicStreamPusher(PeriodicTaskHandler):
     def stop(self):
         super().stop()
 
-        logger.info(">>> Starting sensor %s" % self)
+        logger.info(">>> Stopping sensor %s" % self)
 
         from_datetime = self._current_start_time
         to_datetime = get_utc_now_date()
@@ -71,7 +71,7 @@ class PeriodicStreamPusher(PeriodicTaskHandler):
 
         self._do_push_buffer_file_to_aggregator(data=data, from_datetime=from_datetime, to_datetime=to_datetime)
 
-        logger.info(">>> Starting sensor %s" % self)
+        logger.info(">>> Stopped sensor %s" % self)
 
     def _do_stop_recording(self):
         raise NotImplementedError("%s -> _do_stop_recording" % self.sensor_name)
