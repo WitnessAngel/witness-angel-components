@@ -138,10 +138,10 @@ class WaBackgroundService(WaRuntimeSupportMixin):
             return self._osc_client.send_message(address, values=values)
         except OSError as exc:
             # NO LOGGING HERE, else it would loop due to custom logging handler
-            print(
-                "{SERVICE} Could not send osc message %s%s to app: %r"
-                % (address, values, exc)
-            )
+            ##print(
+            ##    "{SERVICE} Could not send osc message %s%s to app: %r"
+            ##    % (address, values, exc)
+            ##)
             return
 
     def _offload_task(self, method, *args, **kwargs):
