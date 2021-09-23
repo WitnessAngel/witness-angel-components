@@ -13,17 +13,27 @@ _lang_code, _charset = locale.getlocale()
 DEFAULT_LANGUAGE = "fr" if "fr" in _lang_code.lower() else "en"
 
 
+def get_package_translator(language, locale_dir):
+    return gettext.translation(
+        "witnessangel",
+        locale_dir,
+        languages=[language],
+        fallback=True  # (language == "en")  # We don't care about EN translations
+    )
+
+
 class Lang(Observable):
     """Internationalization of the program : https://github.com/tito/kivy-gettext-example"""
 
     observers = []
-    lang = None
+    language = None
+    ugettext = None
+    locale_dirs = None
 
-    def __init__(self, defaultlang, locale_dir):
+    def __init__(self, default_lang, locale_dirs):
         super(Lang, self).__init__()
-        self.ugettext = None
-        self.locale_dir = locale_dir
-        self.switch_lang(defaultlang)
+        self.locale_dirs = locale_dirs
+        self.switch_lang(default_lang)
 
 
     def _(self, text):
@@ -43,16 +53,19 @@ class Lang(Observable):
         else:
             return super(Lang, self).funbind(name, func, *args, **kwargs)
 
-    def switch_lang(self, lang):
-        # instanciate a gettext
-        locales = gettext.translation(
-            "witnessangel",
-            self.locale_dir,
-            languages=[lang],  # FIXME change dir lookup
-            fallback=(lang == "en")  # We don't care about EN translations
-        )
-        self.ugettext = locales.gettext
-        self.lang = lang
+    def switch_lang(self, language):
+
+        # Instantiate the whole translator chain
+        translator = None
+        for locale_dir in self.locale_dirs:
+            _translator = get_package_translator(language, locale_dir=locale_dir)
+            if translator is None:
+                translator = _translator  # Head of chain
+            else:
+                translator.add_fallback(_translator)
+
+        self.ugettext = translator.gettext
+        self.language = language
 
         # update all the kv rules attached to this text
         for func, largs, kwargs in self.observers:

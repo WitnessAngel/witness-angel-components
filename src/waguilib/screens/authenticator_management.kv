@@ -1,0 +1,162 @@
+#:import tr wa_keygen_gui.tr
+
+
+<LanguageMenuHeader@MDBoxLayout>:
+    orientation: "vertical"
+    adaptive_size: True
+    padding: "10dp"
+    MDLabel:
+        text: tr._("Language")
+        font_style: "H6"
+        adaptive_size: True
+        pos_hint: {"center_y": .5}
+
+
+<ThinTwoLineAvatarIconListItem@TwoLineAvatarIconListItem>
+    _height: dp(60)
+
+<UserKeyStoreListItem@ThinTwoLineAvatarIconListItem>:
+    text: tr._("User Profile")
+    secondary_text: tr._("Stored inside system disk")
+    #tertiary_text: tr._("fit more text than usual")
+
+    IconLeftWidget:
+        icon: "account-box"
+
+<OpenFolderButton@IRightBodyTouch+MDRectangleFlatIconButton>:
+    text: tr._("Find")
+    icon: "file-find-outline"
+
+<FolderKeyStoreListItem>:
+
+    selected_path: None
+    text: tr._("Custom location")
+    secondary_text: str(self.selected_path) if self.selected_path else tr._("Please select a folder")
+    #tertiary_text: tr._("fit more text than usual2")
+
+    on_size:
+        self.ids._right_container.width = open_folder_btn.width
+        self.ids._right_container.x = open_folder_btn.width
+        self.ids._right_container.height = open_folder_btn.height
+        self.ids._right_container.y = root.y + root.height/2 - open_folder_btn.height/2  # - dp(10)
+
+    IconLeftWidget:
+        icon: "folder"
+    OpenFolderButton:
+        id: open_folder_btn
+
+
+<AuthenticatorTesterContent@MDBoxLayout>
+    orientation: "vertical"
+    spacing: "12dp"
+    size_hint_y: None
+    height: "80dp"
+
+    MDLabel:
+        text: tr._("Test integrity and passphrase of authenticator.")
+    MDTextField:
+        id: tester_passphrase
+        hint_text: tr._("Passphrase")
+
+
+<KeyringSelectorScreen>:
+
+    on_pre_enter: root.refresh_keyring_list()
+
+    MDBoxLayout:
+
+        orientation: "vertical"
+
+        ScrollView:
+            orientation: "vertical"
+
+            MDGridLayout:
+                cols: 1
+
+                MDToolbar:
+                    title: tr._("Manage Authenticators")
+                    right_action_items: [["refresh", lambda x: root.refresh_keyring_list()], ["earth", lambda x: root.language_menu_open(x)], ["help-circle-outline", lambda x: root.display_help_popup()]]
+
+                ScrollView:
+                    bar_width: 5
+                    bar_inactive_color: self.bar_color
+
+                    MDList:
+                        id: authentication_device_list
+
+                MDBoxLayout:
+                    height: dp(40)
+                    size_hint_y: None
+
+                    md_bg_color: app.theme_cls.bg_darkest
+                    line_color: [0.2, 0.2, 0.2, 1]
+
+                    MDIcon:
+                        icon: root.AUTHENTICATOR_INITIALIZATION_STATUS_ICONS[root.authenticator_status] # "language-python"
+                        halign: "center"
+                        width: dp(90)
+                        size_hint_x: None
+
+                    MDLabel:
+                        text: root.get_authenticator_status_message(root.authenticator_status)
+                        halign: "left"
+
+                ScrollView:
+                    id: scrlv
+                    TextInput:  #MDLabel:
+                        id: authentication_device_information
+                        readonly: True
+                        padding: [10,10]
+                        halign: "left"
+                        #theme_text_color: "Error"
+                        size_hint: 1, None
+                        height: max( (len(self._lines)+1) * self.line_height, scrlv.height)
+                        text: "<empty>"
+
+                MDGridLayout:
+                    id: authenticator_actions_create
+                    cols: 2
+                    size_hint_x: 1
+                    size_hint_y: None
+                    height: self.minimum_height
+                    disabled: root.authenticator_status is not False
+
+                    MDRectangleFlatIconButton:
+                        anchor_x: "right"
+                        halign: "center"
+                        icon: "account-key-outline"
+                        text: "Initialize"
+                        size_hint_x: 1
+                        on_press: root.manager.current = "authenticator_creation_screen"
+
+                    MDRectangleFlatIconButton:
+                        icon: "database-import-outline"
+                        text: "Import"
+                        size_hint_x: 1
+                        on_press: root.archive_chooser_open()
+
+                MDGridLayout:
+                    id: authenticator_actions_modify
+                    cols: 2
+                    size_hint_x: 1
+                    size_hint_y: None
+                    height: self.minimum_height
+                    disabled: root.authenticator_status is not True
+
+                    MDRectangleFlatIconButton:
+                        icon: "database-export-outline"
+                        text: "Export"
+                        size_hint_x: 1
+                        on_press: root.export_authenticator_to_archive()
+
+                    MDRectangleFlatIconButton:
+                        icon: "crosshairs-question"
+                        text: "Check"
+                        size_hint_x: 1
+                        on_press: root.show_checkup_dialog()
+
+                    MDRectangleFlatIconButton:
+                        icon: "delete-alert-outline"
+                        text: "Destroy"
+                        size_hint_x: 1
+                        on_press: root.show_authenticator_destroy_confirmation_dialog()

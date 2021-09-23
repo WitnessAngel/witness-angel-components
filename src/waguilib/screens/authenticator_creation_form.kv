@@ -1,0 +1,69 @@
+#:import tr wa_keygen_gui.tr
+
+
+<AuthenticatorCreationScreen>:
+
+    on_pre_enter: root.reset_initialization_form()
+
+    GridLayout:
+        padding: [10, 10, 10, 10]
+        spacing: [20, 20]
+        cols: 1
+
+        MDToolbar:
+            title: tr._("Create authenticator")
+            id: initialization_form_toolbar
+            left_action_items: [["arrow-left", lambda x: root.go_to_home_screen()]]
+            right_action_items: [["help-circle-outline", lambda x: root.display_help_popup()]]
+
+        MDLabel:
+            text: tr._("Target:") + " " + str(root._selected_authenticator_path)
+            halign: "center"
+
+        MDTextField:
+            id: formfield_username
+            hint_text: 'Owner name'
+            mode: "fill"
+            #helper_text: 'Your own name'
+            #helper_text_mode: 'on_focus'
+            #color_mode: 'custom'
+            #line_color_focus: app.COLORS.WHITE
+            #disabled: False
+            #fill_color: app.COLORS.DARK_GREY
+            #current_hint_text_color: app.COLORS.WHITE
+
+        MDTextField:
+            id: formfield_passphrase
+            hint_text: 'Passphrase'
+            mode: "fill"
+
+        MDTextField:
+            id: formfield_passphrasehint
+            hint_text: 'Passphrase hint'
+            mode: "fill"
+
+        RelativeLayout :
+            height: dp(35)
+
+            MDRectangleFlatButton:
+                id: button_initialize
+                text: "Initialize"
+                size_hint: .4, 1
+                pos_hint: {'x': .3}
+                on_release:
+                    root.request_authenticator_initialization()
+
+        AnchorLayout:
+            size_hint: 1, 1
+            pos: 300,300
+
+            MDLabel:
+                id: operation_status_label
+                text: root.operation_status
+
+        MDProgressBar:
+            size_hint_y: None
+            height: dp(10)
+            padding: [20,200]
+            id: progress_bar
+            value: 0
