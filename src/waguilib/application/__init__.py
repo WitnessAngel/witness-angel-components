@@ -102,12 +102,6 @@ class WAGuiApp(WaRuntimeSupportMixin, MDApp):  # FIXME WaGui instead?
 
     # APP LIFECYCLE AND RECORDING STATE #
 
-    def build(self):
-        # Hack top ensure that we don't need to click TWICE to gain focus on Kivy Window and then on widget!
-        def force_window_focus(*args, **kwargs):
-            Window.raise_window()
-        Window.bind(on_cursor_enter=force_window_focus)
-
     def set_recording_btn_state(self, pushed: bool=None, disabled: bool=None):
         assert pushed is not None or disabled is not None, (pushed, disabled)
         recording_btn = self.recording_button  # Must have been defined on subclass!

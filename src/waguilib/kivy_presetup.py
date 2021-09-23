@@ -32,20 +32,31 @@ except Exception as exc:
 
 # SETUP INITIAL STATE OF THE WINDOW
 try:
+
     from waguilib.importable_settings import WACLIENT_TYPE
     if WACLIENT_TYPE == "APPLICATION":
         from kivy.config import Config
+        '''
         Config.set('graphics', 'top', '50')
         Config.set('graphics', 'left', '50')
         Config.set('graphics', 'position', 'custom')
+        '''
         # FIXME this happens too late I guess
         #Config.set("graphics", "fullscreen", "0")
         #Config.set("graphics", "show_cursor", "1")
 
         from kivy.core.window import Window
-        Window.minimum_width, Window.minimum_height = Window.size = (500, 380)
+        ##Window.minimum_width, Window.minimum_height = Window.size = (600, 600)
 
         # Disable multitouch emulation red dots on right/middle clicks
         Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
+
+        # Ensure that we don't need to click TWICE to gain focus on Kivy Window and then on widget!
+        def force_window_focus(*args, **kwargs):
+            Window.raise_window()
+        Window.bind(on_cursor_enter=force_window_focus)
+
 except Exception as exc:
     print(">>>>>>>> FAILED INITIALIZATION OF WA GUI WINDOW: %r" % exc)
+    raise
+
