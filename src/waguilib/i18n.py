@@ -74,8 +74,17 @@ class _Translator(Observable):
         self.language = language
 
         # update all the kv rules attached to this text
-        for func, largs, kwargs in self.observers:
-            func(largs, None, None)
+        _obsolete_idx = []
+
+        for idx, (func, largs, kwargs) in enumerate(self.observers):
+            try:
+                func(largs, None, None)
+            except ReferenceError:
+                _obsolete_idx.append(idx)
+
+        for _idx in reversed(_obsolete_idx):
+            # Reversed loop, to preserve meaning of indexes
+            del self.observers[_idx]
 
 
 tr = _Translator(DEFAULT_LANGUAGE)  # Initially without locale data files
