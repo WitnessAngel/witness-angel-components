@@ -1,0 +1,309 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Pascal <chambon.pascal@gmail.com>, 2021.
+msgid ""
+msgstr ""
+"Project-Id-Version: WitnessAngelGuilib\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-09-23 23:26+0200\n"
+"PO-Revision-Date: 2021-09-23 23:21+0200\n"
+"Last-Translator: Pascal <pythoniks@gmail.com>\n"
+"Language-Team: Nothing\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Virtaal 0.7.1\n"
+
+#: src/waguilib/screens/authenticator_creation_form.kv:14
+msgid "Create Authenticator"
+msgstr "Créer un Authentifieur"
+
+#: src/waguilib/screens/authenticator_creation_form.kv:20
+msgid "Target:"
+msgstr "Cible :"
+
+#: src/waguilib/screens/authenticator_creation_form.py:63
+msgid "Please enter a username, passphrase and passphrase hint."
+msgstr ""
+"Veuillez entrer un nom d'utilisateur, une phrase secrète et son indice."
+
+#: src/waguilib/screens/authenticator_creation_form.py:65
+#, python-format
+msgid "Passphrase must be at least %s characters long."
+msgstr "La phrase secrète doit faire au moins %s caractères de long."
+
+#: src/waguilib/screens/authenticator_creation_form.py:75
+msgid "Validation error"
+msgstr "Erreur de validation"
+
+#: src/waguilib/screens/authenticator_creation_form.py:162
+msgid "Please wait a few seconds, initialization is in process."
+msgstr "Veuillez attendre quelques secondes, initialisation en cours"
+
+#: src/waguilib/screens/authenticator_creation_form.py:174
+msgid "Initialization successfully completed."
+msgstr "Initialisation complétée avec succès."
+
+#: src/waguilib/screens/authenticator_creation_form.py:175
+#: src/waguilib/screens/authenticator_management.py:327
+msgid "Success"
+msgstr "Succès"
+
+#: src/waguilib/screens/authenticator_creation_form.py:177
+msgid "Operation failed, check logs."
+msgstr "Opération échouée, vérifiez les logs."
+
+#: src/waguilib/screens/authenticator_creation_form.py:178
+#: src/waguilib/screens/authenticator_management.py:330
+msgid "Failure"
+msgstr "Échec"
+
+#: src/waguilib/screens/authenticator_creation_form.py:181
+msgid ""
+"        On this page, you can initialize an authenticator inside an empty "
+"folder; this authenticator actually consists in metadata files as well as a "
+"set of asymmetric keypairs.\n"
+"        \n"
+"        To proceed, you have to input your user name or pseudo, a long "
+"passphrase (e.g. consisting of 4 different words), and a public hint to help "
+"your remember your passphrase later.\n"
+"        \n"
+"        You should keep your passphrase somewhere safe (in a digital "
+"password manager, on a paper in a vault...), because if you forget any of "
+"its aspects (upper/lower case, accents, spaces...), there is no way to "
+"recover it.\n"
+"        "
+msgstr ""
+"        Sur cette page, vous pouvez initialiser un authentifieur dans un "
+"dossier vide ; cet authentifieur consiste en réalité en des fichiers de "
+"métadonnées, ainsi qu'en un ensemble de paires de clés asymétriques.\n"
+"        \n"
+"        Pour continuer, vous devez entrer votre nom d'utilisateur ou pseudo, "
+"une longue phrase secrète (par exemple, composée de 4 mots différents), et "
+"un indice public pour vous aider à vous souvenir de votre phrase secrète "
+"plus tard.\n"
+"        \n"
+"        Vous devez conserver votre phrase secrète en lieu sûr (dans un "
+"gestionnaire de mots de passe numérique, sur un papier dans un coffre-"
+"fort...), car si vous oubliez l'un de ses aspects (majuscules/minuscules, "
+"accents, espaces...), il n'y a aucun moyen de la récupérer.\n"
+"        "
+
+#: src/waguilib/screens/authenticator_creation_form.py:190
+msgid "Authenticator creation page"
+msgstr "Page de création de l'authentifieur"
+
+#: src/waguilib/screens/authenticator_management.kv:9
+msgid "Language"
+msgstr "Langue"
+
+#: src/waguilib/screens/authenticator_management.kv:19
+msgid "User Profile"
+msgstr "Profil Utilisateur"
+
+#: src/waguilib/screens/authenticator_management.kv:20
+msgid "Stored inside system disk"
+msgstr "Stocké dans le disque système"
+
+#: src/waguilib/screens/authenticator_management.kv:27
+msgid "Find"
+msgstr "Trouver"
+
+#: src/waguilib/screens/authenticator_management.kv:33
+msgid "Custom location"
+msgstr "Emplacement personnalisé"
+
+#: src/waguilib/screens/authenticator_management.kv:34
+msgid "Please select a folder"
+msgstr "Veuillez sélectionner un dossier"
+
+#: src/waguilib/screens/authenticator_management.kv:56
+msgid "Test integrity and passphrase of authenticator"
+msgstr "Tester l'intégrité et la phrase secrète de l'authentifieur"
+
+#: src/waguilib/screens/authenticator_management.kv:59
+msgid "Passphrase"
+msgstr "Phrase secrète"
+
+#: src/waguilib/screens/authenticator_management.kv:77
+msgid "Manage Authenticators"
+msgstr "Gérer les Authentifieurs"
+
+#: src/waguilib/screens/authenticator_management.kv:88
+msgid "Please select an authenticator location"
+msgstr "Veuillez sélectionner un emplacement d'authentifieur"
+
+#: src/waguilib/screens/authenticator_management.py:192
+#, python-brace-format
+msgid "Drive: {drive} ({label})"
+msgstr "Disque : {drive} ({label})"
+
+#: src/waguilib/screens/authenticator_management.py:193
+#, python-brace-format
+msgid "Size: {size}, Filesystem: {filesystem}"
+msgstr "Taille : {size}, Format : {filesystem}"
+
+#: src/waguilib/screens/authenticator_management.py:216
+msgid "No valid location selected"
+msgstr "Aucun emplacement valide sélectionné"
+
+#: src/waguilib/screens/authenticator_management.py:218
+msgid "Authenticator not initialized"
+msgstr "Authentifieur non initialisé"
+
+#: src/waguilib/screens/authenticator_management.py:220
+msgid "Authenticator initialized"
+msgstr "Authentifieur initialisé"
+
+#: src/waguilib/screens/authenticator_management.py:237
+msgid "Please select an authenticator folder"
+msgstr "Veuillez sélectionner un dossier d'authentifieur"
+
+#: src/waguilib/screens/authenticator_management.py:241
+#, python-format
+msgid ""
+"Selected folder is invalid\n"
+"Full path: %s"
+msgstr ""
+"Le dossier sélectionné est invalide\n"
+"Chemin complet : %s"
+
+#: src/waguilib/screens/authenticator_management.py:245
+#, python-format
+msgid "Full path: %s"
+msgstr "Chemin complet : %s"
+
+#: src/waguilib/screens/authenticator_management.py:259
+#, python-brace-format
+msgid ""
+"                Full path: {authenticator_path}\n"
+"                ID: {authenticator_uid}\n"
+"                User: {authenticator_user}\n"
+"                Password hint: {authenticator_passphrase_hint}\n"
+"            "
+msgstr ""
+"                Chemin complet : {authenticator_path}\n"
+"                ID : {authenticator_uid}\n"
+"                Utilisateur : {authenticator_user}\n"
+"                Indice de phrase secrète : {authenticator_passphrase_hint}"
+
+#: src/waguilib/screens/authenticator_management.py:276
+msgid "Destroy authenticator"
+msgstr "Détruire l'authentifieur"
+
+#: src/waguilib/screens/authenticator_management.py:277
+msgid ""
+"Beware, this might make encrypted data using these keys impossible to "
+"decrypt."
+msgstr ""
+"Attention, cela peut rendre impossible le déchiffrement des données "
+"chiffrées utilisant ces clés."
+
+#: src/waguilib/screens/authenticator_management.py:296
+msgid "Deletion is over"
+msgstr "Destruction terminée"
+
+#: src/waguilib/screens/authenticator_management.py:297
+#, python-format
+msgid "All authentication data from folder %s has been removed."
+msgstr "Toutes les données d'authentifieur du dossier %s ont été supprimées."
+
+#: src/waguilib/screens/authenticator_management.py:305
+msgid "Sanity check"
+msgstr "Contrôle d'intégrité"
+
+#: src/waguilib/screens/authenticator_management.py:328
+#, python-format
+msgid "Keypairs successfully tested: %s"
+msgstr "Paires de clés testées avec succès : %s"
+
+#: src/waguilib/screens/authenticator_management.py:333
+#, python-brace-format
+msgid ""
+"Keypairs tested: {keypair_count}\n"
+"Missing private keys: {missing_private_keys}\n"
+"Wrong passphrase for keys:  {undecodable_private_keys}"
+msgstr ""
+"Paires de clés testées : {keypair_count}\n"
+"Clés privées manquantes : {missing_private_keys}\n"
+"Mauvaise phrase secrète pour les clés :  {undecodable_private_keys}"
+
+#: src/waguilib/screens/authenticator_management.py:340
+#, python-format
+msgid "Checkup result: %s"
+msgstr "Résultat du contrôle : %s"
+
+#: src/waguilib/screens/authenticator_management.py:385
+msgid "Export successful"
+msgstr "Exportation réussie"
+
+#: src/waguilib/screens/authenticator_management.py:386
+#, python-format
+msgid "Authenticator archive exported to %s"
+msgstr "L'archive de l'authentifieur a été exportée vers %s"
+
+#: src/waguilib/screens/authenticator_management.py:400
+msgid "Import successful"
+msgstr "Importation réussie"
+
+#: src/waguilib/screens/authenticator_management.py:401
+#, python-format
+msgid ""
+"Authenticator archive unpacked from %s, its integrity has not been checked "
+"though."
+msgstr ""
+"L'archive d'authentifieur a été décompressée depuis %s, son intégrité n'a "
+"cependant pas été vérifiée."
+
+#: src/waguilib/screens/authenticator_management.py:407
+msgid ""
+"        On this page, you can manage your authenticators, which are actually "
+"digital keychains identified by unique IDs.\n"
+"        \n"
+"        These keychains contain both public keys, which can be freely "
+"shared, and their corresponding private keys, protected by passphrases, "
+"which must be kept hidden.\n"
+"        \n"
+"        Authenticators can be stored in your user profile or in a custom "
+"folder, especially at the root of removable devices.\n"
+"        \n"
+"        You can initialize new authenticators from scratch, import/export "
+"them from/to ZIP archives, or check their integrity by providing their "
+"passphrases.\n"
+"        \n"
+"        Note that if you destroy an authenticator and all its exported ZIP "
+"archives, the WitnessAngel recordings which used it as a trusted third party "
+"might not be decryptable anymore (unless they used a shared secret with "
+"other trusted third parties).\n"
+"        "
+msgstr ""
+"        Sur cette page, vous pouvez gérer vos authentifieurs, qui sont en "
+"fait des trousseaux de clés numériques identifiés par des ID uniques.\n"
+"        \n"
+"        Ces trousseaux contiennent à la fois des clés publiques, qui peuvent "
+"être partagées librement, et les clés privées correspondantes, protégées par "
+"des phrases secrètes, qui doivent rester cachées.\n"
+"        \n"
+"        Les authentifieurs peuvent être stockés dans votre profil "
+"utilisateur ou dans un dossier personnalisé, notamment à la racine des "
+"périphériques amovibles.\n"
+"        \n"
+"        Vous pouvez initialiser de nouveaux authentifieurs à partir de zéro, "
+"les importer/exporter depuis/vers des archives ZIP, ou vérifier leur "
+"intégrité en fournissant leurs phrases secrètes.\n"
+"        \n"
+"        Notez que si vous détruisez un authentifieurs et toutes ses archives "
+"ZIP exportées, les enregistrements WitnessAngel qui l'utilisaient en tant "
+"que tiers de confiance risquent de ne plus pouvoir être déchiffrés (à moins "
+"qu'ils n'aient utilisé un secret partagé avec d'autres tiers de confiance)."
+
+#: src/waguilib/screens/authenticator_management.py:420
+msgid "Authenticator management page"
+msgstr "Page de gestion de l'authentifieur"
+
+#: src/waguilib/widgets/popups.py:19
+#, python-format
+msgid "Abnormal error caught: %s"
+msgstr "Erreur anormale détectée : %s"
