@@ -28,7 +28,7 @@ from waguilib.importable_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_AP
 from waguilib.utilities import convert_bytes_to_human_representation
 
 from waguilib.i18n import tr
-
+from waguilib.widgets.popups import safe_catch_unhandled_exception_and_display_popup
 
 Builder.load_file(str(Path(__file__).parent / 'authenticator_management.kv'))
 
@@ -164,6 +164,7 @@ class KeyringSelectorScreen(Screen):
                 return True
         return False
 
+    @safe_catch_unhandled_exception_and_display_popup
     def refresh_keyring_list(self):
 
         authentication_device_list = list_available_authentication_devices()  # TODO rename to usb devices?
@@ -219,6 +220,7 @@ class KeyringSelectorScreen(Screen):
         else:
             return tr._("Authenticator is initialized")
 
+    @safe_catch_unhandled_exception_and_display_popup
     def display_keyring_info(self, keyring_widget, keyring_metadata): ##list_item_obj, list_item_index):
 
         authentication_device_list_widget = self.ids.authentication_device_list  # FIXME rename to authenticator
@@ -283,6 +285,7 @@ class KeyringSelectorScreen(Screen):
     def close_dialog(self):
         self._dialog.dismiss()
 
+    @safe_catch_unhandled_exception_and_display_popup
     def _delete_authenticator_data(self, authenticator_path):
         # FIXME protect against any OSERROR here!!
         metadata_file_path = get_metadata_file_path(authenticator_path)
@@ -315,6 +318,7 @@ class KeyringSelectorScreen(Screen):
         self._dialog.bind(on_open=_set_focus_on_passphrase)
         self._dialog.open()
 
+    @safe_catch_unhandled_exception_and_display_popup
     def close_dialog_and_check_authenticator(self, authenticator_path):
         passphrase = self._dialog.content_cls.ids.tester_passphrase.text
         self.close_dialog()
@@ -367,6 +371,7 @@ class KeyringSelectorScreen(Screen):
                     missing_private_keys=missing_private_keys,
                     undecodable_private_keys=undecodable_private_keys)
 
+    @safe_catch_unhandled_exception_and_display_popup
     def export_authenticator_to_archive(self):
         authenticator_path = self._selected_authenticator_path
 
@@ -384,6 +389,7 @@ class KeyringSelectorScreen(Screen):
             text=tr._("Authenticator archive exported to %s") % archive_path,
             ).open()
 
+    @safe_catch_unhandled_exception_and_display_popup
     def _close_archive_chooser_and_import_authenticator_from_archive(self, archive_path):
         self._archive_chooser.close()
 

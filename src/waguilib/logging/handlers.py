@@ -3,6 +3,7 @@ from logging import Handler
 from decorator import decorator
 from kivy.logger import Logger as logger
 
+
 class CallbackHandler(Handler):
     def __init__(self, gui_console_callback):
         super().__init__()

@@ -94,6 +94,7 @@ class AuthenticatorCreationScreen(Screen):
         self.close_dialog(obj)
         self.go_to_home_screen()
 
+    # No safe_catch_unhandled_exception_and_display_popup() here, we handle finalization in any case
     def _offloaded_initialize_authenticator(self, form_values, authenticator_path):
         success = False
 
