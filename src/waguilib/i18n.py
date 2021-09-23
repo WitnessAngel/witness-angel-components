@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
 
 import gettext
+import locale
 
 import kivy
 from kivy.lang import Observable
 
-#LOCALE_DIR = Path(__file__).parents[3] / "data" / "locales"
-#print("@@@@@@@@@ LOCALE DIR", LOCALE_DIR)
+
+# VERY rough detection of user language, will often not work under Windows but it's OK
+# See https://stackoverflow.com/a/25691701 and win32.GetUserDefaultUILanguage()
+_lang_code, _charset = locale.getlocale()
+DEFAULT_LANGUAGE = "fr" if "fr" in _lang_code.lower() else "en"
 
 
 class Lang(Observable):
@@ -18,9 +22,9 @@ class Lang(Observable):
     def __init__(self, defaultlang, locale_dir):
         super(Lang, self).__init__()
         self.ugettext = None
-        self.lang = defaultlang
-        self.switch_lang(self.lang)
         self.locale_dir = locale_dir
+        self.switch_lang(defaultlang)
+
 
     def _(self, text):
         return self.ugettext(text)
@@ -42,11 +46,13 @@ class Lang(Observable):
     def switch_lang(self, lang):
         # instanciate a gettext
         locales = gettext.translation(
-            "witness-angel-client",
+            "witnessangel",
             self.locale_dir,
             languages=[lang],  # FIXME change dir lookup
+            fallback=(lang == "en")  # We don't care about EN translations
         )
         self.ugettext = locales.gettext
+        self.lang = lang
 
         # update all the kv rules attached to this text
         for func, largs, kwargs in self.observers:
