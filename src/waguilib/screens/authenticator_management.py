@@ -189,8 +189,8 @@ class KeyringSelectorScreen(Screen):
             filesystem = authentication_device["format"].upper()
 
             keyring_widget = Factory.ThinTwoLineAvatarIconListItem(
-                text=tr._("Drive: %s (%s)") % (authentication_device["path"], authentication_device["label"]),
-                secondary_text=tr._("Size: %s, Filesystem: %s") % (device_size, filesystem),
+                text=tr._("Drive: {drive} ({label})").format(drive=authentication_device["path"], label=authentication_device["label"]),
+                secondary_text=tr._("Size: {size}, Filesystem: {filesystem}").format(size=device_size, filesystem=filesystem),
             )
             keyring_widget.add_widget(IconLeftWidget(icon="usb-flash-drive"))
             keyring_list_entries.append((keyring_widget, dict(keyring_type=KeyringType.USB_DEVICE, **authentication_device)))
@@ -330,8 +330,10 @@ class KeyringSelectorScreen(Screen):
             result = tr._("Failure")
             missing_private_keys_cast = [shorten_uid(k) for k in missing_private_keys]
             undecodable_private_keys_cast = [shorten_uid(k) for k in undecodable_private_keys]
-            details = (tr._("Keypairs tested: %s\nMissing private keys: %s\nWrong passphrase for keys: %s") %
-                        (keypair_count, ", ".join(missing_private_keys_cast) or "-", ", ".join(undecodable_private_keys_cast) or "-"))
+            details = tr._("Keypairs tested: {keypair_count}\nMissing private keys: {missing_private_keys}\nWrong passphrase for keys:  {undecodable_private_keys}").format(
+                    keypair_count=keypair_count,
+                    missing_private_keys=(", ".join(missing_private_keys_cast) or "-"),
+                    undecodable_private_keys=", ".join(undecodable_private_keys_cast) or "-")
 
         MDDialog(
             auto_dismiss=True,
