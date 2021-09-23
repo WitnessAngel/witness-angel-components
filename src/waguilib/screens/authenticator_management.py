@@ -72,14 +72,14 @@ class KeyringSelectorScreen(Screen):
         self._app = MDApp.get_running_app()
         self._folder_chooser = MDFileManager(
             selector="folder",
-            exit_manager=self._folder_chooser_exit,
-            select_path=self._folder_chooser_select_path,
+            exit_manager=self.close_folder_chooser,
+            select_path=lambda x: (self.close_folder_chooser(), self._folder_chooser_select_path(x)),
         )
         self._archive_chooser = MDFileManager(
             selector="file",
             ext=["." + self.AUTHENTICATOR_ARCHIVE_FORMAT],
-            exit_manager=self._archive_chooser_exit,
-            select_path=self._close_archive_chooser_and_import_authenticator_from_archive,
+            exit_manager=self.close_archive_chooser,
+            select_path=lambda x: (self.close_archive_chooser(), self._import_authenticator_from_archive(x)),
         )
 
         language_menu_items = [
@@ -107,12 +107,11 @@ class KeyringSelectorScreen(Screen):
         self._language_selector_menu.dismiss()
         tr.switch_lang(lang_code)
 
-    def _folder_chooser_exit(self, *args):
+    def close_folder_chooser(self, *args):
         self._folder_chooser.close()
 
     def _folder_chooser_select_path(self, path, *args):
         self._selected_custom_folder_path = Path(path)
-        self._folder_chooser.close()
         authenticator_widget = self.ids.authentication_device_list.children[-2]  # AUTOSELECT "custom folder" item
         authenticator_widget._onrelease_callback(authenticator_widget)
 
@@ -123,7 +122,7 @@ class KeyringSelectorScreen(Screen):
             file_manager_path = previously_selected_custom_folder_path
         self._folder_chooser.show(str(file_manager_path))  # Soon use .show_disks!!
 
-    def _archive_chooser_exit(self, *args):
+    def close_archive_chooser(self, *args):
         self._archive_chooser.close()
 
     def archive_chooser_open(self, *args):
@@ -277,7 +276,7 @@ class KeyringSelectorScreen(Screen):
             title=tr._("Destroy authenticator"),
             text=tr._("Beware, it might make encrypted data using these keys impossible to decrypt."),
             #size_hint=(0.8, 1),
-            buttons=[MDFlatButton(text="I'm sure", on_release=lambda *args: self.close_dialog_and_destroy_authenticator(authenticator_path)),
+            buttons=[MDFlatButton(text="I'm sure", on_release=lambda *args: (self.close_dialog(), self._delete_authenticator_data(authenticator_path))),
                      MDFlatButton(text="Cancel", on_release=lambda *args: self.close_dialog())],
         )
         self._dialog.open()
@@ -299,10 +298,6 @@ class KeyringSelectorScreen(Screen):
             ).open()
         self.refresh_keyring_list()
 
-    def close_dialog_and_destroy_authenticator(self, authenticator_path):
-        self.close_dialog()
-        self._delete_authenticator_data(authenticator_path=authenticator_path)
-
     def show_checkup_dialog(self):
         authenticator_path = self._selected_authenticator_path
         self._dialog = MDDialog(
@@ -310,7 +305,7 @@ class KeyringSelectorScreen(Screen):
             title=tr._("Sanity check"),
             type="custom",
             content_cls=Factory.AuthenticatorTesterContent(),
-            buttons=[MDFlatButton(text="Check", on_release=lambda *args: self.close_dialog_and_check_authenticator(authenticator_path)),
+            buttons=[MDFlatButton(text="Check", on_release=lambda *args: (self.close_dialog(), self._check_authenticator_integrity(authenticator_path))),
                      MDFlatButton(text="Cancel", on_release=lambda *args: self.close_dialog())],
         )
         def _set_focus_on_passphrase(*args):
@@ -319,7 +314,7 @@ class KeyringSelectorScreen(Screen):
         self._dialog.open()
 
     @safe_catch_unhandled_exception_and_display_popup
-    def close_dialog_and_check_authenticator(self, authenticator_path):
+    def _check_authenticator_integrity(self, authenticator_path):
         passphrase = self._dialog.content_cls.ids.tester_passphrase.text
         self.close_dialog()
         result_dict = self._test_authenticator_password(authenticator_path=authenticator_path, passphrase=passphrase)
@@ -390,8 +385,7 @@ class KeyringSelectorScreen(Screen):
             ).open()
 
     @safe_catch_unhandled_exception_and_display_popup
-    def _close_archive_chooser_and_import_authenticator_from_archive(self, archive_path):
-        self._archive_chooser.close()
+    def _import_authenticator_from_archive(self, archive_path):
 
         archive_path = Path(archive_path)
         authenticator_path = self._selected_authenticator_path
