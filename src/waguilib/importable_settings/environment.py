@@ -30,7 +30,7 @@ if IS_ANDROID:
     INTERNAL_APP_ROOT = Path(CONTEXT.getFilesDir().toString())
     INTERNAL_CACHE_DIR = Path(CONTEXT.getCacheDir().toString())
     Environment = autoclass("android.os.Environment")
-    _EXTERNAL_APP_ROOT = (
+    EXTERNAL_APP_ROOT = (
         Path(Environment.getExternalStorageDirectory().toString()) / "WitnessAngel"
     )
 
@@ -40,7 +40,7 @@ else:
     CONTEXT = None  # Unused on Desktop
     _base_dir = Path(storagepath.get_home_dir()) / "WitnessAngel"
     INTERNAL_APP_ROOT = _base_dir / "Internal"
-    _EXTERNAL_APP_ROOT = _base_dir / "External"
+    EXTERNAL_APP_ROOT = _base_dir / "External"
     INTERNAL_CACHE_DIR = _base_dir / "Cache"
 
     PackageManager = None
@@ -55,11 +55,14 @@ WIP_RECORDING_MARKER = INTERNAL_APP_ROOT / "recording_in_progress"
 INTERNAL_LOGS_DIR = INTERNAL_APP_ROOT / "Logs"
 INTERNAL_LOGS_DIR.mkdir(exist_ok=True)
 
+INTERNAL_AUTHENTICATOR_DIR = INTERNAL_APP_ROOT / "Authenticator"
+INTERNAL_AUTHENTICATOR_DIR.mkdir(exist_ok=True)
+
 INTERNAL_KEYS_DIR = INTERNAL_APP_ROOT / "KeyStorage"
 INTERNAL_KEYS_DIR.mkdir(exist_ok=True)
 
 INTERNAL_CONTAINERS_DIR = INTERNAL_APP_ROOT / "Containers"
 INTERNAL_CONTAINERS_DIR.mkdir(exist_ok=True)
 
-EXTERNAL_DATA_EXPORTS_DIR = _EXTERNAL_APP_ROOT / "DataExports"  # Might no exist yet (and require permissions!)
+EXTERNAL_DATA_EXPORTS_DIR = EXTERNAL_APP_ROOT / "DataExports"  # Might no exist yet (and require permissions!)
 
