@@ -27,7 +27,7 @@ from wacryptolib.utilities import get_metadata_file_path
 from waguilib.importable_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_APP_ROOT, EXTERNAL_DATA_EXPORTS_DIR
 from waguilib.utilities import convert_bytes_to_human_representation
 
-from wa_keygen_gui import tr
+from waguilib.i18n import tr
 
 
 Builder.load_file(str(Path(__file__).parent / 'authenticator_management.kv'))

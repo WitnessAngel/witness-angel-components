@@ -18,7 +18,7 @@ from wacryptolib.key_generation import generate_asymmetric_keypair
 from wacryptolib.key_storage import FilesystemKeyStorage
 from wacryptolib.utilities import generate_uuid0
 
-from wa_keygen_gui import tr
+from waguilib.i18n import tr
 
 
 Builder.load_file(str(Path(__file__).parent / 'authenticator_creation_form.kv'))
