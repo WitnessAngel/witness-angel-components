@@ -77,6 +77,18 @@
                     title: tr._("Manage Authenticators")
                     right_action_items: [["refresh", lambda x: root.refresh_keyring_list()], ["earth", lambda x: root.language_menu_open(x)], ["help-circle-outline", lambda x: root.display_help_popup()]]
 
+                MDBoxLayout:
+                    height: dp(40)
+                    size_hint_y: None
+
+                    md_bg_color: app.theme_cls.bg_darkest
+                    line_color: [0, 0, 0, 1]
+
+                    MDLabel:
+                        text: tr._("Please select an authenticator location")
+                        halign: "left"
+                        padding_x: "10dp"
+
                 ScrollView:
                     bar_width: 5
                     bar_inactive_color: self.bar_color
@@ -94,7 +106,7 @@
                     MDIcon:
                         icon: root.AUTHENTICATOR_INITIALIZATION_STATUS_ICONS[root.authenticator_status] # "language-python"
                         halign: "center"
-                        width: dp(90)
+                        width: dp(80)
                         size_hint_x: None
 
                     MDLabel:
