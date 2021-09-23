@@ -106,6 +106,7 @@ class KeyringSelectorScreen(Screen):
     def language_menu_select(self, lang_code):
         self._language_selector_menu.dismiss()
         tr.switch_lang(lang_code)
+        self.refresh_keyring_list()  # Refresh translation of Drive etc.
 
     def close_folder_chooser(self, *args):
         self._folder_chooser.close()
@@ -126,7 +127,7 @@ class KeyringSelectorScreen(Screen):
         self._archive_chooser.close()
 
     def archive_chooser_open(self, *args):
-        file_manager_path = EXTERNAL_APP_ROOT
+        file_manager_path = EXTERNAL_DATA_EXPORTS_DIR
         self._archive_chooser.show(str(file_manager_path))  # Soon use .show_disks!!
 
     def _get_authenticator_path(self,keyring_metadata):
@@ -213,11 +214,11 @@ class KeyringSelectorScreen(Screen):
 
     def get_authenticator_status_message(self, authenticator_status):
         if authenticator_status is None:
-            return tr._("No valid authenticator location selected")
+            return tr._("No valid location selected")
         elif not authenticator_status:
-            return tr._("Authenticator is not yet initialized")
+            return tr._("Authenticator not initialized")
         else:
-            return tr._("Authenticator is initialized")
+            return tr._("Authenticator initialized")
 
     @safe_catch_unhandled_exception_and_display_popup
     def display_keyring_info(self, keyring_widget, keyring_metadata): ##list_item_obj, list_item_index):
@@ -238,7 +239,7 @@ class KeyringSelectorScreen(Screen):
             authenticator_status = None
 
         elif not authenticator_path.exists():
-            authenticator_info_text = tr._("Selected authenticator folder is invalid\nFull path: %s" % authenticator_path)
+            authenticator_info_text = tr._("Selected folder is invalid\nFull path: %s" % authenticator_path)
             authenticator_status = None
 
         elif not is_authenticator_initialized(authenticator_path):
@@ -274,7 +275,7 @@ class KeyringSelectorScreen(Screen):
         self._dialog = MDDialog(
             auto_dismiss=True,
             title=tr._("Destroy authenticator"),
-            text=tr._("Beware, it might make encrypted data using these keys impossible to decrypt."),
+            text=tr._("Beware, this might make encrypted data using these keys impossible to decrypt."),
             #size_hint=(0.8, 1),
             buttons=[MDFlatButton(text="I'm sure", on_release=lambda *args: (self.close_dialog(), self._delete_authenticator_data(authenticator_path))),
                      MDFlatButton(text="Cancel", on_release=lambda *args: self.close_dialog())],
