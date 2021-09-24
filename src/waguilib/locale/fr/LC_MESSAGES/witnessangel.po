@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-23 23:50+0200\n"
-"PO-Revision-Date: 2021-09-23 23:51+0200\n"
+"POT-Creation-Date: 2021-09-24 11:11+0200\n"
+"PO-Revision-Date: 2021-09-24 11:14+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
@@ -21,6 +21,15 @@ msgstr ""
 #: src/waguilib/screens/authenticator_creation_form.kv:14
 msgid "Create Authenticator"
 msgstr "Créer un Authentifieur"
+
+#: src/waguilib/screens/authenticator_creation_form.kv:16
+msgid "Back"
+msgstr "Retour"
+
+#: src/waguilib/screens/authenticator_creation_form.kv:17
+#: src/waguilib/screens/authenticator_management.kv:78
+msgid "Help"
+msgstr "Aide"
 
 #: src/waguilib/screens/authenticator_creation_form.kv:20
 msgid "Target:"
@@ -121,6 +130,7 @@ msgid "Authenticator creation page"
 msgstr "Page de création d'authentifieur"
 
 #: src/waguilib/screens/authenticator_management.kv:9
+#: src/waguilib/screens/authenticator_management.kv:78
 msgid "Language"
 msgstr "Langue"
 
@@ -151,6 +161,10 @@ msgstr "Tester l'intégrité et la phrase secrète de l'authentifieur"
 #: src/waguilib/screens/authenticator_management.kv:77
 msgid "Manage Authenticators"
 msgstr "Gérer les Authentifieurs"
+
+#: src/waguilib/screens/authenticator_management.kv:78
+msgid "Refresh"
+msgstr "Rafraîchir"
 
 #: src/waguilib/screens/authenticator_management.kv:88
 msgid "Please select an authenticator location"
