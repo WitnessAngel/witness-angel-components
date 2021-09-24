@@ -25,7 +25,7 @@ Builder.load_file(str(Path(__file__).parent / 'authenticator_creation_form.kv'))
 
 
 THREAD_POOL_EXECUTOR = ThreadPoolExecutor(
-    max_workers=1, thread_name_prefix="keygen_worker"  # SINGLE worker for now, to avoid concurrency
+    max_workers=1, thread_name_prefix="authenticator_keygen_worker"  # SINGLE worker for now, to avoid concurrency
 )
 
 GENERATED_KEYS_COUNT = 7
@@ -43,7 +43,7 @@ class AuthenticatorCreationScreen(Screen):
         self._app = MDApp.get_running_app()
 
     def go_to_home_screen(self):
-        self.manager.current = "keyring_selector_screen"
+        self.manager.current = "authenticator_selector_screen"
 
     def reset_initialization_form(self):
         self.set_form_fields_status(enabled=True)

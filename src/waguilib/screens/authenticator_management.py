@@ -34,7 +34,7 @@ Builder.load_file(str(Path(__file__).parent / 'authenticator_management.kv'))
 
 
 @unique
-class KeyringType(Enum):
+class AuthenticatorType(Enum):
    USER_PROFILE = 1
    CUSTOM_FOLDER = 2
    USB_DEVICE = 3
@@ -58,7 +58,7 @@ class FolderKeyStoreListItem(Factory.ThinTwoLineAvatarIconListItem):
         Clock.schedule_once(force_reset, timeout=1)
     '''
 
-class KeyringSelectorScreen(Screen):
+class AuthenticatorSelectorScreen(Screen):
 
     # FIXME MAKE THEM PUBLIC!!!!!!!!!
     _selected_authenticator_path = ObjectProperty(None, allownone=True) # Path corresponding to a selected authenticator entry
@@ -68,7 +68,7 @@ class KeyringSelectorScreen(Screen):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        Clock.schedule_once(lambda *args, **kwargs: self.refresh_keyring_list())  # "on_pre_enter" is not called for initial screen
+        Clock.schedule_once(lambda *args, **kwargs: self.refresh_authenticator_list())  # "on_pre_enter" is not called for initial screen
         self._app = MDApp.get_running_app()
         self._folder_chooser = MDFileManager(
             selector="folder",
@@ -106,7 +106,7 @@ class KeyringSelectorScreen(Screen):
     def language_menu_select(self, lang_code):
         self._language_selector_menu.dismiss()
         tr.switch_lang(lang_code)
-        self.refresh_keyring_list()  # Refresh translation of Drive etc.
+        self.refresh_authenticator_list()  # Refresh translation of Drive etc.
 
     def close_folder_chooser(self, *args):
         self._folder_chooser.close()
@@ -130,15 +130,15 @@ class KeyringSelectorScreen(Screen):
         file_manager_path = EXTERNAL_DATA_EXPORTS_DIR
         self._archive_chooser.show(str(file_manager_path))  # Soon use .show_disks!!
 
-    def _get_authenticator_path(self,keyring_metadata):
-        keyring_type = keyring_metadata["keyring_type"]
-        if keyring_type == KeyringType.USER_PROFILE:
+    def _get_authenticator_path(self,authenticator_metadata):
+        authenticator_type = authenticator_metadata["authenticator_type"]
+        if authenticator_type == AuthenticatorType.USER_PROFILE:
             authenticator_path = INTERNAL_AUTHENTICATOR_DIR
-        elif keyring_type == KeyringType.CUSTOM_FOLDER:
+        elif authenticator_type == AuthenticatorType.CUSTOM_FOLDER:
             authenticator_path = self._selected_custom_folder_path
         else:
-            assert keyring_type == KeyringType.USB_DEVICE
-            authenticator_path = get_authenticator_path_for_authentication_device(keyring_metadata)
+            assert authenticator_type == AuthenticatorType.USB_DEVICE
+            authenticator_path = get_authenticator_path_for_authentication_device(authenticator_metadata)
         return authenticator_path
 
     def reselect_previously_selected_authenticator(self):
@@ -158,49 +158,49 @@ class KeyringSelectorScreen(Screen):
     def _select_matching_authenticator_entry(self, authenticator_path):
         authenticator_list_widget = self.ids.authenticator_list
         for authenticator_widget in authenticator_list_widget.children:  # Starts from bottom of list so!
-            target_authenticator_path = self._get_authenticator_path(authenticator_widget._keyring_metadata)
+            target_authenticator_path = self._get_authenticator_path(authenticator_widget._authenticator_metadata)
             if target_authenticator_path == authenticator_path:
                 authenticator_widget._onrelease_callback(authenticator_widget)
                 return True
         return False
 
     @safe_catch_unhandled_exception_and_display_popup
-    def refresh_keyring_list(self):
+    def refresh_authenticator_list(self):
 
         authentication_device_list = list_available_authentication_devices()  # TODO rename to usb devices?
 
         authenticator_list_widget = self.ids.authenticator_list
         authenticator_list_widget.clear_widgets()
 
-        keyring_list_entries = []  # Pairs (widget, metadata)
+        authenticator_list_entries = []  # Pairs (widget, metadata)
 
-        # TODO rename key_store to keyring
-        profile_keyring_widget = Factory.UserKeyStoreListItem()
-        keyring_list_entries.append((profile_keyring_widget, dict(keyring_type=KeyringType.USER_PROFILE)))
+        # TODO rename key_store to authenticator
+        profile_authenticator_widget = Factory.UserKeyStoreListItem()
+        authenticator_list_entries.append((profile_authenticator_widget, dict(authenticator_type=AuthenticatorType.USER_PROFILE)))
 
-        folder_keyring_widget = Factory.FolderKeyStoreListItem()  # FIXME bug of Kivy, can't put selected_path here as argument
-        folder_keyring_widget.selected_path = self._selected_custom_folder_path
-        self.bind(_selected_custom_folder_path = folder_keyring_widget.setter('selected_path'))
-        folder_keyring_widget.ids.open_folder_btn.bind(on_press=self.folder_chooser_open)  #
-        keyring_list_entries.append((folder_keyring_widget, dict(keyring_type=KeyringType.CUSTOM_FOLDER)))
+        folder_authenticator_widget = Factory.FolderKeyStoreListItem()  # FIXME bug of Kivy, can't put selected_path here as argument
+        folder_authenticator_widget.selected_path = self._selected_custom_folder_path
+        self.bind(_selected_custom_folder_path = folder_authenticator_widget.setter('selected_path'))
+        folder_authenticator_widget.ids.open_folder_btn.bind(on_press=self.folder_chooser_open)  #
+        authenticator_list_entries.append((folder_authenticator_widget, dict(authenticator_type=AuthenticatorType.CUSTOM_FOLDER)))
 
         for index, authentication_device in enumerate(authentication_device_list):
 
             device_size = convert_bytes_to_human_representation(authentication_device["size"])
             filesystem = authentication_device["format"].upper()
 
-            keyring_widget = Factory.ThinTwoLineAvatarIconListItem(
+            authenticator_widget = Factory.ThinTwoLineAvatarIconListItem(
                 text=tr._("Drive: {drive} ({label})").format(drive=authentication_device["path"], label=authentication_device["label"]),
                 secondary_text=tr._("Size: {size}, Filesystem: {filesystem}").format(size=device_size, filesystem=filesystem),
             )
-            keyring_widget.add_widget(IconLeftWidget(icon="usb-flash-drive"))
-            keyring_list_entries.append((keyring_widget, dict(keyring_type=KeyringType.USB_DEVICE, **authentication_device)))
+            authenticator_widget.add_widget(IconLeftWidget(icon="usb-flash-drive"))
+            authenticator_list_entries.append((authenticator_widget, dict(authenticator_type=AuthenticatorType.USB_DEVICE, **authentication_device)))
 
-        for (keyring_widget, keyring_metadata) in keyring_list_entries:
-            keyring_widget._keyring_metadata = keyring_metadata
-            keyring_widget._onrelease_callback = partial(self.display_keyring_info, keyring_metadata=keyring_metadata)
-            keyring_widget.bind(on_release=keyring_widget._onrelease_callback)
-            authenticator_list_widget.add_widget(keyring_widget)
+        for (authenticator_widget, authenticator_metadata) in authenticator_list_entries:
+            authenticator_widget._authenticator_metadata = authenticator_metadata
+            authenticator_widget._onrelease_callback = partial(self.display_authenticator_info, authenticator_metadata=authenticator_metadata)
+            authenticator_widget.bind(on_release=authenticator_widget._onrelease_callback)
+            authenticator_list_widget.add_widget(authenticator_widget)
 
         self.reselect_previously_selected_authenticator()  # Preserve previous selection across refreshes
 
@@ -221,17 +221,17 @@ class KeyringSelectorScreen(Screen):
             return tr._("Authenticator initialized")
 
     @safe_catch_unhandled_exception_and_display_popup
-    def display_keyring_info(self, keyring_widget, keyring_metadata):
+    def display_authenticator_info(self, authenticator_widget, authenticator_metadata):
 
         authenticator_list_widget = self.ids.authenticator_list
 
         for child in authenticator_list_widget.children:
             assert hasattr(child, "opposite_colors"), child
-            child.bg_color = keyring_widget.theme_cls.bg_light
-        keyring_widget.bg_color = keyring_widget.theme_cls.bg_darkest
+            child.bg_color = authenticator_widget.theme_cls.bg_light
+        authenticator_widget.bg_color = authenticator_widget.theme_cls.bg_darkest
 
         authenticator_info_text = ""
-        authenticator_path = self._get_authenticator_path(keyring_metadata)
+        authenticator_path = self._get_authenticator_path(authenticator_metadata)
 
         # FIXMe handle OS errors here
         if not authenticator_path:
@@ -297,7 +297,7 @@ class KeyringSelectorScreen(Screen):
                 title=tr._("Deletion is over"),
                 text=tr._("All authentication data from folder %s has been removed.") % authenticator_path,
             ).open()
-        self.refresh_keyring_list()
+        self.refresh_authenticator_list()
 
     def show_checkup_dialog(self):
         authenticator_path = self._selected_authenticator_path
@@ -402,7 +402,7 @@ class KeyringSelectorScreen(Screen):
             text=tr._("Authenticator archive unpacked from %s, its integrity has not been checked though.") % archive_path.name,
             ).open()
 
-        self.refresh_keyring_list()
+        self.refresh_authenticator_list()
 
     def display_help_popup(self):
         help_text = dedent(tr._("""\
