@@ -113,7 +113,7 @@ class KeyringSelectorScreen(Screen):
 
     def _folder_chooser_select_path(self, path, *args):
         self._selected_custom_folder_path = Path(path)
-        authenticator_widget = self.ids.authentication_device_list.children[-2]  # AUTOSELECT "custom folder" item
+        authenticator_widget = self.ids.authenticator_list.children[-2]  # AUTOSELECT "custom folder" item
         authenticator_widget._onrelease_callback(authenticator_widget)
 
     def folder_chooser_open(self, widget, *args):
@@ -152,12 +152,12 @@ class KeyringSelectorScreen(Screen):
             self._select_default_authenticator_entry()
 
     def _select_default_authenticator_entry(self):
-        authenticator_widget = self.ids.authentication_device_list.children[-1]  # ALWAYS EXISTS
+        authenticator_widget = self.ids.authenticator_list.children[-1]  # ALWAYS EXISTS
         authenticator_widget._onrelease_callback(authenticator_widget)
 
     def _select_matching_authenticator_entry(self, authenticator_path):
-        authentication_device_list_widget = self.ids.authentication_device_list
-        for authenticator_widget in authentication_device_list_widget.children:  # Starts from bottom of list so!
+        authenticator_list_widget = self.ids.authenticator_list
+        for authenticator_widget in authenticator_list_widget.children:  # Starts from bottom of list so!
             target_authenticator_path = self._get_authenticator_path(authenticator_widget._keyring_metadata)
             if target_authenticator_path == authenticator_path:
                 authenticator_widget._onrelease_callback(authenticator_widget)
@@ -169,8 +169,8 @@ class KeyringSelectorScreen(Screen):
 
         authentication_device_list = list_available_authentication_devices()  # TODO rename to usb devices?
 
-        authentication_device_list_widget = self.ids.authentication_device_list  # FIXME rename this
-        authentication_device_list_widget.clear_widgets()
+        authenticator_list_widget = self.ids.authenticator_list
+        authenticator_list_widget.clear_widgets()
 
         keyring_list_entries = []  # Pairs (widget, metadata)
 
@@ -200,7 +200,7 @@ class KeyringSelectorScreen(Screen):
             keyring_widget._keyring_metadata = keyring_metadata
             keyring_widget._onrelease_callback = partial(self.display_keyring_info, keyring_metadata=keyring_metadata)
             keyring_widget.bind(on_release=keyring_widget._onrelease_callback)
-            authentication_device_list_widget.add_widget(keyring_widget)
+            authenticator_list_widget.add_widget(keyring_widget)
 
         self.reselect_previously_selected_authenticator()  # Preserve previous selection across refreshes
 
@@ -221,11 +221,11 @@ class KeyringSelectorScreen(Screen):
             return tr._("Authenticator initialized")
 
     @safe_catch_unhandled_exception_and_display_popup
-    def display_keyring_info(self, keyring_widget, keyring_metadata): ##list_item_obj, list_item_index):
+    def display_keyring_info(self, keyring_widget, keyring_metadata):
 
-        authentication_device_list_widget = self.ids.authentication_device_list  # FIXME rename to authenticator
+        authenticator_list_widget = self.ids.authenticator_list
 
-        for child in authentication_device_list_widget.children:
+        for child in authenticator_list_widget.children:
             assert hasattr(child, "opposite_colors"), child
             child.bg_color = keyring_widget.theme_cls.bg_light
         keyring_widget.bg_color = keyring_widget.theme_cls.bg_darkest
@@ -264,7 +264,7 @@ class KeyringSelectorScreen(Screen):
                 Password hint: {authenticator_passphrase_hint}
             """)).format(**displayed_values)
 
-        textarea = self.ids.authentication_device_information
+        textarea = self.ids.authenticator_information
         textarea.text = authenticator_info_text
 
         self._selected_authenticator_path = authenticator_path  # Might be None
