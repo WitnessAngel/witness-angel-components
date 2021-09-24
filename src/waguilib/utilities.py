@@ -16,10 +16,6 @@ class InterruptableEvent(threading.Event):
             wait(timeout)
 
 
-def get_guilib_asset_path(*path_components):
-    return str(ASSETS_PATH.joinpath(*path_components))
-
-
 def get_system_information(disk_storage_path):
     """Return a dict of information about connections, ram, and the partition of disk_storage_path"""
     import psutil

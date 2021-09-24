@@ -5,9 +5,9 @@ import os
 from PIL import Image, ImageDraw, ImageFont
 
 
-from waguilib.utilities import get_guilib_asset_path
-
 ###THIS_DIR = Path(__file__).parent
+from kivy.resources import resource_find
+
 
 class EpaperStatusDisplayBase:
 
@@ -69,7 +69,7 @@ class EpaperStatusDisplayBase:
         text_offset_x = text_offset_x if text_offset_x is not None else self.TEXT_OFFSET_X
         text_offset_y = text_offset_y if text_offset_y is not None else self.TEXT_OFFSET_Y
         #source_image_path = source_image_path or str(THIS_DIR / "preview.png")
-        font_file_path = font_file_path or get_guilib_asset_path("fonts", "epaper_font.ttc")
+        font_file_path = font_file_path or resource_find("fonts/epaper_font.ttc")
 
         thumbnail_image_path = preview_image_path + ".thumb.jpg"
         try:
@@ -99,12 +99,12 @@ class EpaperStatusDisplayBase:
         draw.text(((text_offset_x + 68), 0), status_obj.pop("recording_status"), font = font, fill = 1)
 
         # Print bitmap wifi logo and status
-        wifi_logo = Image.open(get_guilib_asset_path("images", 'wifi.bmp'))
+        wifi_logo = Image.open(resource_find("images/wifi.bmp"))
         bmp = wifi_logo.resize((20, 15))
         framebuffer.paste(bmp, (text_offset_x, 20))
         draw.text(((text_offset_x + 25), 20), status_obj.pop("wifi_status"), font = font, fill = 0)
 
-        ethernet_logo = Image.open(get_guilib_asset_path("images", 'ethernet_small.bmp'))
+        ethernet_logo = Image.open(resource_find("images/ethernet_small.bmp"))
         bmp = ethernet_logo.resize((20, 20))
         framebuffer.paste(bmp, (text_offset_x + 60, 20))
         draw.text(((text_offset_x + 85), 20), status_obj.pop("ethernet_status"), font = font, fill = 0)

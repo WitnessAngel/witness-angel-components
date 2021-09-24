@@ -1,5 +1,5 @@
 
-# WORKAROUND FOR LOGGING WEIRDNESS IN KIVY SETUP #
+# WORKAROUND FOR LOGGING AND GRAPHICS WEIRDNESS IN KIVY SETUP #
 
 try:
     # MUST BE ROBUST DUE TO NEED FOR RESILIENT "CRASH HANDLER" ACCESS #
@@ -32,6 +32,10 @@ except Exception as exc:
 
 # SETUP INITIAL STATE OF THE WINDOW
 try:
+
+    # Add paths to image/font/sound assets
+    from waguilib.assets import register_common_resources
+    register_common_resources()
 
     from waguilib.importable_settings import WACLIENT_TYPE
     if WACLIENT_TYPE == "APPLICATION":
