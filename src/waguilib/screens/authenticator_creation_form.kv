@@ -22,7 +22,7 @@
 
         MDTextField:
             id: formfield_username
-            hint_text: 'Owner name'
+            hint_text: tr._('User name')
             mode: "fill"
             #helper_text: 'Your own name'
             #helper_text_mode: 'on_focus'
@@ -34,12 +34,12 @@
 
         MDTextField:
             id: formfield_passphrase
-            hint_text: 'Passphrase'
+            hint_text: tr._('Passphrase')
             mode: "fill"
 
         MDTextField:
             id: formfield_passphrasehint
-            hint_text: 'Passphrase hint'
+            hint_text: tr._('Passphrase hint')
             mode: "fill"
 
         RelativeLayout :
@@ -47,7 +47,7 @@
 
             MDRectangleFlatButton:
                 id: button_initialize
-                text: "Initialize"
+                text: tr._("Initialize")
                 size_hint: .4, 1
                 pos_hint: {'x': .3}
                 on_release:

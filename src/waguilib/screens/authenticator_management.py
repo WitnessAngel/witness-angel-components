@@ -277,8 +277,8 @@ class KeyringSelectorScreen(Screen):
             title=tr._("Destroy authenticator"),
             text=tr._("Beware, this might make encrypted data using these keys impossible to decrypt."),
             #size_hint=(0.8, 1),
-            buttons=[MDFlatButton(text="I'm sure", on_release=lambda *args: (self.close_dialog(), self._delete_authenticator_data(authenticator_path))),
-                     MDFlatButton(text="Cancel", on_release=lambda *args: self.close_dialog())],
+            buttons=[MDFlatButton(text=tr._("Confirm"), on_release=lambda *args: (self.close_dialog(), self._delete_authenticator_data(authenticator_path))),
+                     MDFlatButton(text=tr._("Cancel"), on_release=lambda *args: self.close_dialog())],
         )
         self._dialog.open()
 
@@ -306,8 +306,8 @@ class KeyringSelectorScreen(Screen):
             title=tr._("Sanity check"),
             type="custom",
             content_cls=Factory.AuthenticatorTesterContent(),
-            buttons=[MDFlatButton(text="Check", on_release=lambda *args: (self.close_dialog(), self._check_authenticator_integrity(authenticator_path))),
-                     MDFlatButton(text="Cancel", on_release=lambda *args: self.close_dialog())],
+            buttons=[MDFlatButton(text=tr._("Check"), on_release=lambda *args: (self.close_dialog(), self._check_authenticator_integrity(authenticator_path))),
+                     MDFlatButton(text=tr._("Cancel"), on_release=lambda *args: self.close_dialog())],
         )
         def _set_focus_on_passphrase(*args):
             self._dialog.content_cls.ids.tester_passphrase.focus = True

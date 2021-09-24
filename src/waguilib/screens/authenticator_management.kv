@@ -123,7 +123,7 @@
                         #theme_text_color: "Error"
                         size_hint: 1, None
                         height: max( (len(self._lines)+1) * self.line_height, scrlv.height)
-                        text: "<empty>"
+                        text: tr._("<empty>")
 
                 MDGridLayout:
                     id: authenticator_actions_create
@@ -137,13 +137,13 @@
                         anchor_x: "right"
                         halign: "center"
                         icon: "account-key-outline"
-                        text: "Initialize"
+                        text: tr._("Initialize")
                         size_hint_x: 1
                         on_press: root.manager.current = "authenticator_creation_screen"
 
                     MDRectangleFlatIconButton:
                         icon: "database-import-outline"
-                        text: "Import"
+                        text: tr._("Import")
                         size_hint_x: 1
                         on_press: root.archive_chooser_open()
 
@@ -157,18 +157,18 @@
 
                     MDRectangleFlatIconButton:
                         icon: "database-export-outline"
-                        text: "Export"
+                        text: tr._("Export")
                         size_hint_x: 1
                         on_press: root.export_authenticator_to_archive()
 
                     MDRectangleFlatIconButton:
                         icon: "crosshairs-question"
-                        text: "Check"
+                        text: tr._("Check")
                         size_hint_x: 1
                         on_press: root.show_checkup_dialog()
 
                     MDRectangleFlatIconButton:
                         icon: "delete-alert-outline"
-                        text: "Destroy"
+                        text: tr._("Destroy")
                         size_hint_x: 1
                         on_press: root.show_authenticator_destroy_confirmation_dialog()

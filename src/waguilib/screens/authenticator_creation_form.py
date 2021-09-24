@@ -83,7 +83,7 @@ class AuthenticatorCreationScreen(Screen):
             auto_dismiss=False,
             title=title,
             text=text,
-            buttons=[MDFlatButton(text="Close", on_release=on_release)],
+            buttons=[MDFlatButton(text=tr._("Close"), on_release=on_release)],
         )
         self._dialog.open()
 

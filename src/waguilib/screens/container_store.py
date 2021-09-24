@@ -142,7 +142,7 @@ class ContainerStoreScreen(Screen):
             title=str(info_container),
             text=message,
             size_hint=(0.8, 1),
-            buttons=[MDFlatButton(text="Close", on_release=self.close_dialog)],
+            buttons=[MDFlatButton(text=tr._("Close"), on_release=self.close_dialog)],
         )
         self.dialog.open()
 
