@@ -14,6 +14,8 @@
 
 <ThinTwoLineAvatarIconListItem@TwoLineAvatarIconListItem>
     _height: dp(60)
+    # This might help with the blurred content of scrollview... see https://github.com/kivy/kivy/issues/2297
+    on_pos: self.pos = tuple(map(int, args[1]))
 
 <UserKeyStoreListItem@ThinTwoLineAvatarIconListItem>:
     text: tr._("User Profile")
@@ -59,6 +61,32 @@
         hint_text: tr._("Passphrase")
 
 
+<ElevatedMDBoxLayout@RectangularElevationBehavior+MDBoxLayout>:
+    elevation: 20
+
+
+<-SelectableLabel@TextInput>:
+    readonly: True
+    # Modified from kivy/data/style.kv
+    canvas.before:
+        # Clear (can be used to remove legacy canvas instructions)
+        Color:
+            rgba: self.background_color
+        Rectangle:
+            pos: self.pos
+            size: self.size
+        Color:
+            rgba:
+                (self.cursor_color
+                if self.focus and not self._cursor_blink
+                else (0, 0, 0, 0))
+        Rectangle:
+            pos: self._cursor_visual_pos
+            size: root.cursor_width, -self._cursor_visual_height
+        Color:
+            rgba: self.disabled_foreground_color if self.disabled else (self.hint_text_color if not self.text else self.foreground_color)
+
+
 <KeyringSelectorScreen>:
 
     on_pre_enter: root.refresh_keyring_list()
@@ -77,12 +105,12 @@
                     title: tr._("Manage Authenticators")
                     right_action_items: [["refresh", lambda x: root.refresh_keyring_list(), tr._("Refresh")], ["earth", lambda x: root.language_menu_open(x), tr._("Language")], ["help-circle-outline", lambda x: root.display_help_popup(), tr._("Help")]]
 
-                MDBoxLayout:
+                ElevatedMDBoxLayout:
                     height: dp(40)
                     size_hint_y: None
 
-                    md_bg_color: app.theme_cls.bg_darkest
-                    line_color: [0, 0, 0, 1]
+                    md_bg_color: app.theme_cls.bg_light
+                    #line_color: [0, 0, 0, 1]
 
                     MDLabel:
                         text: tr._("Please select an authenticator location")
@@ -96,12 +124,12 @@
                     MDList:
                         id: authentication_device_list
 
-                MDBoxLayout:
+                ElevatedMDBoxLayout:
                     height: dp(40)
                     size_hint_y: None
 
-                    md_bg_color: app.theme_cls.bg_darkest
-                    line_color: [0.2, 0.2, 0.2, 1]
+                    md_bg_color: app.theme_cls.bg_light
+                    #line_color: [0.2, 0.2, 0.2, 1]
 
                     MDIcon:
                         icon: root.AUTHENTICATOR_INITIALIZATION_STATUS_ICONS[root.authenticator_status] # "language-python"
@@ -114,15 +142,14 @@
                         halign: "left"
 
                 ScrollView:
-                    id: scrlv
-                    TextInput:  #MDLabel:
+                    size_hint_y: 0.4
+                    id: authenticator_information_scrollview
+                    SelectableLabel:
                         id: authentication_device_information
-                        readonly: True
                         padding: [10,10]
                         halign: "left"
-                        #theme_text_color: "Error"
                         size_hint: 1, None
-                        height: max( (len(self._lines)+1) * self.line_height, scrlv.height)
+                        height: max((len(self._lines)+1) * self.line_height, authenticator_information_scrollview.height)
                         text: tr._("<empty>")
 
                 MDGridLayout:
