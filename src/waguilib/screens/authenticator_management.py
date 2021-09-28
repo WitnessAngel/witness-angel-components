@@ -17,7 +17,7 @@ from kivymd.uix.list import IconLeftWidget
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.screen import Screen
 
-from waguilib.widgets.popups import dialog_with_close_button
+from waguilib.widgets.popups import dialog_with_close_button, process_method_with_gui_spinner
 from wacryptolib.authentication_device import list_available_authentication_devices, \
     get_authenticator_path_for_authentication_device
 from wacryptolib.authenticator import is_authenticator_initialized, load_authenticator_metadata
@@ -67,6 +67,8 @@ class AuthenticatorSelectorScreen(Screen):
     _selected_custom_folder_path = ObjectProperty(None, allownone=True)  # Custom folder selected for FolderKeyStoreListItem entry
 
     AUTHENTICATOR_ARCHIVE_FORMAT = "zip"
+
+    _dialog = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -305,6 +307,7 @@ class AuthenticatorSelectorScreen(Screen):
         self._dialog.dismiss()
 
     @safe_catch_unhandled_exception_and_display_popup
+    @process_method_with_gui_spinner
     def _delete_authenticator_data(self, authenticator_path):
         # FIXME protect against any OSERROR here!!
         metadata_file_path = get_metadata_file_path(authenticator_path)
@@ -332,6 +335,7 @@ class AuthenticatorSelectorScreen(Screen):
         self._dialog.open()
 
     @safe_catch_unhandled_exception_and_display_popup
+    @process_method_with_gui_spinner
     def _check_authenticator_integrity(self, authenticator_path):
         passphrase = self._dialog.content_cls.ids.tester_passphrase.text
         self.close_dialog()
@@ -386,6 +390,7 @@ class AuthenticatorSelectorScreen(Screen):
                     undecodable_private_keys=undecodable_private_keys)
 
     @safe_catch_unhandled_exception_and_display_popup
+    @process_method_with_gui_spinner
     def _export_authenticator_to_archive(self):
         authenticator_path = self._selected_authenticator_path
 
@@ -405,6 +410,7 @@ class AuthenticatorSelectorScreen(Screen):
             ).open()
 
     @safe_catch_unhandled_exception_and_display_popup
+    @process_method_with_gui_spinner
     def _import_authenticator_from_archive(self, archive_path):
 
         archive_path = Path(archive_path)

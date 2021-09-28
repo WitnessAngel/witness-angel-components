@@ -1,5 +1,7 @@
 from decorator import decorator
 from kivy.clock import Clock
+from kivy.lang import Builder
+from kivymd.app import MDApp
 from kivymd.toast import toast
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
@@ -45,3 +47,32 @@ def dialog_with_close_button(buttons=None, close_btn_label=None, full_width=Fals
                 **kwargs,
             )
     return dialog
+
+
+Builder.load_string("""
+
+<WaitSpinner@MDSpinner>:
+    size_hint: None, None
+    size: dp(46), dp(46)
+    pos_hint: {'center_x': .5, 'center_y': .5}
+    active: False
+
+""")
+
+@decorator
+def process_method_with_gui_spinner(func, self, *args, **kwargs):
+    """
+    Handle a time-consuming operation with the display of a GUI spinner,
+    which must have id "wait_spinner" and be located in root tree.
+
+    Can be called from secondary thread too.
+    """
+    _app = MDApp.get_running_app()
+    wait_spinner = _app.root.ids.wait_spinner
+    Clock.schedule_once(lambda x: wait_spinner.setter("active")(x, True))
+    try:
+        return func(self, *args, **kwargs)
+    finally:
+        Clock.schedule_once(lambda x: wait_spinner.setter("active")(x, False))
+
+

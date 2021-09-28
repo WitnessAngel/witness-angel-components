@@ -11,7 +11,7 @@ from kivy.properties import ObjectProperty, StringProperty
 from kivymd.app import MDApp
 from kivymd.uix.screen import Screen
 
-from waguilib.widgets.popups import dialog_with_close_button
+from waguilib.widgets.popups import dialog_with_close_button, process_method_with_gui_spinner
 from wacryptolib.authenticator import initialize_authenticator
 from wacryptolib.key_generation import generate_asymmetric_keypair
 from wacryptolib.key_storage import FilesystemKeyStorage
@@ -36,6 +36,8 @@ class AuthenticatorCreationScreen(Screen):
     _selected_authenticator_path = ObjectProperty(None, allownone=True)
 
     operation_status = StringProperty()
+
+    _dialog = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -95,6 +97,7 @@ class AuthenticatorCreationScreen(Screen):
         self.go_to_home_screen()
 
     # No safe_catch_unhandled_exception_and_display_popup() here, we handle finalization in any case
+    @process_method_with_gui_spinner
     def _offloaded_initialize_authenticator(self, form_values, authenticator_path):
         success = False
 
@@ -125,7 +128,7 @@ class AuthenticatorCreationScreen(Screen):
             success = True
 
         except Exception as exc:
-            print(">>>>>>>>>> ERROR IN THREAD", exc)  # FIXME add logging AND snackbar
+            print(">> ERROR IN _offloaded_initialize_authenticator THREAD", exc)  # FIXME add logging AND snackbar
 
         Clock.schedule_once(partial(self.finish_initialization, success=success))
 
