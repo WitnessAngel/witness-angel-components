@@ -47,14 +47,16 @@ def warn_if_permission_missing(permission: str) -> bool:
 
 def request_external_storage_dirs_access():
     """Ask for write permission and create missing directories."""
-    from kivy.logger import Logger as logger  # Delayed import
-    permission = "WRITE_EXTERNAL_STORAGE"
-    request_single_permission(permission)
-    # FIXME remove this ugly sleep() hack and move this to Service
-    time.sleep(3)  # Let the callback permission request be processed
-    res = has_single_permission(permission)
-    #logger.info("Has single permission %r is %s" % (permission, res))
-    if res:
-        EXTERNAL_DATA_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
-        return True
-    return False
+    if IS_ANDROID:
+        from kivy.logger import Logger as logger  # Delayed import
+        permission = "WRITE_EXTERNAL_STORAGE"
+        request_single_permission(permission)
+        # FIXME remove this ugly sleep() hack and move this to Service
+        time.sleep(3)  # Let the callback permission request be processed
+        res = has_single_permission(permission)
+        #logger.info("Has single permission %r is %s" % (permission, res))
+        if res:
+            EXTERNAL_DATA_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
+            return True
+        return False
+    return True

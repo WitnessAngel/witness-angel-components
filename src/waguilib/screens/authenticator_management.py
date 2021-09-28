@@ -24,7 +24,7 @@ from wacryptolib.exceptions import KeyLoadingError
 from wacryptolib.key_generation import load_asymmetric_key_from_pem_bytestring
 from wacryptolib.key_storage import FilesystemKeyStorage
 from wacryptolib.utilities import get_metadata_file_path
-from waguilib.importable_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_APP_ROOT, EXTERNAL_DATA_EXPORTS_DIR
+from waguilib.importable_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_APP_ROOT, EXTERNAL_DATA_EXPORTS_DIR, request_external_storage_dirs_access
 from waguilib.utilities import convert_bytes_to_human_representation
 
 from waguilib.i18n import tr
@@ -127,6 +127,8 @@ class AuthenticatorSelectorScreen(Screen):
         self._archive_chooser.close()
 
     def archive_chooser_open(self, *args):
+
+        EXTERNAL_DATA_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)  # FIXME beware permissions on smartphone!!!
         file_manager_path = EXTERNAL_DATA_EXPORTS_DIR
         self._archive_chooser.show(str(file_manager_path))  # Soon use .show_disks!!
 
@@ -167,7 +169,10 @@ class AuthenticatorSelectorScreen(Screen):
     @safe_catch_unhandled_exception_and_display_popup
     def refresh_authenticator_list(self):
 
-        authentication_device_list = list_available_authentication_devices()  # TODO rename to usb devices?
+        try:
+            authentication_device_list = list_available_authentication_devices()  # TODO rename to usb devices?
+        except ModuleNotFoundError:  # probably on android, so no UDEV system
+            authentication_device_list = []
 
         authenticator_list_widget = self.ids.authenticator_list
         authenticator_list_widget.clear_widgets()
@@ -376,7 +381,7 @@ class AuthenticatorSelectorScreen(Screen):
         timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
         authenticator_metadata = load_authenticator_metadata(authenticator_path)
         device_uid = shorten_uid(authenticator_metadata["device_uid"])
-        EXTERNAL_DATA_EXPORTS_DIR.mkdir(exist_ok=True)  # FIXME beware permissions on smartphone!!!
+        EXTERNAL_DATA_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)  # FIXME beware permissions on smartphone!!!
         archive_path_base = EXTERNAL_DATA_EXPORTS_DIR.joinpath("authenticator_uid%s_%s" % (device_uid, timestamp))
         archive_path = shutil.make_archive(base_name=archive_path_base, format=self.AUTHENTICATOR_ARCHIVE_FORMAT,
                             root_dir=authenticator_path)
