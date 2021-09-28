@@ -37,7 +37,8 @@ try:
     from waguilib.assets import register_common_resources
     register_common_resources()
 
-    from waguilib.importable_settings import WACLIENT_TYPE
+    from waguilib.importable_settings import WACLIENT_TYPE, IS_ANDROID
+
     if WACLIENT_TYPE == "APPLICATION":
         from kivy.config import Config
         '''
@@ -52,8 +53,9 @@ try:
         from kivy.core.window import Window
         ##Window.minimum_width, Window.minimum_height = Window.size = (600, 600)
 
-        # Disable multitouch emulation red dots on right/middle clicks
-        Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
+        if not IS_ANDROID:
+            # Disable multitouch emulation red dots on Desktop, on right/middle clicks
+            Config.set('input', 'mouse', 'mouse,disable_multitouch')
 
         # Ensure that we don't need to click TWICE to gain focus on Kivy Window and then on widget!
         def force_window_focus(*args, **kwargs):
