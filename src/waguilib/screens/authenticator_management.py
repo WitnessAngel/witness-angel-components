@@ -311,7 +311,7 @@ class AuthenticatorSelectorScreen(Screen):
         key_files = authenticator_path.glob("*.pem")
         for filepath in [metadata_file_path] + list(key_files):
             filepath.unlink(missing_ok=True)
-        MDDialog(
+        dialog_with_close_button(
                 title=tr._("Deletion is over"),
                 text=tr._("All authentication data from folder %s has been removed.") % authenticator_path,
             ).open()
@@ -435,4 +435,5 @@ class AuthenticatorSelectorScreen(Screen):
         dialog_with_close_button(
             title=tr._("Authenticator management page"),
             text=help_text,
+            full_width=True,
             ).open()

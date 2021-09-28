@@ -9,8 +9,6 @@ from kivy.clock import Clock
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty, StringProperty
 from kivymd.app import MDApp
-from kivymd.uix.button import MDFlatButton
-from kivymd.uix.dialog import MDDialog
 from kivymd.uix.screen import Screen
 
 from waguilib.widgets.popups import dialog_with_close_button
@@ -190,5 +188,6 @@ class AuthenticatorCreationScreen(Screen):
         dialog_with_close_button(
             title=tr._("Authenticator creation page"),
             text=help_text,
+            full_width=True,
             ).open()
 
