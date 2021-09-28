@@ -279,6 +279,16 @@ class AuthenticatorSelectorScreen(Screen):
         self._selected_authenticator_path = authenticator_path  # Might be None
         self.authenticator_status = authenticator_status
 
+    def show_authenticator_export_confirmation_dialog(self):
+        self._dialog = dialog_with_close_button(
+            close_btn_label=tr._("Cancel"),
+            title=tr._("Export authenticator"),
+            text=tr._("Keep the exported archive in a secure place."),
+            #size_hint=(0.8, 1),
+            buttons=[MDFlatButton(text=tr._("Confirm"), on_release=lambda *args: (self.close_dialog(), self._export_authenticator_to_archive()))],
+        )
+        self._dialog.open()
+
     def show_authenticator_destroy_confirmation_dialog(self):
         authenticator_path = self._selected_authenticator_path
         self._dialog = dialog_with_close_button(
@@ -375,7 +385,7 @@ class AuthenticatorSelectorScreen(Screen):
                     undecodable_private_keys=undecodable_private_keys)
 
     @safe_catch_unhandled_exception_and_display_popup
-    def export_authenticator_to_archive(self):
+    def _export_authenticator_to_archive(self):
         authenticator_path = self._selected_authenticator_path
 
         timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
