@@ -80,6 +80,7 @@ class AuthenticatorCreationScreen(Screen):
 
     def open_dialog(self, text, title, on_close=None):
         on_close = on_close or self.close_dialog
+        assert not self._dialog, self._dialog
         self._dialog = dialog_with_close_button(
             title=title,
             text=text,
@@ -89,6 +90,7 @@ class AuthenticatorCreationScreen(Screen):
 
     def close_dialog(self, obj):
         self._dialog.dismiss()
+        self._dialog = None
 
     def close_dialog_and_leave(self, obj):
         self.close_dialog(obj)

@@ -301,6 +301,7 @@ class AuthenticatorSelectorScreen(Screen):
         self._dialog.open()
 
     def close_dialog(self):
+        # Beware, dialog might also auto-close through another way
         self._dialog.dismiss()
 
     @safe_catch_unhandled_exception_and_display_popup
