@@ -17,6 +17,7 @@ from kivymd.uix.list import IconLeftWidget
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.screen import Screen
 
+from waguilib.widgets.popups import dialog_with_close_button
 from wacryptolib.authentication_device import list_available_authentication_devices, \
     get_authenticator_path_for_authentication_device
 from wacryptolib.authenticator import is_authenticator_initialized, load_authenticator_metadata
@@ -280,13 +281,12 @@ class AuthenticatorSelectorScreen(Screen):
 
     def show_authenticator_destroy_confirmation_dialog(self):
         authenticator_path = self._selected_authenticator_path
-        self._dialog = MDDialog(
-            auto_dismiss=True,
+        self._dialog = dialog_with_close_button(
+            close_btn_label=tr._("Cancel"),
             title=tr._("Destroy authenticator"),
             text=tr._("Beware, this might make encrypted data using these keys impossible to decrypt."),
             #size_hint=(0.8, 1),
-            buttons=[MDFlatButton(text=tr._("Confirm"), on_release=lambda *args: (self.close_dialog(), self._delete_authenticator_data(authenticator_path))),
-                     MDFlatButton(text=tr._("Cancel"), on_release=lambda *args: self.close_dialog())],
+            buttons=[MDFlatButton(text=tr._("Confirm"), on_release=lambda *args: (self.close_dialog(), self._delete_authenticator_data(authenticator_path)))],
         )
         self._dialog.open()
 
@@ -301,7 +301,6 @@ class AuthenticatorSelectorScreen(Screen):
         for filepath in [metadata_file_path] + list(key_files):
             filepath.unlink(missing_ok=True)
         MDDialog(
-             auto_dismiss=True,
                 title=tr._("Deletion is over"),
                 text=tr._("All authentication data from folder %s has been removed.") % authenticator_path,
             ).open()
@@ -309,13 +308,12 @@ class AuthenticatorSelectorScreen(Screen):
 
     def show_checkup_dialog(self):
         authenticator_path = self._selected_authenticator_path
-        self._dialog = MDDialog(
-            auto_dismiss=True,
+        self._dialog = dialog_with_close_button(
+            close_btn_label=tr._("Cancel"),
             title=tr._("Sanity check"),
             type="custom",
             content_cls=Factory.AuthenticatorTesterContent(),
-            buttons=[MDFlatButton(text=tr._("Check"), on_release=lambda *args: (self.close_dialog(), self._check_authenticator_integrity(authenticator_path))),
-                     MDFlatButton(text=tr._("Cancel"), on_release=lambda *args: self.close_dialog())],
+            buttons=[MDFlatButton(text=tr._("Check"), on_release=lambda *args: (self.close_dialog(), self._check_authenticator_integrity(authenticator_path)))],
         )
         def _set_focus_on_passphrase(*args):
             self._dialog.content_cls.ids.tester_passphrase.focus = True
@@ -344,8 +342,7 @@ class AuthenticatorSelectorScreen(Screen):
                     missing_private_keys=(", ".join(missing_private_keys_cast) or "-"),
                     undecodable_private_keys=", ".join(undecodable_private_keys_cast) or "-")
 
-        MDDialog(
-            auto_dismiss=True,
+        dialog_with_close_button(
             title=tr._("Checkup result: %s") % result,
             text=details,
             ).open()
@@ -391,8 +388,7 @@ class AuthenticatorSelectorScreen(Screen):
         archive_path = shutil.make_archive(base_name=archive_path_base, format=self.AUTHENTICATOR_ARCHIVE_FORMAT,
                             root_dir=authenticator_path)
 
-        MDDialog(
-            auto_dismiss=True,
+        dialog_with_close_button(
             title=tr._("Export successful"),
             text=tr._("Authenticator archive exported to %s") % archive_path,
             ).open()
@@ -406,8 +402,7 @@ class AuthenticatorSelectorScreen(Screen):
         # BEWARE - might override target files!
         shutil.unpack_archive(archive_path, extract_dir=authenticator_path, format=self.AUTHENTICATOR_ARCHIVE_FORMAT)
 
-        MDDialog(
-            auto_dismiss=True,
+        dialog_with_close_button(
             title=tr._("Import successful"),
             text=tr._("Authenticator archive unpacked from %s, its integrity has not been checked though.") % archive_path.name,
             ).open()
@@ -426,8 +421,7 @@ class AuthenticatorSelectorScreen(Screen):
         
         Note that if you destroy an authenticator and all its exported ZIP archives, the WitnessAngel recordings which used it as a trusted third party might not be decryptable anymore (unless they used a shared secret with other trusted third parties).
         """))
-        MDDialog(
-            auto_dismiss=True,
+        dialog_with_close_button(
             title=tr._("Authenticator management page"),
             text=help_text,
             ).open()

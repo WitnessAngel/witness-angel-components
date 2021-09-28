@@ -127,3 +127,9 @@ def display_notification(context, notification):
 
     notification_service = context.getSystemService(Context.NOTIFICATION_SERVICE)
     notification_service.notify(0, notification)
+
+
+def patch_ctypes_module():
+    """ctypes.pythonapi fails on Android due to wrong ctypes.PyDLL(None) setup"""
+    import ctypes, sys
+    ctypes.pythonapi = ctypes.PyDLL("libpython%d.%d.so" % sys.version_info[:2])

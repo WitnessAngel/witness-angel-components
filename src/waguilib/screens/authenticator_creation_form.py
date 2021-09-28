@@ -13,6 +13,7 @@ from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.screen import Screen
 
+from waguilib.widgets.popups import dialog_with_close_button
 from wacryptolib.authenticator import initialize_authenticator
 from wacryptolib.key_generation import generate_asymmetric_keypair
 from wacryptolib.key_storage import FilesystemKeyStorage
@@ -77,13 +78,12 @@ class AuthenticatorCreationScreen(Screen):
 
         self._launch_authenticator_initialization(form_values=form_values)
 
-    def open_dialog(self, text, title, on_release=None):
-        on_release = on_release or self.close_dialog
-        self._dialog = MDDialog(
-            auto_dismiss=False,
+    def open_dialog(self, text, title, on_close=None):
+        on_close = on_close or self.close_dialog
+        self._dialog = dialog_with_close_button(
             title=title,
             text=text,
-            buttons=[MDFlatButton(text=tr._("Close"), on_release=on_release)],
+            close_btn_callback=on_close,
         )
         self._dialog.open()
 
@@ -169,13 +169,13 @@ class AuthenticatorCreationScreen(Screen):
                                     authenticator_path=authenticator_path)
 
     def finish_initialization(self, *args, success, **kwargs):
-        on_release = self.close_dialog_and_leave
+        on_close = self.close_dialog_and_leave
         if success:
             self.open_dialog(tr._("Initialization successfully completed."),
-                             title=tr._("Success"), on_release=on_release)
+                             title=tr._("Success"), on_close=on_close)
         else:
             self.open_dialog(tr._("Operation failed, check logs."),
-                             title=tr._("Failure"), on_release=on_release)
+                             title=tr._("Failure"), on_close=on_close)
 
     def display_help_popup(self):
         help_text = dedent(tr._("""\
@@ -185,8 +185,7 @@ class AuthenticatorCreationScreen(Screen):
         
         You should keep your passphrase somewhere safe (in a digital password manager, on a paper in a vault...), because if you forget any of its aspects (upper/lower case, accents, spaces...), there is no way to recover it.
         """))
-        MDDialog(
-            auto_dismiss=True,
+        dialog_with_close_button(
             title=tr._("Authenticator creation page"),
             text=help_text,
             ).open()
