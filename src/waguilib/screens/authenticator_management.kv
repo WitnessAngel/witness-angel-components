@@ -1,6 +1,5 @@
 #:import tr waguilib.i18n.tr
 
-
 <LanguageMenuHeader@MDBoxLayout>:
     orientation: "vertical"
     adaptive_size: True
@@ -25,9 +24,16 @@
     IconLeftWidget:
         icon: "account-box"
 
-<OpenFolderButton@IRightBodyTouch+MDRectangleFlatIconButton>:
-    text: tr._("Find")
-    icon: "file-find-outline"
+#<OpenFolderButton@Widget> UNUSED
+    ##IRightBodyTouch+#MDRectangleFlatIconButton>:
+    #text: " " # tr._("FindXXXXXXX")
+    #icon: "file-find-outline"
+    #size_hint: None, None
+    #width: 100
+    #height: 80
+    #on_parent:
+    #    ssss
+
 
 <FolderKeyStoreListItem>:
 
@@ -37,14 +43,27 @@
     #tertiary_text: tr._("fit more text than usual2")
 
     on_size:
+        """ UNUSED
+        print(">>>>>>>>>>>>>>>> on_size", self.size, "but", open_folder_btn.width)
         self.ids._right_container.width = open_folder_btn.width
         self.ids._right_container.x = open_folder_btn.width
         self.ids._right_container.height = open_folder_btn.height
         self.ids._right_container.y = root.y + root.height/2 - open_folder_btn.height/2  # - dp(10)
+        print(">>>>>>>>>>>>>>>> on_size NEW VALUES", self.ids._right_container.width, self.ids._right_container.x, self.ids._right_container.height, self.ids._right_container.y)
+        self.do_layout()
+        self.ids._right_container.do_layout()
+        print(">>>>>>>>>>>>>>>> DO LAYOUT")
+        self.canvas.ask_update()
+        """
+
+    #on_parent: UNUSED
+        #print(">>>>>>>>>>>>>>>> on_parent", self.size)
+        #Clock.schedule_once(lambda x: self.property('size').dispatch(args[0]))  # Useless
 
     IconLeftWidget:
         icon: "folder"
-    OpenFolderButton:
+    IconRightWidget:
+        icon: "file-find-outline"
         id: open_folder_btn
 
 
