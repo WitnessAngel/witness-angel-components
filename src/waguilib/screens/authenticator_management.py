@@ -24,7 +24,8 @@ from wacryptolib.exceptions import KeyLoadingError
 from wacryptolib.key_generation import load_asymmetric_key_from_pem_bytestring
 from wacryptolib.key_storage import FilesystemKeyStorage
 from wacryptolib.utilities import get_metadata_file_path
-from waguilib.importable_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_APP_ROOT, EXTERNAL_DATA_EXPORTS_DIR, request_external_storage_dirs_access
+from waguilib.importable_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_APP_ROOT, EXTERNAL_DATA_EXPORTS_DIR, \
+    request_external_storage_dirs_access
 from waguilib.utilities import convert_bytes_to_human_representation
 
 from waguilib.i18n import tr
@@ -49,7 +50,7 @@ class FolderKeyStoreListItem(Factory.ThinTwoLineAvatarIconListItem):
     def __init__(self):
         super().__init__()
         #print(">>>>>>>>>>>>>>", self._EventDispatcher__event_stack)
-        print(">>>>>>>>>>>>>>>>>>", self.size, self.__class__.__mro__, "\n", self.__class__, "\n", self.__dict__, hex(id(self)))
+        #print(">>>>>>>>>>>>>>>>>>", self.size, self.__class__.__mro__, "\n", self.__class__, "\n", self.__dict__, hex(id(self)))
         ##Clock.schedule_once(lambda x: self.dispatch('on_focus'))
         def force_reset(*args):
             prop = self.property('size')
@@ -117,6 +118,8 @@ class AuthenticatorSelectorScreen(Screen):
         authenticator_widget._onrelease_callback(authenticator_widget)
 
     def folder_chooser_open(self, widget, *args):
+        if not request_external_storage_dirs_access():
+            return
         file_manager_path = EXTERNAL_APP_ROOT
         previously_selected_custom_folder_path = self._selected_custom_folder_path
         if previously_selected_custom_folder_path and previously_selected_custom_folder_path.is_dir():
@@ -127,8 +130,8 @@ class AuthenticatorSelectorScreen(Screen):
         self._archive_chooser.close()
 
     def archive_chooser_open(self, *args):
-
-        EXTERNAL_DATA_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)  # FIXME beware permissions on smartphone!!!
+        if not request_external_storage_dirs_access():
+            return
         file_manager_path = EXTERNAL_DATA_EXPORTS_DIR
         self._archive_chooser.show(str(file_manager_path))  # Soon use .show_disks!!
 
@@ -381,6 +384,8 @@ class AuthenticatorSelectorScreen(Screen):
         timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
         authenticator_metadata = load_authenticator_metadata(authenticator_path)
         device_uid = shorten_uid(authenticator_metadata["device_uid"])
+        if not request_external_storage_dirs_access():
+            return
         EXTERNAL_DATA_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)  # FIXME beware permissions on smartphone!!!
         archive_path_base = EXTERNAL_DATA_EXPORTS_DIR.joinpath("authenticator_uid%s_%s" % (device_uid, timestamp))
         archive_path = shutil.make_archive(base_name=archive_path_base, format=self.AUTHENTICATOR_ARCHIVE_FORMAT,
