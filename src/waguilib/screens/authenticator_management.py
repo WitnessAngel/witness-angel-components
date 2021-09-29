@@ -11,13 +11,12 @@ from kivy.lang import Builder
 from kivy.properties import ObjectProperty
 from kivymd.app import MDApp
 from kivymd.uix.button import MDFlatButton
-from kivymd.uix.dialog import MDDialog
 from kivymd.uix.filemanager import MDFileManager
 from kivymd.uix.list import IconLeftWidget
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.screen import Screen
 
-from waguilib.widgets.popups import dialog_with_close_button, process_method_with_gui_spinner
+from waguilib.widgets.popups import dialog_with_close_button
 from wacryptolib.authentication_device import list_available_authentication_devices, \
     get_authenticator_path_for_authentication_device
 from wacryptolib.authenticator import is_authenticator_initialized, load_authenticator_metadata
@@ -307,7 +306,6 @@ class AuthenticatorSelectorScreen(Screen):
         self._dialog.dismiss()
 
     @safe_catch_unhandled_exception_and_display_popup
-    @process_method_with_gui_spinner
     def _delete_authenticator_data(self, authenticator_path):
         # FIXME protect against any OSERROR here!!
         metadata_file_path = get_metadata_file_path(authenticator_path)
@@ -335,7 +333,6 @@ class AuthenticatorSelectorScreen(Screen):
         self._dialog.open()
 
     @safe_catch_unhandled_exception_and_display_popup
-    @process_method_with_gui_spinner
     def _check_authenticator_integrity(self, authenticator_path):
         passphrase = self._dialog.content_cls.ids.tester_passphrase.text
         self.close_dialog()
@@ -390,7 +387,6 @@ class AuthenticatorSelectorScreen(Screen):
                     undecodable_private_keys=undecodable_private_keys)
 
     @safe_catch_unhandled_exception_and_display_popup
-    @process_method_with_gui_spinner
     def _export_authenticator_to_archive(self):
         authenticator_path = self._selected_authenticator_path
 
@@ -410,7 +406,6 @@ class AuthenticatorSelectorScreen(Screen):
             ).open()
 
     @safe_catch_unhandled_exception_and_display_popup
-    @process_method_with_gui_spinner
     def _import_authenticator_from_archive(self, archive_path):
 
         archive_path = Path(archive_path)

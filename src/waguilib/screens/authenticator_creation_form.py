@@ -112,6 +112,7 @@ class AuthenticatorCreationScreen(Screen):
             filesystem_key_storage = FilesystemKeyStorage(authenticator_path)
 
             for i in range(1, GENERATED_KEYS_COUNT+1):
+                # TODO add some logging here
                 key_pair = generate_asymmetric_keypair(
                     key_type="RSA_OAEP",
                     passphrase=form_values["passphrase"]
@@ -162,7 +163,7 @@ class AuthenticatorCreationScreen(Screen):
 
         self.ids.button_initialize.disabled = True
         self.ids.formfield_passphrase.text = "***"  # PRIVACY
-        self.operation_status = tr._("Please wait a few seconds, initialization is in process.")
+        self.operation_status = tr._("Please wait, initialization might take a few minutes.")
 
         self.set_form_fields_status(enabled=False)
         self.ids.initialization_form_toolbar.disabled = True
