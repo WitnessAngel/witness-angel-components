@@ -16,7 +16,7 @@ from kivymd.uix.list import IconLeftWidget
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.screen import Screen
 
-from waguilib.widgets.popups import dialog_with_close_button
+from waguilib.widgets.popups import dialog_with_close_button, register_current_dialog, close_current_dialog
 from wacryptolib.authentication_device import list_available_authentication_devices, \
     get_authenticator_path_for_authentication_device
 from wacryptolib.authenticator import is_authenticator_initialized, load_authenticator_metadata
@@ -66,8 +66,6 @@ class AuthenticatorSelectorScreen(Screen):
     _selected_custom_folder_path = ObjectProperty(None, allownone=True)  # Custom folder selected for FolderKeyStoreListItem entry
 
     AUTHENTICATOR_ARCHIVE_FORMAT = "zip"
-
-    _dialog = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -281,29 +279,31 @@ class AuthenticatorSelectorScreen(Screen):
         self.authenticator_status = authenticator_status
 
     def show_authenticator_export_confirmation_dialog(self):
-        self._dialog = dialog_with_close_button(
+        dialog = dialog_with_close_button(
             close_btn_label=tr._("Cancel"),
             title=tr._("Export authenticator"),
             text=tr._("Keep the exported archive in a secure place."),
             #size_hint=(0.8, 1),
             buttons=[MDFlatButton(text=tr._("Confirm"), on_release=lambda *args: (self.close_dialog(), self._export_authenticator_to_archive()))],
         )
-        self._dialog.open()
+        dialog.open()
+        register_current_dialog(dialog)
 
     def show_authenticator_destroy_confirmation_dialog(self):
         authenticator_path = self._selected_authenticator_path
-        self._dialog = dialog_with_close_button(
+        dialog = dialog_with_close_button(
             close_btn_label=tr._("Cancel"),
             title=tr._("Destroy authenticator"),
             text=tr._("Beware, this might make encrypted data using these keys impossible to decrypt."),
             #size_hint=(0.8, 1),
             buttons=[MDFlatButton(text=tr._("Confirm"), on_release=lambda *args: (self.close_dialog(), self._delete_authenticator_data(authenticator_path)))],
         )
-        self._dialog.open()
+        dialog.open()
+        register_current_dialog(dialog)
 
     def close_dialog(self):
-        # Beware, dialog might also auto-close through another way
-        self._dialog.dismiss()
+        # Note that dialog might also auto-close through another way
+        close_current_dialog()
 
     @safe_catch_unhandled_exception_and_display_popup
     def _delete_authenticator_data(self, authenticator_path):
@@ -320,21 +320,22 @@ class AuthenticatorSelectorScreen(Screen):
 
     def show_checkup_dialog(self):
         authenticator_path = self._selected_authenticator_path
-        self._dialog = dialog_with_close_button(
+        dialog = dialog_with_close_button(
             close_btn_label=tr._("Cancel"),
             title=tr._("Sanity check"),
             type="custom",
             content_cls=Factory.AuthenticatorTesterContent(),
-            buttons=[MDFlatButton(text=tr._("Check"), on_release=lambda *args: (self.close_dialog(), self._check_authenticator_integrity(authenticator_path)))],
+            buttons=[MDFlatButton(text=tr._("Check"), on_release=lambda *args:  self._check_authenticator_integrity(dialog, authenticator_path))],
         )
         def _set_focus_on_passphrase(*args):
-            self._dialog.content_cls.ids.tester_passphrase.focus = True
-        self._dialog.bind(on_open=_set_focus_on_passphrase)
-        self._dialog.open()
+            dialog.content_cls.ids.tester_passphrase.focus = True
+        dialog.bind(on_open=_set_focus_on_passphrase)
+        dialog.open()
+        register_current_dialog(dialog)
 
     @safe_catch_unhandled_exception_and_display_popup
-    def _check_authenticator_integrity(self, authenticator_path):
-        passphrase = self._dialog.content_cls.ids.tester_passphrase.text
+    def _check_authenticator_integrity(self, dialog, authenticator_path):
+        passphrase = dialog.content_cls.ids.tester_passphrase.text
         self.close_dialog()
         result_dict = self._test_authenticator_password(authenticator_path=authenticator_path, passphrase=passphrase)
 

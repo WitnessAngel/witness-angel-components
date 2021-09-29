@@ -11,7 +11,8 @@ from kivy.properties import ObjectProperty, StringProperty
 from kivymd.app import MDApp
 from kivymd.uix.screen import Screen
 
-from waguilib.widgets.popups import dialog_with_close_button, process_method_with_gui_spinner
+from waguilib.widgets.popups import dialog_with_close_button, process_method_with_gui_spinner, register_current_dialog, \
+    close_current_dialog
 from wacryptolib.authenticator import initialize_authenticator
 from wacryptolib.key_generation import generate_asymmetric_keypair
 from wacryptolib.key_storage import FilesystemKeyStorage
@@ -36,8 +37,6 @@ class AuthenticatorCreationScreen(Screen):
     _selected_authenticator_path = ObjectProperty(None, allownone=True)
 
     operation_status = StringProperty()
-
-    _dialog = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -80,20 +79,19 @@ class AuthenticatorCreationScreen(Screen):
 
     def open_dialog(self, text, title, on_close=None):
         on_close = on_close or self.close_dialog
-        assert not self._dialog, self._dialog
-        self._dialog = dialog_with_close_button(
+        dialog = dialog_with_close_button(
             title=title,
             text=text,
             close_btn_callback=on_close,
         )
-        self._dialog.open()
+        dialog.open()
+        register_current_dialog(dialog)
 
     def close_dialog(self, obj):
-        self._dialog.dismiss()
-        self._dialog = None
+        close_current_dialog()
 
     def close_dialog_and_leave(self, obj):
-        self.close_dialog(obj)
+        close_current_dialog()
         self.go_to_home_screen()
 
     # No safe_catch_unhandled_exception_and_display_popup() here, we handle finalization in any case

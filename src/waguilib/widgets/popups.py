@@ -49,6 +49,22 @@ def dialog_with_close_button(buttons=None, close_btn_label=None, full_width=Fals
     return dialog
 
 
+_CURRENT_DIALOG = None  # System to avoid nasty bugs with multiple dialogs overwriting each other's variables
+
+def register_current_dialog(dialog):
+    global _CURRENT_DIALOG
+    if _CURRENT_DIALOG and _CURRENT_DIALOG._window:
+        raise RuntimeError("Multiple popups can't be opened at the same time")
+    _CURRENT_DIALOG = dialog
+
+def close_current_dialog():
+    global _CURRENT_DIALOG
+    if not _CURRENT_DIALOG or not _CURRENT_DIALOG._window:
+        raise RuntimeError("No popups currently open for closing")
+    _CURRENT_DIALOG.dismiss()
+    _CURRENT_DIALOG = None
+
+
 Builder.load_string("""
 
 <WaitSpinner@MDSpinner>:
