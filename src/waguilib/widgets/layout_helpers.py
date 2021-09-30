@@ -18,25 +18,31 @@ def activate_widget_debug_outline():
     Builder.load_string(WIDGET_OUTLINE_HACK)
 
 
-# Other helpers which might be useful someday #
+def load_layout_helper_widgets():
+    Builder.load_string("""
+    
+# Other helpers which might be useful
 
-#<Separator@Widget>:
-#    canvas:
-#        Color:
-#            rgba: 1, 1, 1, 1
-#        Rectangle:
-#            pos: self.pos
-#            size: self.size
+<Separator@Widget>:
+    canvas:
+        Color:
+            rgba: 1, 1, 1, 0
+        Rectangle:
+            pos: self.pos
+            size: self.size
 
-#<VSeparator@Separator>:
-#    size_hint_y: None
-#    height: 20
+<VSeparator@Separator>:
+    size_hint_y: None
+    height: 20
 
-#<HSeparator@Separator>:
-#    size_hint_x: None
-#    width: 20
+<HSeparator@Separator>:
+    size_hint_x: None
+    width: 20
+
+    """)
 
 
+# FIXME use or remove?
 #<ConsoleOutput>:
 #    readonly: True
 #    padding: 6, 6
