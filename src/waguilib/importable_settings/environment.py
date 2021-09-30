@@ -30,8 +30,9 @@ if IS_ANDROID:
     INTERNAL_APP_ROOT = Path(CONTEXT.getFilesDir().toString())
     INTERNAL_CACHE_DIR = Path(CONTEXT.getCacheDir().toString())
     Environment = autoclass("android.os.Environment")
+    EXTERNAL_APP_PREFIX = Environment.getExternalStorageDirectory().toString()  # Can be stripped as <sdcard>
     EXTERNAL_APP_ROOT = (
-        Path(Environment.getExternalStorageDirectory().toString()) / "WitnessAngel"
+        Path(EXTERNAL_APP_PREFIX) / "WitnessAngel"
     )
 
     PackageManager = autoclass('android.content.pm.PackageManager')  # Precached for permission checking
@@ -40,8 +41,10 @@ else:
     CONTEXT = None  # Unused on Desktop
     _base_dir = Path(storagepath.get_home_dir()) / "WitnessAngel"
     INTERNAL_APP_ROOT = _base_dir / "Internal"
-    EXTERNAL_APP_ROOT = _base_dir / "External"
     INTERNAL_CACHE_DIR = _base_dir / "Cache"
+    EXTERNAL_APP_PREFIX = None
+    EXTERNAL_APP_ROOT = _base_dir / "External"
+
 
     PackageManager = None
 
@@ -66,3 +69,12 @@ INTERNAL_CONTAINERS_DIR.mkdir(exist_ok=True)
 
 EXTERNAL_DATA_EXPORTS_DIR = EXTERNAL_APP_ROOT / "DataExports"  # Might no exist yet (and require permissions!)
 
+
+def strip_external_app_prefix(path):
+    if not path:
+        return ""
+    path = str(path)  # Convert from Path if needed
+    if EXTERNAL_APP_PREFIX and path.startswith(EXTERNAL_APP_PREFIX):
+        path = path[len(EXTERNAL_APP_PREFIX):]
+        path = "<sdcard>" + path  # e.g. sdcard/subfolder/...
+    return path

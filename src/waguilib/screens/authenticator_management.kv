@@ -1,4 +1,6 @@
 #:import tr waguilib.i18n.tr
+#:import strip_external_app_prefix waguilib.importable_settings.strip_external_app_prefix
+
 
 <LanguageMenuHeader@MDBoxLayout>:
     orientation: "vertical"
@@ -39,7 +41,7 @@
 
     selected_path: None
     text: tr._("Custom location")
-    secondary_text: str(self.selected_path) if self.selected_path else tr._("Please select a folder")
+    secondary_text: strip_external_app_prefix(self.selected_path) if self.selected_path else tr._("Please select a folder")
     #tertiary_text: tr._("fit more text than usual2")
 
     on_size:

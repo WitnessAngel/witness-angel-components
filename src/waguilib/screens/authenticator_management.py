@@ -25,7 +25,7 @@ from wacryptolib.key_generation import load_asymmetric_key_from_pem_bytestring
 from wacryptolib.key_storage import FilesystemKeyStorage
 from wacryptolib.utilities import get_metadata_file_path
 from waguilib.importable_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_APP_ROOT, EXTERNAL_DATA_EXPORTS_DIR, \
-    request_external_storage_dirs_access
+    request_external_storage_dirs_access, strip_external_app_prefix
 from waguilib.utilities import convert_bytes_to_human_representation
 
 from waguilib.i18n import tr
@@ -236,6 +236,7 @@ class AuthenticatorSelectorScreen(Screen):
 
         authenticator_info_text = ""
         authenticator_path = self._get_authenticator_path(authenticator_metadata)
+        authenticator_path_shortened = strip_external_app_prefix(authenticator_path)
 
         # FIXMe handle OS errors here
         if not authenticator_path:
@@ -243,11 +244,11 @@ class AuthenticatorSelectorScreen(Screen):
             authenticator_status = None
 
         elif not authenticator_path.exists():
-            authenticator_info_text = tr._("Selected folder is invalid\nFull path: %s" % authenticator_path)
+            authenticator_info_text = tr._("Selected folder is invalid\nPath: %s" % authenticator_path_shortened)
             authenticator_status = None
 
         elif not is_authenticator_initialized(authenticator_path):
-            authenticator_info_text = tr._("Full path: %s") % authenticator_path
+            authenticator_info_text = tr._("Path: %s") % authenticator_path_shortened
             authenticator_status = False
 
         elif is_authenticator_initialized(authenticator_path):
@@ -255,14 +256,14 @@ class AuthenticatorSelectorScreen(Screen):
             authenticator_metadata = load_authenticator_metadata(authenticator_path)
 
             displayed_values = dict(
-                authenticator_path=authenticator_path,
+                authenticator_path=authenticator_path_shortened,
                 authenticator_uid=authenticator_metadata["device_uid"],
                 authenticator_user=authenticator_metadata["user"],
                 authenticator_passphrase_hint=authenticator_metadata["passphrase_hint"],
             )
 
             authenticator_info_text = dedent(tr._("""\
-                Full path: {authenticator_path}
+                Path: {authenticator_path}
                 ID: {authenticator_uid}
                 User: {authenticator_user}
                 Password hint: {authenticator_passphrase_hint}
@@ -278,7 +279,7 @@ class AuthenticatorSelectorScreen(Screen):
         dialog_with_close_button(
             close_btn_label=tr._("Cancel"),
             title=tr._("Export authenticator"),
-            text=tr._("Keep the exported archive in a secure place."),
+            text=tr._("You should keep the exported archive in a secure place."),
             #size_hint=(0.8, 1),
             buttons=[MDFlatButton(text=tr._("Confirm"), on_release=lambda *args: (self.close_dialog(), self._export_authenticator_to_archive()))],
         )
@@ -396,7 +397,7 @@ class AuthenticatorSelectorScreen(Screen):
 
         dialog_with_close_button(
             title=tr._("Export successful"),
-            text=tr._("Authenticator archive exported to %s") % archive_path,
+            text=tr._("Authenticator archive exported to %s") % strip_external_app_prefix(archive_path),
             )
 
     @safe_catch_unhandled_exception_and_display_popup

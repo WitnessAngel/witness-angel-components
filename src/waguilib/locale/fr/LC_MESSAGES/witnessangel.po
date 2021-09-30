@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-29 16:35+0200\n"
-"PO-Revision-Date: 2021-09-29 16:36+0200\n"
+"POT-Creation-Date: 2021-09-30 20:45+0200\n"
+"PO-Revision-Date: 2021-09-30 20:46+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
@@ -18,78 +18,78 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Virtaal 0.7.1\n"
 
-#: src/waguilib/screens/authenticator_creation_form.kv:12
+#: src/waguilib/screens/authenticator_creation_form.kv:13
 msgid "Create Authenticator"
 msgstr "Créer un Authentifieur"
 
-#: src/waguilib/screens/authenticator_creation_form.kv:14
+#: src/waguilib/screens/authenticator_creation_form.kv:15
 msgid "Back"
 msgstr "Retour"
 
-#: src/waguilib/screens/authenticator_creation_form.kv:15
-#: src/waguilib/screens/authenticator_management.kv:125
+#: src/waguilib/screens/authenticator_creation_form.kv:16
+#: src/waguilib/screens/authenticator_management.kv:127
 msgid "Help"
 msgstr "Aide"
 
-#: src/waguilib/screens/authenticator_creation_form.kv:24
+#: src/waguilib/screens/authenticator_creation_form.kv:25
 msgid "Target:"
 msgstr "Cible :"
 
-#: src/waguilib/screens/authenticator_creation_form.kv:29
+#: src/waguilib/screens/authenticator_creation_form.kv:30
 msgid "User name"
 msgstr "Utilisateur"
 
-#: src/waguilib/screens/authenticator_creation_form.kv:41
-#: src/waguilib/screens/authenticator_management.kv:80
+#: src/waguilib/screens/authenticator_creation_form.kv:42
+#: src/waguilib/screens/authenticator_management.kv:82
 msgid "Passphrase"
 msgstr "Phrase secrète"
 
-#: src/waguilib/screens/authenticator_creation_form.kv:45
+#: src/waguilib/screens/authenticator_creation_form.kv:46
 msgid "Passphrase hint"
 msgstr "Indice de phrase secrète"
 
-#: src/waguilib/screens/authenticator_creation_form.kv:52
-#: src/waguilib/screens/authenticator_management.kv:186
+#: src/waguilib/screens/authenticator_creation_form.kv:57
+#: src/waguilib/screens/authenticator_management.kv:188
 msgid "Initialize"
 msgstr "Initialiser"
 
-#: src/waguilib/screens/authenticator_creation_form.py:64
+#: src/waguilib/screens/authenticator_creation_form.py:63
 msgid "Please enter a username, passphrase and passphrase hint."
 msgstr ""
 "Veuillez entrer un nom d'utilisateur, une phrase secrète et son indice."
 
-#: src/waguilib/screens/authenticator_creation_form.py:66
+#: src/waguilib/screens/authenticator_creation_form.py:65
 #, python-format
 msgid "Passphrase must be at least %s characters long."
 msgstr "La phrase secrète doit faire au moins %s caractères de long."
 
-#: src/waguilib/screens/authenticator_creation_form.py:76
+#: src/waguilib/screens/authenticator_creation_form.py:75
 msgid "Validation error"
 msgstr "Erreur de validation"
 
-#: src/waguilib/screens/authenticator_creation_form.py:166
+#: src/waguilib/screens/authenticator_creation_form.py:161
 msgid "Please wait, initialization might take a few minutes."
 msgstr "Veuillez attendre, l'initialisation peut prendre quelques minutes."
 
-#: src/waguilib/screens/authenticator_creation_form.py:178
+#: src/waguilib/screens/authenticator_creation_form.py:173
 msgid "Initialization successfully completed."
 msgstr "Initialisation complétée avec succès."
 
-#: src/waguilib/screens/authenticator_creation_form.py:179
-#: src/waguilib/screens/authenticator_management.py:346
+#: src/waguilib/screens/authenticator_creation_form.py:174
+#: src/waguilib/screens/authenticator_management.py:341
 msgid "Success"
 msgstr "Succès"
 
-#: src/waguilib/screens/authenticator_creation_form.py:181
+#: src/waguilib/screens/authenticator_creation_form.py:176
 msgid "Operation failed, check logs."
 msgstr "Opération échouée, vérifiez les logs."
 
-#: src/waguilib/screens/authenticator_creation_form.py:182
-#: src/waguilib/screens/authenticator_management.py:349
+#: src/waguilib/screens/authenticator_creation_form.py:177
+#: src/waguilib/screens/authenticator_management.py:344
 msgid "Failure"
 msgstr "Échec"
 
-#: src/waguilib/screens/authenticator_creation_form.py:185
+#: src/waguilib/screens/authenticator_creation_form.py:180
 msgid ""
 "        On this page, you can initialize an authenticator inside an empty "
 "folder; this authenticator actually consists in metadata files as well as a "
@@ -120,146 +120,146 @@ msgstr ""
 "accents, espaces...), il n'y a aucun moyen de la récupérer.\n"
 "        "
 
-#: src/waguilib/screens/authenticator_creation_form.py:193
+#: src/waguilib/screens/authenticator_creation_form.py:188
 msgid "Authenticator creation page"
 msgstr "Page de création d'authentifieur"
 
-#: src/waguilib/screens/authenticator_management.kv:8
-#: src/waguilib/screens/authenticator_management.kv:125
+#: src/waguilib/screens/authenticator_management.kv:10
+#: src/waguilib/screens/authenticator_management.kv:127
 msgid "Language"
 msgstr "Langue"
 
-#: src/waguilib/screens/authenticator_management.kv:20
+#: src/waguilib/screens/authenticator_management.kv:22
 msgid "User Profile"
 msgstr "Profil Utilisateur"
 
-#: src/waguilib/screens/authenticator_management.kv:21
+#: src/waguilib/screens/authenticator_management.kv:23
 msgid "Stored inside system disk"
 msgstr "Stocké dans le disque système"
 
-#: src/waguilib/screens/authenticator_management.kv:41
+#: src/waguilib/screens/authenticator_management.kv:43
 msgid "Custom location"
 msgstr "Emplacement personnalisé"
 
-#: src/waguilib/screens/authenticator_management.kv:42
+#: src/waguilib/screens/authenticator_management.kv:44
 msgid "Please select a folder"
 msgstr "Veuillez sélectionner un dossier"
 
-#: src/waguilib/screens/authenticator_management.kv:77
+#: src/waguilib/screens/authenticator_management.kv:79
 msgid "Test integrity and passphrase of authenticator"
 msgstr "Tester l'intégrité et la phrase secrète de l'authentifieur"
 
-#: src/waguilib/screens/authenticator_management.kv:124
+#: src/waguilib/screens/authenticator_management.kv:126
 msgid "Manage Authenticators"
 msgstr "Gérer les Authentifieurs"
 
-#: src/waguilib/screens/authenticator_management.kv:125
+#: src/waguilib/screens/authenticator_management.kv:127
 msgid "Refresh"
 msgstr "Rafraîchir"
 
-#: src/waguilib/screens/authenticator_management.kv:135
+#: src/waguilib/screens/authenticator_management.kv:137
 msgid "Please select an authenticator location"
 msgstr "Veuillez sélectionner un emplacement d'authentifieur"
 
-#: src/waguilib/screens/authenticator_management.kv:172
+#: src/waguilib/screens/authenticator_management.kv:174
 msgid "<empty>"
 msgstr "<vide>"
 
-#: src/waguilib/screens/authenticator_management.kv:192
+#: src/waguilib/screens/authenticator_management.kv:194
 msgid "Import"
 msgstr "Importer"
 
-#: src/waguilib/screens/authenticator_management.kv:206
+#: src/waguilib/screens/authenticator_management.kv:208
 msgid "Export"
 msgstr "Exporter"
 
-#: src/waguilib/screens/authenticator_management.kv:212
-#: src/waguilib/screens/authenticator_management.py:328
+#: src/waguilib/screens/authenticator_management.kv:214
+#: src/waguilib/screens/authenticator_management.py:322
 msgid "Check"
 msgstr "Vérifier"
 
-#: src/waguilib/screens/authenticator_management.kv:218
+#: src/waguilib/screens/authenticator_management.kv:220
 msgid "Destroy"
 msgstr "Détruire"
 
-#: src/waguilib/screens/authenticator_management.py:203
+#: src/waguilib/screens/authenticator_management.py:197
 #, python-brace-format
 msgid "Drive: {drive} ({label})"
 msgstr "Disque : {drive} ({label})"
 
-#: src/waguilib/screens/authenticator_management.py:204
+#: src/waguilib/screens/authenticator_management.py:198
 #, python-brace-format
 msgid "Size: {size}, Filesystem: {filesystem}"
 msgstr "Taille : {size}, Format : {filesystem}"
 
-#: src/waguilib/screens/authenticator_management.py:227
+#: src/waguilib/screens/authenticator_management.py:221
 msgid "No valid location selected"
 msgstr "Aucun emplacement valide sélectionné"
 
-#: src/waguilib/screens/authenticator_management.py:229
+#: src/waguilib/screens/authenticator_management.py:223
 msgid "Authenticator not initialized"
 msgstr "Authentifieur non initialisé"
 
-#: src/waguilib/screens/authenticator_management.py:231
+#: src/waguilib/screens/authenticator_management.py:225
 msgid "Authenticator initialized"
 msgstr "Authentifieur initialisé"
 
-#: src/waguilib/screens/authenticator_management.py:248
+#: src/waguilib/screens/authenticator_management.py:243
 msgid "Please select an authenticator folder"
 msgstr "Veuillez sélectionner un dossier d'authentifieur"
 
-#: src/waguilib/screens/authenticator_management.py:252
+#: src/waguilib/screens/authenticator_management.py:247
 #, python-format
 msgid ""
 "Selected folder is invalid\n"
-"Full path: %s"
+"Path: %s"
 msgstr ""
 "Le dossier sélectionné est invalide\n"
-"Chemin complet : %s"
+"Chemin : %s"
 
-#: src/waguilib/screens/authenticator_management.py:256
+#: src/waguilib/screens/authenticator_management.py:251
 #, python-format
-msgid "Full path: %s"
-msgstr "Chemin complet : %s"
+msgid "Path: %s"
+msgstr "Chemin : %s"
 
-#: src/waguilib/screens/authenticator_management.py:270
+#: src/waguilib/screens/authenticator_management.py:265
 #, python-brace-format
 msgid ""
-"                Full path: {authenticator_path}\n"
+"                Path: {authenticator_path}\n"
 "                ID: {authenticator_uid}\n"
 "                User: {authenticator_user}\n"
 "                Password hint: {authenticator_passphrase_hint}\n"
 "            "
 msgstr ""
-"                Chemin complet : {authenticator_path}\n"
+"                Chemin : {authenticator_path}\n"
 "                ID : {authenticator_uid}\n"
 "                Utilisateur : {authenticator_user}\n"
 "                Indice de phrase secrète : {authenticator_passphrase_hint}"
 
-#: src/waguilib/screens/authenticator_management.py:285
-#: src/waguilib/screens/authenticator_management.py:296
-#: src/waguilib/screens/authenticator_management.py:324
+#: src/waguilib/screens/authenticator_management.py:280
+#: src/waguilib/screens/authenticator_management.py:290
+#: src/waguilib/screens/authenticator_management.py:318
 msgid "Cancel"
 msgstr "Annuler"
 
-#: src/waguilib/screens/authenticator_management.py:286
+#: src/waguilib/screens/authenticator_management.py:281
 msgid "Export authenticator"
 msgstr "Exporter l'authentifieur"
 
-#: src/waguilib/screens/authenticator_management.py:287
-msgid "Keep the exported archive in a secure place."
-msgstr "Gardez l'archive exportée en lieu sûr."
+#: src/waguilib/screens/authenticator_management.py:282
+msgid "You should keep the exported archive in a secure place."
+msgstr "Vous devriez garder l'archive exportée en lieu sûr."
 
-#: src/waguilib/screens/authenticator_management.py:289
-#: src/waguilib/screens/authenticator_management.py:300
+#: src/waguilib/screens/authenticator_management.py:284
+#: src/waguilib/screens/authenticator_management.py:294
 msgid "Confirm"
 msgstr "Confirmer"
 
-#: src/waguilib/screens/authenticator_management.py:297
+#: src/waguilib/screens/authenticator_management.py:291
 msgid "Destroy authenticator"
 msgstr "Détruire l'authentifieur"
 
-#: src/waguilib/screens/authenticator_management.py:298
+#: src/waguilib/screens/authenticator_management.py:292
 msgid ""
 "Beware, this might make encrypted data using these keys impossible to "
 "decrypt."
@@ -267,25 +267,25 @@ msgstr ""
 "Attention, cela peut rendre impossible le déchiffrement des données "
 "chiffrées utilisant ces clés."
 
-#: src/waguilib/screens/authenticator_management.py:316
+#: src/waguilib/screens/authenticator_management.py:309
 msgid "Deletion is over"
 msgstr "Destruction terminée"
 
-#: src/waguilib/screens/authenticator_management.py:317
+#: src/waguilib/screens/authenticator_management.py:310
 #, python-format
 msgid "All authentication data from folder %s has been removed."
 msgstr "Toutes les données d'authentifieur du dossier %s ont été supprimées."
 
-#: src/waguilib/screens/authenticator_management.py:325
+#: src/waguilib/screens/authenticator_management.py:319
 msgid "Sanity check"
 msgstr "Contrôle d'intégrité"
 
-#: src/waguilib/screens/authenticator_management.py:347
+#: src/waguilib/screens/authenticator_management.py:342
 #, python-format
 msgid "Keypairs successfully tested: %s"
 msgstr "Paires de clés testées avec succès : %s"
 
-#: src/waguilib/screens/authenticator_management.py:352
+#: src/waguilib/screens/authenticator_management.py:347
 #, python-brace-format
 msgid ""
 "Keypairs tested: {keypair_count}\n"
@@ -296,25 +296,25 @@ msgstr ""
 "Clés privées manquantes : {missing_private_keys}\n"
 "Mauvaise phrase secrète pour les clés :  {undecodable_private_keys}"
 
-#: src/waguilib/screens/authenticator_management.py:358
+#: src/waguilib/screens/authenticator_management.py:353
 #, python-format
 msgid "Checkup result: %s"
 msgstr "Résultat du contrôle : %s"
 
-#: src/waguilib/screens/authenticator_management.py:404
+#: src/waguilib/screens/authenticator_management.py:399
 msgid "Export successful"
 msgstr "Exportation réussie"
 
-#: src/waguilib/screens/authenticator_management.py:405
+#: src/waguilib/screens/authenticator_management.py:400
 #, python-format
 msgid "Authenticator archive exported to %s"
 msgstr "L'archive de l'authentifieur a été exportée vers %s"
 
-#: src/waguilib/screens/authenticator_management.py:418
+#: src/waguilib/screens/authenticator_management.py:413
 msgid "Import successful"
 msgstr "Importation réussie"
 
-#: src/waguilib/screens/authenticator_management.py:419
+#: src/waguilib/screens/authenticator_management.py:414
 #, python-format
 msgid ""
 "Authenticator archive unpacked from %s, its integrity has not been checked "
@@ -323,7 +323,7 @@ msgstr ""
 "L'archive d'authentifieur a été décompressée depuis %s, son intégrité n'a "
 "cependant pas été vérifiée."
 
-#: src/waguilib/screens/authenticator_management.py:425
+#: src/waguilib/screens/authenticator_management.py:420
 msgid ""
 "        On this page, you can manage your authenticators, which are actually "
 "digital keychains identified by unique IDs.\n"
@@ -365,16 +365,16 @@ msgstr ""
 "que tiers de confiance risquent de ne plus pouvoir être déchiffrés (à moins "
 "qu'ils n'aient utilisé un secret partagé avec d'autres tiers de confiance)."
 
-#: src/waguilib/screens/authenticator_management.py:437
+#: src/waguilib/screens/authenticator_management.py:432
 msgid "Authenticator management page"
 msgstr "Page de gestion des authentifieurs"
 
 #: src/waguilib/screens/container_store.py:145
-#: src/waguilib/widgets/popups.py:36
+#: src/waguilib/widgets/popups.py:38
 msgid "Close"
 msgstr "Fermer"
 
-#: src/waguilib/widgets/popups.py:23
+#: src/waguilib/widgets/popups.py:25
 #, python-format
 msgid "Abnormal error caught: %s"
 msgstr "Erreur anormale détectée : %s"

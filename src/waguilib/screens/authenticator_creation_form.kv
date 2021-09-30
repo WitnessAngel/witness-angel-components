@@ -1,4 +1,5 @@
 #:import tr waguilib.i18n.tr
+#:import strip_external_app_prefix waguilib.importable_settings.strip_external_app_prefix
 
 
 <AuthenticatorCreationScreen>:
@@ -21,7 +22,7 @@
 
 
             MDLabel:
-                text: tr._("Target:") + " " + str(root._selected_authenticator_path)
+                text: tr._("Target:") + " " + strip_external_app_prefix(root._selected_authenticator_path)
                 halign: "center"
 
             MDTextField:
