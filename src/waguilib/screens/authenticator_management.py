@@ -73,13 +73,13 @@ class AuthenticatorSelectorScreen(Screen):
         self._app = MDApp.get_running_app()
         self._folder_chooser = MDFileManager(
             selector="folder",
-            exit_manager=self.close_folder_chooser,
+            exit_manager=lambda x: close_current_dialog(),
             select_path=lambda x: (self.close_folder_chooser(), self._folder_chooser_select_path(x)),
         )
         self._archive_chooser = MDFileManager(
             selector="file",
             ext=["." + self.AUTHENTICATOR_ARCHIVE_FORMAT],
-            exit_manager=self.close_archive_chooser,
+            exit_manager=lambda x: close_current_dialog(),
             select_path=lambda x: (self.close_archive_chooser(), self._import_authenticator_from_archive(x)),
         )
 
@@ -109,9 +109,6 @@ class AuthenticatorSelectorScreen(Screen):
         tr.switch_lang(lang_code)
         self.refresh_authenticator_list()  # Refresh translation of Drive etc.
 
-    def close_folder_chooser(self, *args):
-        self._folder_chooser.close()
-
     def _folder_chooser_select_path(self, path, *args):
         self._selected_custom_folder_path = Path(path)
         authenticator_widget = self.ids.authenticator_list.children[-2]  # AUTOSELECT "custom folder" item
@@ -125,15 +122,14 @@ class AuthenticatorSelectorScreen(Screen):
         if previously_selected_custom_folder_path and previously_selected_custom_folder_path.is_dir():
             file_manager_path = previously_selected_custom_folder_path
         self._folder_chooser.show(str(file_manager_path))  # Soon use .show_disks!!
-
-    def close_archive_chooser(self, *args):
-        self._archive_chooser.close()
+        register_current_dialog(self._folder_chooser)
 
     def archive_chooser_open(self, *args):
         if not request_external_storage_dirs_access():
             return
         file_manager_path = EXTERNAL_DATA_EXPORTS_DIR
         self._archive_chooser.show(str(file_manager_path))  # Soon use .show_disks!!
+        register_current_dialog(self._archive_chooser)
 
     def _get_authenticator_path(self,authenticator_metadata):
         authenticator_type = authenticator_metadata["authenticator_type"]
@@ -279,27 +275,23 @@ class AuthenticatorSelectorScreen(Screen):
         self.authenticator_status = authenticator_status
 
     def show_authenticator_export_confirmation_dialog(self):
-        dialog = dialog_with_close_button(
+        dialog_with_close_button(
             close_btn_label=tr._("Cancel"),
             title=tr._("Export authenticator"),
             text=tr._("Keep the exported archive in a secure place."),
             #size_hint=(0.8, 1),
             buttons=[MDFlatButton(text=tr._("Confirm"), on_release=lambda *args: (self.close_dialog(), self._export_authenticator_to_archive()))],
         )
-        dialog.open()
-        register_current_dialog(dialog)
 
     def show_authenticator_destroy_confirmation_dialog(self):
         authenticator_path = self._selected_authenticator_path
-        dialog = dialog_with_close_button(
+        dialog_with_close_button(
             close_btn_label=tr._("Cancel"),
             title=tr._("Destroy authenticator"),
             text=tr._("Beware, this might make encrypted data using these keys impossible to decrypt."),
             #size_hint=(0.8, 1),
             buttons=[MDFlatButton(text=tr._("Confirm"), on_release=lambda *args: (self.close_dialog(), self._delete_authenticator_data(authenticator_path)))],
         )
-        dialog.open()
-        register_current_dialog(dialog)
 
     def close_dialog(self):
         # Note that dialog might also auto-close through another way
@@ -315,12 +307,13 @@ class AuthenticatorSelectorScreen(Screen):
         dialog_with_close_button(
                 title=tr._("Deletion is over"),
                 text=tr._("All authentication data from folder %s has been removed.") % authenticator_path,
-            ).open()
+            )
         self.refresh_authenticator_list()
 
     def show_checkup_dialog(self):
         authenticator_path = self._selected_authenticator_path
         dialog = dialog_with_close_button(
+            auto_open_and_register=False,  # Important, we customize before
             close_btn_label=tr._("Cancel"),
             title=tr._("Sanity check"),
             type="custom",
@@ -331,7 +324,7 @@ class AuthenticatorSelectorScreen(Screen):
             dialog.content_cls.ids.tester_passphrase.focus = True
         dialog.bind(on_open=_set_focus_on_passphrase)
         dialog.open()
-        register_current_dialog(dialog)
+        register_current_dialog(dialog)  # To handle BACK button here too
 
     @safe_catch_unhandled_exception_and_display_popup
     def _check_authenticator_integrity(self, dialog, authenticator_path):
@@ -358,7 +351,7 @@ class AuthenticatorSelectorScreen(Screen):
         dialog_with_close_button(
             title=tr._("Checkup result: %s") % result,
             text=details,
-            ).open()
+            )
 
     def _test_authenticator_password(self, authenticator_path, passphrase):  # FIXME rename this
         filesystem_key_storage = FilesystemKeyStorage(authenticator_path)
@@ -404,7 +397,7 @@ class AuthenticatorSelectorScreen(Screen):
         dialog_with_close_button(
             title=tr._("Export successful"),
             text=tr._("Authenticator archive exported to %s") % archive_path,
-            ).open()
+            )
 
     @safe_catch_unhandled_exception_and_display_popup
     def _import_authenticator_from_archive(self, archive_path):
@@ -418,7 +411,7 @@ class AuthenticatorSelectorScreen(Screen):
         dialog_with_close_button(
             title=tr._("Import successful"),
             text=tr._("Authenticator archive unpacked from %s, its integrity has not been checked though.") % archive_path.name,
-            ).open()
+            )
 
         self.refresh_authenticator_list()
 
@@ -438,4 +431,4 @@ class AuthenticatorSelectorScreen(Screen):
             title=tr._("Authenticator management page"),
             text=help_text,
             full_width=True,
-            ).open()
+            )

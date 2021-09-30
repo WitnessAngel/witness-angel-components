@@ -79,13 +79,11 @@ class AuthenticatorCreationScreen(Screen):
 
     def open_dialog(self, text, title, on_close=None):
         on_close = on_close or self.close_dialog
-        dialog = dialog_with_close_button(
+        dialog_with_close_button(
             title=title,
             text=text,
             close_btn_callback=on_close,
         )
-        dialog.open()
-        register_current_dialog(dialog)
 
     def close_dialog(self, obj):
         close_current_dialog()
@@ -191,5 +189,5 @@ class AuthenticatorCreationScreen(Screen):
             title=tr._("Authenticator creation page"),
             text=help_text,
             full_width=True,
-            ).open()
+            )
 

@@ -1,10 +1,12 @@
 from decorator import decorator
 from kivy.clock import Clock
 from kivy.lang import Builder
+from kivy.uix.modalview import ModalView
 from kivymd.app import MDApp
 from kivymd.toast import toast
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
+from kivymd.uix.filemanager import MDFileManager
 from kivymd.uix.snackbar import Snackbar
 
 from waguilib.i18n import tr
@@ -31,7 +33,7 @@ def safe_catch_unhandled_exception_and_display_popup(func):
 
 
 def dialog_with_close_button(buttons=None, close_btn_label=None, full_width=False,
-                             close_btn_callback=None, **kwargs):
+                             close_btn_callback=None, auto_open_and_register=True, **kwargs):
     """A dialog which can close itself and works on on smartphone too"""
     close_btn_label = close_btn_label or tr._("Close")
     dialog = None
@@ -46,26 +48,42 @@ def dialog_with_close_button(buttons=None, close_btn_label=None, full_width=Fals
                 buttons=buttons + [close_btn] if buttons else [close_btn],
                 **kwargs,
             )
+
+    if auto_open_and_register:
+        dialog.open()
+        register_current_dialog(dialog)
+
     return dialog
 
 
 _CURRENT_DIALOG = None  # System to avoid nasty bugs with multiple dialogs overwriting each other's variables
 
 def register_current_dialog(dialog):
+    # Works for MDFileManager as well as normal ModalView
     global _CURRENT_DIALOG
     if has_current_dialog():
-        raise RuntimeError("Multiple popups can't be opened at the same time")
+        raise RuntimeError("Multiple popups can't be opened at the same time: %s" % _CURRENT_DIALOG)
     _CURRENT_DIALOG = dialog
 
 def has_current_dialog():
     global _CURRENT_DIALOG
-    return(_CURRENT_DIALOG and _CURRENT_DIALOG._window)
+    if not _CURRENT_DIALOG:
+        return False
+    if isinstance(_CURRENT_DIALOG, MDFileManager):
+        return _CURRENT_DIALOG._window_manager_open  # Wraps a ModalView
+    else:
+        assert isinstance(_CURRENT_DIALOG, ModalView)
+        return bool(_CURRENT_DIALOG._window)
 
 def close_current_dialog():
     global _CURRENT_DIALOG
     if not has_current_dialog():
         raise RuntimeError("No popups currently open for closing")
-    _CURRENT_DIALOG.dismiss()
+    if isinstance(_CURRENT_DIALOG, MDFileManager):
+        _CURRENT_DIALOG.close()  # Wraps a ModalView
+    else:
+        assert isinstance(_CURRENT_DIALOG, ModalView)
+        _CURRENT_DIALOG.dismiss()
     _CURRENT_DIALOG = None
 
 
