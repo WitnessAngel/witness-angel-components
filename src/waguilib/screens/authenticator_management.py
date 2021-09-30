@@ -74,13 +74,13 @@ class AuthenticatorSelectorScreen(Screen):
         self._folder_chooser = MDFileManager(
             selector="folder",
             exit_manager=lambda x: close_current_dialog(),
-            select_path=lambda x: (self.close_folder_chooser(), self._folder_chooser_select_path(x)),
+            select_path=lambda x: (close_current_dialog(), self._folder_chooser_select_path(x)),
         )
         self._archive_chooser = MDFileManager(
             selector="file",
             ext=["." + self.AUTHENTICATOR_ARCHIVE_FORMAT],
             exit_manager=lambda x: close_current_dialog(),
-            select_path=lambda x: (self.close_archive_chooser(), self._import_authenticator_from_archive(x)),
+            select_path=lambda x: (close_current_dialog(), self._import_authenticator_from_archive(x)),
         )
 
         language_menu_items = [
