@@ -77,12 +77,11 @@ class AuthenticatorCreationScreen(Screen):
 
         self._launch_authenticator_initialization(form_values=form_values)
 
-    def open_dialog(self, text, title, on_close=None):
-        on_close = on_close or self.close_dialog
+    def open_dialog(self, text, title, on_dismiss=None):
         dialog_with_close_button(
             title=title,
             text=text,
-            close_btn_callback=on_close,
+            **({"on_dismiss": on_dismiss} if on_dismiss else {})
         )
 
     def close_dialog(self, obj):
@@ -98,7 +97,7 @@ class AuthenticatorCreationScreen(Screen):
         success = False
 
         try:
-
+      
             Clock.schedule_once(partial(self._do_update_progress_bar, 10))
 
             initialize_authenticator(authenticator_path,
@@ -172,10 +171,10 @@ class AuthenticatorCreationScreen(Screen):
         on_close = self.close_dialog_and_leave
         if success:
             self.open_dialog(tr._("Initialization successfully completed."),
-                             title=tr._("Success"), on_close=on_close)
+                             title=tr._("Success"), on_dismiss=lambda x: self.go_to_home_screen())
         else:
             self.open_dialog(tr._("Operation failed, check logs."),
-                             title=tr._("Failure"), on_close=on_close)
+                             title=tr._("Failure"), on_dismiss=lambda x: self.go_to_home_screen())
 
     def display_help_popup(self):
         help_text = dedent(tr._("""\
