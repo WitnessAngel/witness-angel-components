@@ -7,11 +7,31 @@ from gettext import NullTranslations
 import kivy
 from kivy.lang import Observable
 
+from waguilib.importable_settings import IS_ANDROID
 
-# VERY rough detection of user language, will often not work under Windows but it's OK
-# See https://stackoverflow.com/a/25691701 and win32.GetUserDefaultUILanguage()
-_lang_code, _charset = locale.getlocale()
-DEFAULT_LANGUAGE = "fr" if "fr" in _lang_code.lower() else "en"
+
+def detect_default_language():
+    """Rough language detection on multiple platforms"""
+    lang_code = "en"
+
+    if IS_ANDROID:
+        try:
+            from jnius import autoclass
+            JavaUtilLocale = autoclass('java.util.Locale')
+            java_locale = JavaUtilLocale.getDefault()
+            lang_code = java_locale.language
+            #print("######### JAVA LOCALE DETECTED: %s %s #########" % (java_locale.language, java_locale.country ))
+        except Exception as exc:
+            print("######### JavaUtilLocale exception %r" % exc)  # FIXME use logging
+    else:
+        # VERY rough detection of user language, will often not work under Windows but it's OK
+        # See https://stackoverflow.com/a/25691701 and win32.GetUserDefaultUILanguage()
+        lang_code, _charset = locale.getlocale()
+        #print("######### DEFAULT LOCALE DETECTED: %s %s #########" % (_lang_code, _charset))
+
+    return "fr" if lang_code.strip().lower().startswith("fr") else "en"
+
+DEFAULT_LANGUAGE = detect_default_language()
 
 
 def get_package_translator(language, locale_dir):
