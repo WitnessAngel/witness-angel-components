@@ -53,13 +53,17 @@ _CURRENT_DIALOG = None  # System to avoid nasty bugs with multiple dialogs overw
 
 def register_current_dialog(dialog):
     global _CURRENT_DIALOG
-    if _CURRENT_DIALOG and _CURRENT_DIALOG._window:
+    if has_current_dialog():
         raise RuntimeError("Multiple popups can't be opened at the same time")
     _CURRENT_DIALOG = dialog
 
+def has_current_dialog():
+    global _CURRENT_DIALOG
+    return(_CURRENT_DIALOG and _CURRENT_DIALOG._window)
+
 def close_current_dialog():
     global _CURRENT_DIALOG
-    if not _CURRENT_DIALOG or not _CURRENT_DIALOG._window:
+    if not has_current_dialog():
         raise RuntimeError("No popups currently open for closing")
     _CURRENT_DIALOG.dismiss()
     _CURRENT_DIALOG = None
