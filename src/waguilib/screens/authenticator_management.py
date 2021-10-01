@@ -92,7 +92,7 @@ class AuthenticatorSelectorScreen(Screen):
             } for (lang, lang_code) in [("English", "en"), ("French", "fr")]
         ]
         self._language_selector_menu = MDDropdownMenu(
-            header_cls=Factory.LanguageMenuHeader(),
+            #header_cls=Factory.LanguageMenuHeader(),
             #caller=self.screen.ids.button,
             items=language_menu_items,
             width_mult=2,
