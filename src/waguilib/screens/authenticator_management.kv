@@ -4,13 +4,14 @@
 
 <LanguageMenuHeader@MDBoxLayout>:
     orientation: "vertical"
-    adaptive_size: True
+    adaptive_width: True
     padding: "10dp"
+    height: dp(25)
+    size_hint_y: None
     MDLabel:
         text: tr._("Language")
         font_style: "H6"
-        adaptive_size: True
-        pos_hint: {"center_y": .5}
+        adaptive_width: True
 
 
 <ThinTwoLineAvatarIconListItem@TwoLineAvatarIconListItem>
@@ -180,6 +181,8 @@
                     size_hint_y: None
                     height: self.minimum_height
                     disabled: root.authenticator_status is not False
+                    spacing: 10
+                    padding: [10, 0]
 
                     MDRectangleFlatIconButton:
                         anchor_x: "right"
@@ -202,6 +205,8 @@
                     size_hint_y: None
                     height: self.minimum_height
                     disabled: root.authenticator_status is not True
+                    spacing: 10
+                    padding: [10, 10]
 
                     MDRectangleFlatIconButton:
                         icon: "database-export-outline"

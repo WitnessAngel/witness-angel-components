@@ -20,7 +20,6 @@
             spacing: [20, 20]
             cols: 1
 
-
             MDLabel:
                 text: tr._("Target:") + " " + strip_external_app_prefix(root._selected_authenticator_path)
                 halign: "center"
@@ -48,15 +47,20 @@
             VSeparator:
 
             RelativeLayout :
-                height: dp(35)
+                height: dp(50)
 
                 MDRectangleFlatButton:
                     id: button_initialize
                     text: tr._("Initialize")
-                    size_hint: .4, 1
+                    size_hint: .5, 1
+                    # For some reason, setting "height" here causes infinite recursions in layout
+                    size_hint_min_y: dp(50)
+                    size_hint_max_y: dp(50)
                     pos_hint: {'x': .3}
                     on_release:
                         root.request_authenticator_initialization()
+
+            Widget:
 
             AnchorLayout:
                 size_hint: 1, 1
