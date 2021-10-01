@@ -16,7 +16,8 @@ from kivymd.uix.list import IconLeftWidget
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.screen import Screen
 
-from waguilib.widgets.popups import dialog_with_close_button, register_current_dialog, close_current_dialog
+from waguilib.widgets.popups import dialog_with_close_button, register_current_dialog, close_current_dialog, \
+    help_text_popup
 from wacryptolib.authentication_device import list_available_authentication_devices, \
     get_authenticator_path_for_authentication_device
 from wacryptolib.authenticator import is_authenticator_initialized, load_authenticator_metadata
@@ -428,8 +429,6 @@ class AuthenticatorSelectorScreen(Screen):
         
         Note that if you destroy an authenticator and all its exported ZIP archives, the WitnessAngel recordings which used it as a trusted third party might not be decryptable anymore (unless they used a shared secret with other trusted third parties).
         """))
-        dialog_with_close_button(
+        help_text_popup(
             title=tr._("Authenticator management page"),
-            text=help_text,
-            full_width=True,
-            )
+            text=help_text,)

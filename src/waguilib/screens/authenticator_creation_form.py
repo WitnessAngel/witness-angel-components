@@ -12,7 +12,7 @@ from kivymd.app import MDApp
 from kivymd.uix.screen import Screen
 
 from waguilib.widgets.popups import dialog_with_close_button, process_method_with_gui_spinner, register_current_dialog, \
-    close_current_dialog
+    close_current_dialog, help_text_popup
 from wacryptolib.authenticator import initialize_authenticator
 from wacryptolib.key_generation import generate_asymmetric_keypair
 from wacryptolib.key_storage import FilesystemKeyStorage
@@ -184,9 +184,8 @@ class AuthenticatorCreationScreen(Screen):
         
         You should keep your passphrase somewhere safe (in a digital password manager, on a paper in a vault...), because if you forget any of its aspects (upper/lower case, accents, spaces...), there is no way to recover it.
         """))
-        dialog_with_close_button(
+        help_text_popup(
             title=tr._("Authenticator creation page"),
-            text=help_text,
-            full_width=True,
-            )
+            text=help_text,)
+
 

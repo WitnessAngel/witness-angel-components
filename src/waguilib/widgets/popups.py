@@ -43,6 +43,7 @@ def dialog_with_close_button(buttons=None, close_btn_label=None, full_width=Fals
     close_btn = MDFlatButton(text=close_btn_label, on_release=close_btn_callback)
     if full_width:
         kwargs["size_hint_x"] = 0.95
+        kwargs["size_hint_y"] = None
     dialog = MDDialog(
                 auto_dismiss=False,  # IMPORTANT, else buggy on Android
                 buttons=buttons + [close_btn] if buttons else [close_btn],
@@ -54,6 +55,15 @@ def dialog_with_close_button(buttons=None, close_btn_label=None, full_width=Fals
         register_current_dialog(dialog)
 
     return dialog
+
+
+def help_text_popup(title, text):  # FIXME rename this
+    text = "[size=13sp]" + text + "[/size]"  # Else it's too big
+    dialog_with_close_button(
+        title=tr._(title),
+        text=text,
+        full_width=True,
+    )
 
 
 _CURRENT_DIALOG = None  # System to avoid nasty bugs with multiple dialogs overwriting each other's variables
