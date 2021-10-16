@@ -119,6 +119,8 @@ class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
     sensor_name = "rtsp_camera"
     record_extension = ".mp4"
 
+    _subprocess = None
+
     def __init__(self,
                  interval_s,
                  tarfile_aggregator,
@@ -209,6 +211,9 @@ class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
         self._launch_and_wait_ffmpeg_process()
 
     def _do_stop_recording(self):
+        if self._subprocess is None:
+            logger.warning("No subprocess to be terminated in RtspCameraSensor stop-recording")
+            return b""  # Init failed previously
         try:
             self._subprocess.stdin.write(b"q")  # FFMPEG command to quit
             self._subprocess.stdin.close()
