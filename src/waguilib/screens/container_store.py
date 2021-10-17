@@ -21,6 +21,7 @@ from kivymd.uix.list import OneLineIconListItem, MDList
 from kivymd.uix.screen import Screen
 from kivymd.uix.snackbar import Snackbar
 
+from waguilib.i18n import tr
 from waguilib.importable_settings import EXTERNAL_DATA_EXPORTS_DIR
 from waguilib.logging.handlers import safe_catch_unhandled_exception
 
