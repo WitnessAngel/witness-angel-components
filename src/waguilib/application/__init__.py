@@ -158,7 +158,7 @@ class WAGuiApp(WaRuntimeSupportMixin, MDApp):  # FIXME WaGui instead?
 
     def switch_to_recording_state(self, is_recording):
         """
-        Might be called as a reaction to the service broadcasting a changed state.
+        Might also be called as a reaction to the service broadcasting a changed state.
          Let it propagate anyway in this case, the service will just ignore the duplicated command.
         """
         self.set_recording_btn_state(disabled=True)
