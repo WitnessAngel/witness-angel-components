@@ -17,7 +17,7 @@ try:
     logging.Logger.manager.root = logging.root
 
     # For now allow EVERYTHING
-    logging.root.setLevel(logging.DEBUG)
+    logging.root.setLevel(logging.INFO)
     logging.disable(0)
 
     # import logging_tree
@@ -61,6 +61,9 @@ try:
         def force_window_focus(*args, **kwargs):
             Window.raise_window()
         Window.bind(on_cursor_enter=force_window_focus)
+
+        from waguilib.widgets.layout_helpers import load_layout_helper_widgets
+        load_layout_helper_widgets()
 
 except Exception as exc:
     print(">>>>>>>> FAILED INITIALIZATION OF WA GUI WINDOW: %r" % exc)
