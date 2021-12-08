@@ -154,6 +154,9 @@ class AuthenticatorCreationScreen(Screen):
 
     def _launch_authenticator_initialization(self, form_values):
         authenticator_path = self._selected_authenticator_path
+
+        if not authenticator_path.is_dir():
+            authenticator_path.mkdir(parents=False)  # Only 1 level of folder can be created here!
         assert authenticator_path and authenticator_path.is_dir(), authenticator_path
 
         self.ids.button_initialize.disabled = True

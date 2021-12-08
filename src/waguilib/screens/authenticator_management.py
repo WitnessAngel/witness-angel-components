@@ -244,7 +244,7 @@ class AuthenticatorSelectorScreen(Screen):
             authenticator_info_text = tr._("Please select an authenticator folder")
             authenticator_status = None
 
-        elif not authenticator_path.exists():
+        elif not authenticator_path.parent.exists():  # Parent folder only is enough!
             authenticator_info_text = tr._("Selected folder is invalid\nPath: %s" % authenticator_path_shortened)
             authenticator_status = None
 
