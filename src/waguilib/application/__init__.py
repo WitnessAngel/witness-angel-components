@@ -176,8 +176,8 @@ class WAGuiApp(WaRuntimeSupportMixin, MDApp):  # FIXME WaGui instead?
         """Ask the service for an update on its recording state."""
         self._unanswered_service_state_requests += 1
         if self._unanswered_service_state_requests > 2:
-            self._unanswered_service_state_requests = -10  # Leave some time for the service to go online
-            logger.info("Launching recorder service")
+            self._unanswered_service_state_requests = -15  # Leave some time for the service to go online
+            logger.info("Launching recorder service from main app")
             self.service_controller.start_service()
         else:
             self.service_controller.broadcast_recording_state()
