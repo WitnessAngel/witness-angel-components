@@ -1,22 +1,38 @@
+#:import tr waguilib.i18n.tr
+
+<ElevatedMDBoxLayout@RectangularElevationBehavior+MDBoxLayout>:
+    elevation: 20  # FIXME CLASS DUPLICATED
+
+
+<LeftCheckbox@ILeftBodyTouch+MDCheckbox>:
+
+
+<AuthenticatorEntry@OneLineAvatarIconListItem>:
+    text: "One-line item with avatar"
+
+    LeftCheckbox:
+        id: selection_checkbox
+
+    #IconRightWidget:
+    #    icon: "minus"
+
 
 <AuthenticationDeviceStoreScreen>:
 
     on_pre_enter: root.list_imported_key_devices()
 
-    canvas.before:
-        Color:
-            rgba: 0.1372, 0.2862, 0.5294, 1
-        Rectangle:
-            pos: self.pos
-            size: self.size
+    #canvas.before:
+    #    Color:
+    #        rgba: 0.1372, 0.2862, 0.5294, 1
+    #    Rectangle:
+    #        pos: self.pos
+    #        size: self.size
 
-    BoxLayout:
+    MDBoxLayout:
         orientation: 'vertical'
-        spacing: 10
-        padding: [0,20]
+        #spacing: 10
 
         MDToolbar:
-            md_bg_color: (0.1372, 0.2862, 0.5294, 1)
             title: "Witness Angel"
             elevation: 10
             left_action_items: [['menu', lambda x: app.navigation_drawer.set_state("toggle")]]
@@ -28,31 +44,50 @@
                     #app.screen_manager.transition.direction = "right"
                     app.screen_manager.current = "MainPage"
 
-        Label:
-            size_hint: None, None
-            size: 350, 40
-            text: 'Key management'
-            halign: "left"
-            theme_text_color: "Custom"
-            text_color: 1, 1, 1, 1
-            font_size: 24
+        ElevatedMDBoxLayout:
+            height: dp(40)
+            size_hint_y: None
+
+            md_bg_color: app.theme_cls.bg_light
+            #line_color: [0, 0, 0, 1]
+
+            MDLabel:
+                text: tr._("Please select authenticators to use for encryption")
+                halign: "left"
+                padding_x: "10dp"
+
+        #MDLabel:
+        #    text: 'Key management'
+        #    halign: "left"
+        #    padding_x: "10dp"
+        #    font_size: "10dp"
 
         ScrollView:
             do_scroll_x: False
             do_scroll_y: True
-            bar_width: 10
-            #bar_color: [1, 0, 1, 1]
+            bar_width: 5
             scroll_type: ["bars", "content"]
+            bar_inactive_color: self.bar_color
 
-            GridLayout:
-                size_hint_y: None
-                id: device_table
-                cols: 2
-                row_default_height: 25
-                row_force_default: True
-                padding: 10
-                spacing: (0, 10)
-                height: self.minimum_height
+            MDList:
+                id: imported_authenticator_list
+
+        #ScrollView:
+        #    do_scroll_x: False
+        #    do_scroll_y: True
+        #    bar_width: 10
+        #    #bar_color: [1, 0, 1, 1]
+        #    scroll_type: ["bars", "content"]
+
+        #    GridLayout:
+        #        size_hint_y: None
+        #        id: device_table
+        #        cols: 2
+        #        row_default_height: 25
+        #        row_force_default: True
+        #        padding: 10
+        #        spacing: (0, 10)
+        #        height: self.minimum_height
 
         AnchorLayout:
             anchor_x: 'center'
@@ -67,8 +102,8 @@
 
                 Button:
                     id: btn
-                    background_color: (51, 23, 186.0, 1)
-                    color: 0.1372, 0.2862, 0.5294, 1
+                    #background_color: (51, 23, 186.0, 1)
+                    #color: 0.1372, 0.2862, 0.5294, 1
                     text: "Import new keys"
                     size_hint: 0.5, 1
                     on_release:
@@ -76,8 +111,8 @@
 
                 Button:
                     id: btn
-                    background_color: (51, 23, 186.0, 1)
-                    color: 0.1372, 0.2862, 0.5294, 1
+                    #background_color: (51, 23, 186.0, 1)
+                    #color: 0.1372, 0.2862, 0.5294, 1
                     text: "Delete keys"
                     size_hint: 0.5, 1
                     on_release:

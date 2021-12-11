@@ -15,20 +15,11 @@
 
     on_pre_enter: root.get_detected_container()
 
-    canvas.before:
-        Color:
-            rgba: 0.1372, 0.2862, 0.5294, 1
-        Rectangle:
-            pos: self.pos
-            size: self.size
-
     BoxLayout:
         orientation: 'vertical'
         spacing: 20
-        padding: [0,20]
 
         MDToolbar:
-            md_bg_color: (0.1372, 0.2862, 0.5294, 1)
             title: "Witness Angel"
             elevation: 10
             left_action_items: [['menu', lambda x: app.navigation_drawer.set_state("toggle")]]
@@ -40,13 +31,13 @@
                     app.screen_manager.current = "MainPage"
                     #app.screen_manager.transition.direction = "right"
 
-        Label:
+        MDLabel:
             size_hint: None, None
             size: 350, 40
             text: 'Container management'
             halign: "right"
-            theme_text_color: "Custom"
-            text_color: 1, 1, 1, 1
+            #theme_text_color: "Custom"
+            #text_color: 1, 1, 1, 1
             font_size: 24
 
         ScrollView:

@@ -4,30 +4,23 @@
 <LauncherWithImagePreviewScreen>:
 
     orientation: "vertical"
-    canvas.before:
-        Color:
-            rgba: 0.1372, 0.2862, 0.5294, 1
-        Rectangle:
-            pos: self.pos
-            size: self.size
+#    canvas.before:
+#        Color:
+#            rgba: 0.1372, 0.2862, 0.5294, 1
+#        Rectangle:
+#            pos: self.pos
+#            size: self.size
 
     BoxLayout:
         orientation: 'vertical'
         spacing: 20
-        padding: [0,20]
 
         MDToolbar:
-            md_bg_color: (0.1372, 0.2862, 0.5294, 1)
+            #md_bg_color: (0.1372, 0.2862, 0.5294, 1)
             title: "Witness Angel Ward - NVR"
             elevation: 5
             left_action_items: [['menu', lambda x: app.navigation_drawer.set_state("toggle")]]
-
-            ActionButton:
-                text: 'Settings'
-
-                on_release:
-                    app.open_settings()
-
+            right_action_items: [['cog', lambda x: app.open_settings()]]
 
         ToggleButton:
             id: recording_button

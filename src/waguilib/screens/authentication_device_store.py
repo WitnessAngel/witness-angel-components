@@ -1,8 +1,11 @@
 import logging
+import uuid
+
 import shutil
 import functools
 from pathlib import Path
 
+from kivy.factory import Factory
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty
 from kivy.uix import boxlayout
@@ -37,7 +40,7 @@ class AuthenticationDeviceStoreScreen(Screen):
     filesystem_key_storage_pool = ObjectProperty(None)
 
     def __init__(self, *args, **kwargs):
-        self.selected_authentication_device_uids = []
+        self.selected_authentication_device_uids = []  # List of STRINGS
         self.register_event_type('on_selected_authentication_devices_changed')
         super().__init__(*args, **kwargs)
 
@@ -111,7 +114,7 @@ class AuthenticationDeviceStoreScreen(Screen):
         print(">> we refresh auth devices panel")
         Keys_page_ids = self.ids  # FIXME rename this
 
-        Keys_page_ids.device_table.clear_widgets()  # FIXME naming
+        Keys_page_ids.imported_authenticator_list.clear_widgets()  # FIXME naming
 
         key_storage_metadata = self.filesystem_key_storage_pool.list_imported_key_storage_metadata()
 
@@ -119,34 +122,44 @@ class AuthenticationDeviceStoreScreen(Screen):
             self.display_message_no_device_found()
             return
 
-        self.chbx_lbls = {}  # FIXME: lbls ?
-        self.btn_lbls = {}  # FIXME: lbls ?
+        #self.chbx_lbls = {}  # FIXME: lbls ?
+        #self.btn_lbls = {}  # FIXME: lbls ?
 
         for (index, (device_uid, metadata)) in enumerate(sorted(key_storage_metadata.items()), start=1):
             uuid_suffix = str(device_uid).split("-")[-1]
             #print("COMPARING", str(device_uid), self.selected_authentication_device_uids)
-            my_check_box = CheckBox(
-                active=(str(device_uid) in self.selected_authentication_device_uids),
-                size_hint=(0.15, None),
-                on_release=self.check_box_authentication_device_checked,
-                height=40,
-            )
-            my_check_btn = Button(
-                text="Key n°%s, User %s, Uid %s" % (index, metadata["user"], uuid_suffix),
-                size_hint=(0.85, None),
-                background_color=(0, 1, 1, 0.1),
-                on_release=functools.partial(self.info_keys_stored, device_uid=device_uid, user=metadata["user"]),
-                height=40,
-            )
-            self.chbx_lbls[my_check_box] = str(device_uid)
-            self.btn_lbls[my_check_btn] = str(device_uid)
+            # my_check_box = CheckBox(
+            #     active=(str(device_uid) in self.selected_authentication_device_uids),
+            #     size_hint=(0.15, None),
+            #     on_release=self.check_box_authentication_device_checked,
+            #     height=40,
+            # )
+            # my_check_btn = Button(
+            #     text="Key n°%s, User %s, Uid %s" % (index, metadata["user"], uuid_suffix),
+            #     size_hint=(0.85, None),
+            #     #background_color=(0, 1, 1, 0.1),
+            #     on_release=functools.partial(self.info_keys_stored, device_uid=device_uid, user=metadata["user"]),
+            #     height=40,
+            # )
+            # self.chbx_lbls[my_check_box] = str(device_uid)
+            # self.btn_lbls[my_check_btn] = str(device_uid)
            # device_row = BoxLayout(
             #    orientation="horizontal",
                 #pos_hint={"center": 1, "top": 1},
                 #padding=[20, 0],
            #)
-            Keys_page_ids.device_table.add_widget(my_check_box)
-            Keys_page_ids.device_table.add_widget(my_check_btn)
+            device_uid_str = str(device_uid)
+            authenticator_label = "Key n°%s, User %s, Uid %s" % (index, metadata["user"], uuid_suffix)
+            authenticator_entry = Factory.AuthenticatorEntry(text=authenticator_label)  # FIXME RENAME THIS
+            selection_checkbox = authenticator_entry.ids.selection_checkbox
+            print(">>>>>>>>selection_checkbox", selection_checkbox)
+            selection_checkbox.active = device_uid_str in self.selected_authentication_device_uids
+            def selection_callback(widget, value, device_uid_str=device_uid_str):
+                self.check_box_authentication_device_checked(device_uid_str=device_uid_str, is_selected=value)
+            selection_checkbox.bind(active=selection_callback)
+
+            Keys_page_ids.imported_authenticator_list.add_widget(authenticator_entry)
+            #Keys_page_ids.device_table.add_widget(my_check_btn)
             #Keys_page_ids.device_table.add_widget(device_row)
 
         """
@@ -198,14 +211,15 @@ class AuthenticationDeviceStoreScreen(Screen):
         Display_layout.add_widget(devices_display)
         keys_page_ids.device_table.add_widget(Display_layout)
 
-    def check_box_authentication_device_checked(self, check_box_checked):
+    def check_box_authentication_device_checked(self, device_uid_str: str, is_selected: bool):
         """
         Display the device checked
         """
-        if self.chbx_lbls[check_box_checked] in self.selected_authentication_device_uids:
-            self.selected_authentication_device_uids.remove(self.chbx_lbls[check_box_checked])
-        else:
-            self.selected_authentication_device_uids.append(self.chbx_lbls[check_box_checked])
+        print("@@@@check_box_authentication_device_checked@@@", locals())
+        if not is_selected and device_uid_str in self.selected_authentication_device_uids:
+            self.selected_authentication_device_uids.remove(device_uid_str)
+        elif is_selected and device_uid_str not in self.selected_authentication_device_uids:
+            self.selected_authentication_device_uids.append(device_uid_str)
         self.dispatch('on_selected_authentication_devices_changed', self.selected_authentication_device_uids)
         print("self.selected_authentication_device_uids", self.selected_authentication_device_uids)
 
