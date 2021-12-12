@@ -19,6 +19,8 @@ from kivy.uix.button import Button
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.screenmanager import ScreenManager
 from kivy.uix.textinput import TextInput
+from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.label import MDLabel
 from kivymd.uix.textfield import MDTextField
 from kivymd.app import MDApp
 from kivymd.theming import ThemableBehavior
@@ -27,6 +29,7 @@ from kivymd.uix.dialog import MDDialog
 from kivymd.uix.list import OneLineIconListItem, MDList
 from kivymd.uix.screen import Screen
 from kivymd.uix.snackbar import Snackbar
+from waguilib.i18n import tr
 
 from wacryptolib.authentication_device import list_available_authentication_devices, _get_key_storage_folder_path
 from wacryptolib.exceptions import KeyStorageAlreadyExists
@@ -62,26 +65,34 @@ class AuthenticationDeviceStoreScreen(Screen):
         print("DETECTED AUTH DEVICES", authentication_devices)
 
         if not authentication_devices:
-            msg = "No connected authentication devices found"
+            msg = tr._("No connected authentication devices found")
         else:
+
             authentication_devices_initialized = [x for x in authentication_devices if x["is_initialized"]]
 
             if not authentication_devices_initialized:
-                msg = "No initialized authentication devices found"
+                msg = tr._("No initialized authentication devices found")
             else:
+                device_uids = []
+
                 for authentication_device in authentication_devices_initialized:
-                    #print(">>>>>>>>>> importing,", authentication_device)
+                    print(">>>>>>>>>> importing,", authentication_device)
                     key_storage_folder_path = _get_key_storage_folder_path(authentication_device)  # FIXME make it public?
                     try:
                         self.filesystem_key_storage_pool.import_key_storage_from_folder(key_storage_folder_path)
                     except KeyStorageAlreadyExists:
-                        pass  # We tried anyway, since some "update" mevhanics might be setup one day
-                msg = "%d authentication device(s) updated" % len(authentication_devices_initialized)
+                        pass  # We tried anyway, since some "update" mechanics might be setup one day
+                    device_uids.append(authentication_device["metadata"]["device_uid"])
+
+                msg = "%d authentication device(s) updated" % len(device_uids)
+
+                # Autoselect freshly imported keys
+                self._change_authenticator_selection_status(device_uids=device_uids, is_selected=True)
 
         display_info_toast(msg)
 
         # update the display of authentication_device saved in the local folder .keys_storage_ward
-        self.list_imported_key_devices()
+        self.list_imported_key_devices(display_toast=False)
 
     def delete_keys(self):
 
@@ -101,10 +112,10 @@ class AuthenticationDeviceStoreScreen(Screen):
 
         display_info_toast(msg)
 
-        self.list_imported_key_devices()
+        self.list_imported_key_devices(display_toast=False)
 
 
-    def list_imported_key_devices(self):
+    def list_imported_key_devices(self, display_toast=True):
         """
         loop through the KEYS_ROOT / files, and read their metadata.json,
         to display in the interface their USER and the start of their UUID
@@ -148,20 +159,21 @@ class AuthenticationDeviceStoreScreen(Screen):
                 #pos_hint={"center": 1, "top": 1},
                 #padding=[20, 0],
            #)
-            device_uid_str = str(device_uid)
-            authenticator_label = "Key n°%s, User %s, Uid %s" % (index, metadata["user"], uuid_suffix)
+            authenticator_label = tr._("Key n°%s, User %s, Uid %s") % (index, metadata["user"], uuid_suffix)
             authenticator_entry = Factory.AuthenticatorEntry(text=authenticator_label)  # FIXME RENAME THIS
             selection_checkbox = authenticator_entry.ids.selection_checkbox
             print(">>>>>>>>selection_checkbox", selection_checkbox)
-            selection_checkbox.active = device_uid_str in self.selected_authentication_device_uids
-            def selection_callback(widget, value, device_uid_str=device_uid_str):
-                self.check_box_authentication_device_checked(device_uid_str=device_uid_str, is_selected=value)
+            selection_checkbox.active = str(device_uid) in self.selected_authentication_device_uids
+            def selection_callback(widget, value, device_uid=device_uid):  # Force device_uid save here, else scope bug
+                self.check_box_authentication_device_checked(device_uid=device_uid, is_selected=value)
             selection_checkbox.bind(active=selection_callback)
 
             Keys_page_ids.imported_authenticator_list.add_widget(authenticator_entry)
             #Keys_page_ids.device_table.add_widget(my_check_btn)
             #Keys_page_ids.device_table.add_widget(device_row)
 
+        if display_toast:
+            display_info_toast(tr._("Refreshed imported authenticators"))
         """
                 file_metadata = Path(dir_key_sorage).joinpath(".metadata.json")
                 if file_metadata.exists():
@@ -200,26 +212,28 @@ class AuthenticationDeviceStoreScreen(Screen):
 
     def display_message_no_device_found(self):
         keys_page_ids = self.ids
-        devices_display = Button(
+        devices_display = MDLabel(
             text="No imported autentication device found ",
-            background_color=(1, 0, 0, 0.01),
+            #background_color=(1, 0, 0, 0.01),
+            halign="center",
             font_size="20sp",
-            color=[0, 1, 0, 1],
+            #color=[0, 1, 0, 1],
         )
-        keys_page_ids.device_table.clear_widgets()
-        Display_layout = BoxLayout(orientation="horizontal", padding=[140, 0])
+        keys_page_ids.imported_authenticator_list.clear_widgets()
+        Display_layout = MDBoxLayout(orientation="horizontal", padding=[140, 0])
         Display_layout.add_widget(devices_display)
-        keys_page_ids.device_table.add_widget(Display_layout)
+        keys_page_ids.imported_authenticator_list.add_widget(Display_layout)
 
-    def check_box_authentication_device_checked(self, device_uid_str: str, is_selected: bool):
-        """
-        Display the device checked
-        """
-        print("@@@@check_box_authentication_device_checked@@@", locals())
-        if not is_selected and device_uid_str in self.selected_authentication_device_uids:
-            self.selected_authentication_device_uids.remove(device_uid_str)
-        elif is_selected and device_uid_str not in self.selected_authentication_device_uids:
-            self.selected_authentication_device_uids.append(device_uid_str)
+    def check_box_authentication_device_checked(self, device_uid: uuid.UUID, is_selected: bool):
+        self._change_authenticator_selection_status(device_uids=[device_uid], is_selected=is_selected,)
+
+    def _change_authenticator_selection_status(self, device_uids: list, is_selected: bool):
+        for device_uid in device_uids:
+            device_uid_str = str(device_uid)
+            if not is_selected and device_uid_str in self.selected_authentication_device_uids:
+                self.selected_authentication_device_uids.remove(device_uid_str)
+            elif is_selected and device_uid_str not in self.selected_authentication_device_uids:
+                self.selected_authentication_device_uids.append(device_uid_str)
         self.dispatch('on_selected_authentication_devices_changed', self.selected_authentication_device_uids)
         print("self.selected_authentication_device_uids", self.selected_authentication_device_uids)
 
@@ -251,7 +265,7 @@ class AuthenticationDeviceStoreScreen(Screen):
 
     def open_dialog_display_keys_in_authentication_device(self, message, user):
         self.dialog = MDDialog(
-            title="Imported authentication device of user %s" % user,
+            title=tr._("Imported authentication device of user %s") % user,
             text=message,
             size_hint=(0.8, 1),
             buttons=[MDFlatButton(text="Close", on_release=self.close_dialog)],

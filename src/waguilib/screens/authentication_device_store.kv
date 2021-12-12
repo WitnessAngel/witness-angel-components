@@ -19,7 +19,10 @@
 
 <AuthenticationDeviceStoreScreen>:
 
-    on_pre_enter: root.list_imported_key_devices()
+    on_pre_enter:
+        root.list_imported_key_devices()
+        keyguardian_import_btn.size_hint_x = 0.5
+        keyguardian_delete_btn.size_hint_x = 0.5
 
     #canvas.before:
     #    Color:
@@ -28,92 +31,92 @@
     #        pos: self.pos
     #        size: self.size
 
-    MDBoxLayout:
-        orientation: 'vertical'
-        #spacing: 10
+    ScrollView:
+        orientation: "vertical"
 
-        MDToolbar:
-            title: "Witness Angel"
-            elevation: 10
-            left_action_items: [['menu', lambda x: app.navigation_drawer.set_state("toggle")]]
+        MDGridLayout:
+            cols: 1
 
-            ActionButton:
-                text: 'Home'
+            MDToolbar:
+                title: "Witness Angel"
+                elevation: 10
+                left_action_items: [['menu', lambda x: app.navigation_drawer.set_state("toggle")]]
+                right_action_items: [["refresh", lambda x: root.list_imported_key_devices(), tr._("Refresh")], ["home", lambda x: app.get_back_to_home_screen(), tr._("Back to home")],]
 
-                on_release:
-                    #app.screen_manager.transition.direction = "right"
-                    app.screen_manager.current = "MainPage"
+            ElevatedMDBoxLayout:
+                height: dp(40)
+                size_hint_y: None
 
-        ElevatedMDBoxLayout:
-            height: dp(40)
-            size_hint_y: None
+                md_bg_color: app.theme_cls.bg_light
+                #line_color: [0, 0, 0, 1]
 
-            md_bg_color: app.theme_cls.bg_light
-            #line_color: [0, 0, 0, 1]
+                MDLabel:
+                    text: tr._("Please select authenticators to use for encryption")
+                    halign: "left"
+                    padding_x: "10dp"
 
-            MDLabel:
-                text: tr._("Please select authenticators to use for encryption")
-                halign: "left"
-                padding_x: "10dp"
+            #MDLabel:
+            #    text: 'Key management'
+            #    halign: "left"
+            #    padding_x: "10dp"
+            #    font_size: "10dp"
 
-        #MDLabel:
-        #    text: 'Key management'
-        #    halign: "left"
-        #    padding_x: "10dp"
-        #    font_size: "10dp"
+            ScrollView:
+                do_scroll_x: False
+                do_scroll_y: True
+                bar_width: 5
+                scroll_type: ["bars", "content"]
+                bar_inactive_color: self.bar_color
+                #size_hint_y: 0.5
 
-        ScrollView:
-            do_scroll_x: False
-            do_scroll_y: True
-            bar_width: 5
-            scroll_type: ["bars", "content"]
-            bar_inactive_color: self.bar_color
+                MDList:
+                    id: imported_authenticator_list
 
-            MDList:
-                id: imported_authenticator_list
+            #ScrollView:
+            #    do_scroll_x: False
+            #    do_scroll_y: True
+            #    bar_width: 10
+            #    #bar_color: [1, 0, 1, 1]
+            #    scroll_type: ["bars", "content"]
 
-        #ScrollView:
-        #    do_scroll_x: False
-        #    do_scroll_y: True
-        #    bar_width: 10
-        #    #bar_color: [1, 0, 1, 1]
-        #    scroll_type: ["bars", "content"]
+            #    GridLayout:
+            #        size_hint_y: None
+            #        id: device_table
+            #        cols: 2
+            #        row_default_height: 25
+            #        row_force_default: True
+            #        padding: 10
+            #        spacing: (0, 10)
+            #        height: self.minimum_height
 
-        #    GridLayout:
-        #        size_hint_y: None
-        #        id: device_table
-        #        cols: 2
-        #        row_default_height: 25
-        #        row_force_default: True
-        #        padding: 10
-        #        spacing: (0, 10)
-        #        height: self.minimum_height
 
-        AnchorLayout:
-            anchor_x: 'center'
-            anchor_y: 'bottom'
-            padding: [20, 20, 20, 20]
-            height: 80
-            size_hint_y: None
-            BoxLayout:
-                orientation: 'horizontal'
+            MDGridLayout:
+                id: authenticator_actions_modify
+                cols: 2
+                size_hint_x: 1
+                size_hint_y: None
+                height: self.minimum_height
                 spacing: 10
-                #padding: [0,20]
+                padding: [10, 10]
 
-                MDRectangleFlatButton:
-                    id: btn
+                MDRectangleFlatIconButton:
+                    id: keyguardian_import_btn
+                    icon: "database-export-outline"
                     #background_color: (51, 23, 186.0, 1)
                     #color: 0.1372, 0.2862, 0.5294, 1
                     text: "Import new keys"
-                    size_hint: 0.5, 1
-                    on_release:
+                    #size_hint_x: 0.5
+                    #size_hint_y: None
+                    on_press:
                         root.import_keys()
 
-                MDRectangleFlatButton:
-                    id: btn
+                MDRectangleFlatIconButton:
+                    id: keyguardian_delete_btn
+                    icon: "database-export-outline"
                     #background_color: (51, 23, 186.0, 1)
                     #color: 0.1372, 0.2862, 0.5294, 1
                     text: "Delete keys"
-                    size_hint: 0.5, 1
-                    on_release:
+                    #size_hint_x: 0.5
+                    #size_hint_y: None
+                    on_press:
                         root.delete_keys()
