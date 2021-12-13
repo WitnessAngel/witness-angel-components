@@ -134,11 +134,13 @@
                     icon: "account-key-outline"
                     text: tr._("Initialize")
                     on_press: root.manager.current = "authenticator_creation_screen"
+                    size_hint_x: 1  # HACK
 
                 WAOperationButton:
                     icon: "database-import-outline"
                     text: tr._("Import")
                     on_press: root.archive_chooser_open()
+                    size_hint_x: 1  # HACK
 
             WAButtonsGridLayout:
                 id: authenticator_actions_modify
@@ -149,13 +151,16 @@
                     icon: "database-export-outline"
                     text: tr._("Export")
                     on_press: root.show_authenticator_export_confirmation_dialog()
+                    size_hint_x: 1  # HACK
 
                 WAOperationButton:
                     icon: "crosshairs-question"
                     text: tr._("Check")
                     on_press: root.show_checkup_dialog()
+                    size_hint_x: 1  # HACK
 
                 WAOperationButton:
                     icon: "delete-alert-outline"
                     text: tr._("Destroy")
                     on_press: root.show_authenticator_destroy_confirmation_dialog()
+                    size_hint_x: 1  # HACK

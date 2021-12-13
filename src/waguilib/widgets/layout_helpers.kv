@@ -13,6 +13,7 @@
 
 # Main layout of each view, to place both fixed-height and relative-height components
 <WAVerticalPanel@MDGridLayout>:
+    size_hint_x: 1
     cols: 1
 
 # Top toolbar of each Screen
@@ -29,7 +30,7 @@
 # Bottom panel with 2 columns of action buttons
 <WAButtonsGridLayout@MDGridLayout>:
     cols: 2
-    size_hint_x: 1
+    size_hint_x: 3
     size_hint_y: None
     height: self.minimum_height
     spacing: 10
@@ -37,8 +38,9 @@
 
 # Buttons for important actions like import/export/delete etc.
 <WAOperationButton@MDRectangleFlatIconButton>:
-    halign: "center"
-    size_hint_x: 1  # Beware, can create buggy "Clock iterations" if not on current Screen
+    # The doc says "You cannot use the ``size_hint_x`` parameter for `KivyMD` buttons"
+    # But actually we can, but only at final level of KV components
+    # But beware, this can create buggy "Clock iterations" if not on current Screen
 
 
 # Label widgets
