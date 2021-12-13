@@ -13,85 +13,76 @@
 
 <ContainerStoreScreen>:
 
-    on_pre_enter: root.get_detected_container()
+    on_pre_enter: root.get_detected_container()  # FIXME rename this!!!
 
-    BoxLayout:
-        orientation: 'vertical'
-        spacing: 20
+    WAMainVerticalScrollView:
 
-        WAToolbar:
-            title: "Witness Angel"
-            left_action_items: [['menu', lambda x: app.navigation_drawer.set_state("toggle")]]
+        WAVerticalPanel:
 
-            ActionButton:
-                text: 'Home'
+            WAToolbar:
+                title: "Witness Angel"
+                left_action_items: [['menu', lambda x: app.navigation_drawer.set_state("toggle")]]
+                right_action_items: [["refresh", lambda x: root.get_detected_container(), tr._("Refresh")], ["home", lambda x: app.get_back_to_home_screen(), tr._("Back to home")],]
 
-                on_release:
-                    app.screen_manager.current = "MainPage"
-                    #app.screen_manager.transition.direction = "right"
+            WAElevatedBoxLayout:
 
-        MDLabel:
-            size_hint: None, None
-            size: 350, 40
-            text: 'Container management'
-            halign: "right"
-            #theme_text_color: "Custom"
-            #text_color: 1, 1, 1, 1
-            font_size: 24
+                MDLabel:
+                    text: tr._("Container management page")
+                    padding_x: "10dp"
 
-        WAVerticalScrollView:
+            WAVerticalScrollView:
 
-            GridLayout:
+                GridLayout:
+                    size_hint_y: None
+                    id: container_table
+                    cols: 2
+                    row_default_height: 25
+                    row_force_default: True
+                    padding: 10
+                    spacing: (0, 10)
+                    height: self.minimum_height
+
+            AnchorLayout:
+                anchor_x: 'center'
+                anchor_y: 'bottom'
+                padding: [20, 60, 20, 0]
+                height: 50
                 size_hint_y: None
-                id: container_table
-                cols: 2
-                row_default_height: 25
-                row_force_default: True
-                padding: 10
-                spacing: (0, 10)
-                height: self.minimum_height
 
-        AnchorLayout:
-            anchor_x: 'center'
-            anchor_y: 'bottom'
-            padding: [20, 60, 20, 0]
-            height: 50
-            size_hint_y: None
+                BoxLayout:
 
-            BoxLayout:
+                    Button:
+                        id: refresh
+                        background_color: (51, 23, 186.0, 1)
+                        color: 0.1372, 0.2862, 0.5294, 1
+                        text: "Refresh"
+                        #size: 200, 50
+                        size_hint: 0.3, None
+                        disabled: False
+                        height: 30
+                        on_release:
+                            root.get_detected_container()
 
-                Button:
-                    id: refresh
-                    background_color: (51, 23, 186.0, 1)
-                    color: 0.1372, 0.2862, 0.5294, 1
-                    text: "Refresh"
-                    #size: 200, 50
-                    size_hint: 0.3, None
-                    disabled: False
-                    height: 30
-                    on_release:
-                        root.get_detected_container()
+                    Button:
+                        id: delete
+                        background_color: (51, 23, 186.0, 1)
+                        color: 0.1372, 0.2862, 0.5294, 1
+                        text: "Delete"
+                        #size: 200, 50
+                        size_hint: 0.3, None
+                        disabled: False
+                        height: 30
+                        on_release:
+                            root.open_dialog_delete_container()
 
-                Button:
-                    id: delete
-                    background_color: (51, 23, 186.0, 1)
-                    color: 0.1372, 0.2862, 0.5294, 1
-                    text: "Delete"
-                    #size: 200, 50
-                    size_hint: 0.3, None
-                    disabled: False
-                    height: 30
-                    on_release:
-                        root.open_dialog_delete_container()
-
-                Button:
-                    id: decipher
-                    background_color: (51, 23, 186.0, 1)
-                    color: 0.1372, 0.2862, 0.5294, 1
-                    text: "Decrypt"
-                    #size: 200, 50
-                    size_hint: 0.3, None
-                    disabled: False
-                    height: 30
-                    on_release:
-                        root.open_dialog_decipher_container()
+                    Button:
+                        id: decipher
+                        background_color: (51, 23, 186.0, 1)
+                        color: 0.1372, 0.2862, 0.5294, 1
+                        text: "Decrypt"
+                        #size: 200, 50
+                        size_hint: 0.3, None
+                        disabled: False
+                        height: 30
+                        on_release:
+                            root.open_dialog_decipher_container()
