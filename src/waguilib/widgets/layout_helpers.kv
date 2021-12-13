@@ -1,0 +1,90 @@
+
+
+<WAMainVerticalScrollView@ScrollView>:
+    do_scroll_x: False
+    do_scroll_y: True
+    bar_width: 5
+    scroll_type: ["bars", "content"]
+
+
+<WAVerticalScrollView@WAMainVerticalScrollView>:
+    bar_inactive_color: self.bar_color
+
+
+# Main layout of each view, to place both fixed-height and relative-height components
+<WAVerticalPanel@MDGridLayout>:
+    cols: 1
+
+# Top toolbar of each Screen
+<WAToolbar@MDToolbar>:
+    elevation: 10
+
+# Some kind of explanatory title on top of each view
+<WAElevatedBoxLayout@RectangularElevationBehavior+MDBoxLayout>:
+    elevation: 20
+    height: dp(40)
+    size_hint_y: None
+    md_bg_color: app.theme_cls.bg_light
+
+# Bottom panel with 2 columns of action buttons
+<WAButtonsGridLayout@MDGridLayout>:
+    cols: 2
+    size_hint_x: 1
+    size_hint_y: None
+    height: self.minimum_height
+    spacing: 10
+    padding: [10, 0]
+
+# Buttons for important actions like import/export/delete etc.
+<WAOperationButton@MDRectangleFlatIconButton>:
+    halign: "center"
+    size_hint_x: 1  # Beware, can create buggy "Clock iterations" if not on current Screen
+
+
+# Label widgets
+
+<-WASelectableLabel@TextInput>:
+    size_hint: 1, None
+    height: max((len(self._lines)+1) * self.line_height, self.parent.height)
+    padding: [10,10]
+    halign: "left"
+
+    readonly: True
+    # Modified from kivy/data/style.kv
+    canvas.before:
+        # Clear (can be used to remove legacy canvas instructions)
+        Color:
+            rgba: self.background_color
+        Rectangle:
+            pos: self.pos
+            size: self.size
+        Color:
+            rgba:
+                (self.cursor_color
+                if self.focus and not self._cursor_blink
+                else (0, 0, 0, 0))
+        Rectangle:
+            pos: self._cursor_visual_pos
+            size: root.cursor_width, -self._cursor_visual_height
+        Color:
+            rgba: self.disabled_foreground_color if self.disabled else (self.hint_text_color if not self.text else self.foreground_color)
+
+
+# Separator helpers
+
+<Separator@Widget>:
+    canvas:
+        Color:
+            rgba: 1, 1, 1, 0
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<VSeparator@Separator>:
+    size_hint_y: None
+    height: 20
+
+<HSeparator@Separator>:
+    size_hint_x: None
+    width: 20
+

@@ -33,13 +33,13 @@
         MDGridLayout:
             cols: 1
 
-            MDToolbar:
+            WAToolbar:
                 title: "Witness Angel"
-                elevation: 10
+
                 left_action_items: [['menu', lambda x: app.navigation_drawer.set_state("toggle")]]
                 right_action_items: [["refresh", lambda x: root.list_imported_key_devices(), tr._("Refresh")], ["home", lambda x: app.get_back_to_home_screen(), tr._("Back to home")],]
 
-            WAElevatedMDBoxLayout:
+            WAElevatedBoxLayout:
 
                 MDLabel:
                     text: tr._("Please select authenticators to use for encryption")
@@ -70,33 +70,17 @@
             #        height: self.minimum_height
 
 
-            MDGridLayout:
+            WAButtonsGridLayout:
                 id: authenticator_actions_modify
-                cols: 2
-                size_hint_x: 1
-                size_hint_y: None
-                height: self.minimum_height
-                spacing: 10
-                padding: [10, 10]
 
-                MDRectangleFlatIconButton:
+                WAOperationButton:
                     id: keyguardian_import_btn
                     icon: "database-export-outline"
-                    #background_color: (51, 23, 186.0, 1)
-                    #color: 0.1372, 0.2862, 0.5294, 1
                     text: "Import new keys"
-                    #size_hint_x: 0.5
-                    #size_hint_y: None
-                    on_press:
-                        root.import_keys()
+                    on_press: root.import_keys()
 
                 MDRectangleFlatIconButton:
                     id: keyguardian_delete_btn
                     icon: "database-export-outline"
-                    #background_color: (51, 23, 186.0, 1)
-                    #color: 0.1372, 0.2862, 0.5294, 1
                     text: "Delete keys"
-                    #size_hint_x: 0.5
-                    #size_hint_y: None
-                    on_press:
-                        root.delete_keys()
+                    on_press: root.delete_keys()
