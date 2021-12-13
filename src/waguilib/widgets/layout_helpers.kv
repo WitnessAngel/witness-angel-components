@@ -1,3 +1,7 @@
+# BEWARE, force-import necessary KivyMD classes here so that their styles are well applied BEFORE our!
+#: import OneLineAvatarIconListItem kivymd.uix.list.OneLineAvatarIconListItem
+#: import MDRectangleFlatIconButton kivymd.uix.button.MDRectangleFlatIconButton
+
 
 ## Structure of a Screen ##
 
@@ -40,8 +44,8 @@
 # Buttons for important actions like import/export/delete etc.
 <WAOperationButton@MDRectangleFlatIconButton>:
     # The doc says "You cannot use the ``size_hint_x`` parameter for `KivyMD` buttons"
-    # But actually we can, but only at final level of KV components
-    # But beware, this can create buggy "Clock iterations" if not on current Screen
+    # Actually we can, but beware, this can create buggy "Clock iterations" if not on current Screen
+    # size_hint_x: 1  # Set it at last moment later, when needed
 
 
 ## List items ##
@@ -50,13 +54,6 @@
 
 <WASelectableListItemEntry@OneLineAvatarIconListItem>:
     text: ""
-
-    BoxLayout:  # Copied from kivymd\uix\list.py, since for some reason it's overridden by this class...
-        id: _left_container
-        size_hint: None, None
-        x: root.x + dp(16)
-        y: root.y + root.height/2 - self.height/2
-        size: dp(48), dp(48)
 
     WAListItemLeftCheckbox:
         id: selection_checkbox
