@@ -33,7 +33,7 @@ from waguilib.i18n import tr
 
 from wacryptolib.authentication_device import list_available_authentication_devices, _get_key_storage_folder_path
 from wacryptolib.exceptions import KeyStorageAlreadyExists
-from waguilib.widgets.popups import display_info_toast
+from waguilib.widgets.popups import display_info_toast, close_current_dialog, dialog_with_close_button
 
 Builder.load_file(str(Path(__file__).parent / 'authentication_device_store.kv'))
 
@@ -96,6 +96,8 @@ class AuthenticationDeviceStoreScreen(Screen):
 
     def delete_keys(self):
 
+        # FIXME add confirmation dialog!!
+
         device_uids = self.selected_authentication_device_uids
 
         if not device_uids:
@@ -109,6 +111,8 @@ class AuthenticationDeviceStoreScreen(Screen):
                 except OSError as exc:
                     logging.error("Failed deletion of imported authentication device %s: %r", device_uid, exc)
             msg = "Selected imported authentication devices were deleted"
+
+            self._change_authenticator_selection_status(device_uids=device_uids, is_selected=False)  # Update selection list
 
         display_info_toast(msg)
 
@@ -126,6 +130,7 @@ class AuthenticationDeviceStoreScreen(Screen):
         Keys_page_ids = self.ids  # FIXME rename this
 
         Keys_page_ids.imported_authenticator_list.clear_widgets()  # FIXME naming
+        Keys_page_ids.imported_authenticator_list.do_layout()  # Prevents bug with "not found" message position
 
         key_storage_metadata = self.filesystem_key_storage_pool.list_imported_key_storage_metadata()
 
@@ -275,13 +280,9 @@ class AuthenticationDeviceStoreScreen(Screen):
         self.open_dialog_display_keys_in_authentication_device(message, user=user)
 
     def open_dialog_display_keys_in_authentication_device(self, message, user):
-        self.dialog = MDDialog(
+        dialog_with_close_button(
+            close_btn_label=tr._("Close"),
             title=tr._("Imported authentication device of user %s") % user,
             text=message,
-            size_hint=(0.8, 1),
-            buttons=[MDFlatButton(text="Close", on_release=self.close_dialog)],
         )
-        self.dialog.open()
 
-    def close_dialog(self, *args, **kwargs):
-        self.dialog.dismiss()

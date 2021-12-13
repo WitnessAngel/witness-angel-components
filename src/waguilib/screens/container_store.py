@@ -27,6 +27,7 @@ from waguilib.importable_settings import EXTERNAL_DATA_EXPORTS_DIR
 from waguilib.logging.handlers import safe_catch_unhandled_exception
 
 from wacryptolib.container import gather_escrow_dependencies
+from waguilib.widgets.popups import close_current_dialog, dialog_with_close_button
 
 Builder.load_file(str(Path(__file__).parent / 'container_store.kv'))
 
@@ -43,7 +44,7 @@ class ContainerStoreScreen(Screen):
     def _get_selected_container_names(self):
         container_names = []
         for container_entry in self.ids.container_table.children:
-            if container_entry.selected:
+            if getattr(container_entry, "selected", None):  # Beware of WABigInformationBox
                 assert container_entry.unique_identifier, container_entry.unique_identifier
                 container_names.append(container_entry.unique_identifier)
         print(">>>>> extract_selected_container_names", container_names)
@@ -60,6 +61,7 @@ class ContainerStoreScreen(Screen):
         container_names = self.filesystem_container_storage.list_container_names(as_sorted=True)
 
         containers_page_ids.container_table.clear_widgets()
+        containers_page_ids.container_table.do_layout()  # Prevents bug with "not found" message position
 
         if not container_names:
             display_layout = Factory.WABigInformationBox()
@@ -159,13 +161,20 @@ class ContainerStoreScreen(Screen):
         self.open_container_details_dialog(container_repr, info_container=container_name)
 
     def open_container_details_dialog(self, message, info_container):
+        dialog_with_close_button(
+            close_btn_label=tr._("Close"),
+            title=str(info_container),
+            text=message,
+        )
+        '''
         self.dialog = MDDialog(
             title=str(info_container),
             text=message,
             size_hint=(0.8, 1),
-            buttons=[MDFlatButton(text=tr._("Close"), on_release=self.close_dialog)],
+            buttons=[MDFlatButton(text=tr._("Close"), on_release=lambda *args: close_current_dialog())],
         )
         self.dialog.open()
+        '''
 
 
     def open_dialog_delete_container(self):
@@ -190,21 +199,17 @@ class ContainerStoreScreen(Screen):
                 % count_container_checked
             )
         """
-        self.dialog = MDDialog(
-            title="Container deletion confirmation",
+        dialog_with_close_button(
+            close_btn_label=tr._("Cancel"),
+            title=tr._("Container deletion confirmation"),
             text=message,
-            size_hint=(0.8, 1),
             buttons=[
                 MDFlatButton(
-                    text="Confirm deletion", on_release=functools.partial(self.close_dialog_delete_container, container_names=container_names)
-                ),
-                MDFlatButton(text="Cancel", on_release=self.close_dialog),
-            ],
+                    text="Confirm deletion", on_release=lambda *args: (close_current_dialog(), self.delete_containers(container_names=container_names))
+                ),]
         )
-        self.dialog.open()
 
-    def close_dialog_delete_container(self, obj, container_names):
-
+    def delete_containers(self, container_names):
         for container_name in container_names:
             try:
                 self.filesystem_container_storage.delete_container(container_name)
@@ -212,10 +217,7 @@ class ContainerStoreScreen(Screen):
                 pass  # File has probably been puregd already
 
         self.get_detected_container()  # FIXME rename
-        self.close_dialog()
 
-    def close_dialog(self, *args, **kwargs):
-        self.dialog.dismiss()
 
     def open_dialog_decipher_container(self):
 
@@ -258,8 +260,9 @@ class ContainerStoreScreen(Screen):
         pprint.pprint(relevant_key_storage_metadata)
 
 
-        content = PassphrasesDialogContent()
+        content_cls = PassphrasesDialogContent()
 
+        print(">>>>>>relevant_key_storage_metadata", relevant_key_storage_metadata)
         for metadata in relevant_key_storage_metadata:
             hint_text="Passphrase for user %s (hint: %s)" % (metadata["user"], metadata["passphrase_hint"])
             _widget = TextInput(hint_text=hint_text)
@@ -272,29 +275,23 @@ class ContainerStoreScreen(Screen):
                                                   "mode": "fill",
                                                   "fill_color": (0.3, 0.3, 0.3, 0.4),
                                                   "current_hint_text_color": (0.1, 1, 0.2, 1)})'''
-            content.add_widget(_widget)
+            content_cls.add_widget(_widget)
 
-        self.dialog = MDDialog(
-            title=message,
+        dialog_with_close_button(
+            close_btn_label=tr._("Cancel"),
+            title=tr._("Container decryption confirmation"),
             type="custom",
-            content_cls=content,
-            #text=message,
-            size_hint=(0.8, 1),
+            content_cls=content_cls,
             buttons=[
                 MDFlatButton(
                     text="Launch decryption",
-                    on_release=functools.partial(self.close_dialog_decipher_container, container_names=container_names),
-                ),
-                MDFlatButton(text="Cancel", on_release=self.close_dialog),
-            ],
+                    on_release=lambda *args: (close_current_dialog(), self.decipher_containers(container_names=container_names, input_content_cls=content_cls)),
+                ),]
         )
 
-        self.dialog.open()
+    def decipher_containers(self, container_names, input_content_cls):
 
-    def close_dialog_decipher_container(self, obj, container_names):
-        self.dialog.dismiss()
-
-        inputs = list(reversed(self.dialog.content_cls.children))
+        inputs = list(reversed(input_content_cls.children))
         passphrases = [i.text for i in inputs]
         passphrase_mapper = {None: passphrases}  # For now we regroup all passphrases together
 

@@ -84,13 +84,6 @@ class AuthenticatorCreationScreen(Screen):
             **({"on_dismiss": on_dismiss} if on_dismiss else {})
         )
 
-    def close_dialog(self, obj):
-        close_current_dialog()
-
-    def close_dialog_and_leave(self, obj):
-        close_current_dialog()
-        self.go_to_home_screen()
-
     # No safe_catch_unhandled_exception_and_display_popup() here, we handle finalization in any case
     @process_method_with_gui_spinner
     def _offloaded_initialize_authenticator(self, form_values, authenticator_path):
@@ -171,7 +164,6 @@ class AuthenticatorCreationScreen(Screen):
                                     authenticator_path=authenticator_path)
 
     def finish_initialization(self, *args, success, **kwargs):
-        on_close = self.close_dialog_and_leave
         if success:
             self.open_dialog(tr._("Initialization successfully completed."),
                              title=tr._("Success"), on_dismiss=lambda x: self.go_to_home_screen())

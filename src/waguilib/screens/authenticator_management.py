@@ -195,7 +195,7 @@ class AuthenticatorSelectorScreen(Screen):
             filesystem = authentication_device["format"].upper()
 
             authenticator_widget = Factory.ThinTwoLineAvatarIconListItem(
-                text=tr._("Drive: {drive} ({label})").format(drive=authentication_device["path"], label=authentication_device["label"]),
+                text=tr._("Drive: {drive} ({label})").format(drive=authentication_device["path"], label=authentication_device["label"] or tr._("no name")),
                 secondary_text=tr._("Size: {size}, Filesystem: {filesystem}").format(size=device_size, filesystem=filesystem),
             )
             authenticator_widget.add_widget(IconLeftWidget(icon="usb-flash-drive"))
@@ -282,7 +282,7 @@ class AuthenticatorSelectorScreen(Screen):
             title=tr._("Export authenticator"),
             text=tr._("You should keep the exported archive in a secure place."),
             #size_hint=(0.8, 1),
-            buttons=[MDFlatButton(text=tr._("Confirm"), on_release=lambda *args: (self.close_dialog(), self._export_authenticator_to_archive()))],
+            buttons=[MDFlatButton(text=tr._("Confirm"), on_release=lambda *args: (close_current_dialog(), self._export_authenticator_to_archive()))],
         )
 
     def show_authenticator_destroy_confirmation_dialog(self):
@@ -292,12 +292,8 @@ class AuthenticatorSelectorScreen(Screen):
             title=tr._("Destroy authenticator"),
             text=tr._("Beware, this might make encrypted data using these keys impossible to decrypt."),
             #size_hint=(0.8, 1),
-            buttons=[MDFlatButton(text=tr._("Confirm"), on_release=lambda *args: (self.close_dialog(), self._delete_authenticator_data(authenticator_path)))],
+            buttons=[MDFlatButton(text=tr._("Confirm"), on_release=lambda *args: (close_current_dialog(), self._delete_authenticator_data(authenticator_path)))],
         )
-
-    def close_dialog(self):
-        # Note that dialog might also auto-close through another way
-        close_current_dialog()
 
     @safe_catch_unhandled_exception_and_display_popup
     def _delete_authenticator_data(self, authenticator_path):
@@ -331,7 +327,7 @@ class AuthenticatorSelectorScreen(Screen):
     @safe_catch_unhandled_exception_and_display_popup
     def _check_authenticator_integrity(self, dialog, authenticator_path):
         passphrase = dialog.content_cls.ids.tester_passphrase.text
-        self.close_dialog()
+        close_current_dialog()
         result_dict = self._test_authenticator_password(authenticator_path=authenticator_path, passphrase=passphrase)
 
         keypair_count= result_dict["keypair_count"]

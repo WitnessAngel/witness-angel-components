@@ -34,7 +34,7 @@ def safe_catch_unhandled_exception_and_display_popup(func):
 
 def dialog_with_close_button(buttons=None, close_btn_label=None, full_width=False,
                              close_btn_callback=None, auto_open_and_register=True, **kwargs):
-    """A dialog which can close itself and works on on smartphone too"""
+    """A dialog which can close itself and works on smartphone too"""
     close_btn_label = close_btn_label or tr._("Close")
     dialog = None
     def default_on_close(*args):
