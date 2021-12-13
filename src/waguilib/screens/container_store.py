@@ -66,6 +66,16 @@ class ContainerStoreScreen(Screen):
 
         for index, container_name in enumerate(container_names, start=1):
 
+            container_label = tr._("N° %s:  %s")% (index, container_name),
+            container_entry = Factory.WASelectableListItemEntry(text=container_label)  # FIXME RENAME THIS
+            selection_checkbox = container_entry.ids.selection_checkbox
+
+            def selection_callback(widget, value, container_name=container_name):  # Force container_name save here, else scope bug
+                self.check_box_authentication_device_checked(device_uid=device_uid, is_selected=value)
+            selection_checkbox.bind(active=selection_callback)
+
+            Keys_page_ids.imported_authenticator_list.add_widget(authenticator_entry)
+
             my_check_box = CheckBox(active=False,
                                     size_hint=(0.1, None), height=40)
             my_check_box._container_name = container_name

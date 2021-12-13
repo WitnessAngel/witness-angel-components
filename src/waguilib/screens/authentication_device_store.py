@@ -161,12 +161,18 @@ class AuthenticationDeviceStoreScreen(Screen):
            #)
             authenticator_label = tr._("Key n°%s, User %s, Uid %s") % (index, metadata["user"], uuid_suffix)
             authenticator_entry = Factory.WASelectableListItemEntry(text=authenticator_label)  # FIXME RENAME THIS
+
             selection_checkbox = authenticator_entry.ids.selection_checkbox
             print(">>>>>>>>selection_checkbox", selection_checkbox)
             selection_checkbox.active = str(device_uid) in self.selected_authentication_device_uids
             def selection_callback(widget, value, device_uid=device_uid):  # Force device_uid save here, else scope bug
                 self.check_box_authentication_device_checked(device_uid=device_uid, is_selected=value)
             selection_checkbox.bind(active=selection_callback)
+
+            information_icon = authenticator_entry.ids.information_icon
+            def information_callback(widget, device_uid=device_uid, metadata=metadata):  # Force device_uid save here, else scope bug
+                self.info_keys_stored(device_uid=device_uid, user=metadata["user"])
+            information_icon.bind(on_press=information_callback)
 
             Keys_page_ids.imported_authenticator_list.add_widget(authenticator_entry)
             #Keys_page_ids.device_table.add_widget(my_check_btn)
@@ -242,7 +248,7 @@ class AuthenticationDeviceStoreScreen(Screen):
         self.dispatch('on_selected_authentication_devices_changed', self.selected_authentication_device_uids)
         print("self.selected_authentication_device_uids", self.selected_authentication_device_uids)
 
-    def info_keys_stored(self, btn_selected, device_uid, user):
+    def info_keys_stored(self, device_uid, user):
 
         """
         display the information of the keys stored in the selected usb
