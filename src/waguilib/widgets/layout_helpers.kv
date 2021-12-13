@@ -41,6 +41,7 @@
     spacing: 10
     padding: [10, 0]
 
+
 # Buttons for important actions like import/export/delete etc.
 <WAOperationButton@MDRectangleFlatIconButton>:
     # The doc says "You cannot use the ``size_hint_x`` parameter for `KivyMD` buttons"
@@ -54,14 +55,16 @@
 
 <WASelectableListItemEntry@OneLineAvatarIconListItem>:
     text: ""
+    selected: selection_checkbox.active
+    unique_identifier: None  # Useful for UIDs and such
 
     WAListItemLeftCheckbox:
         id: selection_checkbox
+        active: root.selected
 
     IconRightWidget:
         icon: "information-outline"
         id: information_icon
-
 
 
 ## Label widgets ##

@@ -82,7 +82,6 @@
                     text: tr._("<empty>")
 
             WAButtonsGridLayout:
-                id: authenticator_actions_create
                 disabled: root.authenticator_status is not False
 
                 WAOperationButton:
@@ -98,7 +97,6 @@
                     size_hint_x: 1  # HACK
 
             WAButtonsGridLayout:
-                id: authenticator_actions_modify
                 disabled: root.authenticator_status is not True
                 padding: [10, 10]
 

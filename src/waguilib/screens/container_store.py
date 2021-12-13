@@ -40,6 +40,14 @@ class ContainerStoreScreen(Screen):
     #: The container storage managed by this Screen
     filesystem_container_storage = ObjectProperty(None)
 
+    def _get_selected_container_names(self):
+        container_names = []
+        for container_entry in self.ids.container_table.children:
+            if container_entry.selected:
+                assert container_entry.unique_identifier, container_entry.unique_identifier
+                container_names.append(container_entry.unique_identifier)
+        print(">>>>> extract_selected_container_names", container_names)
+        return container_names
 
     @safe_catch_unhandled_exception
     def get_detected_container(self):
@@ -67,7 +75,9 @@ class ContainerStoreScreen(Screen):
         for index, container_name in enumerate(container_names, start=1):
 
             container_label = tr._("N° %s:  %s") % (index, container_name)
-            container_entry = Factory.WASelectableListItemEntry(text=container_label)  # FIXME RENAME THIS
+            container_entry = Factory.WASelectableListItemEntry(
+                    text=container_label)  # FIXME RENAME THIS
+            container_entry.unique_identifier = container_name
             #selection_checkbox = container_entry.ids.selection_checkbox
 
             #def selection_callback(widget, value, container_name=container_name):  # Force container_name save here, else scope bug
@@ -160,7 +170,7 @@ class ContainerStoreScreen(Screen):
 
     def open_dialog_delete_container(self):
 
-        container_names = self.get_selected_container_names()
+        container_names = self._get_selected_container_names()
         if not container_names:
             return
 
@@ -209,7 +219,7 @@ class ContainerStoreScreen(Screen):
 
     def open_dialog_decipher_container(self):
 
-        container_names = self.get_selected_container_names()
+        container_names = self._get_selected_container_names()
         if not container_names:
             return
 

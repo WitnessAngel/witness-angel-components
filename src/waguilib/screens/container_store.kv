@@ -13,7 +13,11 @@
 
 <ContainerStoreScreen>:
 
-    on_pre_enter: root.get_detected_container()  # FIXME rename this!!!
+    on_pre_enter:
+        # Lazy-init hack to workaround Clock iteration troubles
+        container_delete_btn.size_hint_x = 0.5
+        container_decrypt_btn.size_hint_x = 0.5
+        root.get_detected_container()  # FIXME rename this!!!
 
     WAMainVerticalScrollView:
 
@@ -34,47 +38,17 @@
                 MDList:
                     id: container_table
 
-            AnchorLayout:
-                anchor_x: 'center'
-                anchor_y: 'bottom'
-                padding: [20, 60, 20, 0]
-                height: 50
-                size_hint_y: None
+            WAButtonsGridLayout:
+                padding: [10, 10]
 
-                BoxLayout:
+                WAOperationButton:
+                    id: container_delete_btn
+                    icon: "delete-alert-outline"
+                    text: tr._("Delete")
+                    on_press: root.open_dialog_delete_container()
 
-                    Button:
-                        id: refresh
-                        background_color: (51, 23, 186.0, 1)
-                        color: 0.1372, 0.2862, 0.5294, 1
-                        text: "Refresh"
-                        #size: 200, 50
-                        size_hint: 0.3, None
-                        disabled: False
-                        height: 30
-                        on_release:
-                            root.get_detected_container()
-
-                    Button:
-                        id: delete
-                        background_color: (51, 23, 186.0, 1)
-                        color: 0.1372, 0.2862, 0.5294, 1
-                        text: "Delete"
-                        #size: 200, 50
-                        size_hint: 0.3, None
-                        disabled: False
-                        height: 30
-                        on_release:
-                            root.open_dialog_delete_container()
-
-                    Button:
-                        id: decipher
-                        background_color: (51, 23, 186.0, 1)
-                        color: 0.1372, 0.2862, 0.5294, 1
-                        text: "Decrypt"
-                        #size: 200, 50
-                        size_hint: 0.3, None
-                        disabled: False
-                        height: 30
-                        on_release:
-                            root.open_dialog_decipher_container()
+                WAOperationButton:
+                    id: container_decrypt_btn
+                    icon: "eye-circle-outline"
+                    text: tr._("Decrypt")
+                    on_press: root.open_dialog_decipher_container()

@@ -4,9 +4,11 @@
 <AuthenticationDeviceStoreScreen>:
 
     on_pre_enter:
-        root.list_imported_key_devices()
+        # Lazy-init hack to workaround Clock iteration troubles
         keyguardian_import_btn.size_hint_x = 0.5
         keyguardian_delete_btn.size_hint_x = 0.5
+        root.list_imported_key_devices()
+
 
     WAMainVerticalScrollView:
 
@@ -30,7 +32,6 @@
                     id: imported_authenticator_list
 
             WAButtonsGridLayout:
-                id: authenticator_actions_modify
                 padding: [10, 10]
 
                 WAOperationButton:
@@ -39,7 +40,7 @@
                     text: "Import new keys"
                     on_press: root.import_keys()
 
-                MDRectangleFlatIconButton:
+                WAOperationButton:
                     id: keyguardian_delete_btn
                     icon: "delete-alert-outline"
                     text: "Delete keys"
