@@ -2,18 +2,6 @@
 #:import strip_external_app_prefix waguilib.importable_settings.strip_external_app_prefix
 
 
-<OBSOLETE_LanguageMenuHeader@MDBoxLayout>:
-    orientation: "vertical"
-    adaptive_width: True
-    padding: "10dp"
-    height: dp(25)
-    size_hint_y: None
-    MDLabel:
-        text: tr._("Language")
-        font_style: "H6"
-        adaptive_width: True
-
-
 <ThinTwoLineAvatarIconListItem@TwoLineAvatarIconListItem>
     _height: dp(60)
     # This might help with the blurred content of scrollview... see https://github.com/kivy/kivy/issues/2297
@@ -22,49 +10,18 @@
 <UserKeyStoreListItem@ThinTwoLineAvatarIconListItem>:
     text: tr._("User Profile")
     secondary_text: tr._("Stored inside system disk")
-    #tertiary_text: tr._("fit more text than usual")
 
     IconLeftWidget:
         icon: "account-box"
 
-#<OpenFolderButton@Widget> UNUSED
-    ##IRightBodyTouch+#MDRectangleFlatIconButton>:
-    #text: " " # tr._("FindXXXXXXX")
-    #icon: "file-find-outline"
-    #size_hint: None, None
-    #width: 100
-    #height: 80
-    #on_parent:
-    #    ssss
-
-
 <FolderKeyStoreListItem>:
-
     selected_path: None
     text: tr._("Custom location")
     secondary_text: strip_external_app_prefix(self.selected_path) if self.selected_path else tr._("Please select a folder")
-    #tertiary_text: tr._("fit more text than usual2")
-
-    on_size:
-        """ UNUSED
-        print(">>>>>>>>>>>>>>>> on_size", self.size, "but", open_folder_btn.width)
-        self.ids._right_container.width = open_folder_btn.width
-        self.ids._right_container.x = open_folder_btn.width
-        self.ids._right_container.height = open_folder_btn.height
-        self.ids._right_container.y = root.y + root.height/2 - open_folder_btn.height/2  # - dp(10)
-        print(">>>>>>>>>>>>>>>> on_size NEW VALUES", self.ids._right_container.width, self.ids._right_container.x, self.ids._right_container.height, self.ids._right_container.y)
-        self.do_layout()
-        self.ids._right_container.do_layout()
-        print(">>>>>>>>>>>>>>>> DO LAYOUT")
-        self.canvas.ask_update()
-        """
-
-    #on_parent: UNUSED
-        #print(">>>>>>>>>>>>>>>> on_parent", self.size)
-        #Clock.schedule_once(lambda x: self.property('size').dispatch(args[0]))  # Useless
 
     IconLeftWidget:
         icon: "folder"
+
     IconRightWidget:
         icon: "file-find-outline"
         id: open_folder_btn
@@ -110,7 +67,7 @@
             WAElevatedBoxLayout:
 
                 MDIcon:
-                    icon: root.AUTHENTICATOR_INITIALIZATION_STATUS_ICONS[root.authenticator_status] # "language-python"
+                    icon: root.AUTHENTICATOR_INITIALIZATION_STATUS_ICONS[root.authenticator_status]
                     halign: "center"
                     width: dp(80)
                     size_hint_x: None

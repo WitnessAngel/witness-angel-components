@@ -1,22 +1,12 @@
 
 
-
 <LauncherWithImagePreviewScreen>:
 
-    orientation: "vertical"
-#    canvas.before:
-#        Color:
-#            rgba: 0.1372, 0.2862, 0.5294, 1
-#        Rectangle:
-#            pos: self.pos
-#            size: self.size
-
-    BoxLayout:
+    MDBoxLayout:
         orientation: 'vertical'
         spacing: 20
 
         WAToolbar:
-            #md_bg_color: (0.1372, 0.2862, 0.5294, 1)
             title: "Witness Angel Ward - NVR"
             left_action_items: [['menu', lambda x: app.navigation_drawer.set_state("toggle")]]
             right_action_items: [['cog', lambda x: app.open_settings()]]
