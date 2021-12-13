@@ -66,16 +66,21 @@ class ContainerStoreScreen(Screen):
 
         for index, container_name in enumerate(container_names, start=1):
 
-            container_label = tr._("N° %s:  %s")% (index, container_name),
+            container_label = tr._("N° %s:  %s") % (index, container_name)
             container_entry = Factory.WASelectableListItemEntry(text=container_label)  # FIXME RENAME THIS
-            selection_checkbox = container_entry.ids.selection_checkbox
+            #selection_checkbox = container_entry.ids.selection_checkbox
 
-            def selection_callback(widget, value, container_name=container_name):  # Force container_name save here, else scope bug
-                self.check_box_authentication_device_checked(device_uid=device_uid, is_selected=value)
-            selection_checkbox.bind(active=selection_callback)
+            #def selection_callback(widget, value, container_name=container_name):  # Force container_name save here, else scope bug
+            #    self.check_box_authentication_device_checked(device_uid=device_uid, is_selected=value)
+            #selection_checkbox.bind(active=selection_callback)
 
-            Keys_page_ids.imported_authenticator_list.add_widget(authenticator_entry)
+            def information_callback(widget, container_name=container_name):  # Force device_uid save here, else scope bug
+                self.show_container_details(container_name=container_name)
+            information_icon = container_entry.ids.information_icon
+            information_icon.bind(on_press=information_callback)
 
+            containers_page_ids.container_table.add_widget(container_entry)
+            """
             my_check_box = CheckBox(active=False,
                                     size_hint=(0.1, None), height=40)
             my_check_box._container_name = container_name
@@ -89,7 +94,7 @@ class ContainerStoreScreen(Screen):
                 background_color=(1, 1, 1, 0.01),
                 on_release=functools.partial(self.show_container_details, container_name=container_name),
                 height=40,
-            )
+            )"""
             '''
             self.check_box_container_uuid_dict[my_check_box] = [
                 str(container[0]["container_uid"]),
@@ -109,8 +114,8 @@ class ContainerStoreScreen(Screen):
             layout.add_widget(my_check_box)
             layout.add_widget(my_check_btn)
             """
-            containers_page_ids.container_table.add_widget(my_check_box)
-            containers_page_ids.container_table.add_widget(my_check_btn)
+            #containers_page_ids.container_table.add_widget(my_check_box)
+            #containers_page_ids.container_table.add_widget(my_check_btn)
 
         #print("self.container_checkboxes", self.container_checkboxes)
 
@@ -129,7 +134,7 @@ class ContainerStoreScreen(Screen):
         print("container_names", container_names)
         return container_names
 
-    def show_container_details(self, btn_selected, container_name):
+    def show_container_details(self, container_name):
         """
         Display the contents of container
         """
