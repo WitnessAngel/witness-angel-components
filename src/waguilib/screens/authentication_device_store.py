@@ -160,7 +160,7 @@ class AuthenticationDeviceStoreScreen(Screen):
                 #padding=[20, 0],
            #)
             authenticator_label = tr._("Key n°%s, User %s, Uid %s") % (index, metadata["user"], uuid_suffix)
-            authenticator_entry = Factory.AuthenticatorEntry(text=authenticator_label)  # FIXME RENAME THIS
+            authenticator_entry = Factory.WASelectableListItemEntry(text=authenticator_label)  # FIXME RENAME THIS
             selection_checkbox = authenticator_entry.ids.selection_checkbox
             print(">>>>>>>>selection_checkbox", selection_checkbox)
             selection_checkbox.active = str(device_uid) in self.selected_authentication_device_uids

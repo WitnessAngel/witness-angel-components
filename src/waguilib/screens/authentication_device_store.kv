@@ -1,17 +1,6 @@
 #:import tr waguilib.i18n.tr
 
 
-<LeftCheckbox@ILeftBodyTouch+MDCheckbox>:
-
-
-<AuthenticatorEntry@OneLineAvatarIconListItem>:
-    text: "One-line item with avatar"
-
-    LeftCheckbox:
-        id: selection_checkbox
-
-    #IconRightWidget:
-    #    icon: "minus"
 
 
 <AuthenticationDeviceStoreScreen>:
@@ -20,13 +9,6 @@
         root.list_imported_key_devices()
         keyguardian_import_btn.size_hint_x = 0.5
         keyguardian_delete_btn.size_hint_x = 0.5
-
-    #canvas.before:
-    #    Color:
-    #        rgba: 0.1372, 0.2862, 0.5294, 1
-    #    Rectangle:
-    #        pos: self.pos
-    #        size: self.size
 
     WAMainVerticalScrollView:
 
@@ -46,29 +28,10 @@
                     halign: "left"
                     padding_x: "10dp"
 
-            #MDLabel:
-            #    text: 'Key management'
-            #    halign: "left"
-            #    padding_x: "10dp"
-            #    font_size: "10dp"
-
             WAVerticalScrollView:
 
                 MDList:
                     id: imported_authenticator_list
-
-            #WAVerticalScrollView:
-
-            #    GridLayout:
-            #        size_hint_y: None
-            #        id: device_table
-            #        cols: 2
-            #        row_default_height: 25
-            #        row_force_default: True
-            #        padding: 10
-            #        spacing: (0, 10)
-            #        height: self.minimum_height
-
 
             WAButtonsGridLayout:
                 id: authenticator_actions_modify
@@ -76,12 +39,12 @@
 
                 WAOperationButton:
                     id: keyguardian_import_btn
-                    icon: "database-export-outline"
+                    icon: "database-import-outline"
                     text: "Import new keys"
                     on_press: root.import_keys()
 
                 MDRectangleFlatIconButton:
                     id: keyguardian_delete_btn
-                    icon: "database-export-outline"
+                    icon: "delete-alert-outline"
                     text: "Delete keys"
                     on_press: root.delete_keys()
