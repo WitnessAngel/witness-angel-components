@@ -211,17 +211,22 @@ class AuthenticationDeviceStoreScreen(Screen):
         """
 
     def display_message_no_device_found(self):
+
+        # keys_page_ids = self.ids
+        # devices_display = MDLabel(
+        #     text="No imported autentication device found ",
+        #     #background_color=(1, 0, 0, 0.01),
+        #     halign="center",
+        #     font_size="20sp",
+        #     #color=[0, 1, 0, 1],
+        # )
+        # #keys_page_ids.imported_authenticator_list.clear_widgets()
+        # Display_layout = MDBoxLayout(orientation="horizontal", padding=[140, 0])
+        # Display_layout.add_widget(devices_display)
+
+        Display_layout = Factory.WABigInformationBox()
+        Display_layout.ids.inner_label.text = tr._("No imported autentication device found")
         keys_page_ids = self.ids
-        devices_display = MDLabel(
-            text="No imported autentication device found ",
-            #background_color=(1, 0, 0, 0.01),
-            halign="center",
-            font_size="20sp",
-            #color=[0, 1, 0, 1],
-        )
-        keys_page_ids.imported_authenticator_list.clear_widgets()
-        Display_layout = MDBoxLayout(orientation="horizontal", padding=[140, 0])
-        Display_layout.add_widget(devices_display)
         keys_page_ids.imported_authenticator_list.add_widget(Display_layout)
 
     def check_box_authentication_device_checked(self, device_uid: uuid.UUID, is_selected: bool):

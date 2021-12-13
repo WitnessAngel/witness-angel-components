@@ -2,6 +2,7 @@ import functools
 import pprint
 from pathlib import Path
 
+from kivy.factory import Factory
 from kivy.lang import Builder
 from kivy.uix.screenmanager import Screen
 from kivy.clock import Clock
@@ -53,14 +54,8 @@ class ContainerStoreScreen(Screen):
         containers_page_ids.container_table.clear_widgets()
 
         if not container_names:
-            container_display = Button(
-                text="No container found",
-                background_color=(1, 0, 0, 0.01),
-                font_size="28sp",
-                color=[0, 1, 0, 1],
-            )
-            display_layout = BoxLayout(orientation="horizontal")
-            display_layout.add_widget(container_display)
+            display_layout = Factory.WABigInformationBox()
+            display_layout.ids.inner_label.text = tr._("No containers found")
             containers_page_ids.container_table.add_widget(display_layout)
             return
 
