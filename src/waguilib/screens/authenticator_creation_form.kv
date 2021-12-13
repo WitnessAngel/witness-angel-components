@@ -15,10 +15,9 @@
             left_action_items: [["arrow-left", lambda x: root.go_to_home_screen(), tr._("Back")]]
             right_action_items: [["help-circle-outline", lambda x: root.display_help_popup(), tr._("Help")]]
 
-        GridLayout:
+        WAVerticalPanel:
             padding: [20, 20, 20, 20]
             spacing: [20, 20]
-            cols: 1
 
             MDLabel:
                 text: tr._("Target:") + " " + strip_external_app_prefix(root._selected_authenticator_path)
@@ -56,7 +55,7 @@
                     # For some reason, setting "height" here causes infinite recursions in layout
                     size_hint_min_y: dp(50)
                     size_hint_max_y: dp(50)
-                    pos_hint: {'x': .3}
+                    pos_hint: {'x': .25}
                     on_release:
                         root.request_authenticator_initialization()
 
