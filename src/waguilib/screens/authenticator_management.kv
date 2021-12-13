@@ -83,71 +83,31 @@
         hint_text: tr._("Passphrase")
 
 
-<ElevatedMDBoxLayout@RectangularElevationBehavior+MDBoxLayout>:
-    elevation: 20
-
-
-<-SelectableLabel@TextInput>:
-    readonly: True
-    # Modified from kivy/data/style.kv
-    canvas.before:
-        # Clear (can be used to remove legacy canvas instructions)
-        Color:
-            rgba: self.background_color
-        Rectangle:
-            pos: self.pos
-            size: self.size
-        Color:
-            rgba:
-                (self.cursor_color
-                if self.focus and not self._cursor_blink
-                else (0, 0, 0, 0))
-        Rectangle:
-            pos: self._cursor_visual_pos
-            size: root.cursor_width, -self._cursor_visual_height
-        Color:
-            rgba: self.disabled_foreground_color if self.disabled else (self.hint_text_color if not self.text else self.foreground_color)
-
-
 <AuthenticatorSelectorScreen>:
 
     on_pre_enter: root.refresh_authenticator_list()
 
-    ScrollView:
-        orientation: "vertical"
+    WAMainVerticalScrollView:
 
-        MDGridLayout:
-            cols: 1
+        WAVerticalPanel:
 
             MDToolbar:
                 title: tr._("Manage Authenticators")
                 right_action_items: [["refresh", lambda x: root.refresh_authenticator_list(), tr._("Refresh")], ["earth", lambda x: root.language_menu_open(x), tr._("Language")], ["help-circle-outline", lambda x: root.display_help_popup(), tr._("Help")]]
 
-            ElevatedMDBoxLayout:
-                height: dp(40)
-                size_hint_y: None
-
-                md_bg_color: app.theme_cls.bg_light
-                #line_color: [0, 0, 0, 1]
+            WAElevatedMDBoxLayout:
 
                 MDLabel:
                     text: tr._("Please select an authenticator location")
                     halign: "left"
                     padding_x: "10dp"
 
-            ScrollView:
-                bar_width: 5
-                bar_inactive_color: self.bar_color
+            WAVerticalScrollView:
 
                 MDList:
                     id: authenticator_list
 
-            ElevatedMDBoxLayout:
-                height: dp(40)
-                size_hint_y: None
-
-                md_bg_color: app.theme_cls.bg_light
-                #line_color: [0.2, 0.2, 0.2, 1]
+            WAElevatedMDBoxLayout:
 
                 MDIcon:
                     icon: root.AUTHENTICATOR_INITIALIZATION_STATUS_ICONS[root.authenticator_status] # "language-python"
@@ -159,7 +119,7 @@
                     text: root.get_authenticator_status_message(root.authenticator_status)
                     halign: "left"
 
-            ScrollView:
+            WAVerticalScrollView:
                 size_hint_y: 0.5
                 id: authenticator_information_scrollview
                 SelectableLabel:
