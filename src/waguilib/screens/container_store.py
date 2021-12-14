@@ -38,8 +38,8 @@ class PassphrasesDialogContent(BoxLayout):
 
 class ContainerStoreScreen(Screen):
 
-    #: The container storage managed by this Screen
-    filesystem_container_storage = ObjectProperty(None)
+    #: The container storage managed by this Screen, might be None if unset
+    filesystem_container_storage = ObjectProperty(None, allownone=True)
 
     def _get_selected_container_names(self):
         container_names = []
@@ -57,11 +57,18 @@ class ContainerStoreScreen(Screen):
         #self.root.ids.screen_manager.get_screen(
         #    "Container_management"
         #).ids
-
-        container_names = self.filesystem_container_storage.list_container_names(as_sorted=True)
-
         containers_page_ids.container_table.clear_widgets()
         containers_page_ids.container_table.do_layout()  # Prevents bug with "not found" message position
+
+
+        print(">>>>>>>>>>>>>self.filesystem_container_storage, ", self.filesystem_container_storage)
+        if self.filesystem_container_storage is None:
+            display_layout = Factory.WABigInformationBox()
+            display_layout.ids.inner_label.text = tr._("Container storage is invalid")  # FIXME simplify this
+            containers_page_ids.container_table.add_widget(display_layout)
+            return
+
+        container_names = self.filesystem_container_storage.list_container_names(as_sorted=True)
 
         if not container_names:
             display_layout = Factory.WABigInformationBox()
@@ -150,6 +157,7 @@ class ContainerStoreScreen(Screen):
         """
         Display the contents of container
         """
+        assert self.filesystem_container_storage, self.filesystem_container_storage  # By construction...
         try:
             container = self.filesystem_container_storage.load_container_from_storage(container_name)
             all_dependencies = gather_escrow_dependencies([container])
@@ -210,6 +218,7 @@ class ContainerStoreScreen(Screen):
         )
 
     def delete_containers(self, container_names):
+        assert self.filesystem_container_storage, self.filesystem_container_storage  # By construction...
         for container_name in container_names:
             try:
                 self.filesystem_container_storage.delete_container(container_name)
@@ -243,6 +252,7 @@ class ContainerStoreScreen(Screen):
             )
         """
 
+        assert self.filesystem_container_storage, self.filesystem_container_storage  # By construction...
         filesystem_key_storage_pool = self.filesystem_container_storage._key_storage_pool  # FIXME add public getter
         key_storage_metadata = filesystem_key_storage_pool.list_imported_key_storage_metadata()
 
@@ -290,6 +300,7 @@ class ContainerStoreScreen(Screen):
         )
 
     def decipher_containers(self, container_names, input_content_cls):
+        assert self.filesystem_container_storage, self.filesystem_container_storage  # By construction...
 
         inputs = list(reversed(input_content_cls.children))
         passphrases = [i.text for i in inputs]

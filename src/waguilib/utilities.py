@@ -16,8 +16,10 @@ class InterruptableEvent(threading.Event):
             wait(timeout)
 
 
-def get_system_information(disk_storage_path):
-    """Return a dict of information about connections, ram, and the partition of disk_storage_path"""
+def get_system_information(disk_storage_path: Path):
+    """Return a dict of information about connections, ram, and the partition of disk_storage_path.
+
+    Handles unexisting folders too."""
     import psutil
 
     def _to_bytes_size_str(stat):
@@ -29,9 +31,13 @@ def get_system_information(disk_storage_path):
     available_memory = virtual_memory.available
     available_memory_percent = 100 * available_memory / virtual_memory.total
 
-    disk_usage = psutil.disk_usage(disk_storage_path)  # or shutil.disk_usage(path)?
-    available_disk = disk_usage.free
-    available_disk_percent = 100 * available_disk / disk_usage.total
+    try:
+        _disk_usage = psutil.disk_usage(disk_storage_path)  # or shutil.disk_usage(path)?
+        available_disk = _disk_usage.free
+        available_disk_percent = 100 * available_disk / _disk_usage.total
+    except FileNotFoundError:
+        available_disk = None
+        available_disk_percent = None
 
     net_if_stats = psutil.net_if_stats()  # Can return wrong eth0 status if psutil<=5.5.1
     wifi_status = False

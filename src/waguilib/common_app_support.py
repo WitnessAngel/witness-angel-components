@@ -20,7 +20,7 @@ class WaRuntimeSupportMixin:
         return self._get_class_package_path().joinpath("config_schema.json")
 
     @property
-    def config_template_path(self) -> Path:
+    def config_template_path(self) -> Path:  # FIXME rename to DEFAULTS!!
         """Return the model for config file initialization."""
         return self._get_class_package_path().joinpath("config_template.ini")
 
