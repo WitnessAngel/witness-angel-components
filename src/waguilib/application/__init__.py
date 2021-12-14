@@ -68,7 +68,7 @@ class WAGuiApp(WaRuntimeSupportMixin, MDApp):  # FIXME WaGui instead?
         # Hook here if needed
         ##Path(self.get_application_config()).touch(exist_ok=True)  # For initial creation
         config = super().load_config()
-        return config
+        return config  # Might have unsaved new DEFAULTS in it, which will be saved on any setting update
 
     def build_config(self, config):
         """Populate config with default values, before the loading of user preferences."""

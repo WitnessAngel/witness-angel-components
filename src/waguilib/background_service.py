@@ -83,10 +83,11 @@ class WaBackgroundService(WaRuntimeSupportMixin):
         self._termination_event = InterruptableEvent()
         logger.info("Service started")
 
+        self.reload_config()
+
         # Initial setup of service according to persisted config
-        config = self.config
         try:
-            daemonize_service = config.getboolean("usersettings", "daemonize_service")  # FIXME is that really "usersettings" here?
+            daemonize_service = self.config.getboolean("usersettings", "daemonize_service")  # FIXME is that really "usersettings" here?
         except ConfigParserError:
             daemonize_service = False  # Probably App is just initializing itself
         self.switch_daemonize_service(daemonize_service)
@@ -103,20 +104,17 @@ class WaBackgroundService(WaRuntimeSupportMixin):
         """Return a valid recording toolchain"""
         raise NotImplementedError("_build_recording_toolchain()")
 
-    @property
-    def config(self):  # TODO ensure we don't reload file too often here!
-        """We mimick Kivy App API, to simplify, even though this conf is reloaded at EACH access!"""
-        return self._load_config()
-
-    def _load_config(self, filename=None):
+    def reload_config(self, filename=None):
 
         if not filename:
             filename = self.config_file_path
 
         logger.info(f"Reloading config file {filename}")
-        config = (
-            ConfigParser()
-        )  # No NAME here, since named parsers must be Singletons in process!
+
+        # No NAME here, since named parsers must be Singletons in process!
+        config = ConfigParser()
+        config.read(str(self.config_template_path))  # Default values
+
         try:
             if not os.path.exists(filename):
                 raise FileNotFoundError(filename)
@@ -127,7 +125,7 @@ class WaBackgroundService(WaRuntimeSupportMixin):
             )
 
         # logger.info(f"Config file {filename} loaded")
-        return config
+        self.config = config
 
     def _remote_logging_callback(self, msg):
         return self._send_message("/log_output", "Service: " + msg)
@@ -204,6 +202,7 @@ class WaBackgroundService(WaRuntimeSupportMixin):
         # Fixme - remove "env" parameter if unused?
         self._status_change_in_progress = True
         WIP_RECORDING_MARKER.touch(exist_ok=True)
+        self.reload_config()  # Important
         return self._offload_task(self._offloaded_start_recording, env=env)
 
     @property
