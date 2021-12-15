@@ -231,14 +231,15 @@ class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
         exec = [
             "ffmpeg",
             "-y",  # Always say yes to questions
-            #"-rtsp_flags", "prefer_tcp",  # Safer alternative to ( "-rtsp_transport", "tcp", )
-            #"-timeout", "10000",  # Force failure if input can't be joined anymore
+
         ]
         input = [
-          # These flags need a RECENT ffmpeg version (raspbian buster repos are not up-to-date enough)
-          #  "-fflags", "+igndts",  # Fix "non-monotonous DTS in output stream" error
-          #  "-reconnect", "1", "-reconnect_at_eof", "1", "-reconnect_streamed", "1",
-          # "-reconnect_delay_max", "10",  #  "-reconnect_on_network_error", "1",
+            "-rtsp_flags", "prefer_tcp",  # Safer alternative to ( "-rtsp_transport", "tcp", )
+            "-timeout", "5000",  # Force failure if input can't be joined anymore
+            "-fflags", "+igndts",  # Fix "non-monotonous DTS in output stream" error
+            # Beware these flags only concern HTTP, no use for them in RTPS!
+            #  "-reconnect", "1", "-reconnect_at_eof", "1", "-reconnect_streamed", "1",
+            #  "-reconnect_delay_max", "10",  "-reconnect_on_network_error", "1",
             "-i",
             self._video_stream_url,
         ]
@@ -291,7 +292,7 @@ class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
                     self._container_encryption_stream.encrypt_chunk(chunk)
                 else:
                     break
-            print(">>>>>>>>>> FINALIZING CONTAINER ENCRYPTION STREAM", len(chunk))
+            print(">>>>>>>>>> FINALIZING CONTAINER ENCRYPTION STREAM")
             self._container_encryption_stream.finalize()
             fh.close()
 
@@ -321,7 +322,11 @@ class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
     def _do_stop_recording(self):
         if self._subprocess is None:
             logger.warning("No subprocess to be terminated in RtspCameraSensor stop-recording")
-            return b""  # Init failed previously
+            return  # Init failed previously
+        retcode = self._subprocess.poll()
+        if retcode is not None:
+            logger.warning("Subprocess already terminated with code %s in RtspCameraSensor stop-recording" % retcode)
+            return  # Stream must have crashed
         try:
             self._subprocess.stdin.write(b"q")  # FFMPEG command to quit
             self._subprocess.stdin.close()
