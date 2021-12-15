@@ -9,6 +9,7 @@ from kivy.core.window import Window
 from kivy.properties import StringProperty
 
 from waguilib.common_app_support import WaRuntimeSupportMixin
+from waguilib.widgets.popups import display_info_snackbar
 
 os.environ["KIVY_NO_ARGS"] = "1"
 
@@ -25,7 +26,7 @@ from oscpy.server import ServerClass
 from waguilib.service_control import ServiceController
 from waguilib.logging.handlers import CallbackHandler, safe_catch_unhandled_exception
 from waguilib.service_control.osc_transport import get_osc_server
-
+from waguilib.i18n import tr
 
 
 osc, osc_starter_callback = get_osc_server(is_master=True)
@@ -163,9 +164,6 @@ class WAGuiApp(WaRuntimeSupportMixin, MDApp):  # FIXME WaGui instead?
         if not self.get_daemonize_service():
             self.service_controller.stop_service()  # Will wait for termination, then kill it
 
-    def _check_recording_configuration(self):
-        raise NotImplementedError("_check_recording_configuration")
-
     def switch_to_recording_state(self, is_recording):
         """
         Might also be called as a reaction to the service broadcasting a changed state.
@@ -174,8 +172,8 @@ class WAGuiApp(WaRuntimeSupportMixin, MDApp):  # FIXME WaGui instead?
         self.set_recording_btn_state(disabled=True)
         if is_recording:
 
-            if not self._check_recording_configuration():
-                # Will automatically notify user if problems, for now
+            if not self.refresh_checkup_status():
+                display_info_snackbar(tr._("Configuration errors prevent recording"))
                 return
 
             self.service_controller.start_recording()

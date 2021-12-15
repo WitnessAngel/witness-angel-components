@@ -54,15 +54,19 @@ class WaRuntimeSupportMixin:
         """Return ready-to-call bound checkers from below"""
         raise NotImplementedError("_get_status_checkers")
 
-    def refresh_checkup_status(self):
+    def refresh_checkup_status(self) -> bool:
         status_checkers = self._get_status_checkers()
+
+        global_status = True
         checkup_status_messages = []
 
         for status_checker in status_checkers:
             status, message = status_checker()
+            global_status = global_status and status
             checkup_status_messages.append(("[OK]" if status else "[KO]") + " " + message)
 
         self.checkup_status_text = "\n".join(checkup_status_messages)
+        return global_status
 
     @staticmethod
     def check_container_output_dir(container_dir: Path):
