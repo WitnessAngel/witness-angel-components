@@ -203,6 +203,9 @@ class WaBackgroundService(WaRuntimeSupportMixin):
         self._status_change_in_progress = True
         WIP_RECORDING_MARKER.touch(exist_ok=True)
         self.reload_config()  # Important
+        if not self.refresh_checkup_status():
+            logger.error("Service failed to start because of configuration issues")
+            return
         return self._offload_task(self._offloaded_start_recording, env=env)
 
     @property
