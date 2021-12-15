@@ -9,7 +9,7 @@ from kivy.core.window import Window
 from kivy.properties import StringProperty
 
 from waguilib.common_app_support import WaRuntimeSupportMixin
-from waguilib.widgets.popups import display_info_snackbar
+from waguilib.widgets.popups import display_info_snackbar, display_info_toast
 
 os.environ["KIVY_NO_ARGS"] = "1"
 
@@ -92,6 +92,10 @@ class WAGuiApp(WaRuntimeSupportMixin, MDApp):  # FIXME WaGui instead?
         settings.add_json_panel(
             title=self.title_conf_panel, config=self.config, filename=settings_file
         )
+
+    def close_settings(self, *args, **kwargs):
+        super().close_settings(*args, **kwargs)
+        display_info_toast(tr._("Note that some configuration changes only apply at next recording restart"))
 
     def save_config(self):
         """Dump current config to local INI file."""
