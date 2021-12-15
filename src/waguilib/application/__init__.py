@@ -6,6 +6,7 @@ import functools
 import logging
 import os
 from kivy.core.window import Window
+from kivy.properties import StringProperty
 
 from waguilib.common_app_support import WaRuntimeSupportMixin
 
@@ -53,6 +54,9 @@ class WAGuiApp(WaRuntimeSupportMixin, MDApp):  # FIXME WaGui instead?
     language = None  # TO OVERRIDE at instance level
 
     settings_cls = SettingsWithTabbedPanel
+
+    # Overridden as property to allow event dispatching in GUI
+    checkup_status_text = StringProperty("")
 
     def __init__(self, **kwargs):
         self._unanswered_service_state_requests = 0  # Used to detect a service not responding anymore to status requests
@@ -102,6 +106,10 @@ class WAGuiApp(WaRuntimeSupportMixin, MDApp):  # FIXME WaGui instead?
 
     # APP LIFECYCLE AND RECORDING STATE #
 
+    def _update_app_after_config_change(self):
+        """Do not forget to call this super method from child classes"""
+        self.refresh_checkup_status()
+
     def set_recording_btn_state(self, pushed: bool=None, disabled: bool=None):
         assert pushed is not None or disabled is not None, (pushed, disabled)
         recording_btn = self.recording_button  # Must have been defined on subclass!
@@ -139,6 +147,8 @@ class WAGuiApp(WaRuntimeSupportMixin, MDApp):  # FIXME WaGui instead?
             self._request_recording_state, self.service_querying_interval
         )
         self._request_recording_state()  # Immediate first iteration
+
+        self.refresh_checkup_status()
 
         self.set_recording_btn_state(disabled=True)
 
