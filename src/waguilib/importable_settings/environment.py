@@ -40,10 +40,10 @@ if IS_ANDROID:
 else:
     CONTEXT = None  # Unused on Desktop
     _base_dir = Path(storagepath.get_home_dir()) / "WitnessAngel"
-    INTERNAL_APP_ROOT = _base_dir / "Internal"
-    INTERNAL_CACHE_DIR = _base_dir / "Cache"  # FIXME move that to Internal ?? Why different from LOGS ?
+    INTERNAL_APP_ROOT = _base_dir
+    INTERNAL_CACHE_DIR = INTERNAL_APP_ROOT / "Cache"  # FIXME move that to Internal ?? Why different from LOGS ?
     EXTERNAL_APP_PREFIX = None
-    EXTERNAL_APP_ROOT = _base_dir / "External"
+    EXTERNAL_APP_ROOT = INTERNAL_APP_ROOT / "External"
 
 
     PackageManager = None
