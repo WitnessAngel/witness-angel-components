@@ -106,5 +106,20 @@ class _Translator(Observable):
             # Reversed loop, to preserve meaning of indexes
             del self.observers[_idx]
 
+    @staticmethod
+    def f(string):
+        """
+        Helper to translate fstring-style constructs, using KEYWORD placeholders::
+
+            variable = "SOMETHING"
+            tr.f(tr._("My {variable}"))
+        """
+        from inspect import currentframe
+        from copy import copy
+        frame = currentframe().f_back
+        kwargs = copy(frame.f_globals)
+        kwargs.update(frame.f_locals)
+        return string.format(**kwargs)
+
 
 tr = _Translator(DEFAULT_LANGUAGE)  # Initially without locale data files
