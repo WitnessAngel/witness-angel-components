@@ -14,7 +14,19 @@ from waguilib.logging.handlers import safe_catch_unhandled_exception
 
 
 def display_info_toast(msg, duration=2.5):
+    """Small temporary popup"""
     toast(msg, duration=duration)
+
+
+def display_info_snackbar(msg, duration=3.5):
+    """Full-width temporary bottom message bar"""
+    Snackbar(
+        text=msg,
+        font_size="12sp",
+        duration=duration,
+        #button_text="BUTTON",
+        #button_callback=app.callback
+    ).open()
 
 
 @decorator
