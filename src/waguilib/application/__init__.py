@@ -61,11 +61,11 @@ class WAGuiApp(WaRuntimeSupportMixin, MDApp):  # FIXME WaGui instead?
 
     def __init__(self, **kwargs):
         self._unanswered_service_state_requests = 0  # Used to detect a service not responding anymore to status requests
-        print("STARTING INIT OF WitnessAngelClientApp")
+        #print("STARTING INIT OF WitnessAngelClientApp")
         super(WAGuiApp, self).__init__(**kwargs)
-        print("AFTER PARENT INIT OF WitnessAngelClientApp")
+        #print("AFTER PARENT INIT OF WitnessAngelClientApp")
         osc_starter_callback()  # Opens server port
-        print("FINISHED INIT OF WitnessAngelClientApp")
+        #print("FINISHED INIT OF WitnessAngelClientApp")
 
     # SETTINGS BUILDING AND SAVING #
 
@@ -127,14 +127,14 @@ class WAGuiApp(WaRuntimeSupportMixin, MDApp):  # FIXME WaGui instead?
         """Enables the user to switch to another application, causing the app to wait
         until the user switches back to it eventually.
         """
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>> ON PAUSE HOOK WAS CALLED")
+        #print(">>>>>>>>>>>>>>>>>>>>>>>>>>> ON PAUSE HOOK WAS CALLED")
         return True  # ACCEPT pausing
 
     def on_resume(self):
         """Called when the app is resumed. Used to restore data that has been
         stored in on_pause().
         """
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>> ON RESUME HOOK WAS CALLED")
+        #print(">>>>>>>>>>>>>>>>>>>>>>>>>>> ON RESUME HOOK WAS CALLED")
         pass
 
     def on_start(self):

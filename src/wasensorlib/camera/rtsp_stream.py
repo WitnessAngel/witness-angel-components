@@ -289,11 +289,11 @@ class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
                 chunk = fh.read(DATA_CHUNK_SIZE)
                 assert chunk is not None  # We're NOT in non-blocking mode!
                 if chunk:
-                    print(">>>>>>>>>> ENCRYPTING CHUNK OF LENGTH", len(chunk))
+                    print(">>>> ENCRYPTING CHUNK OF LENGTH", len(chunk))
                     self._container_encryption_stream.encrypt_chunk(chunk)
                 else:
                     break
-            print(">>>>>>>>>> FINALIZING CONTAINER ENCRYPTION STREAM")
+            print(">>>> FINALIZING CONTAINER ENCRYPTION STREAM")
             self._container_encryption_stream.finalize()
             fh.close()
 

@@ -49,7 +49,7 @@ class AuthenticationDeviceStoreScreen(Screen):
 
     def on_selected_authentication_devices_changed(self, *args):
          pass
-         print("I am dispatched on_selected_authentication_devices_changed", args)
+         #print("I am dispatched on_selected_authentication_devices_changed", args)
 
     def import_keys(self):
         """
@@ -62,7 +62,7 @@ class AuthenticationDeviceStoreScreen(Screen):
         # for index, authentication_device in enumerate(list_devices):
         #print(">>>>>>>>>> import_keys started")
         authentication_devices = list_available_authentication_devices()
-        print("DETECTED AUTH DEVICES", authentication_devices)
+        #print("DETECTED AUTH DEVICES", authentication_devices)
 
         if not authentication_devices:
             msg = tr._("No connected authentication devices found")
@@ -76,7 +76,7 @@ class AuthenticationDeviceStoreScreen(Screen):
                 device_uids = []
 
                 for authentication_device in authentication_devices_initialized:
-                    print(">>>>>>>>>> importing,", authentication_device)
+                    #print(">>>>>>>>>> importing,", authentication_device)
                     key_storage_folder_path = _get_key_storage_folder_path(authentication_device)  # FIXME make it public?
                     try:
                         self.filesystem_key_storage_pool.import_key_storage_from_folder(key_storage_folder_path)
@@ -126,7 +126,7 @@ class AuthenticationDeviceStoreScreen(Screen):
 
         KEYS_ROOT = “~/.keys_storage_ward/”
         """
-        print(">> we refresh auth devices panel")
+        #print(">> we refresh auth devices panel")
         Keys_page_ids = self.ids  # FIXME rename this
 
         Keys_page_ids.imported_authenticator_list.clear_widgets()  # FIXME naming
@@ -168,7 +168,7 @@ class AuthenticationDeviceStoreScreen(Screen):
             authenticator_entry = Factory.WASelectableListItemEntry(text=authenticator_label)  # FIXME RENAME THIS
 
             selection_checkbox = authenticator_entry.ids.selection_checkbox
-            print(">>>>>>>>selection_checkbox", selection_checkbox)
+            #print(">>>>>>>>selection_checkbox", selection_checkbox)
             selection_checkbox.active = str(device_uid) in self.selected_authentication_device_uids
             def selection_callback(widget, value, device_uid=device_uid):  # Force device_uid save here, else scope bug
                 self.check_box_authentication_device_checked(device_uid=device_uid, is_selected=value)
@@ -251,7 +251,7 @@ class AuthenticationDeviceStoreScreen(Screen):
             elif is_selected and device_uid_str not in self.selected_authentication_device_uids:
                 self.selected_authentication_device_uids.append(device_uid_str)
         self.dispatch('on_selected_authentication_devices_changed', self.selected_authentication_device_uids)
-        print("self.selected_authentication_device_uids", self.selected_authentication_device_uids)
+        #print("self.selected_authentication_device_uids", self.selected_authentication_device_uids)
 
     def info_keys_stored(self, device_uid, user):
 

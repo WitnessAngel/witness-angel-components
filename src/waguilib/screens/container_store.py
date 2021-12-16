@@ -47,7 +47,7 @@ class ContainerStoreScreen(Screen):
             if getattr(container_entry, "selected", None):  # Beware of WABigInformationBox
                 assert container_entry.unique_identifier, container_entry.unique_identifier
                 container_names.append(container_entry.unique_identifier)
-        print(">>>>> extract_selected_container_names", container_names)
+        #print(">>>>> extract_selected_container_names", container_names)
         return container_names
 
     @safe_catch_unhandled_exception
@@ -60,8 +60,7 @@ class ContainerStoreScreen(Screen):
         containers_page_ids.container_table.clear_widgets()
         containers_page_ids.container_table.do_layout()  # Prevents bug with "not found" message position
 
-
-        print(">>>>>>>>>>>>>self.filesystem_container_storage, ", self.filesystem_container_storage)
+        #print(">>>>>>>>>>>>>self.filesystem_container_storage, ", self.filesystem_container_storage)
         if self.filesystem_container_storage is None:
             display_layout = Factory.WABigInformationBox()
             display_layout.ids.inner_label.text = tr._("Container storage is invalid")  # FIXME simplify this
@@ -150,7 +149,7 @@ class ContainerStoreScreen(Screen):
             if checkbox.active:
                 container_names.append(checkbox._container_name)
 
-        print("container_names", container_names)
+        #print("container_names", container_names)
         return container_names
 
     def show_container_details(self, container_name):
@@ -266,13 +265,13 @@ class ContainerStoreScreen(Screen):
         relevant_key_storage_metadata = sorted([y for (x,y) in key_storage_metadata.items()
                                                 if x in relevant_authentication_device_uids], key = lambda d: d["user"])
 
-        print("--------------")
-        pprint.pprint(relevant_key_storage_metadata)
+        #print("--------------")
+        #pprint.pprint(relevant_key_storage_metadata)
 
 
         content_cls = PassphrasesDialogContent()
 
-        print(">>>>>>relevant_key_storage_metadata", relevant_key_storage_metadata)
+        #print(">>>>>>relevant_key_storage_metadata", relevant_key_storage_metadata)
         for metadata in relevant_key_storage_metadata:
             hint_text="Passphrase for user %s (hint: %s)" % (metadata["user"], metadata["passphrase_hint"])
             _widget = TextInput(hint_text=hint_text)
@@ -315,9 +314,9 @@ class ContainerStoreScreen(Screen):
                 result = self.filesystem_container_storage.decrypt_container_from_storage(container_name, passphrase_mapper=passphrase_mapper)
                 target_path = EXTERNAL_DATA_EXPORTS_DIR / (Path(container_name).with_suffix(""))
                 target_path.write_bytes(result)
-                print(">> Successfully exported data file to %s" % target_path)
+                #print(">> Successfully exported data file to %s" % target_path)
             except Exception as exc:
-                print(">>>>> close_dialog_decipher_container() exception thrown:", exc)  # TEMPORARY
+                #print(">>>>> close_dialog_decipher_container() exception thrown:", exc)  # TEMPORARY
                 errors.append(exc)
 
         if errors:
