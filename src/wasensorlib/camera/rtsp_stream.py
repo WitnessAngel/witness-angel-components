@@ -231,7 +231,7 @@ class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
         exec = [
             "ffmpeg",
             "-y",  # Always say yes to questions
-
+            "-hide_banner",  # Hide useless "library configuration mismatch" stuffs
         ]
         input = [
             "-rtsp_flags", "prefer_tcp",  # Safer alternative to ( "-rtsp_transport", "tcp", )
