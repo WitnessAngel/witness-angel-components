@@ -84,7 +84,7 @@ def register_current_dialog(dialog):
     # Works for MDFileManager as well as normal ModalView
     global _CURRENT_DIALOG
     if has_current_dialog():
-        raise RuntimeError("Multiple popups can't be opened at the same time: %s" % _CURRENT_DIALOG)
+        return  # Might happen with slow UI, multiple clicks on buttons!
     _CURRENT_DIALOG = dialog
 
 def has_current_dialog():
@@ -100,7 +100,7 @@ def has_current_dialog():
 def close_current_dialog():
     global _CURRENT_DIALOG
     if not has_current_dialog():
-        raise RuntimeError("No popups currently open for closing")
+        return  # Might happen with slow UI, multiple clicks on buttons!
     if isinstance(_CURRENT_DIALOG, MDFileManager):
         _CURRENT_DIALOG.close()  # Wraps a ModalView
     else:
