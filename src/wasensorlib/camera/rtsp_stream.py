@@ -321,11 +321,11 @@ class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
 
     def _do_stop_recording(self):
         if self._subprocess is None:
-            logger.warning("No subprocess to be terminated in RtspCameraSensor stop-recording")
+            logger.error("No subprocess to be terminated in RtspCameraSensor stop-recording")
             return  # Init failed previously
         retcode = self._subprocess.poll()
         if retcode is not None:
-            logger.warning("Subprocess already terminated with code %s in RtspCameraSensor stop-recording" % retcode)
+            logger.error("Subprocess was already terminated with code %s in RtspCameraSensor stop-recording" % retcode)
             return  # Stream must have crashed
         try:
             self._subprocess.stdin.write(b"q")  # FFMPEG command to quit
