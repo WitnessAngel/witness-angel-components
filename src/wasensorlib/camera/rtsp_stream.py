@@ -235,8 +235,9 @@ class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
         ]
         input = [
             "-rtsp_flags", "prefer_tcp",  # Safer alternative to ( "-rtsp_transport", "tcp", )
-            "-timeout", "5000",  # Force failure if input can't be joined anymore
+            "-stimeout", "5000000",  # Force failure if input can't be joined anymore (microseconds!)
             "-fflags", "+igndts",  # Fix "non-monotonous DTS in output stream" error
+            # DO NOT use the "-timeout" argument since it's for LISTENING server
             # Beware these flags only concern HTTP, no use for them in RTPS!
             #  "-reconnect", "1", "-reconnect_at_eof", "1", "-reconnect_streamed", "1",
             #  "-reconnect_delay_max", "10",  "-reconnect_on_network_error", "1",
