@@ -22,7 +22,7 @@ def get_system_information(disk_storage_path: Path):
     Handles unexisting folders too."""
     import psutil
 
-    def _to_bytes_size_str(stat):
+    def _to_bytes_size_str(stat):  # FIXME find better name
         return convert_bytes_to_human_representation(stat)
     def _to_percent_str(stat):
         return "%s%%" % int(stat)

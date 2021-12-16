@@ -92,3 +92,18 @@ class WaRuntimeSupportMixin:
             except ValueError:
                 pass
         return False, tr.f(tr._("Wrong camera url: \"{camera_url}\""))
+
+    @staticmethod
+    def check_video_recording_duration_mn(video_recording_duration_mn):
+        message = tr.f(tr._("Each container stores {video_recording_duration_mn} mn(s) of video"))
+        if video_recording_duration_mn > 0:
+            return True, message
+        return False, message
+
+    @staticmethod
+    def check_max_container_age_day(max_container_age_day):
+        message = tr.f(tr._("Containers are kept for {max_container_age_day} day(s)"))
+        if max_container_age_day > 0:
+            return True, message
+        return False, message
+
