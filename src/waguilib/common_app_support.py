@@ -77,9 +77,10 @@ class WaRuntimeSupportMixin:
 
     @staticmethod
     def check_keyguardian_counts(keyguardian_threshold, keyguardian_count):
+        message = tr.f(tr._("{keyguardian_count} key guardian(s) configured, {keyguardian_threshold} of which necessary for decryption"))
         if 0 < keyguardian_threshold <= keyguardian_count:
-            return True, tr.f(tr._("{keyguardian_count} key guardian(s) configured, {keyguardian_threshold} of which necessary for decryption"))
-        return False, tr.f(tr._("{keyguardian_count} key guardian(s) configured, while {keyguardian_threshold} of which necessary for decryption"))
+            return True, message
+        return False, message
 
     @staticmethod
     def check_camera_url(camera_url):
