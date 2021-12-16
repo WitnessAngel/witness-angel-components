@@ -121,7 +121,7 @@ class EpaperStatusDisplayBase:
             #print(">>>>", idx, key, value)
             label = key.replace("_", " ").title()
             draw.text((1, (text_offset_y + idx * self.line_height)), label, font = font, fill = 0)
-            draw.text(((1 + 100), (text_offset_y + idx * self.line_height)), value, font = font, fill = 0)
+            draw.text(((1 + 120), (text_offset_y + idx * self.line_height)), value, font = font, fill = 0)
             """
             # Print Disk status
             draw.text((text_offset_x, text_offset_y), "Disk Left", font = font, fill = 0)
