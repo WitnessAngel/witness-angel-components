@@ -128,6 +128,9 @@ class WaBackgroundService(WaRuntimeSupportMixin):
         self.config = config
 
     def _remote_logging_callback(self, msg):
+        max_length = 64000  # Beware OSCP server expects max 65535 in input, prevent overflow here
+        if len(msg) > max_length:
+            msg = msg[:max_length] + "<truncated...>"
         return self._send_message("/log_output", "Service: " + msg)
 
     def _send_message(self, address, *values):

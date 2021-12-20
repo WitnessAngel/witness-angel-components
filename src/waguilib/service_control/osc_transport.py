@@ -6,12 +6,24 @@ from kivy.utils import platform
 
 # TODO factorize and use unix socks when possible
 from oscpy.client import OSCClient
-from oscpy.server import OSCThreadServer
+from oscpy.server import OSCThreadServer as _OSCThreadServer
 from waguilib.importable_settings import INTERNAL_APP_ROOT
 
 
+class RobustOSCThreadServer(_OSCThreadServer):
+
+    def _listen(self):
+        while True:  # This server listens forever
+            try:
+                super()._listen()
+            except Exception as exc:
+                print(
+                    "Unhandled exception intercepted in RobustOSCThreadServer._listen(): %r" % exc
+                )
+
+
 def _osc_default_handler(address, *values):
-    logger.warning(
+    print(
         "Unknown OSC address %s called (arguments %s)", address, list(values)
     )
 
@@ -31,7 +43,7 @@ def get_osc_server(is_master=True):
     """
     Get the OSC server for the app (master) or service (slave)
     """
-    server = OSCThreadServer(
+    server = RobustOSCThreadServer(
         encoding="utf8", default_handler=_osc_default_handler
     )  # This launches a DAEMON thread!
 
