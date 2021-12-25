@@ -89,7 +89,7 @@ class ContainerStoreScreen(Screen):
 
         self.container_checkboxes = []
 
-        for index, container_name in enumerate(container_names, start=1):
+        for index, container_name in enumerate(reversed(container_names), start=1):
 
             container_label = tr._("N° {index}: {container_name}").format(index=index, container_name=container_name)
             container_entry = Factory.WASelectableListItemEntry(
@@ -170,9 +170,12 @@ class ContainerStoreScreen(Screen):
             container = self.filesystem_container_storage.load_container_from_storage(container_name)
             all_dependencies = gather_escrow_dependencies([container])
             interesting_dependencies = [d[0] for d in list(all_dependencies["encryption"].values())]
-            container_repr = pprint.pformat(interesting_dependencies, indent=2)[:800]  # LIMIT else pygame.error: Width or height is too large
+            container_repr = "\n".join(str(escrow) for escrow in interesting_dependencies)
+            #container_repr = pprint.pformat(interesting_dependencies, indent=2)[:800]  # LIMIT else pygame.error: Width or height is too large
         except Exception as exc:
             container_repr = repr(exc)
+
+        container_repr = tr._("Key Guardians used:") + "\n\n" + container_repr
 
         self.open_container_details_dialog(container_repr, info_container=container_name)
 
