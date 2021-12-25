@@ -1,12 +1,13 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
+# Pascal <pythoniks@gmail.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-25 12:52+0100\n"
-"PO-Revision-Date: 2021-12-25 12:55+0200\n"
+"POT-Creation-Date: 2021-12-25 13:12+0100\n"
+"PO-Revision-Date: 2021-12-25 13:13+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
@@ -68,7 +69,7 @@ msgstr "Les conteneurs sont gardés {max_container_age_day} jour(s)"
 
 #: src/waguilib/screens/authentication_device_store.kv:18
 msgid "Key Guardians"
-msgstr "Gardiens de Clés"
+msgstr "Gardiens des Clés"
 
 #: src/waguilib/screens/authentication_device_store.kv:21
 #: src/waguilib/screens/authenticator_management.kv:53
@@ -117,7 +118,7 @@ msgid "No imported authentication device found"
 msgstr "Aucun périphérique d'authentification importé trouvé"
 
 #: src/waguilib/screens/authentication_device_store.py:284
-#: src/waguilib/screens/container_store.py:181
+#: src/waguilib/screens/container_store.py:184
 #: src/waguilib/widgets/popups.py:50
 msgid "Close"
 msgstr "Fermer"
@@ -348,8 +349,8 @@ msgstr ""
 #: src/waguilib/screens/authenticator_management.py:260
 #: src/waguilib/screens/authenticator_management.py:270
 #: src/waguilib/screens/authenticator_management.py:294
-#: src/waguilib/screens/container_store.py:219
-#: src/waguilib/screens/container_store.py:299
+#: src/waguilib/screens/container_store.py:222
+#: src/waguilib/screens/container_store.py:302
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -505,17 +506,21 @@ msgstr "Aucun conteneur trouvé"
 msgid "N° {index}: {container_name}"
 msgstr "N° {index}: {container_name}"
 
-#: src/waguilib/screens/container_store.py:220
+#: src/waguilib/screens/container_store.py:178
+msgid "Key Guardians used:"
+msgstr "Gardiens des Clés utilisés :"
+
+#: src/waguilib/screens/container_store.py:223
 msgid "Container deletion confirmation"
 msgstr "Confirmation de suppression de conteneur"
 
-#: src/waguilib/screens/container_store.py:300
+#: src/waguilib/screens/container_store.py:303
 msgid "Container decryption confirmation"
 msgstr "Confirmation de déchiffrement de conteneur"
 
 #: src/waguilib/screens/launcher_with_image_preview.kv:14
 msgid "Control Recorder"
-msgstr "Contrôler l'Enregistreur"
+msgstr "Contrôler Enregistreur"
 
 #: src/waguilib/screens/launcher_with_image_preview.kv:16
 msgid "Settings"
@@ -523,11 +528,11 @@ msgstr "Paramètres"
 
 #: src/waguilib/screens/launcher_with_image_preview.kv:20
 msgid "Start Recording"
-msgstr "Lancer l'Enregistrement"
+msgstr "Lancer Enregistrement"
 
 #: src/waguilib/screens/launcher_with_image_preview.kv:20
 msgid "Stop Recording"
-msgstr "Arrêter l'Enregistrement"
+msgstr "Arrêter Enregistrement"
 
 #: src/waguilib/widgets/popups.py:37
 #, python-format
