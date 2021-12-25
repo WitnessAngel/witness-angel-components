@@ -13,9 +13,11 @@ from wacryptolib.utilities import PeriodicTaskHandler, synchronized
 
 logger = logging.getLogger(__name__)
 
+# How much data to push to encryption stream at the same time
+DATA_CHUNK_SIZE =  2 * 1024**2
 
-DATA_CHUNK_SIZE =  1024**2
-SUPROCESS_BUFFER_SIZE = DATA_CHUNK_SIZE * 5
+# This buffer must be big enough to avoid any overflow while encrypting+dumping data
+SUPROCESS_BUFFER_SIZE = DATA_CHUNK_SIZE * 6
 
 
 def get_utc_now_date():  # FIXME remove this
