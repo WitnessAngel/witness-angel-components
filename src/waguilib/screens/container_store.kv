@@ -1,3 +1,4 @@
+#:import tr waguilib.i18n.tr
 
 
 <PassphrasesDialogContent>:
@@ -24,14 +25,14 @@
         WAVerticalPanel:
 
             WAToolbar:
-                title: "Witness Angel"
+                title: tr._("Containers")
                 left_action_items: [['menu', lambda x: app.navigation_drawer.set_state("toggle")]]
                 right_action_items: [["refresh", lambda x: root.get_detected_container(), tr._("Refresh")], ["home", lambda x: app.get_back_to_home_screen(), tr._("Back to home")],]
 
             WAElevatedBoxLayout:
 
                 MDLabel:
-                    text: tr._("Container management page")
+                    text: tr._("View and manager encrypted containers")
                     padding_x: "10dp"
 
             WAVerticalScrollView:

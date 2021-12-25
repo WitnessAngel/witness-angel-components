@@ -282,7 +282,7 @@ class AuthenticationDeviceStoreScreen(Screen):
     def open_dialog_display_keys_in_authentication_device(self, message, user):
         dialog_with_close_button(
             close_btn_label=tr._("Close"),
-            title=tr._("Imported authentication device of user %s") % user,
+            title=tr._("Key Guardian %s") % user,
             text=message,
         )
 
