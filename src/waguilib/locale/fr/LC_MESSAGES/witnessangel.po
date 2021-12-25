@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-12-25 12:32+0100\n"
-"PO-Revision-Date: 2021-09-30 20:46+0200\n"
+"PO-Revision-Date: 2021-12-25 12:41+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
@@ -22,20 +22,22 @@ msgstr ""
 msgid ""
 "Note that some configuration changes only apply at next recording restart"
 msgstr ""
+"Notez que certains changements de configuration ne s'appliquent qu'au "
+"redémarrage de l'enregistrement"
 
 #: src/waguilib/application/__init__.py:180
 msgid "Configuration errors prevent recording"
-msgstr ""
+msgstr "Des erreurs de configuration empêchent l'enregistrement"
 
 #: src/waguilib/common_app_support.py:74
 #, python-brace-format
 msgid "Container storage: {container_dir}"
-msgstr ""
+msgstr "Stockage des conteneurs : {container_dir}"
 
 #: src/waguilib/common_app_support.py:76
 #, python-brace-format
 msgid "Invalid container storage: \"{container_dir}\""
-msgstr ""
+msgstr "Stockage des conteneurs invalide : {container_dir}"
 
 #: src/waguilib/common_app_support.py:80
 #, python-brace-format
@@ -43,30 +45,32 @@ msgid ""
 "{keyguardian_count} key guardian(s) configured, {keyguardian_threshold} of "
 "which necessary for decryption"
 msgstr ""
+"{keyguardian_count} gardien(s) de clés configuré(s), dont "
+"{keyguardian_threshold} nécessaire(s) pour le déchiffrement"
 
 #: src/waguilib/common_app_support.py:92
 #, python-brace-format
 msgid "Camera url: {camera_url}"
-msgstr ""
+msgstr "Url de la caméra : {camera_url}"
 
 #: src/waguilib/common_app_support.py:95
 #, python-brace-format
 msgid "Wrong camera url: \"{camera_url}\""
-msgstr ""
+msgstr "Mauvaise url de caméra : \"{camera_url}\""
 
 #: src/waguilib/common_app_support.py:99
 #, python-brace-format
 msgid "Each container stores {video_recording_duration_mn} mn(s) of video"
-msgstr ""
+msgstr "Chaque conteneur stocke {video_recording_duration_mn} mn(s) de vidéo"
 
 #: src/waguilib/common_app_support.py:106
 #, python-brace-format
 msgid "Containers are kept for {max_container_age_day} day(s)"
-msgstr ""
+msgstr "Les conteneurs sont gardés {max_container_age_day} jour(s)"
 
 #: src/waguilib/screens/authentication_device_store.kv:18
 msgid "Key Guardians"
-msgstr ""
+msgstr "Gardiens de Clés"
 
 #: src/waguilib/screens/authentication_device_store.kv:21
 #: src/waguilib/screens/authenticator_management.kv:53
@@ -78,33 +82,33 @@ msgstr "Rafraîchir"
 #: src/waguilib/screens/authentication_device_store.kv:21
 #: src/waguilib/screens/container_store.kv:30
 msgid "Back to home"
-msgstr ""
+msgstr "Retour"
 
 #: src/waguilib/screens/authentication_device_store.kv:26
 msgid "Please select the key guardians to be used"
-msgstr ""
+msgstr "Veuillez sélectionner les gardiens de clés à utiliser"
 
 #: src/waguilib/screens/authentication_device_store.py:68
 msgid "No connected authentication devices found"
-msgstr ""
+msgstr "Aucun périphérique d'authentification trouvé"
 
 #: src/waguilib/screens/authentication_device_store.py:74
 msgid "No initialized authentication devices found"
-msgstr ""
+msgstr "Aucun périphérique d'authentification initialisé trouvé"
 
 #: src/waguilib/screens/authentication_device_store.py:167
 #, python-format
 msgid "Key n°%s, User %s, Uid %s"
-msgstr ""
+msgstr "Clé n°%s, Utilisateur %s, Uid %s"
 
 #: src/waguilib/screens/authentication_device_store.py:187
-#, fuzzy
 msgid "Refreshed imported authenticators"
-msgstr "Exporter l'authentifieur"
+msgstr "Rafraîchir les authentifieurs importés"
 
 #: src/waguilib/screens/authentication_device_store.py:239
+#, fuzzy
 msgid "No imported autentication device found"
-msgstr ""
+msgstr "Aucun périphérique d'authentification trouvé"
 
 #: src/waguilib/screens/authentication_device_store.py:284
 #: src/waguilib/screens/container_store.py:181
@@ -115,7 +119,7 @@ msgstr "Fermer"
 #: src/waguilib/screens/authentication_device_store.py:285
 #, python-format
 msgid "Key Guardian %s"
-msgstr ""
+msgstr "Gardiens de Clé %s"
 
 #: src/waguilib/screens/authenticator_creation_form.kv:13
 msgid "Create Authenticator"
@@ -283,9 +287,8 @@ msgid "Drive: {drive} ({label})"
 msgstr "Disque : {drive} ({label})"
 
 #: src/waguilib/screens/authenticator_management.py:177
-#, fuzzy
 msgid "no name"
-msgstr "Utilisateur"
+msgstr "sans nom"
 
 #: src/waguilib/screens/authenticator_management.py:178
 #, python-brace-format
@@ -473,56 +476,56 @@ msgstr "Page de gestion des authentifieurs"
 
 #: src/waguilib/screens/container_store.kv:28
 msgid "Containers"
-msgstr ""
+msgstr "Conteneurs"
 
 #: src/waguilib/screens/container_store.kv:35
 msgid "View and manager encrypted containers"
-msgstr ""
+msgstr "Voir et gérer les conteneurs chiffrés"
 
 #: src/waguilib/screens/container_store.kv:48
 msgid "Delete"
-msgstr ""
+msgstr "Supprimer"
 
 #: src/waguilib/screens/container_store.kv:54
 msgid "Decrypt"
-msgstr ""
+msgstr "Déchiffrer"
 
 #: src/waguilib/screens/container_store.py:75
 msgid "Container storage is invalid"
-msgstr ""
+msgstr "Le dépôt de conteneurs est invalide"
 
 #: src/waguilib/screens/container_store.py:83
 msgid "No containers found"
-msgstr ""
+msgstr "Aucun conteneur trouvé"
 
 #: src/waguilib/screens/container_store.py:94
 #, python-format
 msgid "N° %s:  %s"
-msgstr ""
+msgstr "N° %s: %s"
 
 #: src/waguilib/screens/container_store.py:220
 msgid "Container deletion confirmation"
-msgstr ""
+msgstr "Confirmation de suppression de conteneur"
 
 #: src/waguilib/screens/container_store.py:300
 msgid "Container decryption confirmation"
-msgstr ""
+msgstr "Confirmation de déchiffrement de conteneur"
 
 #: src/waguilib/screens/launcher_with_image_preview.kv:14
 msgid "Control Recorder"
-msgstr ""
+msgstr "Contrôler l'Enregistreur"
 
 #: src/waguilib/screens/launcher_with_image_preview.kv:16
 msgid "Settings"
-msgstr ""
+msgstr "Paramètres"
 
 #: src/waguilib/screens/launcher_with_image_preview.kv:20
 msgid "Start Recording"
-msgstr ""
+msgstr "Lancer l'Enregistrement"
 
 #: src/waguilib/screens/launcher_with_image_preview.kv:20
 msgid "Stop Recording"
-msgstr ""
+msgstr "Arrêter l'Enregistrement"
 
 #: src/waguilib/widgets/popups.py:37
 #, python-format
