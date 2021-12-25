@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-25 11:32+0100\n"
+"POT-Creation-Date: 2021-12-25 12:32+0100\n"
 "PO-Revision-Date: 2021-09-30 20:46+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
@@ -64,22 +64,25 @@ msgstr ""
 msgid "Containers are kept for {max_container_age_day} day(s)"
 msgstr ""
 
+#: src/waguilib/screens/authentication_device_store.kv:18
+msgid "Key Guardians"
+msgstr ""
+
 #: src/waguilib/screens/authentication_device_store.kv:21
 #: src/waguilib/screens/authenticator_management.kv:53
-#: src/waguilib/screens/container_store.kv:29
-#: src/waguilib/screens/launcher_with_image_preview.kv:15
+#: src/waguilib/screens/container_store.kv:30
+#: src/waguilib/screens/launcher_with_image_preview.kv:16
 msgid "Refresh"
 msgstr "Rafraîchir"
 
 #: src/waguilib/screens/authentication_device_store.kv:21
-#: src/waguilib/screens/container_store.kv:29
+#: src/waguilib/screens/container_store.kv:30
 msgid "Back to home"
 msgstr ""
 
 #: src/waguilib/screens/authentication_device_store.kv:26
-#, fuzzy
-msgid "Please select authenticators to use for encryption"
-msgstr "Veuillez sélectionner un emplacement d'authentifieur"
+msgid "Please select the key guardians to be used"
+msgstr ""
 
 #: src/waguilib/screens/authentication_device_store.py:68
 msgid "No connected authentication devices found"
@@ -104,14 +107,14 @@ msgid "No imported autentication device found"
 msgstr ""
 
 #: src/waguilib/screens/authentication_device_store.py:284
-#: src/waguilib/screens/container_store.py:172
+#: src/waguilib/screens/container_store.py:181
 #: src/waguilib/widgets/popups.py:50
 msgid "Close"
 msgstr "Fermer"
 
 #: src/waguilib/screens/authentication_device_store.py:285
 #, python-format
-msgid "Imported authentication device of user %s"
+msgid "Key Guardian %s"
 msgstr ""
 
 #: src/waguilib/screens/authenticator_creation_form.kv:13
@@ -245,7 +248,7 @@ msgid "Manage Authenticators"
 msgstr "Gérer les Authentifieurs"
 
 #: src/waguilib/screens/authenticator_management.kv:53
-#: src/waguilib/screens/launcher_with_image_preview.kv:15
+#: src/waguilib/screens/launcher_with_image_preview.kv:16
 msgid "Language"
 msgstr "Langue"
 
@@ -336,8 +339,8 @@ msgstr ""
 #: src/waguilib/screens/authenticator_management.py:260
 #: src/waguilib/screens/authenticator_management.py:270
 #: src/waguilib/screens/authenticator_management.py:294
-#: src/waguilib/screens/container_store.py:210
-#: src/waguilib/screens/container_store.py:290
+#: src/waguilib/screens/container_store.py:219
+#: src/waguilib/screens/container_store.py:299
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -468,44 +471,71 @@ msgstr ""
 msgid "Authenticator management page"
 msgstr "Page de gestion des authentifieurs"
 
-#: src/waguilib/screens/container_store.kv:34
-#, fuzzy
-msgid "Container management page"
-msgstr "Page de gestion des authentifieurs"
+#: src/waguilib/screens/container_store.kv:28
+msgid "Containers"
+msgstr ""
 
-#: src/waguilib/screens/container_store.kv:47
+#: src/waguilib/screens/container_store.kv:35
+msgid "View and manager encrypted containers"
+msgstr ""
+
+#: src/waguilib/screens/container_store.kv:48
 msgid "Delete"
 msgstr ""
 
-#: src/waguilib/screens/container_store.kv:53
+#: src/waguilib/screens/container_store.kv:54
 msgid "Decrypt"
 msgstr ""
 
-#: src/waguilib/screens/container_store.py:66
+#: src/waguilib/screens/container_store.py:75
 msgid "Container storage is invalid"
 msgstr ""
 
-#: src/waguilib/screens/container_store.py:74
+#: src/waguilib/screens/container_store.py:83
 msgid "No containers found"
 msgstr ""
 
-#: src/waguilib/screens/container_store.py:85
+#: src/waguilib/screens/container_store.py:94
 #, python-format
 msgid "N° %s:  %s"
 msgstr ""
 
-#: src/waguilib/screens/container_store.py:211
+#: src/waguilib/screens/container_store.py:220
 msgid "Container deletion confirmation"
 msgstr ""
 
-#: src/waguilib/screens/container_store.py:291
+#: src/waguilib/screens/container_store.py:300
 msgid "Container decryption confirmation"
+msgstr ""
+
+#: src/waguilib/screens/launcher_with_image_preview.kv:14
+msgid "Control Recorder"
+msgstr ""
+
+#: src/waguilib/screens/launcher_with_image_preview.kv:16
+msgid "Settings"
+msgstr ""
+
+#: src/waguilib/screens/launcher_with_image_preview.kv:20
+msgid "Start Recording"
+msgstr ""
+
+#: src/waguilib/screens/launcher_with_image_preview.kv:20
+msgid "Stop Recording"
 msgstr ""
 
 #: src/waguilib/widgets/popups.py:37
 #, python-format
 msgid "Abnormal error caught: %s"
 msgstr "Erreur anormale détectée : %s"
+
+#, fuzzy
+#~ msgid "Please select authenticators to use for encryption"
+#~ msgstr "Veuillez sélectionner un emplacement d'authentifieur"
+
+#, fuzzy
+#~ msgid "Container management page"
+#~ msgstr "Page de gestion des authentifieurs"
 
 #~ msgid "Find"
 #~ msgstr "Trouver"
