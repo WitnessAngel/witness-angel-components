@@ -16,6 +16,7 @@ from kivymd.uix.list import IconLeftWidget
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.screen import Screen
 
+from waguilib.widgets.layout_helpers import LanguageSwitcherScreenMixin
 from waguilib.widgets.popups import dialog_with_close_button, register_current_dialog, close_current_dialog, \
     help_text_popup
 from wacryptolib.authentication_device import list_available_authentication_devices, \
@@ -60,7 +61,7 @@ class FolderKeyStoreListItem(Factory.ThinTwoLineAvatarIconListItem):
         Clock.schedule_once(force_reset, timeout=1)
     '''
 
-class AuthenticatorSelectorScreen(Screen):
+class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
 
     # FIXME MAKE THEM PUBLIC!!!!!!!!!
     _selected_authenticator_path = ObjectProperty(None, allownone=True) # Path corresponding to a selected authenticator entry
@@ -84,30 +85,8 @@ class AuthenticatorSelectorScreen(Screen):
             select_path=lambda x: (close_current_dialog(), self._import_authenticator_from_archive(x)),
         )
 
-        language_menu_items = [
-            {
-                "text": lang,
-                "viewclass": "OneLineListItem",
-                "on_release": lambda x=lang_code: self.language_menu_select(x),
-            } for (lang, lang_code) in [("English", "en"), ("French", "fr")]
-        ]
-        self._language_selector_menu = MDDropdownMenu(
-            #header_cls=Factory.LanguageMenuHeader(),
-            #caller=self.screen.ids.button,
-            items=language_menu_items,
-            width_mult=2,
-            position="bottom",
-            ver_growth="down",
-            max_height="110dp",
-        )
-
-    def language_menu_open(self, button):
-        self._language_selector_menu.caller = button
-        self._language_selector_menu.open()
-
     def language_menu_select(self, lang_code):
-        self._language_selector_menu.dismiss()
-        tr.switch_lang(lang_code)
+        super().language_menu_select(lang_code)
         self.refresh_authenticator_list()  # Refresh translation of Drive etc.
 
     def _folder_chooser_select_path(self, path, *args):
