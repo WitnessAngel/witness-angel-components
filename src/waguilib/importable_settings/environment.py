@@ -70,7 +70,7 @@ INTERNAL_CONTAINERS_DIR.mkdir(exist_ok=True)
 EXTERNAL_DATA_EXPORTS_DIR = EXTERNAL_APP_ROOT / "DataExports"  # Might no exist yet (and require permissions!)
 
 
-def strip_external_app_prefix(path):
+def strip_external_app_prefix(path):  # FIXME rename this, make it mor clear
     if not path:
         return ""
     path = str(path)  # Convert from Path if needed

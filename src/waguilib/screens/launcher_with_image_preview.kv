@@ -10,13 +10,13 @@
         spacing: 20
 
         WAToolbar:
-            title: "Witness Angel Ward - NVR"
+            title: tr._("Control Recorder")
             left_action_items: [['menu', lambda x: app.navigation_drawer.set_state("toggle")]]
-            right_action_items: [["refresh", lambda x: app.refresh_checkup_status(), tr._("Refresh")], ["earth", lambda x: root.language_menu_open(x), tr._("Language")], ['cog', lambda x: app.open_settings()]]
+            right_action_items: [["refresh", lambda x: app.refresh_checkup_status(), tr._("Refresh")], ["earth", lambda x: root.language_menu_open(x), tr._("Language")], ['cog', lambda x: app.open_settings(), tr._("Settings")]]
 
         ToggleButton:
             id: recording_button
-            text: 'Start Witness Angel' if self.state == 'normal' else 'Stop Witness Angel'
+            text: tr._('Start Recording') if self.state == 'normal' else tr._('Stop Recording')
             pos_hint: {'center_x': 0.5}
             size_hint: (0.7, 0.2)
             on_state: app.switch_to_recording_state(is_recording=(self.state == "down"))
@@ -37,5 +37,8 @@
             allow_stretch: True
             keep_ratio: True
             nocache: True
+            mipmap: True
+
+        VSeparator:
 
 
