@@ -49,6 +49,15 @@
     # size_hint_x: 1  # Set it at last moment later, when needed
 
 
+# Custom Settings panel, without duplicated top title
+
+<-SettingsPanel>:
+    spacing: 5
+    padding: 5
+    size_hint_y: None
+    height: self.minimum_height
+
+
 ## List items ##
 
 <WAListItemLeftCheckbox@ILeftBodyTouch+MDCheckbox>:

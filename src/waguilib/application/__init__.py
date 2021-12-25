@@ -20,7 +20,7 @@ from kivymd.app import MDApp
 from kivy.clock import Clock
 from kivy.logger import Logger as logger
 from kivy.uix.filechooser import filesize_units
-from kivy.uix.settings import SettingsWithTabbedPanel
+from kivy.uix.settings import SettingsWithSpinner
 
 from oscpy.server import ServerClass
 from waguilib.service_control import ServiceController
@@ -54,7 +54,7 @@ class WAGuiApp(WaRuntimeSupportMixin, MDApp):  # FIXME WaGui instead?
 
     language = None  # TO OVERRIDE at instance level
 
-    settings_cls = SettingsWithTabbedPanel
+    settings_cls = SettingsWithSpinner
 
     # Overridden as property to allow event dispatching in GUI
     checkup_status_text = StringProperty("")
