@@ -52,6 +52,15 @@ class ContainerStoreScreen(Screen):
 
     @safe_catch_unhandled_exception
     def get_detected_container(self):
+        # Use this to profile slow list creation
+        #import cProfile
+        #cProfile.runctx("self._get_detected_container()", locals=locals(), globals=globals(), sort="cumulative")
+        self._get_detected_container()
+
+    def _get_detected_container(self):
+        # FIXME use RecycleView instead for performance!!
+        # https://stackoverflow.com/questions/70333878/kivymd-recycleview-has-low-fps-lags
+
         containers_page_ids = self.ids
 
         #self.root.ids.screen_manager.get_screen(
