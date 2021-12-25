@@ -1,14 +1,12 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# Pascal <chambon.pascal@gmail.com>, 2021.
-# Pascal <pythoniks@gmail.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-25 12:42+0100\n"
-"PO-Revision-Date: 2021-12-25 12:43+0200\n"
+"POT-Creation-Date: 2021-12-25 12:52+0100\n"
+"PO-Revision-Date: 2021-12-25 12:55+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
@@ -88,6 +86,15 @@ msgstr "Retour"
 msgid "Please select the key guardians to be used"
 msgstr "Veuillez sélectionner les gardiens de clés à utiliser"
 
+#: src/waguilib/screens/authentication_device_store.kv:40
+msgid "Import from USB"
+msgstr "Import depuis USB"
+
+#: src/waguilib/screens/authentication_device_store.kv:46
+#: src/waguilib/screens/container_store.kv:48
+msgid "Delete"
+msgstr "Supprimer"
+
 #: src/waguilib/screens/authentication_device_store.py:68
 msgid "No connected authentication devices found"
 msgstr "Aucun périphérique d'authentification trouvé"
@@ -97,9 +104,9 @@ msgid "No initialized authentication devices found"
 msgstr "Aucun périphérique d'authentification initialisé trouvé"
 
 #: src/waguilib/screens/authentication_device_store.py:167
-#, python-format
-msgid "Key n°%s, User %s, Uid %s"
-msgstr "Clé n°%s, Utilisateur %s, Uid %s"
+#, python-brace-format
+msgid "User {user} - Uid {uid}"
+msgstr "Utilisateur {user} - Uid {uid}"
 
 #: src/waguilib/screens/authentication_device_store.py:187
 msgid "Refreshed imported authenticators"
@@ -481,10 +488,6 @@ msgstr "Conteneurs"
 msgid "View and manager encrypted containers"
 msgstr "Voir et gérer les conteneurs chiffrés"
 
-#: src/waguilib/screens/container_store.kv:48
-msgid "Delete"
-msgstr "Supprimer"
-
 #: src/waguilib/screens/container_store.kv:54
 msgid "Decrypt"
 msgstr "Déchiffrer"
@@ -498,9 +501,9 @@ msgid "No containers found"
 msgstr "Aucun conteneur trouvé"
 
 #: src/waguilib/screens/container_store.py:94
-#, python-format
-msgid "N° %s: %s"
-msgstr "N° %s: %s"
+#, python-brace-format
+msgid "N° {index}: {container_name}"
+msgstr "N° {index}: {container_name}"
 
 #: src/waguilib/screens/container_store.py:220
 msgid "Container deletion confirmation"
@@ -530,6 +533,12 @@ msgstr "Arrêter l'Enregistrement"
 #, python-format
 msgid "Abnormal error caught: %s"
 msgstr "Erreur anormale détectée : %s"
+
+#~ msgid "N° %s: %s"
+#~ msgstr "N° %s: %s"
+
+#~ msgid "Key n°%s, User %s, Uid %s"
+#~ msgstr "Clé n°%s, Utilisateur %s, Uid %s"
 
 #, fuzzy
 #~ msgid "Please select authenticators to use for encryption"

@@ -91,7 +91,7 @@ class ContainerStoreScreen(Screen):
 
         for index, container_name in enumerate(container_names, start=1):
 
-            container_label = tr._("N° %s: %s") % (index, container_name)
+            container_label = tr._("N° {index}: {container_name}").format(index=index, container_name=container_name)
             container_entry = Factory.WASelectableListItemEntry(
                     text=container_label)  # FIXME RENAME THIS
             container_entry.unique_identifier = container_name
