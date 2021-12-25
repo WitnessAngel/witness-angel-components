@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-25 12:32+0100\n"
-"PO-Revision-Date: 2021-12-25 12:41+0200\n"
+"POT-Creation-Date: 2021-12-25 12:42+0100\n"
+"PO-Revision-Date: 2021-12-25 12:43+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
@@ -106,9 +106,8 @@ msgid "Refreshed imported authenticators"
 msgstr "Rafraîchir les authentifieurs importés"
 
 #: src/waguilib/screens/authentication_device_store.py:239
-#, fuzzy
-msgid "No imported autentication device found"
-msgstr "Aucun périphérique d'authentification trouvé"
+msgid "No imported authentication device found"
+msgstr "Aucun périphérique d'authentification importé trouvé"
 
 #: src/waguilib/screens/authentication_device_store.py:284
 #: src/waguilib/screens/container_store.py:181
@@ -500,7 +499,7 @@ msgstr "Aucun conteneur trouvé"
 
 #: src/waguilib/screens/container_store.py:94
 #, python-format
-msgid "N° %s:  %s"
+msgid "N° %s: %s"
 msgstr "N° %s: %s"
 
 #: src/waguilib/screens/container_store.py:220

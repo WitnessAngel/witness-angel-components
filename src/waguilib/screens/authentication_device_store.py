@@ -236,7 +236,7 @@ class AuthenticationDeviceStoreScreen(Screen):
         # Display_layout.add_widget(devices_display)
 
         Display_layout = Factory.WABigInformationBox()
-        Display_layout.ids.inner_label.text = tr._("No imported autentication device found")
+        Display_layout.ids.inner_label.text = tr._("No imported authentication device found")
         keys_page_ids = self.ids
         keys_page_ids.imported_authenticator_list.add_widget(Display_layout)
 
