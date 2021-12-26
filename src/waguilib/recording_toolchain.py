@@ -22,7 +22,7 @@ if IS_ANDROID:
 
 
 # EXAMPLE IMPLEMENTATION
-def ___build_recording_toolchain(config, key_storage_pool, encryption_conf):
+def ___build_recording_toolchain(config, key_storage_pool, cryptoconf):
     """Instantiate the whole toolchain of sensors and aggregators, depending on the config.
 
     Returns None if no toolchain is enabled by config.
@@ -77,7 +77,7 @@ def ___build_recording_toolchain(config, key_storage_pool, encryption_conf):
     )
 
     container_storage = ContainerStorage(
-        default_encryption_conf=encryption_conf,
+        default_encryption_conf=cryptoconf,
         containers_dir=INTERNAL_CONTAINERS_DIR,
         max_containers_count=max_containers_count,
         key_storage_pool=key_storage_pool,
