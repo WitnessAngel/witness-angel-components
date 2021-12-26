@@ -24,7 +24,7 @@ from waclient.common_config import (
     APP_CONFIG_FILE,
     INTERNAL_KEYS_DIR,
     EXTERNAL_DATA_EXPORTS_DIR,
-    get_encryption_conf,
+    get_cryptoconf,
     IS_ANDROID, WIP_RECORDING_MARKER, CONTEXT)
 
 from waclient.recording_toolchain import (
@@ -96,9 +96,9 @@ class WaBackgroundService(WaRuntimeSupportMixin):
         if WIP_RECORDING_MARKER.exists():
             self.start_recording()  # Autorecord e.g. after a restart due to closing of main android Activity
 
-    def _get_encryption_conf(self):
+    def _get_cryptoconf(self):
         """Return a wacryptolib-compatible encryption configuration"""
-        raise NotImplementedError("_get_encryption_conf()")
+        raise NotImplementedError("_get_cryptoconf()")
 
     def _build_recording_toolchain(self):
         """Return a valid recording toolchain"""

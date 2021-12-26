@@ -77,7 +77,7 @@ def ___build_recording_toolchain(config, key_storage_pool, cryptoconf):
     )
 
     container_storage = ContainerStorage(
-        default_encryption_conf=cryptoconf,
+        default_cryptoconf=cryptoconf,
         containers_dir=INTERNAL_CONTAINERS_DIR,
         max_containers_count=max_containers_count,
         key_storage_pool=key_storage_pool,

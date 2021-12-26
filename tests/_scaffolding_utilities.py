@@ -44,7 +44,7 @@ def check_periodic_stream_pusher_basic_behaviour(sensor_class: PeriodicStreamPus
     """
     offload_data_ciphertext = random().choice((True, False))
     container_storage = FakeTestContainerStorage(
-        default_encryption_conf={"zexcsc": True},
+        default_cryptoconf={"zexcsc": True},
         containers_dir=containers_dir,
         offload_data_ciphertext=offload_data_ciphertext,
     )
