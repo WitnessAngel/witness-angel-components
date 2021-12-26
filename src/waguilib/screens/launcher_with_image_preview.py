@@ -24,7 +24,7 @@ from kivymd.uix.snackbar import Snackbar
 from waguilib.importable_settings import EXTERNAL_DATA_EXPORTS_DIR
 from waguilib.logging.handlers import safe_catch_unhandled_exception
 
-from wacryptolib.container import gather_escrow_dependencies
+from wacryptolib.cryptainer import gather_escrow_dependencies
 from waguilib.widgets.layout_helpers import LanguageSwitcherScreenMixin
 
 Builder.load_file(str(Path(__file__).parent / 'launcher_with_image_preview.kv'))

@@ -26,7 +26,7 @@ from waguilib.i18n import tr
 from waguilib.importable_settings import EXTERNAL_DATA_EXPORTS_DIR
 from waguilib.logging.handlers import safe_catch_unhandled_exception
 
-from wacryptolib.container import gather_escrow_dependencies
+from wacryptolib.cryptainer import gather_escrow_dependencies
 from waguilib.widgets.popups import close_current_dialog, dialog_with_close_button
 
 Builder.load_file(str(Path(__file__).parent / 'container_store.kv'))

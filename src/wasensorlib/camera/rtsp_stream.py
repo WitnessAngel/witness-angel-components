@@ -6,7 +6,7 @@ import threading
 from datetime import timezone, datetime
 from pathlib import Path
 
-from wacryptolib.container import CONTAINER_DATETIME_FORMAT
+from wacryptolib.cryptainer import CONTAINER_DATETIME_FORMAT
 from wacryptolib.sensor import TarfileRecordsAggregator
 from wacryptolib.utilities import PeriodicTaskHandler, synchronized
 

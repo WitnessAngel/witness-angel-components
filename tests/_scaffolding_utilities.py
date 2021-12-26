@@ -4,7 +4,7 @@ import tempfile
 import time
 from ffprobe import FFProbe
 
-from wacryptolib.container import ContainerStorage
+from wacryptolib.cryptainer import ContainerStorage
 from wacryptolib.sensor import TarfileRecordsAggregator
 from wasensorlib.camera.rtsp_stream import PeriodicStreamPusher
 
