@@ -14,7 +14,7 @@ from kivymd.uix.screen import Screen
 from waguilib.widgets.popups import dialog_with_close_button, process_method_with_gui_spinner, register_current_dialog, \
     close_current_dialog, help_text_popup
 from wacryptolib.authenticator import initialize_authenticator
-from wacryptolib.key_generation import generate_asymmetric_keypair
+from wacryptolib.key_generation import generate_keypair
 from wacryptolib.key_storage import FilesystemKeyStorage
 from wacryptolib.utilities import generate_uuid0
 
@@ -101,7 +101,7 @@ class AuthenticatorCreationScreen(Screen):
 
             for i in range(1, GENERATED_KEYS_COUNT+1):
                 # TODO add some logging here
-                key_pair = generate_asymmetric_keypair(
+                key_pair = generate_keypair(
                     key_type="RSA_OAEP",
                     passphrase=form_values["passphrase"]
                 )
