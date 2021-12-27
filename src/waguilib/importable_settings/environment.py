@@ -64,8 +64,8 @@ INTERNAL_AUTHENTICATOR_DIR.mkdir(exist_ok=True)
 INTERNAL_KEYS_DIR = INTERNAL_APP_ROOT / "KeyStorage"
 INTERNAL_KEYS_DIR.mkdir(exist_ok=True)
 
-INTERNAL_CONTAINERS_DIR = INTERNAL_APP_ROOT / "Containers"
-INTERNAL_CONTAINERS_DIR.mkdir(exist_ok=True)
+INTERNAL_CRYPTAINER_DIR = INTERNAL_APP_ROOT / "Containers"  # FIXME rename
+INTERNAL_CRYPTAINER_DIR.mkdir(exist_ok=True)
 
 EXTERNAL_DATA_EXPORTS_DIR = EXTERNAL_APP_ROOT / "DataExports"  # Might no exist yet (and require permissions!)
 

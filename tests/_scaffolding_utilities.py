@@ -4,12 +4,12 @@ import tempfile
 import time
 from ffprobe import FFProbe
 
-from wacryptolib.cryptainer import ContainerStorage
+from wacryptolib.cryptainer import CryptainerStorage
 from wacryptolib.sensor import TarfileRecordsAggregator
 from wasensorlib.camera.rtsp_stream import PeriodicStreamPusher
 
 
-class FakeTestContainerStorage(ContainerStorage):
+class FakeTestCryptainerStorage(CryptainerStorage):
     """Fake class which bypasses encryption and forces filename unicity regardless of datetime, to speed up tests..."""
 
     increment = 0
@@ -18,11 +18,11 @@ class FakeTestContainerStorage(ContainerStorage):
         super().enqueue_file_for_encryption(filename_base + (".%03d" % self.increment), data, **kwargs)
         self.increment += 1
 
-    def _encrypt_data_into_container(self, data, **kwargs):
+    def _encrypt_data_into_cryptainer(self, data, **kwargs):
         return dict(data_ciphertext=data)
 
-    def _decrypt_data_from_container(self, container, **kwargs):
-        return container["data_ciphertext"]
+    def _decrypt_data_from_cryptainer(self, cryptainer, **kwargs):
+        return cryptainer["data_ciphertext"]
 
 
 class FakeTarfileRecordsAggregator(TarfileRecordsAggregator):  # USELESS ????
@@ -43,7 +43,7 @@ def check_periodic_stream_pusher_basic_behaviour(sensor_class: PeriodicStreamPus
 
     """
     offload_data_ciphertext = random().choice((True, False))
-    container_storage = FakeTestContainerStorage(
+    container_storage = FakeTestCryptainerStorage(
         default_cryptoconf={"zexcsc": True},
         containers_dir=containers_dir,
         offload_data_ciphertext=offload_data_ciphertext,

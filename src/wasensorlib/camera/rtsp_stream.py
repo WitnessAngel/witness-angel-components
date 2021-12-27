@@ -6,7 +6,7 @@ import threading
 from datetime import timezone, datetime
 from pathlib import Path
 
-from wacryptolib.cryptainer import CONTAINER_DATETIME_FORMAT
+from wacryptolib.cryptainer import CRYPTAINER_DATETIME_FORMAT
 from wacryptolib.sensor import TarfileRecordsAggregator
 from wacryptolib.utilities import PeriodicTaskHandler, synchronized
 
@@ -143,8 +143,8 @@ class PeriodicStreamPusher(PeriodicTaskHandler):
     def _build_filename_base(self, from_datetime):
         extension = self.record_extension
         assert extension.startswith("."), extension
-        from_ts = from_datetime.strftime(CONTAINER_DATETIME_FORMAT)
-        filename = "{from_ts}_container{extension}".format(**locals())
+        from_ts = from_datetime.strftime(CRYPTAINER_DATETIME_FORMAT)
+        filename = "{from_ts}_cryptainer{extension}".format(**locals())
         assert " " not in filename, repr(filename)
         return filename
 
@@ -218,13 +218,13 @@ class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
 
     def __init__(self,
                  interval_s,
-                 container_storage,
+                 cryptainer_storage,
                  video_stream_url: str,
                  preview_image_path: Path):
         super().__init__(interval_s=interval_s)
         assert video_stream_url and preview_image_path, (video_stream_url, preview_image_path)
-        self._container_storage = container_storage
-        self._container_encryption_stream = None
+        self._cryptainer_storage = cryptainer_storage
+        self._cryptainer_encryption_stream = None
         self._video_stream_url = video_stream_url
         self._preview_image_path = preview_image_path
 
@@ -292,11 +292,11 @@ class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
                 assert chunk is not None  # We're NOT in non-blocking mode!
                 if chunk:
                     print(">>>> ENCRYPTING CHUNK OF LENGTH", len(chunk))
-                    self._container_encryption_stream.encrypt_chunk(chunk)
+                    self._cryptainer_encryption_stream.encrypt_chunk(chunk)
                 else:
                     break
             print(">>>> FINALIZING CONTAINER ENCRYPTION STREAM")
-            self._container_encryption_stream.finalize()
+            self._cryptainer_encryption_stream.finalize()
             fh.close()
 
         self._stdout_thread = threading.Thread(target=_stdoutreaderthread,
@@ -318,8 +318,8 @@ class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
         #    logger.warning("recorder process exited with abnormal code %s", returncode)
 
     def _do_start_recording(self):
-        self._container_encryption_stream = self._container_storage.create_container_encryption_stream(
-            self._build_filename_base(self._current_start_time), metadata=None, dump_initial_container=True)
+        self._cryptainer_encryption_stream = self._cryptainer_storage.create_cryptainer_encryption_stream(
+            self._build_filename_base(self._current_start_time), metadata=None, dump_initial_cryptainer=True)
         self._launch_and_wait_ffmpeg_process()
 
     def _do_stop_recording(self):

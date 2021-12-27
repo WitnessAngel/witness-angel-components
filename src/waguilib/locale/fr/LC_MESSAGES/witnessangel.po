@@ -30,13 +30,13 @@ msgstr "Des erreurs de configuration empêchent l'enregistrement"
 
 #: src/waguilib/common_app_support.py:74
 #, python-brace-format
-msgid "Container storage: {container_dir}"
-msgstr "Stockage des conteneurs : {container_dir}"
+msgid "Container storage: {cryptainer_dir}"
+msgstr "Stockage des conteneurs : {cryptainer_dir}"
 
 #: src/waguilib/common_app_support.py:76
 #, python-brace-format
-msgid "Invalid container storage: \"{container_dir}\""
-msgstr "Stockage des conteneurs invalide : {container_dir}"
+msgid "Invalid container storage: \"{cryptainer_dir}\""
+msgstr "Stockage des conteneurs invalide : {cryptainer_dir}"
 
 #: src/waguilib/common_app_support.py:80
 #, python-brace-format
@@ -64,8 +64,8 @@ msgstr "Chaque conteneur stocke {video_recording_duration_mn} mn(s) de vidéo"
 
 #: src/waguilib/common_app_support.py:106
 #, python-brace-format
-msgid "Containers are kept for {max_container_age_day} day(s)"
-msgstr "Les conteneurs sont gardés {max_container_age_day} jour(s)"
+msgid "Containers are kept for {max_cryptainer_age_day} day(s)"
+msgstr "Les conteneurs sont gardés {max_cryptainer_age_day} jour(s)"
 
 #: src/waguilib/screens/authentication_device_store.kv:18
 msgid "Key Guardians"

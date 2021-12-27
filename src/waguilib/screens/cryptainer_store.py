@@ -29,89 +29,89 @@ from waguilib.logging.handlers import safe_catch_unhandled_exception
 from wacryptolib.cryptainer import gather_escrow_dependencies
 from waguilib.widgets.popups import close_current_dialog, dialog_with_close_button
 
-Builder.load_file(str(Path(__file__).parent / 'container_store.kv'))
+Builder.load_file(str(Path(__file__).parent / 'cryptainer_store.kv'))
 
 
 class PassphrasesDialogContent(BoxLayout):
     pass
 
 
-class ContainerStoreScreen(Screen):
+class CryptainerStoreScreen(Screen):
 
     #: The container storage managed by this Screen, might be None if unset
-    filesystem_container_storage = ObjectProperty(None, allownone=True)
+    filesystem_cryptainer_storage = ObjectProperty(None, allownone=True)
 
-    def _get_selected_container_names(self):
-        container_names = []
-        for container_entry in self.ids.container_table.children:
-            if getattr(container_entry, "selected", None):  # Beware of WABigInformationBox
-                assert container_entry.unique_identifier, container_entry.unique_identifier
-                container_names.append(container_entry.unique_identifier)
-        #print(">>>>> extract_selected_container_names", container_names)
-        return container_names
+    def _get_selected_cryptainer_names(self):
+        cryptainer_names = []
+        for cryptainer_entry in self.ids.cryptainer_table.children:
+            if getattr(cryptainer_entry, "selected", None):  # Beware of WABigInformationBox
+                assert cryptainer_entry.unique_identifier, cryptainer_entry.unique_identifier
+                cryptainer_names.append(cryptainer_entry.unique_identifier)
+        #print(">>>>> extract_selected_cryptainer_names", container_names)
+        return cryptainer_names
 
     @safe_catch_unhandled_exception
-    def get_detected_container(self):
+    def get_detected_cryptainer(self):
         # Use this to profile slow list creation
         #import cProfile
-        #cProfile.runctx("self._get_detected_container()", locals=locals(), globals=globals(), sort="cumulative")
-        self._get_detected_container()
+        #cProfile.runctx("self._get_detected_cryptainer()", locals=locals(), globals=globals(), sort="cumulative")
+        self._get_detected_cryptainer()
 
-    def _get_detected_container(self):
+    def _get_detected_cryptainer(self):
         # FIXME use RecycleView instead for performance!!
         # https://stackoverflow.com/questions/70333878/kivymd-recycleview-has-low-fps-lags
 
-        containers_page_ids = self.ids
+        cryptainers_page_ids = self.ids
 
         #self.root.ids.screen_manager.get_screen(
         #    "Container_management"
         #).ids
-        containers_page_ids.container_table.clear_widgets()
-        containers_page_ids.container_table.do_layout()  # Prevents bug with "not found" message position
+        cryptainers_page_ids.cryptainer_table.clear_widgets()
+        cryptainers_page_ids.cryptainer_table.do_layout()  # Prevents bug with "not found" message position
 
-        #print(">>>>>>>>>>>>>self.filesystem_container_storage, ", self.filesystem_container_storage)
-        if self.filesystem_container_storage is None:
+        #print(">>>>>>>>>>>>>self.filesystem_cryptainer_storage, ", self.filesystem_cryptainer_storage)
+        if self.filesystem_cryptainer_storage is None:
             display_layout = Factory.WABigInformationBox()
             display_layout.ids.inner_label.text = tr._("Container storage is invalid")  # FIXME simplify this
-            containers_page_ids.container_table.add_widget(display_layout)
+            cryptainers_page_ids.cryptainer_table.add_widget(display_layout)
             return
 
-        container_names = self.filesystem_container_storage.list_container_names(as_sorted=True)
+        cryptainer_names = self.filesystem_cryptainer_storage.list_cryptainer_names(as_sorted=True)
 
-        if not container_names:
+        if not cryptainer_names:
             display_layout = Factory.WABigInformationBox()
             display_layout.ids.inner_label.text = tr._("No containers found")
-            containers_page_ids.container_table.add_widget(display_layout)
+            cryptainers_page_ids.cryptainer_table.add_widget(display_layout)
             return
 
-        self.check_box_container_uuid_dict = {}
-        self.btn_container_uuid_dict = {}
+        self.check_box_cryptainer_uuid_dict = {}
+        self.btn_cryptainer_uuid_dict = {}
 
-        self.container_checkboxes = []
+        self.cryptainer_checkboxes = []
 
-        for index, container_name in enumerate(reversed(container_names), start=1):
+        for index, cryptainer_name in enumerate(reversed(cryptainer_names), start=1):
 
-            container_label = tr._("N° {index}: {container_name}").format(index=index, container_name=container_name)
-            container_entry = Factory.WASelectableListItemEntry(
-                    text=container_label)  # FIXME RENAME THIS
-            container_entry.unique_identifier = container_name
+            cryptainer_label = tr._("N° {index}: {container_name}").format(index=index, cryptainer_name=cryptainer_name)
+            cryptainer_entry = Factory.WASelectableListItemEntry(
+                    text=cryptainer_label)  # FIXME RENAME THIS
+            cryptainer_entry.unique_identifier = cryptainer_name
             #selection_checkbox = container_entry.ids.selection_checkbox
 
             #def selection_callback(widget, value, container_name=container_name):  # Force container_name save here, else scope bug
             #    self.check_box_authentication_device_checked(device_uid=device_uid, is_selected=value)
             #selection_checkbox.bind(active=selection_callback)
 
-            def information_callback(widget, container_name=container_name):  # Force device_uid save here, else scope bug
-                self.show_container_details(container_name=container_name)
-            information_icon = container_entry.ids.information_icon
+            def information_callback(widget, cryptainer_name=cryptainer_name):  # Force device_uid save here, else scope bug
+                self.show_cryptainer_details(cryptainer_name=cryptainer_name)
+            information_icon = cryptainer_entry.ids.information_icon
             information_icon.bind(on_press=information_callback)
 
-            containers_page_ids.container_table.add_widget(container_entry)
+            cryptainers_page_ids.cryptainer_table.add_widget(cryptainer_entry)
             """
             my_check_box = CheckBox(active=False,
                                     size_hint=(0.1, None), height=40)
-            my_check_box._container_name = container_name
-            #my_check_box.bind(active=self.check_box_container_checked)
+            my_check_box._cryptainer_name = container_name
+            #my_check_box.bind(active=self.check_box_cryptainer_checked)
             self.container_checkboxes.append(my_check_box)
 
             my_check_btn = Button(
@@ -119,15 +119,15 @@ class ContainerStoreScreen(Screen):
                 % (index, container_name),
                 size_hint=(0.9, None),
                 background_color=(1, 1, 1, 0.01),
-                on_release=functools.partial(self.show_container_details, container_name=container_name),
+                on_release=functools.partial(self.show_cryptainer_details, container_name=container_name),
                 height=40,
             )"""
             '''
-            self.check_box_container_uuid_dict[my_check_box] = [
+            self.check_box_cryptainer_uuid_dict[my_check_box] = [
                 str(container[0]["container_uid"]),
                 str(container[1]),
             ]
-            self.btn_container_uuid_dict[my_check_btn] = [
+            self.btn_cryptainer_uuid_dict[my_check_btn] = [
                 str(container[0]["container_uid"]),
                 str(container[1]),
             ]
@@ -146,48 +146,48 @@ class ContainerStoreScreen(Screen):
 
         #print("self.container_checkboxes", self.container_checkboxes)
 
-    def get_selected_container_names(self):
+    def get_selected_cryptainer_names(self):
 
-        containers_page_ids = self.ids
+        cryptainers_page_ids = self.ids
 
-        container_names = []
+        cryptainer_names = []
 
-        checkboxes = list(reversed(containers_page_ids.container_table.children))[::2]
+        checkboxes = list(reversed(cryptainers_page_ids.cryptainer_table.children))[::2]
 
         for checkbox in checkboxes:
             if checkbox.active:
-                container_names.append(checkbox._container_name)
+                cryptainer_names.append(checkbox._cryptainer_name)
 
         #print("container_names", container_names)
-        return container_names
+        return cryptainer_names
 
-    def show_container_details(self, container_name):
+    def show_cryptainer_details(self, cryptainer_name):
         """
         Display the contents of container
         """
-        assert self.filesystem_container_storage, self.filesystem_container_storage  # By construction...
+        assert self.filesystem_cryptainer_storage, self.filesystem_cryptainer_storage  # By construction...
         try:
-            container = self.filesystem_container_storage.load_container_from_storage(container_name)
-            all_dependencies = gather_escrow_dependencies([container])
+            cryptainer = self.filesystem_cryptainer_storage.load_cryptainer_from_storage(cryptainer_name)
+            all_dependencies = gather_escrow_dependencies([cryptainer])
             interesting_dependencies = [d[0] for d in list(all_dependencies["encryption"].values())]
-            container_repr = "\n".join(str(escrow) for escrow in interesting_dependencies)
+            cryptainer_repr = "\n".join(str(escrow) for escrow in interesting_dependencies)
             #container_repr = pprint.pformat(interesting_dependencies, indent=2)[:800]  # LIMIT else pygame.error: Width or height is too large
         except Exception as exc:
-            container_repr = repr(exc)
+            cryptainer_repr = repr(exc)
 
-        container_repr = tr._("Key Guardians used:") + "\n\n" + container_repr
+        cryptainer_repr = tr._("Key Guardians used:") + "\n\n" + cryptainer_repr
 
-        self.open_container_details_dialog(container_repr, info_container=container_name)
+        self.open_cryptainer_details_dialog(cryptainer_repr, info_cryptainer=cryptainer_name)
 
-    def open_container_details_dialog(self, message, info_container):
+    def open_cryptainer_details_dialog(self, message, info_cryptainer):
         dialog_with_close_button(
             close_btn_label=tr._("Close"),
-            title=str(info_container),
+            title=str(info_cryptainer),
             text=message,
         )
         '''
         self.dialog = MDDialog(
-            title=str(info_container),
+            title=str(info_cryptainer),
             text=message,
             size_hint=(0.8, 1),
             buttons=[MDFlatButton(text=tr._("Close"), on_release=lambda *args: close_current_dialog())],
@@ -196,26 +196,26 @@ class ContainerStoreScreen(Screen):
         '''
 
 
-    def open_dialog_delete_container(self):
+    def open_dialog_delete_cryptainer(self):
 
-        container_names = self._get_selected_container_names()
-        if not container_names:
+        cryptainer_names = self._get_selected_cryptainer_names()
+        if not cryptainer_names:
             return
 
-        message = "Are you sure you want to delete %s container(s)?" % len(container_names)
+        message = "Are you sure you want to delete %s container(s)?" % len(cryptainer_names)
         """
         self.list_chbx_active = []
-        for chbx in self.check_box_container_uuid_dict:
+        for chbx in self.check_box_cryptainer_uuid_dict:
             if chbx.active:
                 self.list_chbx_active.append(chbx)
 
-        count_container_checked =len(self.list_chbx_active)
-        if count_container_checked == 1:
+        count_cryptainer_checked =len(self.list_chbx_active)
+        if count_cryptainer_checked == 1:
             messge = " do you want to delete these container?"
-        elif count_container_checked > 1:
+        elif count_cryptainer_checked > 1:
             messge = (
                 " do you want to delete these %d containers"
-                % count_container_checked
+                % count_cryptainer_checked
             )
         """
         dialog_with_close_button(
@@ -224,51 +224,51 @@ class ContainerStoreScreen(Screen):
             text=message,
             buttons=[
                 MDFlatButton(
-                    text="Confirm deletion", on_release=lambda *args: (close_current_dialog(), self.delete_containers(container_names=container_names))
+                    text="Confirm deletion", on_release=lambda *args: (close_current_dialog(), self.delete_cryptainers(cryptainer_names=cryptainer_names))
                 ),]
         )
 
-    def delete_containers(self, container_names):
-        assert self.filesystem_container_storage, self.filesystem_container_storage  # By construction...
-        for container_name in container_names:
+    def delete_cryptainers(self, cryptainer_names):
+        assert self.filesystem_cryptainer_storage, self.filesystem_cryptainer_storage  # By construction...
+        for cryptainer_name in cryptainer_names:
             try:
-                self.filesystem_container_storage.delete_container(container_name)
+                self.filesystem_cryptainer_storage.delete_cryptainer(cryptainer_name)
             except FileNotFoundError:
                 pass  # File has probably been puregd already
 
-        self.get_detected_container()  # FIXME rename
+        self.get_detected_cryptainer()  # FIXME rename
 
 
-    def open_dialog_decipher_container(self):
+    def open_dialog_decipher_cryptainer(self):
 
-        container_names = self._get_selected_container_names()
-        if not container_names:
+        cryptainer_names = self._get_selected_cryptainer_names()
+        if not cryptainer_names:
             return
 
-        message = "Decrypt %s container(s)?" % len(container_names)
+        message = "Decrypt %s container(s)?" % len(cryptainer_names)
 
         """
         self.list_chbx_active = []
-        for chbx in self.check_box_container_uuid_dict:
+        for chbx in self.check_box_cryptainer_uuid_dict:
             if chbx.active:
                 self.list_chbx_active.append(chbx)
 
-        count_container_checked = len(self.list_chbx_active)
+        count_cryptainer_checked = len(self.list_chbx_active)
 
-        if count_container_checked == 1:
+        if count_cryptainer_checked == 1:
             messge = " do you want to decipher these container?"
-        elif count_container_checked > 1:
+        elif count_cryptainer_checked > 1:
             messge = (
-                    " Do you want to decipher these %d containers" % count_container_checked
+                    " Do you want to decipher these %d containers" % count_cryptainer_checked
             )
         """
 
-        assert self.filesystem_container_storage, self.filesystem_container_storage  # By construction...
-        filesystem_key_storage_pool = self.filesystem_container_storage._key_storage_pool  # FIXME add public getter
+        assert self.filesystem_cryptainer_storage, self.filesystem_cryptainer_storage  # By construction...
+        filesystem_key_storage_pool = self.filesystem_cryptainer_storage._key_storage_pool  # FIXME add public getter
         key_storage_metadata = filesystem_key_storage_pool.list_imported_key_storage_metadata()
 
-        containers = [self.filesystem_container_storage.load_container_from_storage(x) for x in container_names]
-        dependencies = gather_escrow_dependencies(containers)
+        cryptainers = [self.filesystem_cryptainer_storage.load_cryptainer_from_storage(x) for x in cryptainer_names]
+        dependencies = gather_escrow_dependencies(cryptainers)
 
         # BEWARE this only works for "authentication device" escrows!
         # TODO make this more generic with support for remote escrow!
@@ -306,12 +306,12 @@ class ContainerStoreScreen(Screen):
             buttons=[
                 MDFlatButton(
                     text="Launch decryption",
-                    on_release=lambda *args: (close_current_dialog(), self.decipher_containers(container_names=container_names, input_content_cls=content_cls)),
+                    on_release=lambda *args: (close_current_dialog(), self.decipher_cryptainers(cryptainer_names=cryptainer_names, input_content_cls=content_cls)),
                 ),]
         )
 
-    def decipher_containers(self, container_names, input_content_cls):
-        assert self.filesystem_container_storage, self.filesystem_container_storage  # By construction...
+    def decipher_cryptainers(self, cryptainer_names, input_content_cls):
+        assert self.filesystem_cryptainer_storage, self.filesystem_cryptainer_storage  # By construction...
 
         inputs = list(reversed(input_content_cls.children))
         passphrases = [i.text for i in inputs]
@@ -319,16 +319,16 @@ class ContainerStoreScreen(Screen):
 
         errors = []
 
-        for container_name in container_names:
+        for cryptainer_name in cryptainer_names:
             try:
                 EXTERNAL_DATA_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
                 # FIXME make this asynchronous, to avoid stalling the app!
-                result = self.filesystem_container_storage.decrypt_container_from_storage(container_name, passphrase_mapper=passphrase_mapper)
-                target_path = EXTERNAL_DATA_EXPORTS_DIR / (Path(container_name).with_suffix(""))
+                result = self.filesystem_cryptainer_storage.decrypt_cryptainer_from_storage(cryptainer_name, passphrase_mapper=passphrase_mapper)
+                target_path = EXTERNAL_DATA_EXPORTS_DIR / (Path(cryptainer_name).with_suffix(""))
                 target_path.write_bytes(result)
                 #print(">> Successfully exported data file to %s" % target_path)
             except Exception as exc:
-                #print(">>>>> close_dialog_decipher_container() exception thrown:", exc)  # TEMPORARY
+                #print(">>>>> close_dialog_decipher_cryptainer() exception thrown:", exc)  # TEMPORARY
                 errors.append(exc)
 
         if errors:
@@ -343,17 +343,17 @@ class ContainerStoreScreen(Screen):
         ).open()
 
     @safe_catch_unhandled_exception
-    def __UNUSED_offloaded_attempt_container_decryption(self, container_filepath):  #FIXME move out of here
-        logger.info("Decryption requested for container %s", container_filepath)
+    def __UNUSED_offloaded_attempt_cryptainer_decryption(self, cryptainer_filepath):  #FIXME move out of here
+        logger.info("Decryption requested for container %s", cryptainer_filepath)
         target_directory = EXTERNAL_DATA_EXPORTS_DIR.joinpath(
-            os.path.basename(container_filepath)
+            os.path.basename(cryptainer_filepath)
         )
         target_directory.mkdir(
             exist_ok=True
         )  # Double exports would replace colliding files
-        container = load_container_from_filesystem(container_filepath, include_data_ciphertext=True)
-        tarfile_bytes = decrypt_data_from_container(
-            container, key_storage_pool=self._key_storage_pool
+        cryptainer = load_cryptainer_from_filesystem(cryptainer_filepath, include_data_ciphertext=True)
+        tarfile_bytes = decrypt_data_from_cryptainer(
+            cryptainer, key_storage_pool=self._key_storage_pool
         )
         tarfile_bytesio = io.BytesIO(tarfile_bytes)
         tarfile_obj = tarfile.open(
@@ -366,24 +366,24 @@ class ContainerStoreScreen(Screen):
             target_directory,
         )
 
-    ##@osc.address_method("/attempt_container_decryption")
+    ##@osc.address_method("/attempt_cryptainer_decryption")
     @safe_catch_unhandled_exception
-    def __UNUSED_attempt_container_decryption(self, container_filepath: str):  #FIXME move out of here
-        container_filepath = Path(container_filepath)
-        return self._offload_task(self._offloaded_attempt_container_decryption, container_filepath=container_filepath)
+    def __UNUSED_attempt_cryptainer_decryption(self, cryptainer_filepath: str):  #FIXME move out of here
+        cryptainer_filepath = Path(cryptainer_filepath)
+        return self._offload_task(self._offloaded_attempt_cryptainer_decryption, cryptainer_filepath=cryptainer_filepath)
 
         """
         print("The written sentence is passphrase : %s" % input)
         containers = []
-        for chbx in self.check_box_container_uuid_dict:
+        for chbx in self.check_box_cryptainer_uuid_dict:
             if chbx.active:
                 print(
-                    "Decipher container | with ID_container %s",
-                    self.check_box_container_uuid_dict[chbx],
+                    "Decipher container | with ID_cryptainer %s",
+                    self.check_box_cryptainer_uuid_dict[chbx],
                 )
-                container = load_container_from_filesystem(
+                container = load_cryptainer_from_filesystem(
                     container_filepath=Path(
-                        ".container_storage_ward".format(self.check_box_container_uuid_dict[chbx][1])
+                        ".container_storage_ward".format(self.check_box_cryptainer_uuid_dict[chbx][1])
                     )
                 )
                 containers.append(container)
@@ -395,5 +395,5 @@ class ContainerStoreScreen(Screen):
             request_message="Need decryptions"
         )
         for container in containers:
-            decrypt_data_from_container(container=container)
+            decrypt_data_from_cryptainer(container=container)
             """

@@ -2,7 +2,7 @@
 from kivy.logger import Logger as logger
 
 #from oscpy.server import OSCThreadServer
-from wacryptolib.cryptainer import ContainerStorage
+from wacryptolib.cryptainer import CryptainerStorage
 from wacryptolib.escrow import get_free_keys_generator_worker
 from wacryptolib.sensor import (
     TarfileRecordsAggregator,
@@ -29,7 +29,7 @@ def ___build_recording_toolchain(config, key_storage_pool, cryptoconf):
     """
 
     from waclient.common_config import (
-        INTERNAL_CONTAINERS_DIR,
+        INTERNAL_CRYPTAINER_DIR,
         PREGENERATED_KEY_TYPES,
         IS_ANDROID,
         warn_if_permission_missing)
@@ -54,12 +54,12 @@ def ___build_recording_toolchain(config, key_storage_pool, cryptoconf):
         logger.warning("No sensor is enabled, aborting recorder setup")
         return None
 
-    max_containers_count = get_conf_value("max_containers_count", 100, converter=int)
-    container_recording_duration_s = get_conf_value(
-        "container_recording_duration_s", 60, converter=float
+    max_cryptainers_count = get_conf_value("max_cryptainers_count", 100, converter=int)
+    cryptainer_recording_duration_s = get_conf_value(
+        "cryptainer_recording_duration_s", 60, converter=float
     )
-    container_member_duration_s = get_conf_value(
-        "container_member_duration_s", 60, converter=float
+    cryptainer_member_duration_s = get_conf_value(
+        "cryptainer_member_duration_s", 60, converter=float
     )
     polling_interval_s = get_conf_value("polling_interval_s", 0.5, converter=float)
     max_free_keys_per_type = get_conf_value("max_free_keys_per_type", 1, converter=int)
@@ -68,38 +68,38 @@ def ___build_recording_toolchain(config, key_storage_pool, cryptoconf):
         "Toolchain configuration is %s",
         str(
             dict(
-                max_containers_count=max_containers_count,
-                container_recording_duration_s=container_recording_duration_s,
-                container_member_duration_s=container_member_duration_s,
+                max_cryptainers_count=max_cryptainers_count,
+                cryptainer_recording_duration_s=cryptainer_recording_duration_s,
+                cryptainer_member_duration_s=cryptainer_member_duration_s,
                 polling_interval_s=polling_interval_s,
             )
         ),
     )
 
-    container_storage = ContainerStorage(
+    cryptainer_storage = CryptainerStorage(
         default_cryptoconf=cryptoconf,
-        containers_dir=INTERNAL_CONTAINERS_DIR,
-        max_containers_count=max_containers_count,
+        cryptainer_dir=INTERNAL_CRYPTAINER_DIR,
+        max_cryptainers_count=max_cryptainers_count,
         key_storage_pool=key_storage_pool,
     )
 
     # Tarfile builder level
 
     tarfile_aggregator = TarfileRecordsAggregator(
-        container_storage=container_storage,
-        max_duration_s=container_recording_duration_s,
+        cryptainer_storage=cryptainer_storage,
+        max_duration_s=cryptainer_recording_duration_s,
     )
 
     # Data aggregation level
 
     gyroscope_json_aggregator = JsonDataAggregator(
-        max_duration_s=container_member_duration_s,
+        max_duration_s=cryptainer_member_duration_s,
         tarfile_aggregator=tarfile_aggregator,
         sensor_name="gyroscope",
     )
 
     gps_json_aggregator = JsonDataAggregator(
-        max_duration_s=container_member_duration_s,
+        max_duration_s=cryptainer_member_duration_s,
         tarfile_aggregator=tarfile_aggregator,
         sensor_name="gps",
     )
@@ -122,7 +122,7 @@ def ___build_recording_toolchain(config, key_storage_pool, cryptoconf):
 
     if record_microphone and not warn_if_permission_missing("RECORD_AUDIO"):
         microphone_sensor = get_microphone_sensor(
-            interval_s=container_member_duration_s, tarfile_aggregator=tarfile_aggregator
+            interval_s=cryptainer_member_duration_s, tarfile_aggregator=tarfile_aggregator
         )
         sensors.append(microphone_sensor)
 
@@ -142,7 +142,7 @@ def ___build_recording_toolchain(config, key_storage_pool, cryptoconf):
             max_free_keys_per_type=max_free_keys_per_type,
             sleep_on_overflow_s=0.5
             * max_free_keys_per_type
-            * container_member_duration_s,  # TODO make it configurable?
+            * cryptainer_member_duration_s,  # TODO make it configurable?
             key_types=PREGENERATED_KEY_TYPES,
         )
     else:
@@ -152,7 +152,7 @@ def ___build_recording_toolchain(config, key_storage_pool, cryptoconf):
         sensors_manager=sensors_manager,
         data_aggregators=[gyroscope_json_aggregator, gps_json_aggregator],
         tarfile_aggregators=[tarfile_aggregator],
-        container_storage=container_storage,
+        cryptainer_storage=cryptainer_storage,
         free_keys_generator_worker=free_keys_generator_worker,
         local_key_storage=local_key_storage,
     )
@@ -189,7 +189,7 @@ def stop_recording_toolchain(toolchain):
     sensors_manager = toolchain["sensors_manager"]
     data_aggregators = toolchain["data_aggregators"]
     tarfile_aggregators = toolchain["tarfile_aggregators"]
-    container_storage = toolchain["container_storage"]
+    cryptainer_storage = toolchain["cryptainer_storage"]
     free_keys_generator_worker = toolchain["free_keys_generator_worker"]
 
     if free_keys_generator_worker:
@@ -213,6 +213,6 @@ def stop_recording_toolchain(toolchain):
         )
         tarfile_aggregator.finalize_tarfile()
 
-    container_storage.wait_for_idle_state()  # Encryption workers must finish their job
+    cryptainer_storage.wait_for_idle_state()  # Encryption workers must finish their job
 
     # logger.info("stop_recording_toolchain exits")

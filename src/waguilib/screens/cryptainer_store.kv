@@ -12,44 +12,44 @@
     #    hint_text: "Passphrase"
 
 
-<ContainerStoreScreen>:
+<CryptainerStoreScreen>:
 
     on_pre_enter:
         # Lazy-init hack to workaround Clock iteration troubles
-        container_delete_btn.size_hint_x = 0.5
-        container_decrypt_btn.size_hint_x = 0.5
-        root.get_detected_container()  # FIXME rename this!!!
+        cryptainer_delete_btn.size_hint_x = 0.5
+        cryptainer_decrypt_btn.size_hint_x = 0.5
+        root.get_detected_cryptainer()  # FIXME rename this!!!
 
     WAMainVerticalScrollView:
 
         WAVerticalPanel:
 
             WAToolbar:
-                title: tr._("Containers")
+                title: tr._("Cryptainers")
                 left_action_items: [['menu', lambda x: app.navigation_drawer.set_state("toggle")]]
-                right_action_items: [["refresh", lambda x: root.get_detected_container(), tr._("Refresh")], ["home", lambda x: app.get_back_to_home_screen(), tr._("Back to home")],]
+                right_action_items: [["refresh", lambda x: root.get_detected_cryptainer(), tr._("Refresh")], ["home", lambda x: app.get_back_to_home_screen(), tr._("Back to home")],]
 
             WAElevatedBoxLayout:
 
                 MDLabel:
-                    text: tr._("View and manager encrypted containers")
+                    text: tr._("View and manager encrypted cryptainers")
                     padding_x: "10dp"
 
             WAVerticalScrollView:
                 MDList:
-                    id: container_table
+                    id: cryptainer_table
 
             WAButtonsGridLayout:
                 padding: [10, 10]
 
                 WAOperationButton:
-                    id: container_delete_btn
+                    id: cryptainer_delete_btn
                     icon: "delete-alert-outline"
                     text: tr._("Delete")
-                    on_press: root.open_dialog_delete_container()
+                    on_press: root.open_dialog_delete_cryptainer()
 
                 WAOperationButton:
-                    id: container_decrypt_btn
+                    id: cryptainer_decrypt_btn
                     icon: "eye-circle-outline"
                     text: tr._("Decrypt")
-                    on_press: root.open_dialog_decipher_container()
+                    on_press: root.open_dialog_decipher_cryptainer()

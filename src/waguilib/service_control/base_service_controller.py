@@ -36,5 +36,5 @@ class ServiceControllerBase:
     def broadcast_recording_state(self):
         self._send_message("/broadcast_recording_state")
 
-    def attempt_container_decryption(self, container_filepath):  # FIXME unused, pb with transfer of passphrases for now...
-        self._send_message("/attempt_container_decryption", container_filepath)
+    def attempt_cryptainer_decryption(self, cryptainer_filepath):  # FIXME unused, pb with transfer of passphrases for now...
+        self._send_message("/attempt_cryptainer_decryption", cryptainer_filepath)

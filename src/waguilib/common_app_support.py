@@ -3,7 +3,7 @@ from pathlib import Path
 
 from kivy.properties import StringProperty
 
-from waguilib.importable_settings import INTERNAL_APP_ROOT, INTERNAL_CONTAINERS_DIR, INTERNAL_KEYS_DIR, \
+from waguilib.importable_settings import INTERNAL_APP_ROOT, INTERNAL_CRYPTAINER_DIR, INTERNAL_KEYS_DIR, \
     INTERNAL_LOGS_DIR
 from waguilib.i18n import tr
 
@@ -41,9 +41,9 @@ class WaRuntimeSupportMixin:
         return str(INTERNAL_KEYS_DIR)
 
     @property
-    def internal_containers_dir(self) -> str:  # FIXME switch to Path!
+    def internal_cryptainer_dir(self) -> str:  # FIXME switch to Path!
         """For all local containers"""
-        return str(INTERNAL_CONTAINERS_DIR)
+        return str(INTERNAL_CRYPTAINER_DIR)
 
     @property
     def internal_logs_dir(self) -> str:  # FIXME switch to Path!
@@ -69,11 +69,11 @@ class WaRuntimeSupportMixin:
         return global_status
 
     @staticmethod
-    def check_container_output_dir(container_dir: Path):
-        if container_dir and container_dir.is_dir():
-            return True, tr.f(tr._("Container storage: {container_dir}"))
+    def check_cryptainer_output_dir(cryptainer_dir: Path):
+        if cryptainer_dir and cryptainer_dir.is_dir():
+            return True, tr.f(tr._("Container storage: {cryptainer_dir}"))
 
-        return False, tr.f(tr._("Invalid container storage: \"{container_dir}\""))
+        return False, tr.f(tr._("Invalid container storage: \"{cryptainer_dir}\""))
 
     @staticmethod
     def check_keyguardian_counts(keyguardian_threshold, keyguardian_count):
@@ -102,9 +102,9 @@ class WaRuntimeSupportMixin:
         return False, message
 
     @staticmethod
-    def check_max_container_age_day(max_container_age_day):
-        message = tr.f(tr._("Containers are kept for {max_container_age_day} day(s)"))
-        if max_container_age_day > 0:
+    def check_max_cryptainer_age_day(max_cryptainer_age_day):
+        message = tr.f(tr._("Containers are kept for {max_cryptainer_age_day} day(s)"))
+        if max_cryptainer_age_day > 0:
             return True, message
         return False, message
 
