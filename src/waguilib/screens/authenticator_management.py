@@ -23,8 +23,8 @@ from wacryptolib.authdevice import list_available_authdevices, \
     get_authenticator_path_for_authdevice
 from wacryptolib.authenticator import is_authenticator_initialized, load_authenticator_metadata
 from wacryptolib.exceptions import KeyLoadingError
-from wacryptolib.key_generation import load_asymmetric_key_from_pem_bytestring
-from wacryptolib.key_storage import FilesystemKeyStorage
+from wacryptolib.keygen import load_asymmetric_key_from_pem_bytestring
+from wacryptolib.keystore import FilesystemKeystore
 from wacryptolib.utilities import get_metadata_file_path
 from waguilib.importable_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_APP_ROOT, EXTERNAL_DATA_EXPORTS_DIR, \
     request_external_storage_dirs_access, strip_external_app_prefix
@@ -331,12 +331,12 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
             )
 
     def _test_authenticator_password(self, authenticator_path, passphrase):  # FIXME rename this
-        filesystem_key_storage = FilesystemKeyStorage(authenticator_path)
+        filesystem_keystore = FilesystemKeystore(authenticator_path)
 
         missing_private_keys = []
         undecodable_private_keys = []
 
-        keypair_identifiers = filesystem_key_storage.list_keypair_identifiers()
+        keypair_identifiers = filesystem_keystore.list_keypair_identifiers()
 
         for key_information in keypair_identifiers:
             keychain_uid = key_information["keychain_uid"]
@@ -344,7 +344,7 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
             if not key_information["private_key_present"]:
                 missing_private_keys.append(keychain_uid)
                 continue
-            private_key_pem = filesystem_key_storage.get_private_key(keychain_uid=keychain_uid, key_type=key_type)
+            private_key_pem = filesystem_keystore.get_private_key(keychain_uid=keychain_uid, key_type=key_type)
             try:
                 key_obj = load_asymmetric_key_from_pem_bytestring(
                    key_pem=private_key_pem, key_type=key_type, passphrase=passphrase

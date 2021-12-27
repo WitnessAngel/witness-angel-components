@@ -72,7 +72,7 @@ class WaBackgroundService(WaRuntimeSupportMixin):
 
     def __init__(self):
 
-        ##self._key_storage_pool = FilesystemKeyStoragePool(INTERNAL_KEYS_DIR)
+        ##self._keystore_pool = FilesystemKeystorePool(INTERNAL_KEYS_DIR)
 
         logger.info("Starting service")  # Will not be sent to App (too early)
         osc_starter_callback()  # Opens server port

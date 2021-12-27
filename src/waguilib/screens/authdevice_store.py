@@ -31,8 +31,8 @@ from kivymd.uix.screen import Screen
 from kivymd.uix.snackbar import Snackbar
 from waguilib.i18n import tr
 
-from wacryptolib.authdevice import list_available_authdevices, _get_key_storage_folder_path
-from wacryptolib.exceptions import KeyStorageAlreadyExists
+from wacryptolib.authdevice import list_available_authdevices, _get_keystore_folder_path
+from wacryptolib.exceptions import KeystoreAlreadyExists
 from waguilib.widgets.popups import display_info_toast, close_current_dialog, dialog_with_close_button
 
 Builder.load_file(str(Path(__file__).parent / 'authdevice_store.kv'))
@@ -40,7 +40,7 @@ Builder.load_file(str(Path(__file__).parent / 'authdevice_store.kv'))
 
 class AuthdeviceStoreScreen(Screen):
 
-    filesystem_key_storage_pool = ObjectProperty(None)
+    filesystem_keystore_pool = ObjectProperty(None)
 
     def __init__(self, *args, **kwargs):
         self.selected_authdevice_uids = []  # List of STRINGS
@@ -54,7 +54,7 @@ class AuthdeviceStoreScreen(Screen):
     def import_keys(self):
         """
         loop through the “authdevices” present,
-        and for those who are initialize, copy (with different KeyStorage for each folder)
+        and for those who are initialize, copy (with different Keystore for each folder)
         their content in a <KEYS_ROOT> / <device_uid> / folder (taking the device_uid from metadata.json)
         """
         # list_devices = list_available_authdevices()
@@ -77,10 +77,10 @@ class AuthdeviceStoreScreen(Screen):
 
                 for authdevice in authdevices_initialized:
                     #print(">>>>>>>>>> importing,", authdevice)
-                    key_storage_folder_path = _get_key_storage_folder_path(authdevice)  # FIXME make it public?
+                    keystore_folder_path = _get_keystore_folder_path(authdevice)  # FIXME make it public?
                     try:
-                        self.filesystem_key_storage_pool.import_key_storage_from_folder(key_storage_folder_path)
-                    except KeyStorageAlreadyExists:
+                        self.filesystem_keystore_pool.import_keystore_from_folder(keystore_folder_path)
+                    except KeystoreAlreadyExists:
                         pass  # We tried anyway, since some "update" mechanics might be setup one day
                     device_uids.append(authdevice["metadata"]["device_uid"])
 
@@ -105,7 +105,7 @@ class AuthdeviceStoreScreen(Screen):
         else:
             # TODO move this to WACRYPTOLIB!
             for device_uid in device_uids:
-                path = self.filesystem_key_storage_pool._get_imported_key_storage_path(device_uid)
+                path = self.filesystem_keystore_pool._get_imported_keystore_path(device_uid)
                 try:
                     shutil.rmtree(path)
                 except OSError as exc:
@@ -132,16 +132,16 @@ class AuthdeviceStoreScreen(Screen):
         Keys_page_ids.imported_authenticator_list.clear_widgets()  # FIXME naming
         Keys_page_ids.imported_authenticator_list.do_layout()  # Prevents bug with "not found" message position
 
-        key_storage_metadata = self.filesystem_key_storage_pool.list_imported_key_storage_metadata()
+        keystore_metadata = self.filesystem_keystore_pool.list_imported_keystore_metadata()
 
-        if not key_storage_metadata:
+        if not keystore_metadata:
             self.display_message_no_device_found()
             return
 
         #self.chbx_lbls = {}  # FIXME: lbls ?
         #self.btn_lbls = {}  # FIXME: lbls ?
 
-        for (index, (device_uid, metadata)) in enumerate(sorted(key_storage_metadata.items()), start=1):
+        for (index, (device_uid, metadata)) in enumerate(sorted(keystore_metadata.items()), start=1):
             uuid_suffix = str(device_uid).split("-")[-1]
             #print("COMPARING", str(device_uid), self.selected_authdevice_uids)
             # my_check_box = CheckBox(
@@ -259,8 +259,8 @@ class AuthdeviceStoreScreen(Screen):
         display the information of the keys stored in the selected usb
 
         """
-        imported_key_storage = self.filesystem_key_storage_pool.get_imported_key_storage(key_storage_uid=device_uid)
-        keypair_identifiers = imported_key_storage.list_keypair_identifiers()
+        imported_keystore = self.filesystem_keystore_pool.get_imported_keystore(keystore_uid=device_uid)
+        keypair_identifiers = imported_keystore.list_keypair_identifiers()
 
         message = ""
         for index, keypair_identifier in enumerate(keypair_identifiers, start=1):

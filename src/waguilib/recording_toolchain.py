@@ -22,7 +22,7 @@ if IS_ANDROID:
 
 
 # EXAMPLE IMPLEMENTATION
-def ___build_recording_toolchain(config, key_storage_pool, cryptoconf):
+def ___build_recording_toolchain(config, keystore_pool, cryptoconf):
     """Instantiate the whole toolchain of sensors and aggregators, depending on the config.
 
     Returns None if no toolchain is enabled by config.
@@ -80,7 +80,7 @@ def ___build_recording_toolchain(config, key_storage_pool, cryptoconf):
         default_cryptoconf=cryptoconf,
         cryptainer_dir=INTERNAL_CRYPTAINER_DIR,
         max_cryptainers_count=max_cryptainers_count,
-        key_storage_pool=key_storage_pool,
+        keystore_pool=keystore_pool,
     )
 
     # Tarfile builder level
@@ -132,13 +132,13 @@ def ___build_recording_toolchain(config, key_storage_pool, cryptoconf):
 
     sensors_manager = SensorsManager(sensors=sensors)
 
-    local_key_storage = key_storage_pool.get_local_key_storage()
+    local_keystore = keystore_pool.get_local_keystore()
 
     # Off-band workers
 
     if max_free_keys_per_type:
         free_keys_generator_worker = get_free_keys_generator_worker(
-            key_storage=local_key_storage,
+            keystore=local_keystore,
             max_free_keys_per_type=max_free_keys_per_type,
             sleep_on_overflow_s=0.5
             * max_free_keys_per_type
@@ -154,7 +154,7 @@ def ___build_recording_toolchain(config, key_storage_pool, cryptoconf):
         tarfile_aggregators=[tarfile_aggregator],
         cryptainer_storage=cryptainer_storage,
         free_keys_generator_worker=free_keys_generator_worker,
-        local_key_storage=local_key_storage,
+        local_keystore=local_keystore,
     )
     return toolchain
 

@@ -264,8 +264,8 @@ class CryptainerStoreScreen(Screen):
         """
 
         assert self.filesystem_cryptainer_storage, self.filesystem_cryptainer_storage  # By construction...
-        filesystem_key_storage_pool = self.filesystem_cryptainer_storage._key_storage_pool  # FIXME add public getter
-        key_storage_metadata = filesystem_key_storage_pool.list_imported_key_storage_metadata()
+        filesystem_keystore_pool = self.filesystem_cryptainer_storage._keystore_pool  # FIXME add public getter
+        keystore_metadata = filesystem_keystore_pool.list_imported_keystore_metadata()
 
         cryptainers = [self.filesystem_cryptainer_storage.load_cryptainer_from_storage(x) for x in cryptainer_names]
         dependencies = gather_escrow_dependencies(cryptainers)
@@ -274,17 +274,17 @@ class CryptainerStoreScreen(Screen):
         # TODO make this more generic with support for remote escrow!
         relevant_authdevice_uids = [escrow[0]["authdevice_uid"] for escrow in dependencies["encryption"].values()]
 
-        relevant_key_storage_metadata = sorted([y for (x,y) in key_storage_metadata.items()
+        relevant_keystore_metadata = sorted([y for (x,y) in keystore_metadata.items()
                                                 if x in relevant_authdevice_uids], key = lambda d: d["user"])
 
         #print("--------------")
-        #pprint.pprint(relevant_key_storage_metadata)
+        #pprint.pprint(relevant_keystore_metadata)
 
 
         content_cls = PassphrasesDialogContent()
 
-        #print(">>>>>>relevant_key_storage_metadata", relevant_key_storage_metadata)
-        for metadata in relevant_key_storage_metadata:
+        #print(">>>>>>relevant_keystore_metadata", relevant_keystore_metadata)
+        for metadata in relevant_keystore_metadata:
             hint_text="Passphrase for user %s (hint: %s)" % (metadata["user"], metadata["passphrase_hint"])
             _widget = TextInput(hint_text=hint_text)
 
@@ -353,7 +353,7 @@ class CryptainerStoreScreen(Screen):
         )  # Double exports would replace colliding files
         cryptainer = load_cryptainer_from_filesystem(cryptainer_filepath, include_data_ciphertext=True)
         tarfile_bytes = decrypt_data_from_cryptainer(
-            cryptainer, key_storage_pool=self._key_storage_pool
+            cryptainer, keystore_pool=self._keystore_pool
         )
         tarfile_bytesio = io.BytesIO(tarfile_bytes)
         tarfile_obj = tarfile.open(
@@ -391,7 +391,7 @@ class CryptainerStoreScreen(Screen):
 
         decryption_authorizations = request_decryption_authorizations(
             escrow_dependencies=escrow_dependencies,
-            key_storage_pool=filesystem_key_storage_pool,
+            keystore_pool=filesystem_keystore_pool,
             request_message="Need decryptions"
         )
         for container in containers:

@@ -14,8 +14,8 @@ from kivymd.uix.screen import Screen
 from waguilib.widgets.popups import dialog_with_close_button, process_method_with_gui_spinner, register_current_dialog, \
     close_current_dialog, help_text_popup
 from wacryptolib.authenticator import initialize_authenticator
-from wacryptolib.key_generation import generate_keypair
-from wacryptolib.key_storage import FilesystemKeyStorage
+from wacryptolib.keygen import generate_keypair
+from wacryptolib.keystore import FilesystemKeystore
 from wacryptolib.utilities import generate_uuid0
 
 from waguilib.i18n import tr
@@ -97,7 +97,7 @@ class AuthenticatorCreationScreen(Screen):
                                      user=form_values["user"],
                                      extra_metadata=dict(passphrase_hint=form_values["passphrase_hint"]))
 
-            filesystem_key_storage = FilesystemKeyStorage(authenticator_path)
+            filesystem_keystore = FilesystemKeystore(authenticator_path)
 
             for i in range(1, GENERATED_KEYS_COUNT+1):
                 # TODO add some logging here
@@ -105,7 +105,7 @@ class AuthenticatorCreationScreen(Screen):
                     key_type="RSA_OAEP",
                     passphrase=form_values["passphrase"]
                 )
-                filesystem_key_storage.set_keys(
+                filesystem_keystore.set_keys(
                     keychain_uid=generate_uuid0(),
                     key_type="RSA_OAEP",
                     public_key=key_pair["public_key"],
