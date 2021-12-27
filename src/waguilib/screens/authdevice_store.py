@@ -31,58 +31,58 @@ from kivymd.uix.screen import Screen
 from kivymd.uix.snackbar import Snackbar
 from waguilib.i18n import tr
 
-from wacryptolib.authentication_device import list_available_authentication_devices, _get_key_storage_folder_path
+from wacryptolib.authdevice import list_available_authdevices, _get_key_storage_folder_path
 from wacryptolib.exceptions import KeyStorageAlreadyExists
 from waguilib.widgets.popups import display_info_toast, close_current_dialog, dialog_with_close_button
 
-Builder.load_file(str(Path(__file__).parent / 'authentication_device_store.kv'))
+Builder.load_file(str(Path(__file__).parent / 'authdevice_store.kv'))
 
 
-class AuthenticationDeviceStoreScreen(Screen):
+class AuthdeviceStoreScreen(Screen):
 
     filesystem_key_storage_pool = ObjectProperty(None)
 
     def __init__(self, *args, **kwargs):
-        self.selected_authentication_device_uids = []  # List of STRINGS
-        self.register_event_type('on_selected_authentication_devices_changed')
+        self.selected_authdevice_uids = []  # List of STRINGS
+        self.register_event_type('on_selected_authdevices_changed')
         super().__init__(*args, **kwargs)
 
-    def on_selected_authentication_devices_changed(self, *args):
+    def on_selected_authdevices_changed(self, *args):
          pass
-         #print("I am dispatched on_selected_authentication_devices_changed", args)
+         #print("I am dispatched on_selected_authdevices_changed", args)
 
     def import_keys(self):
         """
-        loop through the “authentication_devices” present,
+        loop through the “authdevices” present,
         and for those who are initialize, copy (with different KeyStorage for each folder)
         their content in a <KEYS_ROOT> / <device_uid> / folder (taking the device_uid from metadata.json)
         """
-        # list_devices = list_available_authentication_devices()
+        # list_devices = list_available_authdevices()
         # print(list_devices)
-        # for index, authentication_device in enumerate(list_devices):
+        # for index, authdevice in enumerate(list_devices):
         #print(">>>>>>>>>> import_keys started")
-        authentication_devices = list_available_authentication_devices()
-        #print("DETECTED AUTH DEVICES", authentication_devices)
+        authdevices = list_available_authdevices()
+        #print("DETECTED AUTH DEVICES", authdevices)
 
-        if not authentication_devices:
+        if not authdevices:
             msg = tr._("No connected authentication devices found")
         else:
 
-            authentication_devices_initialized = [x for x in authentication_devices if x["is_initialized"]]
+            authdevices_initialized = [x for x in authdevices if x["is_initialized"]]
 
-            if not authentication_devices_initialized:
+            if not authdevices_initialized:
                 msg = tr._("No initialized authentication devices found")
             else:
                 device_uids = []
 
-                for authentication_device in authentication_devices_initialized:
-                    #print(">>>>>>>>>> importing,", authentication_device)
-                    key_storage_folder_path = _get_key_storage_folder_path(authentication_device)  # FIXME make it public?
+                for authdevice in authdevices_initialized:
+                    #print(">>>>>>>>>> importing,", authdevice)
+                    key_storage_folder_path = _get_key_storage_folder_path(authdevice)  # FIXME make it public?
                     try:
                         self.filesystem_key_storage_pool.import_key_storage_from_folder(key_storage_folder_path)
                     except KeyStorageAlreadyExists:
                         pass  # We tried anyway, since some "update" mechanics might be setup one day
-                    device_uids.append(authentication_device["metadata"]["device_uid"])
+                    device_uids.append(authdevice["metadata"]["device_uid"])
 
                 msg = "%d authentication device(s) updated" % len(device_uids)
 
@@ -91,14 +91,14 @@ class AuthenticationDeviceStoreScreen(Screen):
 
         display_info_toast(msg)
 
-        # update the display of authentication_device saved in the local folder .keys_storage_ward
+        # update the display of authdevice saved in the local folder .keys_storage_ward
         self.list_imported_key_devices(display_toast=False)
 
     def delete_keys(self):
 
         # FIXME add confirmation dialog!!
 
-        device_uids = self.selected_authentication_device_uids
+        device_uids = self.selected_authdevice_uids
 
         if not device_uids:
             msg = "Please select authentication devices to delete"
@@ -143,11 +143,11 @@ class AuthenticationDeviceStoreScreen(Screen):
 
         for (index, (device_uid, metadata)) in enumerate(sorted(key_storage_metadata.items()), start=1):
             uuid_suffix = str(device_uid).split("-")[-1]
-            #print("COMPARING", str(device_uid), self.selected_authentication_device_uids)
+            #print("COMPARING", str(device_uid), self.selected_authdevice_uids)
             # my_check_box = CheckBox(
-            #     active=(str(device_uid) in self.selected_authentication_device_uids),
+            #     active=(str(device_uid) in self.selected_authdevice_uids),
             #     size_hint=(0.15, None),
-            #     on_release=self.check_box_authentication_device_checked,
+            #     on_release=self.check_box_authdevice_checked,
             #     height=40,
             # )
             # my_check_btn = Button(
@@ -169,9 +169,9 @@ class AuthenticationDeviceStoreScreen(Screen):
 
             selection_checkbox = authenticator_entry.ids.selection_checkbox
             #print(">>>>>>>>selection_checkbox", selection_checkbox)
-            selection_checkbox.active = str(device_uid) in self.selected_authentication_device_uids
+            selection_checkbox.active = str(device_uid) in self.selected_authdevice_uids
             def selection_callback(widget, value, device_uid=device_uid):  # Force device_uid save here, else scope bug
-                self.check_box_authentication_device_checked(device_uid=device_uid, is_selected=value)
+                self.check_box_authdevice_checked(device_uid=device_uid, is_selected=value)
             selection_checkbox.bind(active=selection_callback)
 
             information_icon = authenticator_entry.ids.information_icon
@@ -197,7 +197,7 @@ class AuthenticationDeviceStoreScreen(Screen):
                     my_check_box = CheckBox(#start
                         active=False,
                         size_hint=(0.2, 0.2),
-                        on_release=self.check_box_authentication_device_checked,
+                        on_release=self.check_box_authdevice_checked,
                     )
                     my_check_btn = Button(
                         text=" key N°:  %s        User:  %s      |      UUID device:  %s "
@@ -240,18 +240,18 @@ class AuthenticationDeviceStoreScreen(Screen):
         keys_page_ids = self.ids
         keys_page_ids.imported_authenticator_list.add_widget(Display_layout)
 
-    def check_box_authentication_device_checked(self, device_uid: uuid.UUID, is_selected: bool):
+    def check_box_authdevice_checked(self, device_uid: uuid.UUID, is_selected: bool):
         self._change_authenticator_selection_status(device_uids=[device_uid], is_selected=is_selected,)
 
     def _change_authenticator_selection_status(self, device_uids: list, is_selected: bool):
         for device_uid in device_uids:
             device_uid_str = str(device_uid)
-            if not is_selected and device_uid_str in self.selected_authentication_device_uids:
-                self.selected_authentication_device_uids.remove(device_uid_str)
-            elif is_selected and device_uid_str not in self.selected_authentication_device_uids:
-                self.selected_authentication_device_uids.append(device_uid_str)
-        self.dispatch('on_selected_authentication_devices_changed', self.selected_authentication_device_uids)
-        #print("self.selected_authentication_device_uids", self.selected_authentication_device_uids)
+            if not is_selected and device_uid_str in self.selected_authdevice_uids:
+                self.selected_authdevice_uids.remove(device_uid_str)
+            elif is_selected and device_uid_str not in self.selected_authdevice_uids:
+                self.selected_authdevice_uids.append(device_uid_str)
+        self.dispatch('on_selected_authdevices_changed', self.selected_authdevice_uids)
+        #print("self.selected_authdevice_uids", self.selected_authdevice_uids)
 
     def info_keys_stored(self, device_uid, user):
 
@@ -277,9 +277,9 @@ class AuthenticationDeviceStoreScreen(Screen):
                     #private_key_present_str,
                 )
                 )
-        self.open_dialog_display_keys_in_authentication_device(message, user=user)
+        self.open_dialog_display_keys_in_authdevice(message, user=user)
 
-    def open_dialog_display_keys_in_authentication_device(self, message, user):
+    def open_dialog_display_keys_in_authdevice(self, message, user):
         dialog_with_close_button(
             close_btn_label=tr._("Close"),
             title=tr._("Key Guardian %s") % user,

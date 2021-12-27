@@ -19,8 +19,8 @@ from kivymd.uix.screen import Screen
 from waguilib.widgets.layout_helpers import LanguageSwitcherScreenMixin
 from waguilib.widgets.popups import dialog_with_close_button, register_current_dialog, close_current_dialog, \
     help_text_popup
-from wacryptolib.authentication_device import list_available_authentication_devices, \
-    get_authenticator_path_for_authentication_device
+from wacryptolib.authdevice import list_available_authdevices, \
+    get_authenticator_path_for_authdevice
 from wacryptolib.authenticator import is_authenticator_initialized, load_authenticator_metadata
 from wacryptolib.exceptions import KeyLoadingError
 from wacryptolib.key_generation import load_asymmetric_key_from_pem_bytestring
@@ -119,7 +119,7 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
             authenticator_path = self._selected_custom_folder_path
         else:
             assert authenticator_type == AuthenticatorType.USB_DEVICE
-            authenticator_path = get_authenticator_path_for_authentication_device(authenticator_metadata)
+            authenticator_path = get_authenticator_path_for_authdevice(authenticator_metadata)
         return authenticator_path
 
     def reselect_previously_selected_authenticator(self):
@@ -149,9 +149,9 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
     def refresh_authenticator_list(self):
 
         try:
-            authentication_device_list = list_available_authentication_devices()  # TODO rename to usb devices?
+            authdevice_list = list_available_authdevices()  # TODO rename to usb devices?
         except ModuleNotFoundError:  # probably on android, so no UDEV system
-            authentication_device_list = []
+            authdevice_list = []
 
         authenticator_list_widget = self.ids.authenticator_list
         authenticator_list_widget.clear_widgets()
@@ -168,17 +168,17 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         folder_authenticator_widget.ids.open_folder_btn.bind(on_press=self.folder_chooser_open)  #
         authenticator_list_entries.append((folder_authenticator_widget, dict(authenticator_type=AuthenticatorType.CUSTOM_FOLDER)))
 
-        for index, authentication_device in enumerate(authentication_device_list):
+        for index, authdevice in enumerate(authdevice_list):
 
-            device_size = convert_bytes_to_human_representation(authentication_device["size"])
-            filesystem = authentication_device["format"].upper()
+            device_size = convert_bytes_to_human_representation(authdevice["size"])
+            filesystem = authdevice["format"].upper()
 
             authenticator_widget = Factory.ThinTwoLineAvatarIconListItem(
-                text=tr._("Drive: {drive} ({label})").format(drive=authentication_device["path"], label=authentication_device["label"] or tr._("no name")),
+                text=tr._("Drive: {drive} ({label})").format(drive=authdevice["path"], label=authdevice["label"] or tr._("no name")),
                 secondary_text=tr._("Size: {size}, Filesystem: {filesystem}").format(size=device_size, filesystem=filesystem),
             )
             authenticator_widget.add_widget(IconLeftWidget(icon="usb-flash-drive"))
-            authenticator_list_entries.append((authenticator_widget, dict(authenticator_type=AuthenticatorType.USB_DEVICE, **authentication_device)))
+            authenticator_list_entries.append((authenticator_widget, dict(authenticator_type=AuthenticatorType.USB_DEVICE, **authdevice)))
 
         for (authenticator_widget, authenticator_metadata) in authenticator_list_entries:
             authenticator_widget._authenticator_metadata = authenticator_metadata

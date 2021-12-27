@@ -98,7 +98,7 @@ class CryptainerStoreScreen(Screen):
             #selection_checkbox = container_entry.ids.selection_checkbox
 
             #def selection_callback(widget, value, container_name=container_name):  # Force container_name save here, else scope bug
-            #    self.check_box_authentication_device_checked(device_uid=device_uid, is_selected=value)
+            #    self.check_box_authdevice_checked(device_uid=device_uid, is_selected=value)
             #selection_checkbox.bind(active=selection_callback)
 
             def information_callback(widget, cryptainer_name=cryptainer_name):  # Force device_uid save here, else scope bug
@@ -272,10 +272,10 @@ class CryptainerStoreScreen(Screen):
 
         # BEWARE this only works for "authentication device" escrows!
         # TODO make this more generic with support for remote escrow!
-        relevant_authentication_device_uids = [escrow[0]["authentication_device_uid"] for escrow in dependencies["encryption"].values()]
+        relevant_authdevice_uids = [escrow[0]["authdevice_uid"] for escrow in dependencies["encryption"].values()]
 
         relevant_key_storage_metadata = sorted([y for (x,y) in key_storage_metadata.items()
-                                                if x in relevant_authentication_device_uids], key = lambda d: d["user"])
+                                                if x in relevant_authdevice_uids], key = lambda d: d["user"])
 
         #print("--------------")
         #pprint.pprint(relevant_key_storage_metadata)

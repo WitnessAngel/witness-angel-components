@@ -67,63 +67,63 @@ msgstr "Chaque conteneur stocke {video_recording_duration_mn} mn(s) de vidéo"
 msgid "Containers are kept for {max_cryptainer_age_day} day(s)"
 msgstr "Les conteneurs sont gardés {max_cryptainer_age_day} jour(s)"
 
-#: src/waguilib/screens/authentication_device_store.kv:18
+#: src/waguilib/screens/authdevice_store.kv:18
 msgid "Key Guardians"
 msgstr "Gardiens des Clés"
 
-#: src/waguilib/screens/authentication_device_store.kv:21
+#: src/waguilib/screens/authdevice_store.kv:21
 #: src/waguilib/screens/authenticator_management.kv:53
 #: src/waguilib/screens/container_store.kv:30
 #: src/waguilib/screens/launcher_with_image_preview.kv:16
 msgid "Refresh"
 msgstr "Rafraîchir"
 
-#: src/waguilib/screens/authentication_device_store.kv:21
+#: src/waguilib/screens/authdevice_store.kv:21
 #: src/waguilib/screens/container_store.kv:30
 msgid "Back to home"
 msgstr "Retour"
 
-#: src/waguilib/screens/authentication_device_store.kv:26
+#: src/waguilib/screens/authdevice_store.kv:26
 msgid "Please select the key guardians to be used"
 msgstr "Veuillez sélectionner les gardiens de clés à utiliser"
 
-#: src/waguilib/screens/authentication_device_store.kv:40
+#: src/waguilib/screens/authdevice_store.kv:40
 msgid "Import from USB"
 msgstr "Import depuis USB"
 
-#: src/waguilib/screens/authentication_device_store.kv:46
+#: src/waguilib/screens/authdevice_store.kv:46
 #: src/waguilib/screens/container_store.kv:48
 msgid "Delete"
 msgstr "Supprimer"
 
-#: src/waguilib/screens/authentication_device_store.py:68
+#: src/waguilib/screens/authdevice_store.py:68
 msgid "No connected authentication devices found"
 msgstr "Aucun périphérique d'authentification trouvé"
 
-#: src/waguilib/screens/authentication_device_store.py:74
+#: src/waguilib/screens/authdevice_store.py:74
 msgid "No initialized authentication devices found"
 msgstr "Aucun périphérique d'authentification initialisé trouvé"
 
-#: src/waguilib/screens/authentication_device_store.py:167
+#: src/waguilib/screens/authdevice_store.py:167
 #, python-brace-format
 msgid "User {user} - Uid {uid}"
 msgstr "Utilisateur {user} - Uid {uid}"
 
-#: src/waguilib/screens/authentication_device_store.py:187
+#: src/waguilib/screens/authdevice_store.py:187
 msgid "Refreshed imported authenticators"
 msgstr "Authentifieurs importés rafraîchis"
 
-#: src/waguilib/screens/authentication_device_store.py:239
+#: src/waguilib/screens/authdevice_store.py:239
 msgid "No imported authentication device found"
 msgstr "Aucun périphérique d'authentification importé trouvé"
 
-#: src/waguilib/screens/authentication_device_store.py:284
+#: src/waguilib/screens/authdevice_store.py:284
 #: src/waguilib/screens/container_store.py:184
 #: src/waguilib/widgets/popups.py:50
 msgid "Close"
 msgstr "Fermer"
 
-#: src/waguilib/screens/authentication_device_store.py:285
+#: src/waguilib/screens/authdevice_store.py:285
 #, python-format
 msgid "Key Guardian %s"
 msgstr "Gardiens de Clé %s"
