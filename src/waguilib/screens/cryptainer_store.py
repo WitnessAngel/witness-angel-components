@@ -351,7 +351,7 @@ class CryptainerStoreScreen(Screen):
         target_directory.mkdir(
             exist_ok=True
         )  # Double exports would replace colliding files
-        cryptainer = load_cryptainer_from_filesystem(cryptainer_filepath, include_data_ciphertext=True)
+        cryptainer = load_cryptainer_from_filesystem(cryptainer_filepath, include_payload_ciphertext=True)
         tarfile_bytes = decrypt_payload_from_cryptainer(
             cryptainer, keystore_pool=self._keystore_pool
         )

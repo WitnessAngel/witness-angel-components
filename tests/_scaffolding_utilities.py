@@ -19,10 +19,10 @@ class FakeTestCryptainerStorage(CryptainerStorage):
         self.increment += 1
 
     def _encrypt_payload_into_cryptainer(self, payload, **kwargs):
-        return dict(data_ciphertext=payload)
+        return dict(payload_ciphertext=payload)
 
     def _decrypt_payload_from_cryptainer(self, cryptainer, **kwargs):
-        return cryptainer["data_ciphertext"]
+        return cryptainer["payload_ciphertext"]
 
 
 class FakeTarfileRecordsAggregator(TarfileRecordsAggregator):  # USELESS ????
@@ -42,11 +42,11 @@ class FakeTarfileRecordsAggregator(TarfileRecordsAggregator):  # USELESS ????
 def check_periodic_stream_pusher_basic_behaviour(sensor_class: PeriodicStreamPusher, recording_interval_s: float, total_recording_time_s: float):
 
     """
-    offload_data_ciphertext = random().choice((True, False))
+    offload_payload_ciphertext = random().choice((True, False))
     container_storage = FakeTestCryptainerStorage(
         default_cryptoconf={"zexcsc": True},
         containers_dir=containers_dir,
-        offload_data_ciphertext=offload_data_ciphertext,
+        offload_payload_ciphertext=offload_payload_ciphertext,
     )
     """
 
