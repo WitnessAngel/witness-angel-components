@@ -143,7 +143,7 @@ def ___build_recording_toolchain(config, keystore_pool, cryptoconf):
             sleep_on_overflow_s=0.5
             * max_free_keys_per_type
             * cryptainer_member_duration_s,  # TODO make it configurable?
-            key_types=PREGENERATED_KEY_TYPES,
+            key_algos=PREGENERATED_KEY_TYPES,
         )
     else:
         free_keys_generator_worker = None

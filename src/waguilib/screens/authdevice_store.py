@@ -273,7 +273,7 @@ class AuthdeviceStoreScreen(Screen):
                 % (
                     index,
                     uuid_suffix,
-                    keypair_identifier["key_type"],
+                    keypair_identifier["key_algo"],
                     #private_key_present_str,
                 )
                 )

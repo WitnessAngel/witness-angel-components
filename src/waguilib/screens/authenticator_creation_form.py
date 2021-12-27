@@ -102,12 +102,12 @@ class AuthenticatorCreationScreen(Screen):
             for i in range(1, GENERATED_KEYS_COUNT+1):
                 # TODO add some logging here
                 key_pair = generate_keypair(
-                    key_type="RSA_OAEP",
+                    key_algo="RSA_OAEP",
                     passphrase=form_values["passphrase"]
                 )
                 filesystem_keystore.set_keys(
                     keychain_uid=generate_uuid0(),
-                    key_type="RSA_OAEP",
+                    key_algo="RSA_OAEP",
                     public_key=key_pair["public_key"],
                     private_key=key_pair["private_key"],
                 )

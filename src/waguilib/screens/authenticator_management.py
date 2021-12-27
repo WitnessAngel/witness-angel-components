@@ -340,14 +340,14 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
 
         for key_information in keypair_identifiers:
             keychain_uid = key_information["keychain_uid"]
-            key_type = key_information["key_type"]
+            key_algo = key_information["key_algo"]
             if not key_information["private_key_present"]:
                 missing_private_keys.append(keychain_uid)
                 continue
-            private_key_pem = filesystem_keystore.get_private_key(keychain_uid=keychain_uid, key_type=key_type)
+            private_key_pem = filesystem_keystore.get_private_key(keychain_uid=keychain_uid, key_algo=key_algo)
             try:
                 key_obj = load_asymmetric_key_from_pem_bytestring(
-                   key_pem=private_key_pem, key_type=key_type, passphrase=passphrase
+                   key_pem=private_key_pem, key_algo=key_algo, passphrase=passphrase
                 )
                 assert key_obj, key_obj
             except KeyLoadingError:
