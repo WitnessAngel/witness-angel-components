@@ -175,14 +175,14 @@ class WaBackgroundService(WaRuntimeSupportMixin):
             if self.is_recording:
                 #logger.debug("Ignoring redundant call to service.start_recording()")
                 return
-            logger.info("Starting recording")
+            logger.info("Starting offloaded recording")
 
             if not self._recording_toolchain:
                 self._recording_toolchain = self._build_recording_toolchain()  # FIXME handle exceptions instead of None!
 
             assert self._recording_toolchain
             start_recording_toolchain(self._recording_toolchain)
-            logger.info("Recording started")
+            logger.info("Offloaded recording started")
 
             if IS_ANDROID:
                 from waguilib.android_helpers import build_notification_channel, build_notification

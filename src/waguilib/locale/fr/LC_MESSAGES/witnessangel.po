@@ -111,7 +111,7 @@ msgstr "Utilisateur {user} - Uid {uid}"
 
 #: src/waguilib/screens/authentication_device_store.py:187
 msgid "Refreshed imported authenticators"
-msgstr "Rafraîchir les authentifieurs importés"
+msgstr "Authentifieurs importés rafraîchis"
 
 #: src/waguilib/screens/authentication_device_store.py:239
 msgid "No imported authentication device found"

@@ -91,7 +91,7 @@ class CryptainerStoreScreen(Screen):
 
         for index, cryptainer_name in enumerate(reversed(cryptainer_names), start=1):
 
-            cryptainer_label = tr._("N° {index}: {container_name}").format(index=index, cryptainer_name=cryptainer_name)
+            cryptainer_label = tr._("N° {index}: {cryptainer_name}").format(index=index, cryptainer_name=cryptainer_name)
             cryptainer_entry = Factory.WASelectableListItemEntry(
                     text=cryptainer_label)  # FIXME RENAME THIS
             cryptainer_entry.unique_identifier = cryptainer_name
