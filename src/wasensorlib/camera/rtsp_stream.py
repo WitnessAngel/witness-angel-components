@@ -175,17 +175,17 @@ class PeriodicStreamPusher(PeriodicTaskHandler):
         from_datetime = self._current_start_time
         to_datetime = get_utc_now_date()
 
-        data = self._do_stop_recording()
+        payload = self._do_stop_recording()
 
-        if data is not None:
-            self._handle_post_stop_data(data=data, from_datetime=from_datetime, to_datetime=to_datetime)
+        if payload is not None:
+            self._handle_post_stop_data(payload=payload, from_datetime=from_datetime, to_datetime=to_datetime)
 
         logger.info(">>> Stopped sensor %s" % self)
 
     def _do_stop_recording(self):
         raise NotImplementedError("%s -> _do_stop_recording" % self.sensor_name)
 
-    def _handle_post_stop_data(self, data, from_datetime, to_datetime):
+    def _handle_post_stop_data(self, payload, from_datetime, to_datetime):
         raise NotImplementedError("%s -> _handle_post_stop_data" % self.sensor_name)
 
     @synchronized
@@ -197,13 +197,13 @@ class PeriodicStreamPusher(PeriodicTaskHandler):
         from_datetime = self._current_start_time
         to_datetime = datetime.now(tz=timezone.utc)
 
-        data = self._do_stop_recording() # Renames target files
+        payload = self._do_stop_recording() # Renames target files
 
         self._current_start_time = get_utc_now_date()  # RESET
         self._do_start_recording()  # Must be restarded imediately
 
-        if data is not None:
-            self._handle_post_stop_data(data=data, from_datetime=from_datetime, to_datetime=to_datetime)
+        if payload is not None:
+            self._handle_post_stop_data(payload=payload, from_datetime=from_datetime, to_datetime=to_datetime)
 
 
 

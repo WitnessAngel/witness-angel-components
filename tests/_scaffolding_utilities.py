@@ -14,14 +14,14 @@ class FakeTestCryptainerStorage(CryptainerStorage):
 
     increment = 0
 
-    def enqueue_file_for_encryption(self, filename_base, data, **kwargs):
-        super().enqueue_file_for_encryption(filename_base + (".%03d" % self.increment), data, **kwargs)
+    def enqueue_file_for_encryption(self, filename_base, payload, **kwargs):
+        super().enqueue_file_for_encryption(filename_base + (".%03d" % self.increment), payload, **kwargs)
         self.increment += 1
 
-    def _encrypt_data_into_cryptainer(self, data, **kwargs):
-        return dict(data_ciphertext=data)
+    def _encrypt_payload_into_cryptainer(self, payload, **kwargs):
+        return dict(data_ciphertext=payload)
 
-    def _decrypt_data_from_cryptainer(self, cryptainer, **kwargs):
+    def _decrypt_payload_from_cryptainer(self, cryptainer, **kwargs):
         return cryptainer["data_ciphertext"]
 
 

@@ -352,7 +352,7 @@ class CryptainerStoreScreen(Screen):
             exist_ok=True
         )  # Double exports would replace colliding files
         cryptainer = load_cryptainer_from_filesystem(cryptainer_filepath, include_data_ciphertext=True)
-        tarfile_bytes = decrypt_data_from_cryptainer(
+        tarfile_bytes = decrypt_payload_from_cryptainer(
             cryptainer, keystore_pool=self._keystore_pool
         )
         tarfile_bytesio = io.BytesIO(tarfile_bytes)
@@ -395,5 +395,5 @@ class CryptainerStoreScreen(Screen):
             request_message="Need decryptions"
         )
         for container in containers:
-            decrypt_data_from_cryptainer(container=container)
+            decrypt_payload_from_cryptainer(container=container)
             """
