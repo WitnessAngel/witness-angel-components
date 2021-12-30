@@ -31,7 +31,7 @@ from kivymd.uix.screen import Screen
 from kivymd.uix.snackbar import Snackbar
 from waguilib.i18n import tr
 
-from wacryptolib.authdevice import list_available_authdevices, _get_keystore_folder_path
+from wacryptolib.authdevice import list_available_authdevices, get_authenticator_dir_for_authdevice
 from wacryptolib.exceptions import KeystoreAlreadyExists
 from waguilib.widgets.popups import display_info_toast, close_current_dialog, dialog_with_close_button
 
@@ -77,7 +77,7 @@ class AuthdeviceStoreScreen(Screen):
 
                 for authdevice in authdevices_initialized:
                     #print(">>>>>>>>>> importing,", authdevice)
-                    keystore_folder_path = _get_keystore_folder_path(authdevice)  # FIXME make it public?
+                    keystore_folder_path = get_authenticator_dir_for_authdevice(authdevice)  # FIXME make it public?
                     try:
                         self.filesystem_keystore_pool.import_keystore_from_folder(keystore_folder_path)
                     except KeystoreAlreadyExists:

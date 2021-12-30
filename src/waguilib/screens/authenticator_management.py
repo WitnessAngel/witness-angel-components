@@ -20,7 +20,7 @@ from waguilib.widgets.layout_helpers import LanguageSwitcherScreenMixin
 from waguilib.widgets.popups import dialog_with_close_button, register_current_dialog, close_current_dialog, \
     help_text_popup
 from wacryptolib.authdevice import list_available_authdevices, \
-    get_authenticator_path_for_authdevice
+    get_authenticator_dir_for_authdevice
 from wacryptolib.authenticator import is_authenticator_initialized, load_authenticator_metadata
 from wacryptolib.exceptions import KeyLoadingError
 from wacryptolib.keygen import load_asymmetric_key_from_pem_bytestring
@@ -119,7 +119,7 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
             authenticator_path = self._selected_custom_folder_path
         else:
             assert authenticator_type == AuthenticatorType.USB_DEVICE
-            authenticator_path = get_authenticator_path_for_authdevice(authenticator_metadata)
+            authenticator_path = get_authenticator_dir_for_authdevice(authenticator_metadata)
         return authenticator_path
 
     def reselect_previously_selected_authenticator(self):
