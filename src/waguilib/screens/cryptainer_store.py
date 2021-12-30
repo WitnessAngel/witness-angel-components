@@ -76,7 +76,7 @@ class CryptainerStoreScreen(Screen):
             cryptainers_page_ids.cryptainer_table.add_widget(display_layout)
             return
 
-        cryptainer_names = self.filesystem_cryptainer_storage.list_cryptainer_names(as_sorted=True)
+        cryptainer_names = self.filesystem_cryptainer_storage.list_cryptainer_names(as_sorted_list=True)
 
         if not cryptainer_names:
             display_layout = Factory.WABigInformationBox()
