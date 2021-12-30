@@ -18,7 +18,7 @@ def launch_app_or_service(main_module: str, client_type: str):
         print(">> FATAL ERROR IN %s LAUNCHER (is_service=%s) ON MOBILE PLATFORM, SENDING CRASH REPORT <<"
               % client_type)
         exc_info = sys.exc_info()
-        target_url = "https://waescrow.prolifik.net/crashdumps/"  # Can't access common config safely here
+        target_url = "https://watrustee.prolifik.net/crashdumps/"  # Can't access common config safely here
         from waguilib.logging.crashdumps import generate_and_send_crashdump  # Should be mostly safe to import
         report = generate_and_send_crashdump(exc_info=exc_info, target_url=target_url)
         print(report)  # Not to stderr for now, since it is hooked by Kivy logging

@@ -41,7 +41,7 @@ from waguilib.service_control.osc_transport import get_osc_server, get_osc_clien
 osc, osc_starter_callback = get_osc_server(is_master=False)
 
 # FIXME what happens if exception on remote OSC endpoint ? CRASH!!
-# TODO add custom "local escrow resolver"
+# TODO add custom "local trustee resolver"
 # TODO add exception swallowers, and logging pushed to frontend app (if present)
 
 

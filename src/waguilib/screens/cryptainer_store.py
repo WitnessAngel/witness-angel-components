@@ -26,7 +26,7 @@ from waguilib.i18n import tr
 from waguilib.importable_settings import EXTERNAL_DATA_EXPORTS_DIR
 from waguilib.logging.handlers import safe_catch_unhandled_exception
 
-from wacryptolib.cryptainer import gather_escrow_dependencies
+from wacryptolib.cryptainer import gather_trustee_dependencies
 from waguilib.widgets.popups import close_current_dialog, dialog_with_close_button
 
 Builder.load_file(str(Path(__file__).parent / 'cryptainer_store.kv'))
@@ -168,9 +168,9 @@ class CryptainerStoreScreen(Screen):
         assert self.filesystem_cryptainer_storage, self.filesystem_cryptainer_storage  # By construction...
         try:
             cryptainer = self.filesystem_cryptainer_storage.load_cryptainer_from_storage(cryptainer_name)
-            all_dependencies = gather_escrow_dependencies([cryptainer])
+            all_dependencies = gather_trustee_dependencies([cryptainer])
             interesting_dependencies = [d[0] for d in list(all_dependencies["encryption"].values())]
-            cryptainer_repr = "\n".join(str(escrow) for escrow in interesting_dependencies)
+            cryptainer_repr = "\n".join(str(trustee) for trustee in interesting_dependencies)
             #container_repr = pprint.pformat(interesting_dependencies, indent=2)[:800]  # LIMIT else pygame.error: Width or height is too large
         except Exception as exc:
             cryptainer_repr = repr(exc)
@@ -268,11 +268,11 @@ class CryptainerStoreScreen(Screen):
         keystore_metadata = filesystem_keystore_pool.list_imported_keystore_metadata()
 
         cryptainers = [self.filesystem_cryptainer_storage.load_cryptainer_from_storage(x) for x in cryptainer_names]
-        dependencies = gather_escrow_dependencies(cryptainers)
+        dependencies = gather_trustee_dependencies(cryptainers)
 
-        # BEWARE this only works for "authentication device" escrows!
-        # TODO make this more generic with support for remote escrow!
-        relevant_authdevice_uids = [escrow[0]["authdevice_uid"] for escrow in dependencies["encryption"].values()]
+        # BEWARE this only works for "authentication device" trustees!
+        # TODO make this more generic with support for remote trustee!
+        relevant_authdevice_uids = [trustee[0]["authdevice_uid"] for trustee in dependencies["encryption"].values()]
 
         relevant_keystore_metadata = sorted([y for (x,y) in keystore_metadata.items()
                                                 if x in relevant_authdevice_uids], key = lambda d: d["user"])
@@ -387,10 +387,10 @@ class CryptainerStoreScreen(Screen):
                     )
                 )
                 containers.append(container)
-        escrow_dependencies = gather_escrow_dependencies(containers=containers)
+        trustee_dependencies = gather_trustee_dependencies(containers=containers)
 
         decryption_authorizations = request_decryption_authorizations(
-            escrow_dependencies=escrow_dependencies,
+            trustee_dependencies=trustee_dependencies,
             keystore_pool=filesystem_keystore_pool,
             request_message="Need decryptions"
         )
