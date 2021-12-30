@@ -204,7 +204,7 @@ def stop_recording_toolchain(toolchain):
 
     for idx, data_aggregator in enumerate(data_aggregators, start=1):
         logger.info("Flushing '%s' data aggregator" % data_aggregator.sensor_name)
-        data_aggregator.flush_dataset()
+        data_aggregator.flush_payload()
 
     for idx, tarfile_aggregator in enumerate(tarfile_aggregators, start=1):
         logger.info(
