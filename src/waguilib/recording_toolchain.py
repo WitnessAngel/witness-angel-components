@@ -7,7 +7,7 @@ from wacryptolib.trustee import get_free_keys_generator_worker
 from wacryptolib.sensor import (
     TarfileRecordsAggregator,
     JsonDataAggregator,
-    SensorsManager,
+    SensorManager,
 )
 from waguilib.importable_settings import IS_ANDROID
 
@@ -130,7 +130,7 @@ def ___build_recording_toolchain(config, keystore_pool, cryptoconf):
         logger.warning("No sensor is allowed by app permissions, aborting recorder setup")
         return None
 
-    sensors_manager = SensorsManager(sensors=sensors)
+    sensors_manager = SensorManager(sensors=sensors)
 
     local_keystore = keystore_pool.get_local_keystore()
 
