@@ -21,11 +21,10 @@ from waguilib.widgets.popups import dialog_with_close_button, register_current_d
     help_text_popup
 from wacryptolib.authdevice import list_available_authdevices, \
     get_authenticator_dir_for_authdevice
-from wacryptolib.authenticator import is_authenticator_initialized, load_authenticator_metadata
+from wacryptolib.authenticator import is_authenticator_initialized, load_authenticator_metadata, _get_metadata_file_path
 from wacryptolib.exceptions import KeyLoadingError
 from wacryptolib.keygen import load_asymmetric_key_from_pem_bytestring
 from wacryptolib.keystore import FilesystemKeystore
-from wacryptolib.utilities import get_metadata_file_path
 from waguilib.importable_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_APP_ROOT, EXTERNAL_EXPORTS_DIR, \
     request_external_storage_dirs_access, strip_external_app_root_prefix
 from waguilib.utilities import convert_bytes_to_human_representation
@@ -279,7 +278,7 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
     @safe_catch_unhandled_exception_and_display_popup
     def _delete_authenticator_data(self, authenticator_path):
         # FIXME protect against any OSERROR here!!
-        metadata_file_path = get_metadata_file_path(authenticator_path)
+        metadata_file_path = _get_metadata_file_path(authenticator_path)  # FIXME MOVE TO WACRYPTOLIB!!!
         key_files = authenticator_path.glob("*.pem")
         for filepath in [metadata_file_path] + list(key_files):
             filepath.unlink(missing_ok=True)

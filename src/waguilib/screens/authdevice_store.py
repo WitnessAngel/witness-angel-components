@@ -250,7 +250,7 @@ class AuthdeviceStoreScreen(Screen):
                 self.selected_authenticator_uids.remove(authenticator_uid_str)
             elif is_selected and authenticator_uid_str not in self.selected_authenticator_uids:
                 self.selected_authenticator_uids.append(authenticator_uid_str)
-        self.dispatch('on_selected_authdevices_changed', self.selected_authenticator_uids)
+        self.dispatch('on_selected_authdevices_changed', self.selected_authenticator_uids)  # FIXME rename this
         #print("self.selected_authenticator_uids", self.selected_authenticator_uids)
 
     def info_keys_stored(self, authenticator_uid, authenticator_owner):
