@@ -23,7 +23,7 @@ from kivymd.uix.screen import Screen
 from kivymd.uix.snackbar import Snackbar
 
 from waguilib.i18n import tr
-from waguilib.importable_settings import EXTERNAL_DATA_EXPORTS_DIR
+from waguilib.importable_settings import EXTERNAL_EXPORTS_DIR
 from waguilib.logging.handlers import safe_catch_unhandled_exception
 
 from wacryptolib.cryptainer import gather_trustee_dependencies
@@ -321,10 +321,10 @@ class CryptainerStoreScreen(Screen):
 
         for cryptainer_name in cryptainer_names:
             try:
-                EXTERNAL_DATA_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
+                EXTERNAL_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
                 # FIXME make this asynchronous, to avoid stalling the app!
                 result = self.filesystem_cryptainer_storage.decrypt_cryptainer_from_storage(cryptainer_name, passphrase_mapper=passphrase_mapper)
-                target_path = EXTERNAL_DATA_EXPORTS_DIR / (Path(cryptainer_name).with_suffix(""))
+                target_path = EXTERNAL_EXPORTS_DIR / (Path(cryptainer_name).with_suffix(""))
                 target_path.write_bytes(result)
                 #print(">> Successfully exported data file to %s" % target_path)
             except Exception as exc:
@@ -345,7 +345,7 @@ class CryptainerStoreScreen(Screen):
     @safe_catch_unhandled_exception
     def __UNUSED_offloaded_attempt_cryptainer_decryption(self, cryptainer_filepath):  #FIXME move out of here
         logger.info("Decryption requested for container %s", cryptainer_filepath)
-        target_directory = EXTERNAL_DATA_EXPORTS_DIR.joinpath(
+        target_directory = EXTERNAL_EXPORTS_DIR.joinpath(
             os.path.basename(cryptainer_filepath)
         )
         target_directory.mkdir(

@@ -26,8 +26,8 @@ from wacryptolib.exceptions import KeyLoadingError
 from wacryptolib.keygen import load_asymmetric_key_from_pem_bytestring
 from wacryptolib.keystore import FilesystemKeystore
 from wacryptolib.utilities import get_metadata_file_path
-from waguilib.importable_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_APP_ROOT, EXTERNAL_DATA_EXPORTS_DIR, \
-    request_external_storage_dirs_access, strip_external_app_prefix
+from waguilib.importable_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_APP_ROOT, EXTERNAL_EXPORTS_DIR, \
+    request_external_storage_dirs_access, strip_external_app_root_prefix
 from waguilib.utilities import convert_bytes_to_human_representation
 
 from waguilib.i18n import tr
@@ -107,7 +107,7 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
     def archive_chooser_open(self, *args):
         if not request_external_storage_dirs_access():
             return
-        file_manager_path = EXTERNAL_DATA_EXPORTS_DIR
+        file_manager_path = EXTERNAL_EXPORTS_DIR
         self._archive_chooser.show(str(file_manager_path))  # Soon use .show_disks!!
         register_current_dialog(self._archive_chooser)
 
@@ -216,7 +216,7 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
 
         authenticator_info_text = ""
         authenticator_path = self._get_authenticator_path(authenticator_metadata)
-        authenticator_path_shortened = strip_external_app_prefix(authenticator_path)
+        authenticator_path_shortened = strip_external_app_root_prefix(authenticator_path)
 
         # FIXMe handle OS errors here
         if not authenticator_path:
@@ -371,14 +371,14 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         authenticator_uid = shorten_uid(authenticator_metadata["authenticator_uid"])
         if not request_external_storage_dirs_access():
             return
-        EXTERNAL_DATA_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)  # FIXME beware permissions on smartphone!!!
-        archive_path_base = EXTERNAL_DATA_EXPORTS_DIR.joinpath("authenticator_uid%s_%s" % (authenticator_uid, timestamp))
+        EXTERNAL_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)  # FIXME beware permissions on smartphone!!!
+        archive_path_base = EXTERNAL_EXPORTS_DIR.joinpath("authenticator_uid%s_%s" % (authenticator_uid, timestamp))
         archive_path = shutil.make_archive(base_name=archive_path_base, format=self.AUTHENTICATOR_ARCHIVE_FORMAT,
                             root_dir=authenticator_path)
 
         dialog_with_close_button(
             title=tr._("Export successful"),
-            text=tr._("Authenticator archive exported to %s") % strip_external_app_prefix(archive_path),
+            text=tr._("Authenticator archive exported to %s") % strip_external_app_root_prefix(archive_path),
             )
 
     @safe_catch_unhandled_exception_and_display_popup

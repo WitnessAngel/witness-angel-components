@@ -3,7 +3,7 @@ from pathlib import Path
 
 from kivy.properties import StringProperty
 
-from waguilib.importable_settings import INTERNAL_APP_ROOT, INTERNAL_CRYPTAINER_DIR, INTERNAL_KEYS_DIR, \
+from waguilib.importable_settings import INTERNAL_APP_ROOT, INTERNAL_CRYPTAINER_DIR, INTERNAL_KEYSTORE_POOL_DIR, \
     INTERNAL_LOGS_DIR
 from waguilib.i18n import tr
 
@@ -38,7 +38,7 @@ class WaRuntimeSupportMixin:
     @property
     def internal_keys_dir(self) -> str:  # FIXME switch to Path!
         """For the pool of imported and local keys"""
-        return str(INTERNAL_KEYS_DIR)
+        return str(INTERNAL_KEYSTORE_POOL_DIR)
 
     @property
     def internal_cryptainer_dir(self) -> str:  # FIXME switch to Path!

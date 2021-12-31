@@ -1,5 +1,5 @@
 #:import tr waguilib.i18n.tr
-#:import strip_external_app_prefix waguilib.importable_settings.strip_external_app_prefix
+#:import strip_external_app_root_prefix waguilib.importable_settings.strip_external_app_root_prefix
 
 
 <ThinTwoLineAvatarIconListItem@TwoLineAvatarIconListItem>
@@ -17,7 +17,7 @@
 <FolderKeyStoreListItem>:
     selected_path: None
     text: tr._("Custom location")
-    secondary_text: strip_external_app_prefix(self.selected_path) if self.selected_path else tr._("Please select a folder")
+    secondary_text: strip_external_app_root_prefix(self.selected_path) if self.selected_path else tr._("Please select a folder")
 
     IconLeftWidget:
         icon: "folder"

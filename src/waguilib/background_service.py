@@ -15,15 +15,15 @@ from configparser import ConfigParser, Error as ConfigParserError
 from oscpy.server import ServerClass
 
 from waguilib.common_app_support import WaRuntimeSupportMixin
-from waguilib.importable_settings import IS_ANDROID, WIP_RECORDING_MARKER, CONTEXT, INTERNAL_KEYS_DIR
+from waguilib.importable_settings import IS_ANDROID, WIP_RECORDING_MARKER, CONTEXT
 from waguilib.recording_toolchain import start_recording_toolchain, stop_recording_toolchain
 from waguilib.utilities import InterruptableEvent
 
 '''
 from waclient.common_config import (
     APP_CONFIG_FILE,
-    INTERNAL_KEYS_DIR,
-    EXTERNAL_DATA_EXPORTS_DIR,
+    INTERNAL_KEYSTORE_POOL_DIR,
+    EXTERNAL_EXPORTS_DIR,
     get_cryptoconf,
     IS_ANDROID, WIP_RECORDING_MARKER, CONTEXT)
 
@@ -71,8 +71,6 @@ class WaBackgroundService(WaRuntimeSupportMixin):
     _status_change_in_progress = False  # Set to True while recording is starting/stopping
 
     def __init__(self):
-
-        ##self._keystore_pool = FilesystemKeystorePool(INTERNAL_KEYS_DIR)
 
         logger.info("Starting service")  # Will not be sent to App (too early)
         osc_starter_callback()  # Opens server port

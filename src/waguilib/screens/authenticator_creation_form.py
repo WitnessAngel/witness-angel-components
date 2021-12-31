@@ -61,7 +61,7 @@ class AuthenticatorCreationScreen(Screen):
         form_error = None
         if not all(form_values.values()):
             form_error = tr._("Please enter a username, passphrase and passphrase hint.")
-        elif len(form_values["passphrase"]) < PASSPHRASE_MIN_LENGTH:
+        elif len(form_values["authenticator_passphrase"]) < PASSPHRASE_MIN_LENGTH:
             form_error = tr._("Passphrase must be at least %s characters long.") % PASSPHRASE_MIN_LENGTH
         if form_error:
             raise ValueError(form_error)

@@ -1,7 +1,7 @@
 from typing import List
 import time
 
-from .environment import IS_ANDROID, CONTEXT, PackageManager, EXTERNAL_DATA_EXPORTS_DIR
+from .environment import IS_ANDROID, CONTEXT, PackageManager, EXTERNAL_EXPORTS_DIR
 
 
 def request_multiple_permissions(permissions: List[str]) -> List[bool]:
@@ -56,7 +56,7 @@ def request_external_storage_dirs_access():
         res = has_single_permission(permission)
         #logger.info("Has single permission %r is %s" % (permission, res))
         if res:
-            EXTERNAL_DATA_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
+            EXTERNAL_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
             return True
         return False
     return True
