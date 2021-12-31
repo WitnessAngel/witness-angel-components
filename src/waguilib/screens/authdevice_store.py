@@ -43,7 +43,7 @@ class AuthdeviceStoreScreen(Screen):
     filesystem_keystore_pool = ObjectProperty(None)
 
     def __init__(self, *args, **kwargs):
-        self.selected_authdevice_uids = []  # List of STRINGS
+        self.selected_authenticator_uids = []  # List of STRINGS
         self.register_event_type('on_selected_authdevices_changed')
         super().__init__(*args, **kwargs)
 
@@ -55,7 +55,7 @@ class AuthdeviceStoreScreen(Screen):
         """
         loop through the “authdevices” present,
         and for those who are initialize, copy (with different Keystore for each folder)
-        their content in a <KEYS_ROOT> / <device_uid> / folder (taking the device_uid from metadata.json)
+        their content in a <KEYS_ROOT> / <authenticator_uid> / folder (taking the authenticator_uid from metadata.json)
         """
         # list_devices = list_available_authdevices()
         # print(list_devices)
@@ -73,7 +73,7 @@ class AuthdeviceStoreScreen(Screen):
             if not authdevices_initialized:
                 msg = tr._("No initialized authentication devices found")
             else:
-                device_uids = []
+                authenticator_uids = []
 
                 for authdevice in authdevices_initialized:
                     #print(">>>>>>>>>> importing,", authdevice)
@@ -82,12 +82,12 @@ class AuthdeviceStoreScreen(Screen):
                         self.filesystem_keystore_pool.import_keystore_from_folder(keystore_folder_path)
                     except KeystoreAlreadyExists:
                         pass  # We tried anyway, since some "update" mechanics might be setup one day
-                    device_uids.append(authdevice["metadata"]["device_uid"])
+                    authenticator_uids.append(authdevice["metadata"]["authenticator_uid"])
 
-                msg = "%d authentication device(s) updated" % len(device_uids)
+                msg = "%d authenticators imported" % len(authenticator_uids)
 
                 # Autoselect freshly imported keys
-                self._change_authenticator_selection_status(device_uids=device_uids, is_selected=True)
+                self._change_authenticator_selection_status(authenticator_uids=authenticator_uids, is_selected=True)
 
         display_info_toast(msg)
 
@@ -98,21 +98,21 @@ class AuthdeviceStoreScreen(Screen):
 
         # FIXME add confirmation dialog!!
 
-        device_uids = self.selected_authdevice_uids
+        authenticator_uids = self.selected_authenticator_uids
 
-        if not device_uids:
+        if not authenticator_uids:
             msg = "Please select authentication devices to delete"
         else:
             # TODO move this to WACRYPTOLIB!
-            for device_uid in device_uids:
-                path = self.filesystem_keystore_pool._get_imported_keystore_path(device_uid)
+            for authenticator_uid in authenticator_uids:
+                path = self.filesystem_keystore_pool._get_imported_keystore_dir(authenticator_uid)
                 try:
                     shutil.rmtree(path)
                 except OSError as exc:
-                    logging.error("Failed deletion of imported authentication device %s: %r", device_uid, exc)
+                    logging.error("Failed deletion of imported authentication device %s: %r", authenticator_uid, exc)
             msg = "Selected imported authentication devices were deleted"
 
-            self._change_authenticator_selection_status(device_uids=device_uids, is_selected=False)  # Update selection list
+            self._change_authenticator_selection_status(authenticator_uids=authenticator_uids, is_selected=False)  # Update selection list
 
         display_info_toast(msg)
 
@@ -141,11 +141,11 @@ class AuthdeviceStoreScreen(Screen):
         #self.chbx_lbls = {}  # FIXME: lbls ?
         #self.btn_lbls = {}  # FIXME: lbls ?
 
-        for (index, (device_uid, metadata)) in enumerate(sorted(keystore_metadata.items()), start=1):
-            uuid_suffix = str(device_uid).split("-")[-1]
-            #print("COMPARING", str(device_uid), self.selected_authdevice_uids)
+        for (index, (authenticator_uid, metadata)) in enumerate(sorted(keystore_metadata.items()), start=1):
+            uuid_suffix = str(authenticator_uid).split("-")[-1]
+            #print("COMPARING", str(authenticator_uid), self.selected_authenticator_uids)
             # my_check_box = CheckBox(
-            #     active=(str(device_uid) in self.selected_authdevice_uids),
+            #     active=(str(authenticator_uid) in self.selected_authenticator_uids),
             #     size_hint=(0.15, None),
             #     on_release=self.check_box_authdevice_checked,
             #     height=40,
@@ -154,11 +154,11 @@ class AuthdeviceStoreScreen(Screen):
             #     text="Key n°%s, User %s, Uid %s" % (index, metadata["user"], uuid_suffix),
             #     size_hint=(0.85, None),
             #     #background_color=(0, 1, 1, 0.1),
-            #     on_release=functools.partial(self.info_keys_stored, device_uid=device_uid, user=metadata["user"]),
+            #     on_release=functools.partial(self.info_keys_stored, authenticator_uid=authenticator_uid, user=metadata["user"]),
             #     height=40,
             # )
-            # self.chbx_lbls[my_check_box] = str(device_uid)
-            # self.btn_lbls[my_check_btn] = str(device_uid)
+            # self.chbx_lbls[my_check_box] = str(authenticator_uid)
+            # self.btn_lbls[my_check_btn] = str(authenticator_uid)
            # device_row = BoxLayout(
             #    orientation="horizontal",
                 #pos_hint={"center": 1, "top": 1},
@@ -169,14 +169,14 @@ class AuthdeviceStoreScreen(Screen):
 
             selection_checkbox = authenticator_entry.ids.selection_checkbox
             #print(">>>>>>>>selection_checkbox", selection_checkbox)
-            selection_checkbox.active = str(device_uid) in self.selected_authdevice_uids
-            def selection_callback(widget, value, device_uid=device_uid):  # Force device_uid save here, else scope bug
-                self.check_box_authdevice_checked(device_uid=device_uid, is_selected=value)
+            selection_checkbox.active = str(authenticator_uid) in self.selected_authenticator_uids
+            def selection_callback(widget, value, authenticator_uid=authenticator_uid):  # Force authenticator_uid save here, else scope bug
+                self.check_box_authdevice_checked(authenticator_uid=authenticator_uid, is_selected=value)
             selection_checkbox.bind(active=selection_callback)
 
             information_icon = authenticator_entry.ids.information_icon
-            def information_callback(widget, device_uid=device_uid, metadata=metadata):  # Force device_uid save here, else scope bug
-                self.info_keys_stored(device_uid=device_uid, user=metadata["user"])
+            def information_callback(widget, authenticator_uid=authenticator_uid, metadata=metadata):  # Force authenticator_uid save here, else scope bug
+                self.info_keys_stored(authenticator_uid=authenticator_uid, user=metadata["user"])
             information_icon.bind(on_press=information_callback)
 
             Keys_page_ids.imported_authenticator_list.add_widget(authenticator_entry)
@@ -190,8 +190,8 @@ class AuthdeviceStoreScreen(Screen):
                 if file_metadata.exists():
 
                     metadata = load_from_json_file(file_metadata)
-                    device_uid = str(metadata["device_uid"])
-                    uuid = device_uid.split("-")
+                    authenticator_uid = str(metadata["authenticator_uid"])
+                    uuid = authenticator_uid.split("-")
                     start_of_uuid = uuid[0].lstrip()
                     start_of_UUID = start_of_uuid.rstrip()
                     my_check_box = CheckBox(#start
@@ -206,8 +206,8 @@ class AuthdeviceStoreScreen(Screen):
                         background_color=(1, 1, 1, 0.01),
                         on_press=self.info_keys_stored,
                     )
-                    self.chbx_lbls[my_check_box] = str(metadata["device_uid"])
-                    self.btn_lbls[my_check_btn] = str(metadata["device_uid"])
+                    self.chbx_lbls[my_check_box] = str(metadata["authenticator_uid"])
+                    self.btn_lbls[my_check_btn] = str(metadata["authenticator_uid"])
                     layout = BoxLayout(
                         orientation="horizontal",
                         pos_hint={"center": 1, "top": 1},
@@ -240,26 +240,26 @@ class AuthdeviceStoreScreen(Screen):
         keys_page_ids = self.ids
         keys_page_ids.imported_authenticator_list.add_widget(Display_layout)
 
-    def check_box_authdevice_checked(self, device_uid: uuid.UUID, is_selected: bool):
-        self._change_authenticator_selection_status(device_uids=[device_uid], is_selected=is_selected,)
+    def check_box_authdevice_checked(self, authenticator_uid: uuid.UUID, is_selected: bool):
+        self._change_authenticator_selection_status(authenticator_uids=[authenticator_uid], is_selected=is_selected,)
 
-    def _change_authenticator_selection_status(self, device_uids: list, is_selected: bool):
-        for device_uid in device_uids:
-            device_uid_str = str(device_uid)
-            if not is_selected and device_uid_str in self.selected_authdevice_uids:
-                self.selected_authdevice_uids.remove(device_uid_str)
-            elif is_selected and device_uid_str not in self.selected_authdevice_uids:
-                self.selected_authdevice_uids.append(device_uid_str)
-        self.dispatch('on_selected_authdevices_changed', self.selected_authdevice_uids)
-        #print("self.selected_authdevice_uids", self.selected_authdevice_uids)
+    def _change_authenticator_selection_status(self, authenticator_uids: list, is_selected: bool):
+        for authenticator_uid in authenticator_uids:
+            authenticator_uid_str = str(authenticator_uid)
+            if not is_selected and authenticator_uid_str in self.selected_authenticator_uids:
+                self.selected_authenticator_uids.remove(authenticator_uid_str)
+            elif is_selected and authenticator_uid_str not in self.selected_authenticator_uids:
+                self.selected_authenticator_uids.append(authenticator_uid_str)
+        self.dispatch('on_selected_authdevices_changed', self.selected_authenticator_uids)
+        #print("self.selected_authenticator_uids", self.selected_authenticator_uids)
 
-    def info_keys_stored(self, device_uid, user):
+    def info_keys_stored(self, authenticator_uid, user):
 
         """
         display the information of the keys stored in the selected usb
 
         """
-        imported_keystore = self.filesystem_keystore_pool.get_imported_keystore(keystore_uid=device_uid)
+        imported_keystore = self.filesystem_keystore_pool.get_imported_keystore(keystore_uid=authenticator_uid)
         keypair_identifiers = imported_keystore.list_keypair_identifiers()
 
         message = ""

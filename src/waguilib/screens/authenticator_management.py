@@ -233,11 +233,13 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
 
         elif is_authenticator_initialized(authenticator_path):
             authenticator_status = True
+
+            # FIXME handle loading errors!
             authenticator_metadata = load_authenticator_metadata(authenticator_path)
 
             displayed_values = dict(
                 authenticator_path=authenticator_path_shortened,
-                authenticator_uid=authenticator_metadata["device_uid"],
+                authenticator_uid=authenticator_metadata["authenticator_uid"],
                 authenticator_user=authenticator_metadata["user"],
                 authenticator_passphrase_hint=authenticator_metadata["passphrase_hint"],
             )
@@ -362,12 +364,15 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         authenticator_path = self._selected_authenticator_path
 
         timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
+
+        # This loading is not supposed to fail, by construction
         authenticator_metadata = load_authenticator_metadata(authenticator_path)
-        device_uid = shorten_uid(authenticator_metadata["device_uid"])
+        
+        authenticator_uid = shorten_uid(authenticator_metadata["authenticator_uid"])
         if not request_external_storage_dirs_access():
             return
         EXTERNAL_DATA_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)  # FIXME beware permissions on smartphone!!!
-        archive_path_base = EXTERNAL_DATA_EXPORTS_DIR.joinpath("authenticator_uid%s_%s" % (device_uid, timestamp))
+        archive_path_base = EXTERNAL_DATA_EXPORTS_DIR.joinpath("authenticator_uid%s_%s" % (authenticator_uid, timestamp))
         archive_path = shutil.make_archive(base_name=archive_path_base, format=self.AUTHENTICATOR_ARCHIVE_FORMAT,
                             root_dir=authenticator_path)
 
