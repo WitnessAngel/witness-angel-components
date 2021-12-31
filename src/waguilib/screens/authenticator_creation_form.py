@@ -53,9 +53,9 @@ class AuthenticatorCreationScreen(Screen):
         self.ids.initialization_form_toolbar.disabled = False
 
     def get_form_values(self):
-        return dict(user=self.ids.formfield_username.text.strip(),
-                    passphrase=self.ids.formfield_passphrase.text.strip(),
-                    passphrase_hint=self.ids.formfield_passphrasehint.text.strip())
+        return dict(authenticator_owner=self.ids.formfield_username.text.strip(),
+                    authenticator_passphrase=self.ids.formfield_passphrase.text.strip(),
+                    authenticator_passphrase_hint=self.ids.formfield_passphrasehint.text.strip())
 
     def validate_form_values(self, form_values):
         form_error = None
@@ -94,8 +94,8 @@ class AuthenticatorCreationScreen(Screen):
             Clock.schedule_once(partial(self._do_update_progress_bar, 10))
 
             initialize_authenticator(authenticator_path,
-                                     user=form_values["user"],
-                                     extra_metadata=dict(passphrase_hint=form_values["passphrase_hint"]))
+                                     authenticator_owner=form_values["authenticator_owner"],
+                                     extra_metadata=dict(authenticator_passphrase_hint=form_values["authenticator_passphrase_hint"]))
 
             filesystem_keystore = FilesystemKeystore(authenticator_path)
 
@@ -103,7 +103,7 @@ class AuthenticatorCreationScreen(Screen):
                 # TODO add some logging here
                 key_pair = generate_keypair(
                     key_algo="RSA_OAEP",
-                    passphrase=form_values["passphrase"]
+                    passphrase=form_values["authenticator_passphrase"]
                 )
                 filesystem_keystore.set_keys(
                     keychain_uid=generate_uuid0(),

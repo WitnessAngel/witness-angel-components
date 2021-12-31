@@ -275,7 +275,7 @@ class CryptainerStoreScreen(Screen):
         relevant_authenticator_uids = [trustee[0]["authenticator_uid"] for trustee in dependencies["encryption"].values()]
 
         relevant_keystore_metadata = sorted([y for (x,y) in keystore_metadata.items()
-                                                if x in relevant_authenticator_uids], key = lambda d: d["user"])
+                                                if x in relevant_authenticator_uids], key = lambda d: d["authenticator_owner"])
 
         #print("--------------")
         #pprint.pprint(relevant_keystore_metadata)
@@ -285,11 +285,11 @@ class CryptainerStoreScreen(Screen):
 
         #print(">>>>>>relevant_keystore_metadata", relevant_keystore_metadata)
         for metadata in relevant_keystore_metadata:
-            hint_text="Passphrase for user %s (hint: %s)" % (metadata["user"], metadata["passphrase_hint"])
+            hint_text="Passphrase for user %s (hint: %s)" % (metadata["authenticator_owner"], metadata["authenticator_passphrase_hint"])
             _widget = TextInput(hint_text=hint_text)
 
             '''MDTextField(hint_text="S SSSSSSSS z z",
-                              helper_text="Passphrase for user %s (hint: %s)" % (metadata["user"], metadata["passphrase_hint"]),
+                              helper_text="Passphrase for user %s (hint: %s)" % (metadata["authenticator_owner"], metadata["authenticator_passphrase_hint"]),
                               helper_text_mode="on_focus",
                               **{                    "color_mode": 'custom',
                                                   "line_color_focus": (0.4, 0.5, 1, 1),

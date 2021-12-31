@@ -151,10 +151,10 @@ class AuthdeviceStoreScreen(Screen):
             #     height=40,
             # )
             # my_check_btn = Button(
-            #     text="Key n°%s, User %s, Uid %s" % (index, metadata["user"], uuid_suffix),
+            #     text="Key n°%s, User %s, Uid %s" % (index, metadata["authenticator_owner"], uuid_suffix),
             #     size_hint=(0.85, None),
             #     #background_color=(0, 1, 1, 0.1),
-            #     on_release=functools.partial(self.info_keys_stored, authenticator_uid=authenticator_uid, user=metadata["user"]),
+            #     on_release=functools.partial(self.info_keys_stored, authenticator_uid=authenticator_uid, authenticator_owner=metadata["authenticator_owner"]),
             #     height=40,
             # )
             # self.chbx_lbls[my_check_box] = str(authenticator_uid)
@@ -164,7 +164,7 @@ class AuthdeviceStoreScreen(Screen):
                 #pos_hint={"center": 1, "top": 1},
                 #padding=[20, 0],
            #)
-            authenticator_label = tr._("User {user} - Uid {uid}").format(user=metadata["user"], uid=uuid_suffix)
+            authenticator_label = tr._("User {authenticator_owner} - Uid {uid}").format(authenticator_owner=metadata["authenticator_owner"], uid=uuid_suffix)
             authenticator_entry = Factory.WASelectableListItemEntry(text=authenticator_label)  # FIXME RENAME THIS
 
             selection_checkbox = authenticator_entry.ids.selection_checkbox
@@ -176,7 +176,7 @@ class AuthdeviceStoreScreen(Screen):
 
             information_icon = authenticator_entry.ids.information_icon
             def information_callback(widget, authenticator_uid=authenticator_uid, metadata=metadata):  # Force authenticator_uid save here, else scope bug
-                self.info_keys_stored(authenticator_uid=authenticator_uid, user=metadata["user"])
+                self.info_keys_stored(authenticator_uid=authenticator_uid, authenticator_owner=metadata["authenticator_owner"])
             information_icon.bind(on_press=information_callback)
 
             Keys_page_ids.imported_authenticator_list.add_widget(authenticator_entry)
@@ -201,7 +201,7 @@ class AuthdeviceStoreScreen(Screen):
                     )
                     my_check_btn = Button(
                         text=" key N°:  %s        User:  %s      |      UUID device:  %s "
-                        % ((str(index + 1)), str(metadata["user"]), start_of_UUID),
+                        % ((str(index + 1)), str(metadata["authenticator_owner"]), start_of_UUID),
                         size_hint=(0.8, 0.2),
                         background_color=(1, 1, 1, 0.01),
                         on_press=self.info_keys_stored,
@@ -253,7 +253,7 @@ class AuthdeviceStoreScreen(Screen):
         self.dispatch('on_selected_authdevices_changed', self.selected_authenticator_uids)
         #print("self.selected_authenticator_uids", self.selected_authenticator_uids)
 
-    def info_keys_stored(self, authenticator_uid, user):
+    def info_keys_stored(self, authenticator_uid, authenticator_owner):
 
         """
         display the information of the keys stored in the selected usb
@@ -277,12 +277,12 @@ class AuthdeviceStoreScreen(Screen):
                     #private_key_present_str,
                 )
                 )
-        self.open_dialog_display_keys_in_authdevice(message, user=user)
+        self.open_dialog_display_keys_in_authdevice(message, authenticator_owner=authenticator_owner)
 
-    def open_dialog_display_keys_in_authdevice(self, message, user):
+    def open_dialog_display_keys_in_authdevice(self, message, authenticator_owner):
         dialog_with_close_button(
             close_btn_label=tr._("Close"),
-            title=tr._("Key Guardian %s") % user,
+            title=tr._("Key Guardian %s") % authenticator_owner,
             text=message,
         )
 

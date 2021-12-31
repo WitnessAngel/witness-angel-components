@@ -240,8 +240,8 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
             displayed_values = dict(
                 authenticator_path=authenticator_path_shortened,
                 authenticator_uid=authenticator_metadata["authenticator_uid"],
-                authenticator_user=authenticator_metadata["user"],
-                authenticator_passphrase_hint=authenticator_metadata["passphrase_hint"],
+                authenticator_user=authenticator_metadata["authenticator_owner"],
+                authenticator_passphrase_hint=authenticator_metadata["authenticator_passphrase_hint"],
             )
 
             authenticator_info_text = dedent(tr._("""\
@@ -307,9 +307,9 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
 
     @safe_catch_unhandled_exception_and_display_popup
     def _check_authenticator_integrity(self, dialog, authenticator_path):
-        passphrase = dialog.content_cls.ids.tester_passphrase.text
+        authenticator_passphrase = dialog.content_cls.ids.tester_passphrase.text
         close_current_dialog()
-        result_dict = self._test_authenticator_password(authenticator_path=authenticator_path, passphrase=passphrase)
+        result_dict = self._test_authenticator_password(authenticator_path=authenticator_path, authenticator_passphrase=authenticator_passphrase)
 
         keypair_count= result_dict["keypair_count"]
         missing_private_keys = result_dict["missing_private_keys"]
@@ -332,7 +332,7 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
             text=details,
             )
 
-    def _test_authenticator_password(self, authenticator_path, passphrase):  # FIXME rename this
+    def _test_authenticator_password(self, authenticator_path, authenticator_passphrase):  # FIXME rename this
         filesystem_keystore = FilesystemKeystore(authenticator_path)
 
         missing_private_keys = []
@@ -349,7 +349,7 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
             private_key_pem = filesystem_keystore.get_private_key(keychain_uid=keychain_uid, key_algo=key_algo)
             try:
                 key_obj = load_asymmetric_key_from_pem_bytestring(
-                   key_pem=private_key_pem, key_algo=key_algo, passphrase=passphrase
+                   key_pem=private_key_pem, key_algo=key_algo, passphrase=authenticator_passphrase
                 )
                 assert key_obj, key_obj
             except KeyLoadingError:
@@ -367,7 +367,7 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
 
         # This loading is not supposed to fail, by construction
         authenticator_metadata = load_authenticator_metadata(authenticator_path)
-        
+
         authenticator_uid = shorten_uid(authenticator_metadata["authenticator_uid"])
         if not request_external_storage_dirs_access():
             return
