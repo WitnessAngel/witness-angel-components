@@ -79,7 +79,7 @@ class AuthdeviceStoreScreen(Screen):
                     #print(">>>>>>>>>> importing,", authdevice)
                     keystore_folder_path = get_authenticator_dir_for_authdevice(authdevice)  # FIXME make it public?
                     try:
-                        self.filesystem_keystore_pool.import_keystore_from_folder(keystore_folder_path)
+                        self.filesystem_keystore_pool.import_keystore_from_filesystem(keystore_folder_path)
                     except KeystoreAlreadyExists:
                         pass  # We tried anyway, since some "update" mechanics might be setup one day
                     authenticator_uids.append(authdevice["metadata"]["authenticator_uid"])
