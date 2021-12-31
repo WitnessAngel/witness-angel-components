@@ -95,7 +95,8 @@ class WAGuiApp(WaRuntimeSupportMixin, MDApp):  # FIXME WaGui instead?
 
     def close_settings(self, *args, **kwargs):
         super().close_settings(*args, **kwargs)
-        display_info_toast(tr._("Note that some configuration changes only apply at next recording restart"))
+        # FIXME - track if some settings have been modified or not?
+        display_info_toast(tr._("Some configuration changes only apply at next recording restart"))
 
     def save_config(self):
         """Dump current config to local INI file."""

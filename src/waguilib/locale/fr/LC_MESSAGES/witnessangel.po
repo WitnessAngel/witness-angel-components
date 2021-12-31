@@ -19,9 +19,9 @@ msgstr ""
 
 #: src/waguilib/application/__init__.py:98
 msgid ""
-"Note that some configuration changes only apply at next recording restart"
+"Some configuration changes only apply at next recording restart"
 msgstr ""
-"Notez que certains changements de configuration ne s'appliquent qu'au "
+"Certains changements de configuration ne s'appliquent qu'au "
 "redémarrage de l'enregistrement"
 
 #: src/waguilib/application/__init__.py:180
