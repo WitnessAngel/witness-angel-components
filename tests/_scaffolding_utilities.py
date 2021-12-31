@@ -9,6 +9,7 @@ from wacryptolib.sensor import TarfileRecordsAggregator
 from wasensorlib.camera.rtsp_stream import PeriodicStreamPusher
 
 
+# FIXME REMOVE THIS USELESS
 class FakeTestCryptainerStorage(CryptainerStorage):
     """Fake class which bypasses encryption and forces filename unicity regardless of datetime, to speed up tests..."""
 
@@ -19,12 +20,13 @@ class FakeTestCryptainerStorage(CryptainerStorage):
         self.increment += 1
 
     def _encrypt_payload_into_cryptainer(self, payload, **kwargs):
-        return dict(payload_ciphertext=payload)
+        return dict(payload_ciphertext_struct=payload)  # Not a real struct!
 
     def _decrypt_payload_from_cryptainer(self, cryptainer, **kwargs):
-        return cryptainer["payload_ciphertext"]
+        return cryptainer["payload_ciphertext_struct"]  # Not a real struct!
 
 
+# FIXME REMOVE THIS USELESS
 class FakeTarfileRecordsAggregator(TarfileRecordsAggregator):  # USELESS ????
     def __init__(self):
         self._test_records = []
