@@ -53,15 +53,15 @@ class AuthenticatorCreationScreen(Screen):
         self.ids.initialization_form_toolbar.disabled = False
 
     def get_form_values(self):
-        return dict(authenticator_owner=self.ids.formfield_username.text.strip(),
-                    authenticator_passphrase=self.ids.formfield_passphrase.text.strip(),
-                    authenticator_passphrase_hint=self.ids.formfield_passphrasehint.text.strip())
+        return dict(keystore_owner=self.ids.formfield_username.text.strip(),
+                    keystore_passphrase=self.ids.formfield_passphrase.text.strip(),
+                    keystore_passphrase_hint=self.ids.formfield_passphrasehint.text.strip())
 
     def validate_form_values(self, form_values):
         form_error = None
         if not all(form_values.values()):
             form_error = tr._("Please enter a username, passphrase and passphrase hint.")
-        elif len(form_values["authenticator_passphrase"]) < PASSPHRASE_MIN_LENGTH:
+        elif len(form_values["keystore_passphrase"]) < PASSPHRASE_MIN_LENGTH:
             form_error = tr._("Passphrase must be at least %s characters long.") % PASSPHRASE_MIN_LENGTH
         if form_error:
             raise ValueError(form_error)
@@ -94,8 +94,8 @@ class AuthenticatorCreationScreen(Screen):
             Clock.schedule_once(partial(self._do_update_progress_bar, 10))
 
             initialize_authenticator(authenticator_path,
-                                     authenticator_owner=form_values["authenticator_owner"],
-                                     extra_metadata=dict(authenticator_passphrase_hint=form_values["authenticator_passphrase_hint"]))
+                                     keystore_owner=form_values["keystore_owner"],
+                                     extra_metadata=dict(keystore_passphrase_hint=form_values["keystore_passphrase_hint"]))
 
             filesystem_keystore = FilesystemKeystore(authenticator_path)
 
@@ -103,7 +103,7 @@ class AuthenticatorCreationScreen(Screen):
                 # TODO add some logging here
                 key_pair = generate_keypair(
                     key_algo="RSA_OAEP",
-                    passphrase=form_values["authenticator_passphrase"]
+                    passphrase=form_values["keystore_passphrase"]
                 )
                 filesystem_keystore.set_keys(
                     keychain_uid=generate_uuid0(),

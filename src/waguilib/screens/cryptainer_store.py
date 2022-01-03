@@ -98,10 +98,10 @@ class CryptainerStoreScreen(Screen):
             #selection_checkbox = container_entry.ids.selection_checkbox
 
             #def selection_callback(widget, value, container_name=container_name):  # Force container_name save here, else scope bug
-            #    self.check_box_authdevice_checked(authenticator_uid=authenticator_uid, is_selected=value)
+            #    self.check_box_authdevice_checked(keystore_uid=keystore_uid, is_selected=value)
             #selection_checkbox.bind(active=selection_callback)
 
-            def information_callback(widget, cryptainer_name=cryptainer_name):  # Force authenticator_uid save here, else scope bug
+            def information_callback(widget, cryptainer_name=cryptainer_name):  # Force keystore_uid save here, else scope bug
                 self.show_cryptainer_details(cryptainer_name=cryptainer_name)
             information_icon = cryptainer_entry.ids.information_icon
             information_icon.bind(on_press=information_callback)
@@ -272,10 +272,10 @@ class CryptainerStoreScreen(Screen):
 
         # BEWARE this only works for "authentication device" trustees!
         # TODO make this more generic with support for remote trustee!
-        relevant_authenticator_uids = [trustee[0]["authenticator_uid"] for trustee in dependencies["encryption"].values()]
+        relevant_keystore_uids = [trustee[0]["keystore_uid"] for trustee in dependencies["encryption"].values()]
 
         relevant_keystore_metadata = sorted([y for (x,y) in keystore_metadata.items()
-                                                if x in relevant_authenticator_uids], key = lambda d: d["authenticator_owner"])
+                                                if x in relevant_keystore_uids], key = lambda d: d["keystore_owner"])
 
         #print("--------------")
         #pprint.pprint(relevant_keystore_metadata)
@@ -285,11 +285,11 @@ class CryptainerStoreScreen(Screen):
 
         #print(">>>>>>relevant_keystore_metadata", relevant_keystore_metadata)
         for metadata in relevant_keystore_metadata:
-            hint_text="Passphrase for user %s (hint: %s)" % (metadata["authenticator_owner"], metadata["authenticator_passphrase_hint"])
+            hint_text="Passphrase for user %s (hint: %s)" % (metadata["keystore_owner"], metadata["keystore_passphrase_hint"])
             _widget = TextInput(hint_text=hint_text)
 
             '''MDTextField(hint_text="S SSSSSSSS z z",
-                              helper_text="Passphrase for user %s (hint: %s)" % (metadata["authenticator_owner"], metadata["authenticator_passphrase_hint"]),
+                              helper_text="Passphrase for user %s (hint: %s)" % (metadata["keystore_owner"], metadata["keystore_passphrase_hint"]),
                               helper_text_mode="on_focus",
                               **{                    "color_mode": 'custom',
                                                   "line_color_focus": (0.4, 0.5, 1, 1),

@@ -336,15 +336,15 @@ msgstr "Chemin : %s"
 #, python-brace-format
 msgid ""
 "                Path: {authenticator_path}\n"
-"                ID: {authenticator_uid}\n"
-"                User: {authenticator_user}\n"
-"                Password hint: {authenticator_passphrase_hint}\n"
+"                ID: {keystore_uid}\n"
+"                User: {keystore_owner}\n"
+"                Password hint: {keystore_passphrase_hint}\n"
 "            "
 msgstr ""
 "                Chemin : {authenticator_path}\n"
-"                ID : {authenticator_uid}\n"
-"                Utilisateur : {authenticator_user}\n"
-"                Indice de phrase secrète : {authenticator_passphrase_hint}"
+"                ID : {keystore_uid}\n"
+"                Utilisateur : {keystore_owner}\n"
+"                Indice de phrase secrète : {keystore_passphrase_hint}"
 
 #: src/waguilib/screens/authenticator_management.py:260
 #: src/waguilib/screens/authenticator_management.py:270

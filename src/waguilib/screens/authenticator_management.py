@@ -21,10 +21,10 @@ from waguilib.widgets.popups import dialog_with_close_button, register_current_d
     help_text_popup
 from wacryptolib.authdevice import list_available_authdevices, \
     get_authenticator_dir_for_authdevice
-from wacryptolib.authenticator import is_authenticator_initialized, load_authenticator_metadata, _get_metadata_file_path
+from wacryptolib.authenticator import is_authenticator_initialized
 from wacryptolib.exceptions import KeyLoadingError
 from wacryptolib.keygen import load_asymmetric_key_from_pem_bytestring
-from wacryptolib.keystore import FilesystemKeystore
+from wacryptolib.keystore import FilesystemKeystore, load_keystore_metadata
 from waguilib.importable_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_APP_ROOT, EXTERNAL_EXPORTS_DIR, \
     request_external_storage_dirs_access, strip_external_app_root_prefix
 from waguilib.utilities import convert_bytes_to_human_representation
@@ -234,20 +234,20 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
             authenticator_status = True
 
             # FIXME handle loading errors!
-            authenticator_metadata = load_authenticator_metadata(authenticator_path)
+            authenticator_metadata = load_keystore_metadata(authenticator_path)
 
             displayed_values = dict(
                 authenticator_path=authenticator_path_shortened,
-                authenticator_uid=authenticator_metadata["authenticator_uid"],
-                authenticator_user=authenticator_metadata["authenticator_owner"],
-                authenticator_passphrase_hint=authenticator_metadata["authenticator_passphrase_hint"],
+                keystore_uid=authenticator_metadata["keystore_uid"],
+                keystore_owner=authenticator_metadata["keystore_owner"],
+                keystore_passphrase_hint=authenticator_metadata["keystore_passphrase_hint"],
             )
 
             authenticator_info_text = dedent(tr._("""\
                 Path: {authenticator_path}
-                ID: {authenticator_uid}
-                User: {authenticator_user}
-                Password hint: {authenticator_passphrase_hint}
+                ID: {keystore_uid}
+                User: {keystore_owner}
+                Password hint: {keystore_passphrase_hint}
             """)).format(**displayed_values)
 
         textarea = self.ids.authenticator_information
@@ -278,7 +278,7 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
     @safe_catch_unhandled_exception_and_display_popup
     def _delete_authenticator_data(self, authenticator_path):
         # FIXME protect against any OSERROR here!!
-        metadata_file_path = _get_metadata_file_path(authenticator_path)  # FIXME MOVE TO WACRYPTOLIB!!!
+        metadata_file_path = _get_keystore_metadata_file_path(authenticator_path)  # FIXME MOVE TO WACRYPTOLIB!!!
         key_files = authenticator_path.glob("*.pem")
         for filepath in [metadata_file_path] + list(key_files):
             filepath.unlink(missing_ok=True)
@@ -306,9 +306,9 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
 
     @safe_catch_unhandled_exception_and_display_popup
     def _check_authenticator_integrity(self, dialog, authenticator_path):
-        authenticator_passphrase = dialog.content_cls.ids.tester_passphrase.text
+        keystore_passphrase = dialog.content_cls.ids.tester_passphrase.text
         close_current_dialog()
-        result_dict = self._test_authenticator_password(authenticator_path=authenticator_path, authenticator_passphrase=authenticator_passphrase)
+        result_dict = self._test_authenticator_password(authenticator_path=authenticator_path, keystore_passphrase=keystore_passphrase)
 
         keypair_count= result_dict["keypair_count"]
         missing_private_keys = result_dict["missing_private_keys"]
@@ -331,7 +331,7 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
             text=details,
             )
 
-    def _test_authenticator_password(self, authenticator_path, authenticator_passphrase):  # FIXME rename this
+    def _test_authenticator_password(self, authenticator_path, keystore_passphrase):  # FIXME rename this
         filesystem_keystore = FilesystemKeystore(authenticator_path)
 
         missing_private_keys = []
@@ -348,7 +348,7 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
             private_key_pem = filesystem_keystore.get_private_key(keychain_uid=keychain_uid, key_algo=key_algo)
             try:
                 key_obj = load_asymmetric_key_from_pem_bytestring(
-                   key_pem=private_key_pem, key_algo=key_algo, passphrase=authenticator_passphrase
+                   key_pem=private_key_pem, key_algo=key_algo, passphrase=keystore_passphrase
                 )
                 assert key_obj, key_obj
             except KeyLoadingError:
@@ -365,13 +365,13 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
 
         # This loading is not supposed to fail, by construction
-        authenticator_metadata = load_authenticator_metadata(authenticator_path)
+        authenticator_metadata = load_keystore_metadata(authenticator_path)
 
-        authenticator_uid = shorten_uid(authenticator_metadata["authenticator_uid"])
+        keystore_uid = shorten_uid(authenticator_metadata["keystore_uid"])
         if not request_external_storage_dirs_access():
             return
         EXTERNAL_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)  # FIXME beware permissions on smartphone!!!
-        archive_path_base = EXTERNAL_EXPORTS_DIR.joinpath("authenticator_uid%s_%s" % (authenticator_uid, timestamp))
+        archive_path_base = EXTERNAL_EXPORTS_DIR.joinpath("keystore_uid%s_%s" % (keystore_uid, timestamp))
         archive_path = shutil.make_archive(base_name=archive_path_base, format=self.AUTHENTICATOR_ARCHIVE_FORMAT,
                             root_dir=authenticator_path)
 
