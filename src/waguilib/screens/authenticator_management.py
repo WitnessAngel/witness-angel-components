@@ -281,7 +281,10 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         metadata_file_path = _get_keystore_metadata_file_path(authenticator_path)  # FIXME MOVE TO WACRYPTOLIB!!!
         key_files = authenticator_path.glob("*.pem")
         for filepath in [metadata_file_path] + list(key_files):
-            filepath.unlink(missing_ok=True)
+            try:
+                 filepath.unlink()  # TODO use missing_ok=True later
+             except FileNotFoundError:
+                 pass
         dialog_with_close_button(
                 title=tr._("Deletion is over"),
                 text=tr._("All authentication data from folder %s has been removed.") % authenticator_path,

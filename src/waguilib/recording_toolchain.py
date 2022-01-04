@@ -3,7 +3,7 @@ from kivy.logger import Logger as logger
 
 #from oscpy.server import OSCThreadServer
 from wacryptolib.cryptainer import CryptainerStorage
-from wacryptolib.trustee import get_free_keys_generator_worker
+from wacryptolib.trustee import get_free_keypair_generator_worker
 from wacryptolib.sensor import (
     TarfileRecordsAggregator,
     JsonDataAggregator,
@@ -137,7 +137,7 @@ def ___build_recording_toolchain(config, keystore_pool, cryptoconf):
     # Off-band workers
 
     if max_free_keys_per_type:
-        free_keys_generator_worker = get_free_keys_generator_worker(
+        free_keys_generator_worker = get_free_keypair_generator_worker(
             keystore=local_keystore,
             max_free_keys_per_type=max_free_keys_per_type,
             sleep_on_overflow_s=0.5
