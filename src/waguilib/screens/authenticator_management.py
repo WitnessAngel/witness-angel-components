@@ -169,12 +169,12 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
 
         for index, authdevice in enumerate(authdevice_list):
 
-            device_size = convert_bytes_to_human_representation(authdevice["size"])
-            filesystem = authdevice["format"].upper()
+            filesystem_size = convert_bytes_to_human_representation(authdevice["filesystem_size"])
+            filesystem = authdevice["filesystem_format"].upper()
 
             authenticator_widget = Factory.ThinTwoLineAvatarIconListItem(
-                text=tr._("Drive: {drive} ({label})").format(drive=authdevice["path"], label=authdevice["label"] or tr._("no name")),
-                secondary_text=tr._("Size: {size}, Filesystem: {filesystem}").format(size=device_size, filesystem=filesystem),
+                text=tr._("Drive: {drive} ({label})").format(drive=authdevice["partition_mountpoint"], label=authdevice["partition_label"] or tr._("no name")),
+                secondary_text=tr._("Size: {size}, Filesystem: {filesystem}").format(size=filesystem_size, filesystem=filesystem),
             )
             authenticator_widget.add_widget(IconLeftWidget(icon="usb-flash-drive"))
             authenticator_list_entries.append((authenticator_widget, dict(authenticator_type=AuthenticatorType.USB_DEVICE, **authdevice)))
