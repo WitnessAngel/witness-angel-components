@@ -63,7 +63,7 @@ class FolderKeyStoreListItem(Factory.ThinTwoLineAvatarIconListItem):
 class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
 
     # FIXME MAKE THEM PUBLIC!!!!!!!!!
-    _selected_authenticator_path = ObjectProperty(None, allownone=True) # Path corresponding to a selected authenticator entry
+    _selected_authenticator_dir = ObjectProperty(None, allownone=True) # Path corresponding to a selected authenticator entry
     _selected_custom_folder_path = ObjectProperty(None, allownone=True)  # Custom folder selected for FolderKeyStoreListItem entry
 
     AUTHENTICATOR_ARCHIVE_FORMAT = "zip"
@@ -124,11 +124,11 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         return authenticator_dir
 
     def reselect_previously_selected_authenticator(self):
-        previously_selected_authenticator_path = self._selected_authenticator_path
-        if previously_selected_authenticator_path:
-            result = self._select_matching_authenticator_entry(previously_selected_authenticator_path)
+        previously_selected_authenticator_dir = self._selected_authenticator_dir
+        if previously_selected_authenticator_dir:
+            result = self._select_matching_authenticator_entry(previously_selected_authenticator_dir)
             if not result:
-                self._selected_authenticator_path = None  # Extra security
+                self._selected_authenticator_dir = None  # Extra security
                 self._select_default_authenticator_entry()
         else:
             self._select_default_authenticator_entry()
@@ -137,11 +137,11 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         authenticator_widget = self.ids.authenticator_list.children[-1]  # ALWAYS EXISTS
         authenticator_widget._onrelease_callback(authenticator_widget)
 
-    def _select_matching_authenticator_entry(self, authenticator_path):
+    def _select_matching_authenticator_entry(self, authenticator_dir):
         authenticator_list_widget = self.ids.authenticator_list
         for authenticator_widget in authenticator_list_widget.children:  # Starts from bottom of list so!
-            target_authenticator_path = self._get_authenticator_dir_from_metadata(authenticator_widget._authenticator_metadata)
-            if target_authenticator_path == authenticator_path:
+            target_authenticator_dir = self._get_authenticator_dir_from_metadata(authenticator_widget._authenticator_metadata)
+            if target_authenticator_dir == authenticator_dir:
                 authenticator_widget._onrelease_callback(authenticator_widget)
                 return True
         return False
@@ -216,42 +216,42 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         authenticator_widget.bg_color = authenticator_widget.theme_cls.bg_darkest
 
         authenticator_info_text = ""
-        authenticator_path = self._get_authenticator_dir_from_metadata(authenticator_metadata)
-        authenticator_path_shortened = strip_external_app_root_prefix(authenticator_path)
+        authenticator_dir = self._get_authenticator_dir_from_metadata(authenticator_metadata)
+        authenticator_dir_shortened = strip_external_app_root_prefix(authenticator_dir)
 
         # FIXMe handle OS errors here
-        if not authenticator_path:
+        if not authenticator_dir:
             authenticator_info_text = tr._("Please select an authenticator folder")
             authenticator_status = None
 
-        elif not authenticator_path.parent.exists():  # Parent folder only is enough!
-            authenticator_info_text = tr._("Selected folder is invalid\nPath: %s" % authenticator_path_shortened)
+        elif not authenticator_dir.parent.exists():  # Parent folder only is enough!
+            authenticator_info_text = tr._("Selected folder is invalid\nPath: %s" % authenticator_dir_shortened)
             authenticator_status = None
 
-        elif not is_authenticator_initialized(authenticator_path):
-            authenticator_info_text = tr._("Path: %s") % authenticator_path_shortened
+        elif not is_authenticator_initialized(authenticator_dir):
+            authenticator_info_text = tr._("Path: %s") % authenticator_dir_shortened
             authenticator_status = False
 
-        elif is_authenticator_initialized(authenticator_path):
+        elif is_authenticator_initialized(authenticator_dir):
 
             try:
-                authenticator_metadata = load_keystore_metadata(authenticator_path)
+                authenticator_metadata = load_keystore_metadata(authenticator_dir)
             except SchemaValidationError as exc:
                 authenticator_status = None
-                authenticator_info_text = tr._("Invalid authenticator data in %s") % authenticator_path
+                authenticator_info_text = tr._("Invalid authenticator data in %s") % authenticator_dir
                 logger.warning("Invalid authenticator data: %r", exc)
 
             else:
                 authenticator_status = True
                 _displayed_values = dict(
-                    authenticator_path=authenticator_path_shortened,
+                    authenticator_dir=authenticator_dir_shortened,
                     keystore_uid=authenticator_metadata["keystore_uid"],
                     keystore_owner=authenticator_metadata["keystore_owner"],
                     keystore_passphrase_hint=authenticator_metadata["keystore_passphrase_hint"],
                 )
 
                 authenticator_info_text = dedent(tr._("""\
-                    Path: {authenticator_path}
+                    Path: {authenticator_dir}
                     ID: {keystore_uid}
                     User: {keystore_owner}
                     Password hint: {keystore_passphrase_hint}
@@ -260,7 +260,7 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         textarea = self.ids.authenticator_information
         textarea.text = authenticator_info_text
 
-        self._selected_authenticator_path = authenticator_path  # Might be None
+        self._selected_authenticator_dir = authenticator_dir  # Might be None
         self.authenticator_status = authenticator_status
 
     def show_authenticator_export_confirmation_dialog(self):
@@ -273,20 +273,20 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         )
 
     def show_authenticator_destroy_confirmation_dialog(self):
-        authenticator_path = self._selected_authenticator_path
+        authenticator_dir = self._selected_authenticator_dir
         dialog_with_close_button(
             close_btn_label=tr._("Cancel"),
             title=tr._("Destroy authenticator"),
             text=tr._("Beware, this might make encrypted data using these keys impossible to decrypt."),
             #size_hint=(0.8, 1),
-            buttons=[MDFlatButton(text=tr._("Confirm"), on_release=lambda *args: (close_current_dialog(), self._delete_authenticator_data(authenticator_path)))],
+            buttons=[MDFlatButton(text=tr._("Confirm"), on_release=lambda *args: (close_current_dialog(), self._delete_authenticator_data(authenticator_dir)))],
         )
 
     @safe_catch_unhandled_exception_and_display_popup
-    def _delete_authenticator_data(self, authenticator_path):
+    def _delete_authenticator_data(self, authenticator_dir):
         # FIXME protect against any OSERROR here!!
-        metadata_file_path = _get_keystore_metadata_file_path(authenticator_path)  # FIXME MOVE TO WACRYPTOLIB!!!
-        key_files = authenticator_path.glob("*.pem")
+        metadata_file_path = _get_keystore_metadata_file_path(authenticator_dir)  # FIXME MOVE TO WACRYPTOLIB!!!
+        key_files = authenticator_dir.glob("*.pem")
         for filepath in [metadata_file_path] + list(key_files):
             try:
                 filepath.unlink()  # TODO use missing_ok=True later
@@ -294,19 +294,19 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
                 pass
         dialog_with_close_button(
                 title=tr._("Deletion is over"),
-                text=tr._("All authentication data from folder %s has been removed.") % authenticator_path,
+                text=tr._("All authentication data from folder %s has been removed.") % authenticator_dir,
             )
         self.refresh_authenticator_list()
 
     def show_checkup_dialog(self):
-        authenticator_path = self._selected_authenticator_path
+        authenticator_dir = self._selected_authenticator_dir
         dialog = dialog_with_close_button(
             auto_open_and_register=False,  # Important, we customize before
             close_btn_label=tr._("Cancel"),
             title=tr._("Sanity check"),
             type="custom",
             content_cls=Factory.AuthenticatorTesterContent(),
-            buttons=[MDFlatButton(text=tr._("Check"), on_release=lambda *args:  self._check_authenticator_integrity(dialog, authenticator_path))],
+            buttons=[MDFlatButton(text=tr._("Check"), on_release=lambda *args:  self._check_authenticator_integrity(dialog, authenticator_dir))],
         )
         def _set_focus_on_passphrase(*args):
             dialog.content_cls.ids.tester_passphrase.focus = True
@@ -315,10 +315,10 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         register_current_dialog(dialog)  # To handle BACK button here too
 
     @safe_catch_unhandled_exception_and_display_popup
-    def _check_authenticator_integrity(self, dialog, authenticator_path):
+    def _check_authenticator_integrity(self, dialog, authenticator_dir):
         keystore_passphrase = dialog.content_cls.ids.tester_passphrase.text
         close_current_dialog()
-        result_dict = self._test_authenticator_password(authenticator_path=authenticator_path, keystore_passphrase=keystore_passphrase)
+        result_dict = self._test_authenticator_password(authenticator_dir=authenticator_dir, keystore_passphrase=keystore_passphrase)
 
         keypair_count= result_dict["keypair_count"]
         missing_private_keys = result_dict["missing_private_keys"]
@@ -341,8 +341,8 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
             text=details,
             )
 
-    def _test_authenticator_password(self, authenticator_path, keystore_passphrase):  # FIXME rename this
-        filesystem_keystore = FilesystemKeystore(authenticator_path)
+    def _test_authenticator_password(self, authenticator_dir, keystore_passphrase):  # FIXME rename this
+        filesystem_keystore = FilesystemKeystore(authenticator_dir)
 
         missing_private_keys = []
         undecodable_private_keys = []
@@ -370,12 +370,12 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
 
     @safe_catch_unhandled_exception_and_display_popup
     def _export_authenticator_to_archive(self):
-        authenticator_path = self._selected_authenticator_path
+        authenticator_dir = self._selected_authenticator_dir
 
         timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
 
         # This loading is not supposed to fail, by construction
-        authenticator_metadata = load_keystore_metadata(authenticator_path)
+        authenticator_metadata = load_keystore_metadata(authenticator_dir)
 
         keystore_uid = shorten_uid(authenticator_metadata["keystore_uid"])
         if not request_external_storage_dirs_access():
@@ -383,7 +383,7 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         EXTERNAL_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)  # FIXME beware permissions on smartphone!!!
         archive_path_base = EXTERNAL_EXPORTS_DIR.joinpath("keystore_uid%s_%s" % (keystore_uid, timestamp))
         archive_path = shutil.make_archive(base_name=archive_path_base, format=self.AUTHENTICATOR_ARCHIVE_FORMAT,
-                            root_dir=authenticator_path)
+                            root_dir=authenticator_dir)
 
         dialog_with_close_button(
             title=tr._("Export successful"),
@@ -394,10 +394,10 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
     def _import_authenticator_from_archive(self, archive_path):
 
         archive_path = Path(archive_path)
-        authenticator_path = self._selected_authenticator_path
+        authenticator_dir = self._selected_authenticator_dir
 
         # BEWARE - might override target files!
-        shutil.unpack_archive(archive_path, extract_dir=authenticator_path, format=self.AUTHENTICATOR_ARCHIVE_FORMAT)
+        shutil.unpack_archive(archive_path, extract_dir=authenticator_dir, format=self.AUTHENTICATOR_ARCHIVE_FORMAT)
 
         dialog_with_close_button(
             title=tr._("Import successful"),

@@ -34,7 +34,7 @@ PASSPHRASE_MIN_LENGTH = 20
 
 class AuthenticatorCreationScreen(Screen):
 
-    _selected_authenticator_path = ObjectProperty(None, allownone=True)
+    _selected_authenticator_dir = ObjectProperty(None, allownone=True)
 
     operation_status = StringProperty()
 
@@ -86,18 +86,18 @@ class AuthenticatorCreationScreen(Screen):
 
     # No safe_catch_unhandled_exception_and_display_popup() here, we handle finalization in any case
     @process_method_with_gui_spinner
-    def _offloaded_initialize_authenticator(self, form_values, authenticator_path):
+    def _offloaded_initialize_authenticator(self, form_values, authenticator_dir):
         success = False
 
         try:
       
             Clock.schedule_once(partial(self._do_update_progress_bar, 10))
 
-            initialize_authenticator(authenticator_path,
+            initialize_authenticator(authenticator_dir,
                                      keystore_owner=form_values["keystore_owner"],
                                      keystore_passphrase_hint=form_values["keystore_passphrase_hint"])
 
-            filesystem_keystore = FilesystemKeystore(authenticator_path)
+            filesystem_keystore = FilesystemKeystore(authenticator_dir)
 
             for i in range(1, GENERATED_KEYS_COUNT+1):
                 # TODO add some logging here
@@ -146,11 +146,11 @@ class AuthenticatorCreationScreen(Screen):
         self.ids.progress_bar.value = percent
 
     def _launch_authenticator_initialization(self, form_values):
-        authenticator_path = self._selected_authenticator_path
+        authenticator_dir = self._selected_authenticator_dir
 
-        if not authenticator_path.is_dir():
-            authenticator_path.mkdir(parents=False)  # Only 1 level of folder can be created here!
-        assert authenticator_path and authenticator_path.is_dir(), authenticator_path
+        if not authenticator_dir.is_dir():
+            authenticator_dir.mkdir(parents=False)  # Only 1 level of folder can be created here!
+        assert authenticator_dir and authenticator_dir.is_dir(), authenticator_dir
 
         self.ids.button_initialize.disabled = True
         self.ids.formfield_passphrase.text = "***"  # PRIVACY
@@ -161,7 +161,7 @@ class AuthenticatorCreationScreen(Screen):
 
         THREAD_POOL_EXECUTOR.submit(self._offloaded_initialize_authenticator,
                                     form_values=form_values,
-                                    authenticator_path=authenticator_path)
+                                    authenticator_dir=authenticator_dir)
 
     def finish_initialization(self, *args, success, **kwargs):
         if success:
