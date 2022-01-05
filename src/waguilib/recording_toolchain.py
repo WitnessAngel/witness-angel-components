@@ -132,7 +132,7 @@ def ___build_recording_toolchain(config, keystore_pool, cryptoconf):
 
     sensors_manager = SensorManager(sensors=sensors)
 
-    local_keystore = keystore_pool.get_local_factory_keystore()
+    local_keystore = keystore_pool.get_local_keyfactory_keystore()
 
     # Off-band workers
 

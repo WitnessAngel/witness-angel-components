@@ -29,9 +29,11 @@ from kivymd.uix.dialog import MDDialog
 from kivymd.uix.list import OneLineIconListItem, MDList
 from kivymd.uix.screen import Screen
 from kivymd.uix.snackbar import Snackbar
+
+from wacryptolib.authenticator import is_authenticator_initialized
 from waguilib.i18n import tr
 
-from wacryptolib.authdevice import list_available_authdevices, get_authenticator_dir_for_authdevice
+from wacryptolib.authdevice import list_available_authdevices
 from wacryptolib.exceptions import KeystoreAlreadyExists
 from waguilib.widgets.popups import display_info_toast, close_current_dialog, dialog_with_close_button
 
@@ -68,7 +70,8 @@ class AuthdeviceStoreScreen(Screen):
             msg = tr._("No connected authentication devices found")
         else:
 
-            authdevices_initialized = [x for x in authdevices if x["is_initialized"]]
+            authdevices_initialized = [x for x in authdevices
+                                       if is_authenticator_initialized(x["authenticator_dir"])]
 
             if not authdevices_initialized:
                 msg = tr._("No initialized authentication devices found")
@@ -77,9 +80,9 @@ class AuthdeviceStoreScreen(Screen):
 
                 for authdevice in authdevices_initialized:
                     #print(">>>>>>>>>> importing,", authdevice)
-                    keystore_folder_path = get_authenticator_dir_for_authdevice(authdevice)  # FIXME make it public?
+                    remote_keystore_dir = authdevice["authenticator_dir"]
                     try:
-                        self.filesystem_keystore_pool.import_keystore_from_filesystem(keystore_folder_path)
+                        self.filesystem_keystore_pool.import_keystore_from_filesystem(remote_keystore_dir)
                     except KeystoreAlreadyExists:
                         pass  # We tried anyway, since some "update" mechanics might be setup one day
                     keystore_uids.append(authdevice["metadata"]["keystore_uid"])

@@ -15,16 +15,16 @@ from kivymd.uix.filemanager import MDFileManager
 from kivymd.uix.list import IconLeftWidget
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.screen import Screen
+from kivy.logger import Logger as logger
 
 from waguilib.widgets.layout_helpers import LanguageSwitcherScreenMixin
 from waguilib.widgets.popups import dialog_with_close_button, register_current_dialog, close_current_dialog, \
     help_text_popup
-from wacryptolib.authdevice import list_available_authdevices, \
-    get_authenticator_dir_for_authdevice
+from wacryptolib.authdevice import list_available_authdevices
 from wacryptolib.authenticator import is_authenticator_initialized
-from wacryptolib.exceptions import KeyLoadingError
+from wacryptolib.exceptions import KeyLoadingError, SchemaValidationError
 from wacryptolib.keygen import load_asymmetric_key_from_pem_bytestring
-from wacryptolib.keystore import FilesystemKeystore, load_keystore_metadata
+from wacryptolib.keystore import FilesystemKeystore, load_keystore_metadata, _get_keystore_metadata_file_path
 from waguilib.importable_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_APP_ROOT, EXTERNAL_EXPORTS_DIR, \
     request_external_storage_dirs_access, strip_external_app_root_prefix
 from waguilib.utilities import convert_bytes_to_human_representation
@@ -110,16 +110,16 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         self._archive_chooser.show(str(file_manager_path))  # Soon use .show_disks!!
         register_current_dialog(self._archive_chooser)
 
-    def _get_authenticator_path(self,authenticator_metadata):
+    def _get_authenticator_dir_from_metadata(self, authenticator_metadata):
         authenticator_type = authenticator_metadata["authenticator_type"]
         if authenticator_type == AuthenticatorType.USER_PROFILE:
-            authenticator_path = INTERNAL_AUTHENTICATOR_DIR
+            authenticator_dir = INTERNAL_AUTHENTICATOR_DIR
         elif authenticator_type == AuthenticatorType.CUSTOM_FOLDER:
-            authenticator_path = self._selected_custom_folder_path
+            authenticator_dir = self._selected_custom_folder_path
         else:
             assert authenticator_type == AuthenticatorType.USB_DEVICE
-            authenticator_path = get_authenticator_dir_for_authdevice(authenticator_metadata)
-        return authenticator_path
+            authenticator_dir = authenticator_metadata["authenticator_dir"]
+        return authenticator_dir
 
     def reselect_previously_selected_authenticator(self):
         previously_selected_authenticator_path = self._selected_authenticator_path
@@ -138,7 +138,7 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
     def _select_matching_authenticator_entry(self, authenticator_path):
         authenticator_list_widget = self.ids.authenticator_list
         for authenticator_widget in authenticator_list_widget.children:  # Starts from bottom of list so!
-            target_authenticator_path = self._get_authenticator_path(authenticator_widget._authenticator_metadata)
+            target_authenticator_path = self._get_authenticator_dir_from_metadata(authenticator_widget._authenticator_metadata)
             if target_authenticator_path == authenticator_path:
                 authenticator_widget._onrelease_callback(authenticator_widget)
                 return True
@@ -214,7 +214,7 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         authenticator_widget.bg_color = authenticator_widget.theme_cls.bg_darkest
 
         authenticator_info_text = ""
-        authenticator_path = self._get_authenticator_path(authenticator_metadata)
+        authenticator_path = self._get_authenticator_dir_from_metadata(authenticator_metadata)
         authenticator_path_shortened = strip_external_app_root_prefix(authenticator_path)
 
         # FIXMe handle OS errors here
@@ -231,24 +231,29 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
             authenticator_status = False
 
         elif is_authenticator_initialized(authenticator_path):
-            authenticator_status = True
 
-            # FIXME handle loading errors!
-            authenticator_metadata = load_keystore_metadata(authenticator_path)
+            try:
+                authenticator_metadata = load_keystore_metadata(authenticator_path)
+            except SchemaValidationError as exc:
+                authenticator_status = None
+                authenticator_info_text = tr._("Invalid authenticator data in %s") % authenticator_path
+                logger.warning("Invalid authenticator data: %r", exc)
 
-            displayed_values = dict(
-                authenticator_path=authenticator_path_shortened,
-                keystore_uid=authenticator_metadata["keystore_uid"],
-                keystore_owner=authenticator_metadata["keystore_owner"],
-                keystore_passphrase_hint=authenticator_metadata["keystore_passphrase_hint"],
-            )
+            else:
+                authenticator_status = True
+                _displayed_values = dict(
+                    authenticator_path=authenticator_path_shortened,
+                    keystore_uid=authenticator_metadata["keystore_uid"],
+                    keystore_owner=authenticator_metadata["keystore_owner"],
+                    keystore_passphrase_hint=authenticator_metadata["keystore_passphrase_hint"],
+                )
 
-            authenticator_info_text = dedent(tr._("""\
-                Path: {authenticator_path}
-                ID: {keystore_uid}
-                User: {keystore_owner}
-                Password hint: {keystore_passphrase_hint}
-            """)).format(**displayed_values)
+                authenticator_info_text = dedent(tr._("""\
+                    Path: {authenticator_path}
+                    ID: {keystore_uid}
+                    User: {keystore_owner}
+                    Password hint: {keystore_passphrase_hint}
+                """)).format(**_displayed_values)
 
         textarea = self.ids.authenticator_information
         textarea.text = authenticator_info_text
@@ -282,9 +287,9 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         key_files = authenticator_path.glob("*.pem")
         for filepath in [metadata_file_path] + list(key_files):
             try:
-                 filepath.unlink()  # TODO use missing_ok=True later
-             except FileNotFoundError:
-                 pass
+                filepath.unlink()  # TODO use missing_ok=True later
+            except FileNotFoundError:
+                pass
         dialog_with_close_button(
                 title=tr._("Deletion is over"),
                 text=tr._("All authentication data from folder %s has been removed.") % authenticator_path,
