@@ -359,8 +359,8 @@ msgid "Export authenticator"
 msgstr "Exporter l'authentifieur"
 
 #: src/waguilib/screens/authenticator_management.py:262
-msgid "You should keep the exported archive in a secure place."
-msgstr "Vous devriez garder l'archive exportée en lieu sûr."
+msgid "The exported archive should be kept in a secure place."
+msgstr "L'archive exportée doit être gardée en lieu sûr."
 
 #: src/waguilib/screens/authenticator_management.py:264
 #: src/waguilib/screens/authenticator_management.py:274

@@ -104,11 +104,13 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         register_current_dialog(self._folder_chooser)
 
     def archive_chooser_open(self, *args):
+        print(">>>>>>>>>>>>>>1")
         if not request_external_storage_dirs_access():
             return
         file_manager_path = EXTERNAL_EXPORTS_DIR
         self._archive_chooser.show(str(file_manager_path))  # Soon use .show_disks!!
         register_current_dialog(self._archive_chooser)
+        print(">>>>>>>>>>>>>>2", EXTERNAL_EXPORTS_DIR)
 
     def _get_authenticator_dir_from_metadata(self, authenticator_metadata):
         authenticator_type = authenticator_metadata["authenticator_type"]
@@ -265,7 +267,7 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         dialog_with_close_button(
             close_btn_label=tr._("Cancel"),
             title=tr._("Export authenticator"),
-            text=tr._("You should keep the exported archive in a secure place."),
+            text=tr._("The exported archive should be kept in a secure place."),
             #size_hint=(0.8, 1),
             buttons=[MDFlatButton(text=tr._("Confirm"), on_release=lambda *args: (close_current_dialog(), self._export_authenticator_to_archive()))],
         )

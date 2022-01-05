@@ -55,8 +55,7 @@ def request_external_storage_dirs_access():
         time.sleep(3)  # Let the callback permission request be processed
         res = has_single_permission(permission)
         #logger.info("Has single permission %r is %s" % (permission, res))
-        if res:
-            EXTERNAL_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
-            return True
-        return False
+        if not res:
+            return False
+    EXTERNAL_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)  # On ALL environments!
     return True

@@ -95,7 +95,7 @@ class AuthenticatorCreationScreen(Screen):
 
             initialize_authenticator(authenticator_path,
                                      keystore_owner=form_values["keystore_owner"],
-                                     extra_metadata=dict(keystore_passphrase_hint=form_values["keystore_passphrase_hint"]))
+                                     keystore_passphrase_hint=form_values["keystore_passphrase_hint"])
 
             filesystem_keystore = FilesystemKeystore(authenticator_path)
 
@@ -117,7 +117,7 @@ class AuthenticatorCreationScreen(Screen):
             success = True
 
         except Exception as exc:
-            print(">> ERROR IN _offloaded_initialize_authenticator THREAD", exc)  # FIXME add logging AND snackbar
+            print(">> ERROR IN _offloaded_initialize_authenticator THREAD:", exc)  # FIXME add logging AND snackbar
 
         Clock.schedule_once(partial(self.finish_initialization, success=success))
 
