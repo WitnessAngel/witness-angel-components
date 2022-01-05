@@ -52,8 +52,6 @@ class WAGuiApp(WaRuntimeSupportMixin, MDApp):  # FIXME WaGui instead?
     service_querying_interval = 1  # To check when service is ready, at app start
     use_kivy_settings = False  # No need
 
-    language = None  # TO OVERRIDE at instance level
-
     settings_cls = SettingsWithSpinner
 
     # Overridden as property to allow event dispatching in GUI
