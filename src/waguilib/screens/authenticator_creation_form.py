@@ -34,7 +34,7 @@ PASSPHRASE_MIN_LENGTH = 20
 
 class AuthenticatorCreationScreen(Screen):
 
-    _selected_authenticator_dir = ObjectProperty(None, allownone=True)
+    selected_authenticator_dir = ObjectProperty(None, allownone=True)
 
     operation_status = StringProperty()
 
@@ -72,12 +72,12 @@ class AuthenticatorCreationScreen(Screen):
         try :
             self.validate_form_values(form_values)
         except ValueError as exc:
-            self.open_dialog(str(exc), title=tr._("Validation error"))
+            self.open_generic_dialog(str(exc), title=tr._("Validation error"))
             return
 
         self._launch_authenticator_initialization(form_values=form_values)
 
-    def open_dialog(self, text, title, on_dismiss=None):
+    def open_generic_dialog(self, text, title, on_dismiss=None):
         dialog_with_close_button(
             title=title,
             text=text,
@@ -146,7 +146,8 @@ class AuthenticatorCreationScreen(Screen):
         self.ids.progress_bar.value = percent
 
     def _launch_authenticator_initialization(self, form_values):
-        authenticator_dir = self._selected_authenticator_dir
+        authenticator_dir = self.selected_authenticator_dir
+        assert authenticator_dir, authenticator_dir  # Should have been transmitted to this Screen
 
         if not authenticator_dir.is_dir():
             authenticator_dir.mkdir(parents=False)  # Only 1 level of folder can be created here!
@@ -165,10 +166,10 @@ class AuthenticatorCreationScreen(Screen):
 
     def finish_initialization(self, *args, success, **kwargs):
         if success:
-            self.open_dialog(tr._("Initialization successfully completed."),
+            self.open_generic_dialog(tr._("Initialization successfully completed."),
                              title=tr._("Success"), on_dismiss=lambda x: self.go_to_home_screen())
         else:
-            self.open_dialog(tr._("Operation failed, check logs."),
+            self.open_generic_dialog(tr._("Operation failed, check logs."),
                              title=tr._("Failure"), on_dismiss=lambda x: self.go_to_home_screen())
 
     def display_help_popup(self):

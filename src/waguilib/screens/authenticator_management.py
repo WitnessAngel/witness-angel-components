@@ -62,11 +62,11 @@ class FolderKeyStoreListItem(Factory.ThinTwoLineAvatarIconListItem):
 
 class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
 
-    # FIXME MAKE THEM PUBLIC!!!!!!!!!
-    _selected_authenticator_dir = ObjectProperty(None, allownone=True) # Path corresponding to a selected authenticator entry
-    _selected_custom_folder_path = ObjectProperty(None, allownone=True)  # Custom folder selected for FolderKeyStoreListItem entry
-
     AUTHENTICATOR_ARCHIVE_FORMAT = "zip"
+
+    selected_authenticator_dir = ObjectProperty(None, allownone=True) # Path of selected authenticator entry
+
+    _selected_custom_folder_path = ObjectProperty(None, allownone=True)  # Custom folder selected for FolderKeyStoreListItem entry
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -124,11 +124,11 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         return authenticator_dir
 
     def reselect_previously_selected_authenticator(self):
-        previously_selected_authenticator_dir = self._selected_authenticator_dir
-        if previously_selected_authenticator_dir:
-            result = self._select_matching_authenticator_entry(previously_selected_authenticator_dir)
+        previouslyselected_authenticator_dir = self.selected_authenticator_dir
+        if previouslyselected_authenticator_dir:
+            result = self._select_matching_authenticator_entry(previouslyselected_authenticator_dir)
             if not result:
-                self._selected_authenticator_dir = None  # Extra security
+                self.selected_authenticator_dir = None  # Extra security
                 self._select_default_authenticator_entry()
         else:
             self._select_default_authenticator_entry()
@@ -260,7 +260,7 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         textarea = self.ids.authenticator_information
         textarea.text = authenticator_info_text
 
-        self._selected_authenticator_dir = authenticator_dir  # Might be None
+        self.selected_authenticator_dir = authenticator_dir  # Might be None
         self.authenticator_status = authenticator_status
 
     def show_authenticator_export_confirmation_dialog(self):
@@ -273,7 +273,7 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         )
 
     def show_authenticator_destroy_confirmation_dialog(self):
-        authenticator_dir = self._selected_authenticator_dir
+        authenticator_dir = self.selected_authenticator_dir
         dialog_with_close_button(
             close_btn_label=tr._("Cancel"),
             title=tr._("Destroy authenticator"),
@@ -299,7 +299,7 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         self.refresh_authenticator_list()
 
     def show_checkup_dialog(self):
-        authenticator_dir = self._selected_authenticator_dir
+        authenticator_dir = self.selected_authenticator_dir
         dialog = dialog_with_close_button(
             auto_open_and_register=False,  # Important, we customize before
             close_btn_label=tr._("Cancel"),
@@ -370,7 +370,7 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
 
     @safe_catch_unhandled_exception_and_display_popup
     def _export_authenticator_to_archive(self):
-        authenticator_dir = self._selected_authenticator_dir
+        authenticator_dir = self.selected_authenticator_dir
 
         timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
 
@@ -394,7 +394,7 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
     def _import_authenticator_from_archive(self, archive_path):
 
         archive_path = Path(archive_path)
-        authenticator_dir = self._selected_authenticator_dir
+        authenticator_dir = self.selected_authenticator_dir
 
         # BEWARE - might override target files!
         shutil.unpack_archive(archive_path, extract_dir=authenticator_dir, format=self.AUTHENTICATOR_ARCHIVE_FORMAT)
