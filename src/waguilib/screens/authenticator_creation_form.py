@@ -8,11 +8,9 @@ from kivy.animation import Animation
 from kivy.clock import Clock
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty, StringProperty
-from kivymd.app import MDApp
 from kivymd.uix.screen import Screen
 
-from waguilib.widgets.popups import dialog_with_close_button, process_method_with_gui_spinner, register_current_dialog, \
-    close_current_dialog, help_text_popup
+from waguilib.widgets.popups import dialog_with_close_button, process_method_with_gui_spinner, help_text_popup
 from wacryptolib.authenticator import initialize_authenticator
 from wacryptolib.keygen import generate_keypair
 from wacryptolib.keystore import FilesystemKeystore
@@ -40,7 +38,6 @@ class AuthenticatorCreationScreen(Screen):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._app = MDApp.get_running_app()
 
     def go_to_home_screen(self):
         self.manager.current = "authenticator_selector_screen"

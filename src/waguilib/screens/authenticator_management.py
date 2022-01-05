@@ -9,11 +9,9 @@ from kivy.clock import Clock
 from kivy.factory import Factory
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty
-from kivymd.app import MDApp
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.filemanager import MDFileManager
 from kivymd.uix.list import IconLeftWidget
-from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.screen import Screen
 from kivy.logger import Logger as logger
 
@@ -42,7 +40,7 @@ class AuthenticatorType(Enum):
    USB_DEVICE = 3
 
 
-def shorten_uid(uid):
+def shorten_uid(uid):  # FIXME move this to common waguilib utilities
    return str(uid).split("-")[-1]
 
 
@@ -64,14 +62,21 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
 
     AUTHENTICATOR_ARCHIVE_FORMAT = "zip"
 
+    AUTHENTICATOR_INITIALIZATION_STATUS_ICONS = {
+        True: "check-circle-outline",  # or check-bold
+        False: "checkbox-blank-off-outline",
+        None: "file-question-outline",
+    }
+
     selected_authenticator_dir = ObjectProperty(None, allownone=True) # Path of selected authenticator entry
 
     _selected_custom_folder_path = ObjectProperty(None, allownone=True)  # Custom folder selected for FolderKeyStoreListItem entry
 
+    authenticator_status = ObjectProperty(None, allownone=True)
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         Clock.schedule_once(lambda *args, **kwargs: self.refresh_authenticator_list())  # "on_pre_enter" is not called for initial screen
-        self._app = MDApp.get_running_app()
         self._folder_chooser = MDFileManager(
             selector="folder",
             exit_manager=lambda x: close_current_dialog(),
@@ -87,64 +92,6 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
     def language_menu_select(self, lang_code):
         super().language_menu_select(lang_code)
         self.refresh_authenticator_list()  # Refresh translation of Drive etc.
-
-    def _folder_chooser_select_path(self, path, *args):
-        self._selected_custom_folder_path = Path(path)
-        authenticator_widget = self.ids.authenticator_list.children[-2]  # AUTOSELECT "custom folder" item
-        authenticator_widget._onrelease_callback(authenticator_widget)
-
-    def folder_chooser_open(self, widget, *args):
-        if not request_external_storage_dirs_access():
-            return
-        file_manager_path = EXTERNAL_APP_ROOT
-        previously_selected_custom_folder_path = self._selected_custom_folder_path
-        if previously_selected_custom_folder_path and previously_selected_custom_folder_path.is_dir():
-            file_manager_path = previously_selected_custom_folder_path
-        self._folder_chooser.show(str(file_manager_path))  # Soon use .show_disks!!
-        register_current_dialog(self._folder_chooser)
-
-    def archive_chooser_open(self, *args):
-        print(">>>>>>>>>>>>>>1")
-        if not request_external_storage_dirs_access():
-            return
-        file_manager_path = EXTERNAL_EXPORTS_DIR
-        self._archive_chooser.show(str(file_manager_path))  # Soon use .show_disks!!
-        register_current_dialog(self._archive_chooser)
-        print(">>>>>>>>>>>>>>2", EXTERNAL_EXPORTS_DIR)
-
-    def _get_authenticator_dir_from_metadata(self, authenticator_metadata):
-        authenticator_type = authenticator_metadata["authenticator_type"]
-        if authenticator_type == AuthenticatorType.USER_PROFILE:
-            authenticator_dir = INTERNAL_AUTHENTICATOR_DIR
-        elif authenticator_type == AuthenticatorType.CUSTOM_FOLDER:
-            authenticator_dir = self._selected_custom_folder_path
-        else:
-            assert authenticator_type == AuthenticatorType.USB_DEVICE
-            authenticator_dir = authenticator_metadata["authenticator_dir"]
-        return authenticator_dir
-
-    def reselect_previously_selected_authenticator(self):
-        previouslyselected_authenticator_dir = self.selected_authenticator_dir
-        if previouslyselected_authenticator_dir:
-            result = self._select_matching_authenticator_entry(previouslyselected_authenticator_dir)
-            if not result:
-                self.selected_authenticator_dir = None  # Extra security
-                self._select_default_authenticator_entry()
-        else:
-            self._select_default_authenticator_entry()
-
-    def _select_default_authenticator_entry(self):
-        authenticator_widget = self.ids.authenticator_list.children[-1]  # ALWAYS EXISTS
-        authenticator_widget._onrelease_callback(authenticator_widget)
-
-    def _select_matching_authenticator_entry(self, authenticator_dir):
-        authenticator_list_widget = self.ids.authenticator_list
-        for authenticator_widget in authenticator_list_widget.children:  # Starts from bottom of list so!
-            target_authenticator_dir = self._get_authenticator_dir_from_metadata(authenticator_widget._authenticator_metadata)
-            if target_authenticator_dir == authenticator_dir:
-                authenticator_widget._onrelease_callback(authenticator_widget)
-                return True
-        return False
 
     @safe_catch_unhandled_exception_and_display_popup
     def refresh_authenticator_list(self):
@@ -189,13 +136,54 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
 
         self.reselect_previously_selected_authenticator()  # Preserve previous selection across refreshes
 
-    authenticator_status = ObjectProperty(None, allownone=True)
+    def _get_authenticator_dir_from_metadata(self, authenticator_metadata):
+        authenticator_type = authenticator_metadata["authenticator_type"]
+        if authenticator_type == AuthenticatorType.USER_PROFILE:
+            authenticator_dir = INTERNAL_AUTHENTICATOR_DIR
+        elif authenticator_type == AuthenticatorType.CUSTOM_FOLDER:
+            authenticator_dir = self._selected_custom_folder_path
+        else:
+            assert authenticator_type == AuthenticatorType.USB_DEVICE
+            authenticator_dir = authenticator_metadata["authenticator_dir"]
+        return authenticator_dir
 
-    AUTHENTICATOR_INITIALIZATION_STATUS_ICONS = {
-        True: "check-circle-outline",  # or check-bold
-        False: "checkbox-blank-off-outline",
-        None: "file-question-outline",
-    }
+    def _folder_chooser_select_path(self, path, *args):
+        self._selected_custom_folder_path = Path(path)
+        authenticator_widget = self.ids.authenticator_list.children[-2]  # AUTOSELECT "custom folder" item
+        authenticator_widget._onrelease_callback(authenticator_widget)
+
+    def folder_chooser_open(self, widget, *args):
+        if not request_external_storage_dirs_access():
+            return
+        file_manager_path = EXTERNAL_APP_ROOT
+        previously_selected_custom_folder_path = self._selected_custom_folder_path
+        if previously_selected_custom_folder_path and previously_selected_custom_folder_path.is_dir():
+            file_manager_path = previously_selected_custom_folder_path
+        self._folder_chooser.show(str(file_manager_path))  # Soon use .show_disks!!
+        register_current_dialog(self._folder_chooser)
+
+    def reselect_previously_selected_authenticator(self):
+        previouslyselected_authenticator_dir = self.selected_authenticator_dir
+        if previouslyselected_authenticator_dir:
+            result = self._select_matching_authenticator_entry(previouslyselected_authenticator_dir)
+            if not result:
+                self.selected_authenticator_dir = None  # Extra security
+                self._select_default_authenticator_entry()
+        else:
+            self._select_default_authenticator_entry()
+
+    def _select_default_authenticator_entry(self):
+        authenticator_widget = self.ids.authenticator_list.children[-1]  # ALWAYS EXISTS
+        authenticator_widget._onrelease_callback(authenticator_widget)
+
+    def _select_matching_authenticator_entry(self, authenticator_dir):
+        authenticator_list_widget = self.ids.authenticator_list
+        for authenticator_widget in authenticator_list_widget.children:  # Starts from bottom of list so!
+            target_authenticator_dir = self._get_authenticator_dir_from_metadata(authenticator_widget._authenticator_metadata)
+            if target_authenticator_dir == authenticator_dir:
+                authenticator_widget._onrelease_callback(authenticator_widget)
+                return True
+        return False
 
     def get_authenticator_status_message(self, authenticator_status):
         if authenticator_status is None:
@@ -263,6 +251,30 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         self.selected_authenticator_dir = authenticator_dir  # Might be None
         self.authenticator_status = authenticator_status
 
+
+    def archive_chooser_open(self, *args):
+        if not request_external_storage_dirs_access():
+            return
+        file_manager_path = EXTERNAL_EXPORTS_DIR
+        self._archive_chooser.show(str(file_manager_path))  # Soon use .show_disks!!
+        register_current_dialog(self._archive_chooser)
+
+    @safe_catch_unhandled_exception_and_display_popup
+    def _import_authenticator_from_archive(self, archive_path):
+
+        archive_path = Path(archive_path)
+        authenticator_dir = self.selected_authenticator_dir
+
+        # BEWARE - might override target files!
+        shutil.unpack_archive(archive_path, extract_dir=authenticator_dir, format=self.AUTHENTICATOR_ARCHIVE_FORMAT)
+
+        dialog_with_close_button(
+            title=tr._("Import successful"),
+            text=tr._("Authenticator archive unpacked from %s, its integrity has not been checked though.") % archive_path.name,
+            )
+
+        self.refresh_authenticator_list()
+
     def show_authenticator_export_confirmation_dialog(self):
         dialog_with_close_button(
             close_btn_label=tr._("Cancel"),
@@ -271,6 +283,28 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
             #size_hint=(0.8, 1),
             buttons=[MDFlatButton(text=tr._("Confirm"), on_release=lambda *args: (close_current_dialog(), self._export_authenticator_to_archive()))],
         )
+
+    @safe_catch_unhandled_exception_and_display_popup
+    def _export_authenticator_to_archive(self):
+        authenticator_dir = self.selected_authenticator_dir
+
+        timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
+
+        # This loading is not supposed to fail, by construction
+        authenticator_metadata = load_keystore_metadata(authenticator_dir)
+
+        keystore_uid = shorten_uid(authenticator_metadata["keystore_uid"])
+        if not request_external_storage_dirs_access():
+            return
+        EXTERNAL_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)  # FIXME beware permissions on smartphone!!!
+        archive_path_base = EXTERNAL_EXPORTS_DIR.joinpath("keystore_uid%s_%s" % (keystore_uid, timestamp))
+        archive_path = shutil.make_archive(base_name=archive_path_base, format=self.AUTHENTICATOR_ARCHIVE_FORMAT,
+                            root_dir=authenticator_dir)
+
+        dialog_with_close_button(
+            title=tr._("Export successful"),
+            text=tr._("Authenticator archive exported to %s") % strip_external_app_root_prefix(archive_path),
+            )
 
     def show_authenticator_destroy_confirmation_dialog(self):
         authenticator_dir = self.selected_authenticator_dir
@@ -367,44 +401,6 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         return dict(keypair_count=len(keypair_identifiers),
                     missing_private_keys=missing_private_keys,
                     undecodable_private_keys=undecodable_private_keys)
-
-    @safe_catch_unhandled_exception_and_display_popup
-    def _export_authenticator_to_archive(self):
-        authenticator_dir = self.selected_authenticator_dir
-
-        timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
-
-        # This loading is not supposed to fail, by construction
-        authenticator_metadata = load_keystore_metadata(authenticator_dir)
-
-        keystore_uid = shorten_uid(authenticator_metadata["keystore_uid"])
-        if not request_external_storage_dirs_access():
-            return
-        EXTERNAL_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)  # FIXME beware permissions on smartphone!!!
-        archive_path_base = EXTERNAL_EXPORTS_DIR.joinpath("keystore_uid%s_%s" % (keystore_uid, timestamp))
-        archive_path = shutil.make_archive(base_name=archive_path_base, format=self.AUTHENTICATOR_ARCHIVE_FORMAT,
-                            root_dir=authenticator_dir)
-
-        dialog_with_close_button(
-            title=tr._("Export successful"),
-            text=tr._("Authenticator archive exported to %s") % strip_external_app_root_prefix(archive_path),
-            )
-
-    @safe_catch_unhandled_exception_and_display_popup
-    def _import_authenticator_from_archive(self, archive_path):
-
-        archive_path = Path(archive_path)
-        authenticator_dir = self.selected_authenticator_dir
-
-        # BEWARE - might override target files!
-        shutil.unpack_archive(archive_path, extract_dir=authenticator_dir, format=self.AUTHENTICATOR_ARCHIVE_FORMAT)
-
-        dialog_with_close_button(
-            title=tr._("Import successful"),
-            text=tr._("Authenticator archive unpacked from %s, its integrity has not been checked though.") % archive_path.name,
-            )
-
-        self.refresh_authenticator_list()
 
     def display_help_popup(self):
         help_text = dedent(tr._("""\
