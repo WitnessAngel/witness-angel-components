@@ -97,7 +97,7 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
     def refresh_authenticator_list(self):
 
         try:
-            authdevice_list = list_available_authdevices()  # TODO rename to usb devices?
+            authdevice_list = list_available_authdevices()
         except ModuleNotFoundError:  # probably on android, so no UDEV system
             authdevice_list = []
 
@@ -106,11 +106,10 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
 
         authenticator_list_entries = []  # Pairs (widget, metadata)
 
-        # TODO rename key_store to authenticator
         profile_authenticator_widget = Factory.UserKeyStoreListItem()
         authenticator_list_entries.append((profile_authenticator_widget, dict(authenticator_type=AuthenticatorType.USER_PROFILE)))
 
-        folder_authenticator_widget = Factory.FolderKeyStoreListItem()  # FIXME bug of Kivy, can't put selected_path here as argument
+        folder_authenticator_widget = Factory.FolderKeyStoreListItem()
         folder_authenticator_widget.selected_path = self._selected_custom_folder_path
         self.bind(_selected_custom_folder_path = folder_authenticator_widget.setter('selected_path'))
         folder_authenticator_widget.ids.open_folder_btn.bind(on_press=self.folder_chooser_open)  #
@@ -207,7 +206,6 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         authenticator_dir = self._get_authenticator_dir_from_metadata(authenticator_metadata)
         authenticator_dir_shortened = strip_external_app_root_prefix(authenticator_dir)
 
-        # FIXMe handle OS errors here
         if not authenticator_dir:
             authenticator_info_text = tr._("Please select an authenticator folder")
             authenticator_status = None
@@ -296,8 +294,8 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         keystore_uid = shorten_uid(authenticator_metadata["keystore_uid"])
         if not request_external_storage_dirs_access():
             return
-        EXTERNAL_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)  # FIXME beware permissions on smartphone!!!
-        archive_path_base = EXTERNAL_EXPORTS_DIR.joinpath("keystore_uid%s_%s" % (keystore_uid, timestamp))
+        EXTERNAL_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
+        archive_path_base = EXTERNAL_EXPORTS_DIR.joinpath("authenticator_%s_%s" % (keystore_uid, timestamp))
         archive_path = shutil.make_archive(base_name=archive_path_base, format=self.AUTHENTICATOR_ARCHIVE_FORMAT,
                             root_dir=authenticator_dir)
 
@@ -319,7 +317,8 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
     @safe_catch_unhandled_exception_and_display_popup
     def _delete_authenticator_data(self, authenticator_dir):
         # FIXME protect against any OSERROR here!!
-        metadata_file_path = _get_keystore_metadata_file_path(authenticator_dir)  # FIXME MOVE TO WACRYPTOLIB!!!
+        # FIXME Move this operation to WACRYPTOLIB?
+        metadata_file_path = _get_keystore_metadata_file_path(authenticator_dir)
         key_files = authenticator_dir.glob("*.pem")
         for filepath in [metadata_file_path] + list(key_files):
             try:
@@ -352,7 +351,7 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
     def _check_authenticator_integrity(self, dialog, authenticator_dir):
         keystore_passphrase = dialog.content_cls.ids.tester_passphrase.text
         close_current_dialog()
-        result_dict = self._test_authenticator_password(authenticator_dir=authenticator_dir, keystore_passphrase=keystore_passphrase)
+        result_dict = self._test_authenticator_passphrase(authenticator_dir=authenticator_dir, keystore_passphrase=keystore_passphrase)
 
         keypair_count= result_dict["keypair_count"]
         missing_private_keys = result_dict["missing_private_keys"]
@@ -375,7 +374,7 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
             text=details,
             )
 
-    def _test_authenticator_password(self, authenticator_dir, keystore_passphrase):  # FIXME rename this
+    def _test_authenticator_passphrase(self, authenticator_dir, keystore_passphrase):
         filesystem_keystore = FilesystemKeystore(authenticator_dir)
 
         missing_private_keys = []
