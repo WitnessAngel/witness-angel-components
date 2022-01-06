@@ -29,7 +29,7 @@ from waguilib.logging.handlers import safe_catch_unhandled_exception
 from wacryptolib.cryptainer import gather_trustee_dependencies
 from waguilib.widgets.popups import close_current_dialog, dialog_with_close_button
 
-Builder.load_file(str(Path(__file__).parent / 'cryptainer_store.kv'))
+Builder.load_file(str(Path(__file__).parent / 'cryptainer_storage_management.kv'))
 
 
 class PassphrasesDialogContent(BoxLayout):

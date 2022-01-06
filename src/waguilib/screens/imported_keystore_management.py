@@ -39,7 +39,7 @@ from wacryptolib.exceptions import KeystoreAlreadyExists, SchemaValidationError
 from waguilib.utilities import shorten_uid
 from waguilib.widgets.popups import display_info_toast, close_current_dialog, dialog_with_close_button
 
-Builder.load_file(str(Path(__file__).parent / 'authdevice_store.kv'))
+Builder.load_file(str(Path(__file__).parent / 'imported_keystore_management.kv'))
 
 
 class AuthdeviceStoreScreen(Screen):

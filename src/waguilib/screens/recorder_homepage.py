@@ -27,7 +27,7 @@ from waguilib.logging.handlers import safe_catch_unhandled_exception
 from wacryptolib.cryptainer import gather_trustee_dependencies
 from waguilib.widgets.layout_helpers import LanguageSwitcherScreenMixin
 
-Builder.load_file(str(Path(__file__).parent / 'launcher_with_image_preview.kv'))
+Builder.load_file(str(Path(__file__).parent / 'recorder_homepage.kv'))
 
 
 
