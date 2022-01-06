@@ -25,7 +25,7 @@ from wacryptolib.keygen import load_asymmetric_key_from_pem_bytestring
 from wacryptolib.keystore import FilesystemKeystore, load_keystore_metadata, _get_keystore_metadata_file_path
 from waguilib.importable_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_APP_ROOT, EXTERNAL_EXPORTS_DIR, \
     request_external_storage_dirs_access, strip_external_app_root_prefix
-from waguilib.utilities import convert_bytes_to_human_representation
+from waguilib.utilities import convert_bytes_to_human_representation, shorten_uid
 
 from waguilib.i18n import tr
 from waguilib.widgets.popups import safe_catch_unhandled_exception_and_display_popup
@@ -38,10 +38,6 @@ class AuthenticatorType(Enum):
    USER_PROFILE = 1
    CUSTOM_FOLDER = 2
    USB_DEVICE = 3
-
-
-def shorten_uid(uid):  # FIXME move this to common waguilib utilities
-   return str(uid).split("-")[-1]
 
 
 class FolderKeyStoreListItem(Factory.ThinTwoLineAvatarIconListItem):
@@ -291,11 +287,11 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         # This loading is not supposed to fail, by construction
         authenticator_metadata = load_keystore_metadata(authenticator_dir)
 
-        keystore_uid = shorten_uid(authenticator_metadata["keystore_uid"])
+        keystore_uid_shortened = shorten_uid(authenticator_metadata["keystore_uid"])
         if not request_external_storage_dirs_access():
             return
         EXTERNAL_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
-        archive_path_base = EXTERNAL_EXPORTS_DIR.joinpath("authenticator_%s_%s" % (keystore_uid, timestamp))
+        archive_path_base = EXTERNAL_EXPORTS_DIR.joinpath("authenticator_%s_%s" % (keystore_uid_shortened, timestamp))
         archive_path = shutil.make_archive(base_name=archive_path_base, format=self.AUTHENTICATOR_ARCHIVE_FORMAT,
                             root_dir=authenticator_dir)
 
@@ -362,12 +358,12 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
             details = tr._("Keypairs successfully tested: %s") % keypair_count
         else:
             result = tr._("Failure")
-            missing_private_keys_cast = [shorten_uid(k) for k in missing_private_keys]
-            undecodable_private_keys_cast = [shorten_uid(k) for k in undecodable_private_keys]
+            missing_private_keys_shortened = [shorten_uid(k) for k in missing_private_keys]
+            undecodable_private_keys_shortened = [shorten_uid(k) for k in undecodable_private_keys]
             details = tr._("Keypairs tested: {keypair_count}\nMissing private keys: {missing_private_keys}\nWrong passphrase for keys:  {undecodable_private_keys}").format(
                     keypair_count=keypair_count,
-                    missing_private_keys=(", ".join(missing_private_keys_cast) or "-"),
-                    undecodable_private_keys=", ".join(undecodable_private_keys_cast) or "-")
+                    missing_private_keys=(", ".join(missing_private_keys_shortened) or "-"),
+                    undecodable_private_keys=", ".join(undecodable_private_keys_shortened) or "-")
 
         dialog_with_close_button(
             title=tr._("Checkup result: %s") % result,

@@ -3,7 +3,7 @@ from kivy.logger import Logger as logger
 
 #from oscpy.server import OSCThreadServer
 from wacryptolib.cryptainer import CryptainerStorage
-from wacryptolib.trustee import get_free_keypair_generator_worker
+from wacryptolib.keystore import get_free_keypair_generator_worker
 from wacryptolib.sensor import (
     TarfileRecordsAggregator,
     JsonDataAggregator,

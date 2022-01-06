@@ -69,3 +69,7 @@ def convert_bytes_to_human_representation(size):
             return "%i%s" % (int(size), x)
         size /= 1024.0
     return size
+
+
+def shorten_uid(uid):
+   return "..." + str(uid).split("-")[-1]

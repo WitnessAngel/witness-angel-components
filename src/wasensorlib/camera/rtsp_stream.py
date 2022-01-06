@@ -319,7 +319,7 @@ class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
 
     def _do_start_recording(self):
         self._cryptainer_encryption_stream = self._cryptainer_storage.create_cryptainer_encryption_stream(
-            self._build_filename_base(self._current_start_time), metadata=None, dump_initial_cryptainer=True)
+            self._build_filename_base(self._current_start_time), cryptainer_metadata=None, dump_initial_cryptainer=True)
         self._launch_and_wait_ffmpeg_process()
 
     def _do_stop_recording(self):

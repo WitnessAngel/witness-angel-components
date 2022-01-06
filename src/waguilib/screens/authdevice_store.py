@@ -31,10 +31,12 @@ from kivymd.uix.screen import Screen
 from kivymd.uix.snackbar import Snackbar
 
 from wacryptolib.authenticator import is_authenticator_initialized
+from wacryptolib.keystore import load_keystore_metadata
 from waguilib.i18n import tr
 
 from wacryptolib.authdevice import list_available_authdevices
-from wacryptolib.exceptions import KeystoreAlreadyExists
+from wacryptolib.exceptions import KeystoreAlreadyExists, SchemaValidationError
+from waguilib.utilities import shorten_uid
 from waguilib.widgets.popups import display_info_toast, close_current_dialog, dialog_with_close_button
 
 Builder.load_file(str(Path(__file__).parent / 'authdevice_store.kv'))
@@ -75,22 +77,37 @@ class AuthdeviceStoreScreen(Screen):
 
             if not authdevices_initialized:
                 msg = tr._("No initialized authentication devices found")
+
             else:
-                keystore_uids = []
+
+                imported_keystore_metadata = []
+                already_existing_keystore_metadata = []
+                corrupted_keystore_count = 0
 
                 for authdevice in authdevices_initialized:
                     #print(">>>>>>>>>> importing,", authdevice)
                     remote_keystore_dir = authdevice["authenticator_dir"]
+
+                    try:
+                        keystore_metadata = load_keystore_metadata(remote_keystore_dir)
+                    except SchemaValidationError:
+                        corrupted_keystore_count += 1
+                        continue
+
                     try:
                         self.filesystem_keystore_pool.import_keystore_from_filesystem(remote_keystore_dir)
                     except KeystoreAlreadyExists:
-                        pass  # We tried anyway, since some "update" mechanics might be setup one day
-                    keystore_uids.append(authdevice["metadata"]["keystore_uid"])
+                        already_existing_keystore_metadata.append(keystore_metadata)
+                    else:
+                        imported_keystore_metadata.append(keystore_metadata)
 
-                msg = "%d authenticators imported" % len(keystore_uids)
+                msg = tr._("{imported_keystore_count} authenticators properly imported, {already_existing_keystore_count} already existing, {corrupted_keystore_count} skipped because corrupted").format(
+                    imported_keystore_count=len(imported_keystore_metadata), already_existing_keystore_count=len(already_existing_keystore_metadata), corrupted_keystore_count=corrupted_keystore_count
+                )
 
                 # Autoselect freshly imported keys
-                self._change_authenticator_selection_status(keystore_uids=keystore_uids, is_selected=True)
+                new_keystore_uids = [metadata["keystore_uid"] for metadata in imported_keystore_metadata]
+                self._change_authenticator_selection_status(keystore_uids=new_keystore_uids, is_selected=True)
 
         display_info_toast(msg)
 
@@ -145,7 +162,7 @@ class AuthdeviceStoreScreen(Screen):
         #self.btn_lbls = {}  # FIXME: lbls ?
 
         for (index, (keystore_uid, metadata)) in enumerate(sorted(keystore_metadata.items()), start=1):
-            uuid_suffix = str(keystore_uid).split("-")[-1]
+            keystore_uid_shortened = shorten_uid(keystore_uid)
             #print("COMPARING", str(keystore_uid), self.selected_keystore_uids)
             # my_check_box = CheckBox(
             #     active=(str(keystore_uid) in self.selected_keystore_uids),
@@ -167,7 +184,7 @@ class AuthdeviceStoreScreen(Screen):
                 #pos_hint={"center": 1, "top": 1},
                 #padding=[20, 0],
            #)
-            authenticator_label = tr._("User {keystore_owner} - Uid {uid}").format(keystore_owner=metadata["keystore_owner"], uid=uuid_suffix)
+            authenticator_label = tr._("User {keystore_owner}, id {keystore_uid}").format(keystore_owner=metadata["keystore_owner"], keystore_uid=keystore_uid_shortened)
             authenticator_entry = Factory.WASelectableListItemEntry(text=authenticator_label)  # FIXME RENAME THIS
 
             selection_checkbox = authenticator_entry.ids.selection_checkbox
@@ -272,13 +289,14 @@ class AuthdeviceStoreScreen(Screen):
             uuid_suffix = str(keypair_identifier["keychain_uid"]).split("-")[-1]
 
             message += (
-                " Key n° %s, Uid: ...%s, type: %s\n" #, has_private_key:    %s\n"
+                tr._(" Key n° %s, id ...%s, type: %s") #, has_private_key:    %s\n"
                 % (
                     index,
                     uuid_suffix,
                     keypair_identifier["key_algo"],
                     #private_key_present_str,
                 )
+                + "\n"
                 )
         self.open_dialog_display_keys_in_authdevice(message, keystore_owner=keystore_owner)
 
