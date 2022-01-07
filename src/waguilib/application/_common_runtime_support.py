@@ -9,7 +9,9 @@ from waguilib.i18n import tr
 
 
 class WaRuntimeSupportMixin:
-
+    """
+    Runtime utilities for both GUI and non-GUI applications!
+    """
     # Big status text to be displayed wherever possible
     checkup_status_text = None
 
@@ -17,7 +19,7 @@ class WaRuntimeSupportMixin:
     _config_file_basename = None
 
     def _get_class_package_path(self):
-        """Guess the Path of the folder where this (sub)class is defined"""
+        """Guess the Path of the folder where the object's real (sub)class is defined"""
         return Path(inspect.getfile(self.__class__)).parent
 
     @property
@@ -67,6 +69,8 @@ class WaRuntimeSupportMixin:
 
         self.checkup_status_text = "\n".join(checkup_status_messages)
         return global_status
+
+    ## SETTING CHECKERS - might have to access instance properties someday... ##
 
     @staticmethod
     def check_cryptainer_output_dir(cryptainer_dir: Path):

@@ -11,6 +11,7 @@ SERVICE_START_ARGUMENT = ""
 
 IS_ANDROID = (platform == "android")
 
+# FIXME REMOVE/CHANGE THIS WHOLE WACLIENT_TYPE thing??
 WACLIENT_TYPE = os.environ.get("WACLIENT_TYPE", "<UNKNOWN>")   # Typically "SERVICE" or "APPLICATION"
 
 

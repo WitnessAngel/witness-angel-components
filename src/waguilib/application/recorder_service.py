@@ -1,38 +1,14 @@
-from pathlib import Path
-
-import io
 import logging
 import os
-import tarfile
-import threading
 from concurrent.futures.thread import ThreadPoolExecutor
 from configparser import ConfigParser, Error as ConfigParserError
 
-
-#from kivy.config import ConfigParser
-#from kivy.logger import Logger as logger
-
 from oscpy.server import ServerClass
 
-from waguilib.common_app_support import WaRuntimeSupportMixin
+from waguilib.application._common_runtime_support import WaRuntimeSupportMixin
 from waguilib.importable_settings import IS_ANDROID, WIP_RECORDING_MARKER, CONTEXT
 from waguilib.recording_toolchain import start_recording_toolchain, stop_recording_toolchain
 from waguilib.utilities import InterruptableEvent
-
-'''
-from waclient.common_config import (
-    APP_CONFIG_FILE,
-    INTERNAL_KEYSTORE_POOL_DIR,
-    EXTERNAL_EXPORTS_DIR,
-    get_cryptoconf,
-    IS_ANDROID, WIP_RECORDING_MARKER, CONTEXT)
-
-from waclient.recording_toolchain import (
-    build_recording_toolchain,
-    start_recording_toolchain,
-    stop_recording_toolchain,
-)
-'''
 from waguilib.logging.handlers import CallbackHandler, safe_catch_unhandled_exception
 from waguilib.service_control.osc_transport import get_osc_server, get_osc_client
 
@@ -54,7 +30,7 @@ if IS_ANDROID:
 
 
 @ServerClass
-class WaBackgroundService(WaRuntimeSupportMixin):
+class WaRecorderService(WaRuntimeSupportMixin):
     """
     The background server automatically starts when service script is launched.
 
@@ -102,7 +78,7 @@ class WaBackgroundService(WaRuntimeSupportMixin):
         """Return a valid recording toolchain"""
         raise NotImplementedError("_build_recording_toolchain()")
 
-    def reload_config(self, filename=None):
+    def reload_config(self, filename=None):  # FIXME move to generic app ?
 
         if not filename:
             filename = self.config_file_path
@@ -205,7 +181,7 @@ class WaBackgroundService(WaRuntimeSupportMixin):
         WIP_RECORDING_MARKER.touch(exist_ok=True)
         self.reload_config()  # Important
         if not self.refresh_checkup_status():
-            logger.error("Service failed to start because of configuration issues")
+            logger.error("Service failed to start recording because of configuration issues")
             return
         return self._offload_task(self._offloaded_start_recording, env=env)
 

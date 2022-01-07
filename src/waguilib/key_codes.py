@@ -1,4 +1,4 @@
-# source:  kivy-master\kivy\core\window\__init__.py
+# source:  kivy-master\kivy\core\window\recorder_gui.py
 # and https://gist.github.com/Enteleform/a2e4daf9c302518bf31fcc2b35da4661
 
 
