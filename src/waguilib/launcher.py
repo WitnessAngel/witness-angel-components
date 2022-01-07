@@ -1,6 +1,6 @@
 import os, sys, importlib
 
-def launch_app_or_service(main_module: str, client_type: str):
+def launch_app_or_service_with_crash_handler(main_module: str, client_type: str):
     """
     Launcher used both for main app or service, depending on parameters, and
     uplaod a crash report if an abormal exception occurs on mobile platform.
