@@ -46,10 +46,10 @@
                     id: cryptainer_delete_btn
                     icon: "delete-alert-outline"
                     text: tr._("Delete")
-                    on_press: root.open_dialog_delete_cryptainer()
+                    on_press: root.open_cryptainer_deletion_dialog()
 
                 WAOperationButton:
                     id: cryptainer_decrypt_btn
                     icon: "eye-circle-outline"
                     text: tr._("Decrypt")
-                    on_press: root.open_dialog_decipher_cryptainer()
+                    on_press: root.open_cryptainer_decryption_dialog()

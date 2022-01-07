@@ -48,14 +48,14 @@ class AuthdeviceStoreScreen(Screen):
 
     def __init__(self, *args, **kwargs):
         self.selected_keystore_uids = []  # List of STRINGS
-        self.register_event_type('on_selected_authdevices_changed')
+        self.register_event_type('on_selected_keyguardians_changed')
         super().__init__(*args, **kwargs)
 
-    def on_selected_authdevices_changed(self, *args):
+    def on_selected_keyguardians_changed(self, *args):
          pass
-         #print("I am dispatched on_selected_authdevices_changed", args)
+         #print("I am dispatched on_selected_keyguardians_changed", args)
 
-    def import_keys(self):
+    def import_keystores_from_usb(self):
         """
         loop through the “authdevices” present,
         and for those who are initialize, copy (with different Keystore for each folder)
@@ -64,7 +64,7 @@ class AuthdeviceStoreScreen(Screen):
         # list_devices = list_available_authdevices()
         # print(list_devices)
         # for index, authdevice in enumerate(list_devices):
-        #print(">>>>>>>>>> import_keys started")
+        #print(">>>>>>>>>> import_keystores_from_usb started")
         authdevices = list_available_authdevices()
         #print("DETECTED AUTH DEVICES", authdevices)
 
@@ -112,9 +112,9 @@ class AuthdeviceStoreScreen(Screen):
         display_info_toast(msg)
 
         # update the display of authdevice saved in the local folder .keys_storage_ward
-        self.list_imported_key_devices(display_toast=False)
+        self.list_imported_keystores(display_toast=False)
 
-    def delete_keys(self):
+    def delete_keystores(self):
 
         # FIXME add confirmation dialog!!
 
@@ -136,10 +136,10 @@ class AuthdeviceStoreScreen(Screen):
 
         display_info_toast(msg)
 
-        self.list_imported_key_devices(display_toast=False)
+        self.list_imported_keystores(display_toast=False)
 
 
-    def list_imported_key_devices(self, display_toast=True):
+    def list_imported_keystores(self, display_toast=True):
         """
         loop through the KEYS_ROOT / files, and read their metadata.json,
         to display in the interface their USER and the start of their UUID
@@ -167,14 +167,14 @@ class AuthdeviceStoreScreen(Screen):
             # my_check_box = CheckBox(
             #     active=(str(keystore_uid) in self.selected_keystore_uids),
             #     size_hint=(0.15, None),
-            #     on_release=self.check_box_authdevice_checked,
+            #     on_release=self.on_keystore_checkbox_click,
             #     height=40,
             # )
             # my_check_btn = Button(
             #     text="Key n°%s, User %s, Uid %s" % (index, metadata["keystore_owner"], uuid_suffix),
             #     size_hint=(0.85, None),
             #     #background_color=(0, 1, 1, 0.1),
-            #     on_release=functools.partial(self.info_keys_stored, keystore_uid=keystore_uid, keystore_owner=metadata["keystore_owner"]),
+            #     on_release=functools.partial(self.display_keystore_details, keystore_uid=keystore_uid, keystore_owner=metadata["keystore_owner"]),
             #     height=40,
             # )
             # self.chbx_lbls[my_check_box] = str(keystore_uid)
@@ -191,12 +191,12 @@ class AuthdeviceStoreScreen(Screen):
             #print(">>>>>>>>selection_checkbox", selection_checkbox)
             selection_checkbox.active = str(keystore_uid) in self.selected_keystore_uids
             def selection_callback(widget, value, keystore_uid=keystore_uid):  # Force keystore_uid save here, else scope bug
-                self.check_box_authdevice_checked(keystore_uid=keystore_uid, is_selected=value)
+                self.on_keystore_checkbox_click(keystore_uid=keystore_uid, is_selected=value)
             selection_checkbox.bind(active=selection_callback)
 
             information_icon = authenticator_entry.ids.information_icon
             def information_callback(widget, keystore_uid=keystore_uid, metadata=metadata):  # Force keystore_uid save here, else scope bug
-                self.info_keys_stored(keystore_uid=keystore_uid, keystore_owner=metadata["keystore_owner"])
+                self.display_keystore_details(keystore_uid=keystore_uid, keystore_owner=metadata["keystore_owner"])
             information_icon.bind(on_press=information_callback)
 
             Keys_page_ids.imported_authenticator_list.add_widget(authenticator_entry)
@@ -217,14 +217,14 @@ class AuthdeviceStoreScreen(Screen):
                     my_check_box = CheckBox(#start
                         active=False,
                         size_hint=(0.2, 0.2),
-                        on_release=self.check_box_authdevice_checked,
+                        on_release=self.on_keystore_checkbox_click,
                     )
                     my_check_btn = Button(
                         text=" key N°:  %s        User:  %s      |      UUID device:  %s "
                         % ((str(index + 1)), str(metadata["keystore_owner"]), start_of_UUID),
                         size_hint=(0.8, 0.2),
                         background_color=(1, 1, 1, 0.01),
-                        on_press=self.info_keys_stored,
+                        on_press=self.display_keystore_details,
                     )
                     self.chbx_lbls[my_check_box] = str(metadata["keystore_uid"])
                     self.btn_lbls[my_check_btn] = str(metadata["keystore_uid"])
@@ -260,7 +260,7 @@ class AuthdeviceStoreScreen(Screen):
         keys_page_ids = self.ids
         keys_page_ids.imported_authenticator_list.add_widget(Display_layout)
 
-    def check_box_authdevice_checked(self, keystore_uid: uuid.UUID, is_selected: bool):
+    def on_keystore_checkbox_click(self, keystore_uid: uuid.UUID, is_selected: bool):
         self._change_authenticator_selection_status(keystore_uids=[keystore_uid], is_selected=is_selected,)
 
     def _change_authenticator_selection_status(self, keystore_uids: list, is_selected: bool):
@@ -270,10 +270,10 @@ class AuthdeviceStoreScreen(Screen):
                 self.selected_keystore_uids.remove(keystore_uid_str)
             elif is_selected and keystore_uid_str not in self.selected_keystore_uids:
                 self.selected_keystore_uids.append(keystore_uid_str)
-        self.dispatch('on_selected_authdevices_changed', self.selected_keystore_uids)  # FIXME rename this
+        self.dispatch('on_selected_keyguardians_changed', self.selected_keystore_uids)  # FIXME rename this
         #print("self.selected_keystore_uids", self.selected_keystore_uids)
 
-    def info_keys_stored(self, keystore_uid, keystore_owner):
+    def display_keystore_details(self, keystore_uid, keystore_owner):
 
         """
         display the information of the keys stored in the selected usb
@@ -298,9 +298,9 @@ class AuthdeviceStoreScreen(Screen):
                 )
                 + "\n"
                 )
-        self.open_dialog_display_keys_in_authdevice(message, keystore_owner=keystore_owner)
+        self.open_keystore_details_dialog(message, keystore_owner=keystore_owner)
 
-    def open_dialog_display_keys_in_authdevice(self, message, keystore_owner):
+    def open_keystore_details_dialog(self, message, keystore_owner):
         dialog_with_close_button(
             close_btn_label=tr._("Close"),
             title=tr._("Key Guardian %s") % keystore_owner,

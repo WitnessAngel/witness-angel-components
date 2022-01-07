@@ -98,7 +98,7 @@ class CryptainerStoreScreen(Screen):
             #selection_checkbox = container_entry.ids.selection_checkbox
 
             #def selection_callback(widget, value, container_name=container_name):  # Force container_name save here, else scope bug
-            #    self.check_box_authdevice_checked(keystore_uid=keystore_uid, is_selected=value)
+            #    self.on_keystore_checkbox_click(keystore_uid=keystore_uid, is_selected=value)
             #selection_checkbox.bind(active=selection_callback)
 
             def information_callback(widget, cryptainer_name=cryptainer_name):  # Force keystore_uid save here, else scope bug
@@ -196,7 +196,7 @@ class CryptainerStoreScreen(Screen):
         '''
 
 
-    def open_dialog_delete_cryptainer(self):
+    def open_cryptainer_deletion_dialog(self):
 
         cryptainer_names = self._get_selected_cryptainer_names()
         if not cryptainer_names:
@@ -239,7 +239,7 @@ class CryptainerStoreScreen(Screen):
         self.get_detected_cryptainer()  # FIXME rename
 
 
-    def open_dialog_decipher_cryptainer(self):
+    def open_cryptainer_decryption_dialog(self):
 
         cryptainer_names = self._get_selected_cryptainer_names()
         if not cryptainer_names:
