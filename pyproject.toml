@@ -28,7 +28,7 @@ classifiers = [
     "Operating System :: MacOS :: MacOS X",
 ]
 packages = [
-    { include = "waguilib", from = "src" },
+    { include = "wacomponents", from = "src" },
 ]
 include = ["README.rst"]
 exclude = []

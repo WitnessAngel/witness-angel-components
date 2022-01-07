@@ -6,7 +6,7 @@ from ffprobe import FFProbe
 
 from wacryptolib.cryptainer import CryptainerStorage
 from wacryptolib.sensor import TarfileRecordsAggregator
-from waguilib.sensors.camera.rtsp_stream import PeriodicStreamPusher
+from wacomponents.sensors.camera.rtsp_stream import PeriodicStreamPusher
 
 
 # FIXME REMOVE THIS USELESS

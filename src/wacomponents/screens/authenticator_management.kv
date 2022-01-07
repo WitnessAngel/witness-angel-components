@@ -1,0 +1,119 @@
+#:import tr wacomponents.i18n.tr
+#:import strip_external_app_root_prefix wacomponents.default_settings.strip_external_app_root_prefix
+
+
+<ThinTwoLineAvatarIconListItem@TwoLineAvatarIconListItem>
+    _height: dp(60)
+    # This might help with the blurred content of scrollview... see https://github.com/kivy/kivy/issues/2297
+    on_pos: self.pos = tuple(map(int, args[1]))
+
+<UserKeyStoreListItem@ThinTwoLineAvatarIconListItem>:
+    text: tr._("User Profile")
+    secondary_text: tr._("Stored inside system disk")
+
+    IconLeftWidget:
+        icon: "account-box"
+
+<FolderKeyStoreListItem>:
+    selected_path: None
+    text: tr._("Custom location")
+    secondary_text: strip_external_app_root_prefix(self.selected_path) if self.selected_path else tr._("Please select a folder")
+
+    IconLeftWidget:
+        icon: "folder"
+
+    IconRightWidget:
+        icon: "file-find-outline"
+        id: open_folder_btn
+
+
+<AuthenticatorTesterContent@MDBoxLayout>
+    orientation: "vertical"
+    spacing: "12dp"
+    size_hint_y: None
+    height: "80dp"
+
+    MDLabel:
+        text: tr._("Test integrity and passphrase of authenticator")
+    MDTextField:
+        id: tester_passphrase
+        hint_text: tr._("Passphrase")
+
+
+<AuthenticatorSelectorScreen>:
+
+    on_pre_enter: root.refresh_authenticator_list()
+
+    WAMainVerticalScrollView:
+
+        WAVerticalPanel:
+
+            WAToolbar:
+                title: tr._("Manage Authenticators")
+                right_action_items: [["refresh", lambda x: root.refresh_authenticator_list(), tr._("Refresh")], ["earth", lambda x: root.language_menu_open(x), tr._("Language")], ["help-circle-outline", lambda x: root.display_help_popup(), tr._("Help")]]
+
+            WAElevatedBoxLayout:
+
+                MDLabel:
+                    text: tr._("Please select an authenticator location")
+                    padding_x: "10dp"
+
+            WAVerticalScrollView:
+
+                MDList:
+                    id: authenticator_list
+
+            WAElevatedBoxLayout:
+
+                MDIcon:
+                    icon: root.AUTHENTICATOR_INITIALIZATION_STATUS_ICONS[root.authenticator_status]
+                    halign: "center"
+                    width: dp(80)
+                    size_hint_x: None
+
+                MDLabel:
+                    text: root.get_authenticator_status_message(root.authenticator_status)
+
+            WAVerticalScrollView:
+                size_hint_y: 0.5
+                id: authenticator_information_scrollview
+                WASelectableLabel:
+                    id: authenticator_information
+                    text: tr._("<empty>")
+
+            WAButtonsGridLayout:
+                disabled: root.authenticator_status is not False
+
+                WAOperationButton:
+                    icon: "account-key-outline"
+                    text: tr._("Initialize")
+                    on_press: root.manager.current = "authenticator_creation_screen"
+                    size_hint_x: 1  # HACK
+
+                WAOperationButton:
+                    icon: "database-import-outline"
+                    text: tr._("Import")
+                    on_press: root.archive_chooser_open()
+                    size_hint_x: 1  # HACK
+
+            WAButtonsGridLayout:
+                disabled: root.authenticator_status is not True
+                padding: [10, 10]
+
+                WAOperationButton:
+                    icon: "database-export-outline"
+                    text: tr._("Export")
+                    on_press: root.show_authenticator_export_confirmation_dialog()
+                    size_hint_x: 1  # HACK
+
+                WAOperationButton:
+                    icon: "crosshairs-question"
+                    text: tr._("Check")
+                    on_press: root.show_checkup_dialog()
+                    size_hint_x: 1  # HACK
+
+                WAOperationButton:
+                    icon: "delete-alert-outline"
+                    text: tr._("Destroy")
+                    on_press: root.show_authenticator_destroy_confirmation_dialog()
+                    size_hint_x: 1  # HACK

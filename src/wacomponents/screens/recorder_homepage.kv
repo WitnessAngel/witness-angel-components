@@ -1,0 +1,45 @@
+#:import tr wacomponents.i18n.tr
+
+
+<LauncherWithImagePreviewScreen>:
+
+    on_pre_enter:
+        app.refresh_checkup_status()
+
+    MDBoxLayout:
+        orientation: 'vertical'
+        spacing: 20
+
+        WAToolbar:
+            title: tr._("Control Recorder")
+            left_action_items: [['menu', lambda x: app.navigation_drawer.set_state("toggle")]]
+            right_action_items: [["refresh", lambda x: app.refresh_checkup_status(), tr._("Refresh")], ["earth", lambda x: root.language_menu_open(x), tr._("Language")], ['cog', lambda x: app.open_settings(), tr._("Settings")]]
+
+        ToggleButton:
+            id: recording_button
+            text: tr._('Start Recording') if self.state == 'normal' else tr._('Stop Recording')
+            pos_hint: {'center_x': 0.5}
+            size_hint: (0.7, 0.2)
+            on_state: app.switch_to_recording_state(is_recording=(self.state == "down"))
+            font_size: "30sp"
+
+        WAVerticalScrollView:
+            size_hint_y: 0.4
+            id: information_scrollview
+            WASelectableLabel:
+                id: information_text
+                text: app.checkup_status_text
+
+        Image:
+            id: preview_image
+            source: str(app.fallback_preview_image_path)
+            size_hint_y: 0.4
+            size: (10, 10)     #self.texture_size if self.texture else (10, 10)
+            allow_stretch: True
+            keep_ratio: True
+            nocache: True
+            mipmap: True
+
+        VSeparator:
+
+
