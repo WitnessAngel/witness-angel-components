@@ -2,7 +2,7 @@
 import functools
 
 from _scaffolding_utilities import check_periodic_stream_pusher_basic_behaviour, get_ffprobe_result_from_buffer, get_media_length_s
-from wasensorlib.camera.rtsp_stream import RtspCameraSensor
+from waguilib.sensors.camera.rtsp_stream import RtspCameraSensor
 
 
 def test_rtsp_stream_standard_workflow():

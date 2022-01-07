@@ -29,7 +29,6 @@ classifiers = [
 ]
 packages = [
     { include = "waguilib", from = "src" },
-    { include = "wasensorlib", from = "src" },
 ]
 include = ["README.rst"]
 exclude = []
