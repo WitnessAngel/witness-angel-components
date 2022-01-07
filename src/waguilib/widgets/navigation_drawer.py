@@ -27,14 +27,14 @@ class WaNavigationDrawer(MDNavigationDrawer):
     pass
 
 
-class ContentNavigationDrawer(BoxLayout):  # FIXME useless intermediate class?
+class NavigationDrawerContent(BoxLayout):  # FIXME useless intermediate class?
     pass
 
 
 class DrawerList(ThemableBehavior, MDList):
-    def set_color_item(self, instance_item):
+    def __obsolete_set_color_item(self, instance_item):
         """
-        Called when tap on a menu item.
+        Called when tap on a menu item - UNSAFE SINCE WE CAN NAVIGATE ALSO DIFFERENTLY
         """
         for item in self.children:
             if instance_item.text == item.text:
@@ -43,6 +43,6 @@ class DrawerList(ThemableBehavior, MDList):
                 item.text_color = (0, 0, 0, 1)
 
 
-class ItemDrawer(OneLineIconListItem):  # FIXME rename
+class NavigationDrawerItem(OneLineIconListItem):  # FIXME rename
     icon = StringProperty()
     text_color = ListProperty((0, 0, 0, 1))

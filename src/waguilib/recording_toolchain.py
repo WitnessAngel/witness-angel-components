@@ -9,7 +9,7 @@ from wacryptolib.sensor import (
     JsonDataAggregator,
     SensorManager,
 )
-from waguilib.importable_settings import IS_ANDROID
+from waguilib.default_settings import IS_ANDROID
 
 #osc = OSCThreadServer(encoding="utf8")
 

@@ -1,3 +1,6 @@
+"""
+These settings should preferably be star-imported by setting files of actual projects, not directly referenced.
+"""
 import os
 from pathlib import Path
 
@@ -52,7 +55,7 @@ INTERNAL_CACHE_DIR.mkdir(exist_ok=True)
 
 
 # Created/deleted by app, looked up by daemon service on boot/restart
-WIP_RECORDING_MARKER = INTERNAL_APP_ROOT / "recording_in_progress"  
+WIP_RECORDING_MARKER = INTERNAL_APP_ROOT / "recording_in_progress"
 
 INTERNAL_LOGS_DIR = INTERNAL_APP_ROOT / "logs"
 INTERNAL_LOGS_DIR.mkdir(exist_ok=True)

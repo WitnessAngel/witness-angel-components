@@ -486,7 +486,7 @@ msgid "Containers"
 msgstr "Conteneurs"
 
 #: src/waguilib/screens/container_store.kv:35
-msgid "View and manager encrypted containers"
+msgid "View and manage encrypted containers"
 msgstr "Voir et gérer les conteneurs chiffrés"
 
 #: src/waguilib/screens/container_store.kv:54

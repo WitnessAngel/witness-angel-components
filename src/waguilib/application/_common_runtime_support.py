@@ -3,7 +3,7 @@ from pathlib import Path
 
 from kivy.properties import StringProperty
 
-from waguilib.importable_settings import INTERNAL_APP_ROOT, INTERNAL_CRYPTAINER_DIR, INTERNAL_KEYSTORE_POOL_DIR, \
+from waguilib.default_settings import INTERNAL_APP_ROOT, INTERNAL_CRYPTAINER_DIR, INTERNAL_KEYSTORE_POOL_DIR, \
     INTERNAL_LOGS_DIR
 from waguilib.i18n import tr
 

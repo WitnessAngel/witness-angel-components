@@ -7,7 +7,7 @@ from gettext import NullTranslations
 import kivy
 from kivy.lang import Observable
 
-from waguilib.importable_settings import IS_ANDROID
+from waguilib.default_settings import IS_ANDROID
 
 
 def detect_default_language():

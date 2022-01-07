@@ -23,7 +23,7 @@ from kivymd.uix.screen import Screen
 from kivymd.uix.snackbar import Snackbar
 
 from waguilib.i18n import tr
-from waguilib.importable_settings import EXTERNAL_EXPORTS_DIR
+from waguilib.default_settings import EXTERNAL_EXPORTS_DIR
 from waguilib.logging.handlers import safe_catch_unhandled_exception
 
 from wacryptolib.cryptainer import gather_trustee_dependencies

@@ -2,10 +2,10 @@
 
 
 <WaNavigationDrawer>:
-    ContentNavigationDrawer:
+    NavigationDrawerContent:
         id: content_drawer
 
-<ContentNavigationDrawer>:
+<NavigationDrawerContent>:
     orientation: "vertical"
     padding: "8dp"
     spacing: "8dp"
@@ -42,10 +42,10 @@
 
 
 #FIXME BADLY NAMED
-<ItemDrawer>:
+<NavigationDrawerItem>:
     theme_text_color: "Custom"
-    on_release:
-        self.parent.set_color_item(self)
+    #on_release:
+    #    self.parent.set_color_item(self)
 
     IconLeftWidget:
         id: icon

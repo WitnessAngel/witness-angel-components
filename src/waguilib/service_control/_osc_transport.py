@@ -7,7 +7,7 @@ from kivy.utils import platform
 # TODO factorize and use unix socks when possible
 from oscpy.client import OSCClient
 from oscpy.server import OSCThreadServer as _OSCThreadServer
-from waguilib.importable_settings import INTERNAL_APP_ROOT
+from waguilib.default_settings import INTERNAL_APP_ROOT
 
 
 class RobustOSCThreadServer(_OSCThreadServer):

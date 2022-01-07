@@ -6,7 +6,7 @@ from configparser import ConfigParser, Error as ConfigParserError
 from oscpy.server import ServerClass
 
 from waguilib.application._common_runtime_support import WaRuntimeSupportMixin
-from waguilib.importable_settings import IS_ANDROID, WIP_RECORDING_MARKER, CONTEXT
+from waguilib.default_settings import IS_ANDROID, WIP_RECORDING_MARKER, CONTEXT
 from waguilib.recording_toolchain import start_recording_toolchain, stop_recording_toolchain
 from waguilib.utilities import InterruptableEvent
 from waguilib.logging.handlers import CallbackHandler, safe_catch_unhandled_exception

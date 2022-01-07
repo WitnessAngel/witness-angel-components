@@ -23,8 +23,8 @@ from wacryptolib.authenticator import is_authenticator_initialized
 from wacryptolib.exceptions import KeyLoadingError, SchemaValidationError
 from wacryptolib.keygen import load_asymmetric_key_from_pem_bytestring
 from wacryptolib.keystore import FilesystemKeystore, load_keystore_metadata, _get_keystore_metadata_file_path
-from waguilib.importable_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_APP_ROOT, EXTERNAL_EXPORTS_DIR, \
-    request_external_storage_dirs_access, strip_external_app_root_prefix
+from waguilib.default_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_APP_ROOT, EXTERNAL_EXPORTS_DIR, strip_external_app_root_prefix
+from waguilib.system_permissions import request_external_storage_dirs_access
 from waguilib.utilities import convert_bytes_to_human_representation, shorten_uid
 
 from waguilib.i18n import tr

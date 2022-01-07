@@ -1,7 +1,7 @@
 from typing import List
 import time
 
-from .environment import IS_ANDROID, CONTEXT, PackageManager, EXTERNAL_EXPORTS_DIR
+from waguilib.default_settings import IS_ANDROID, CONTEXT, PackageManager, EXTERNAL_EXPORTS_DIR
 
 
 def request_multiple_permissions(permissions: List[str]) -> List[bool]:
@@ -26,7 +26,6 @@ def has_single_permission(permission: str) -> bool:
     #from kivy.logger import Logger as logger  # Delayed import
     if IS_ANDROID:
         # THIS ONLY WORKS FOR ACTIVITIES: "from android.permissions import check_permission, Permission"
-        from jnius import autoclass
         from android.permissions import Permission
         permission_qualified_name = getattr(Permission, permission)  # e.g. android.permission.ACCESS_FINE_LOCATION
         res = CONTEXT.checkSelfPermission(permission_qualified_name)
@@ -45,7 +44,7 @@ def warn_if_permission_missing(permission: str) -> bool:
     return False
 
 
-def request_external_storage_dirs_access():
+def request_external_storage_dirs_access():  # FIXME rename to request_external_storage_dir_access()?
     """Ask for write permission and create missing directories."""
     if IS_ANDROID:
         from kivy.logger import Logger as logger  # Delayed import

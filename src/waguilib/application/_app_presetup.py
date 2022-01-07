@@ -15,7 +15,7 @@ def _presetup_app_environment(setup_kivy):
         print(">>>>>>>> FAILED INITIALIZATION OF TYPEGUARD: %r" % exc)
 
     try:
-        from waguilib.importable_settings import IS_ANDROID
+        from waguilib.default_settings import IS_ANDROID
         from waguilib.application.android_helpers import patch_ctypes_module_for_android
         if IS_ANDROID:
             patch_ctypes_module_for_android()  # Necessary for wacryptolib
@@ -60,7 +60,7 @@ def _presetup_app_environment(setup_kivy):
         from waguilib.assets import register_common_resources
         register_common_resources()
 
-        from waguilib.importable_settings import WACLIENT_TYPE, IS_ANDROID
+        from waguilib.default_settings import WACLIENT_TYPE, IS_ANDROID
 
         if WACLIENT_TYPE == "APPLICATION":
             from kivy.config import Config
