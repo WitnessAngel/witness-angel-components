@@ -287,9 +287,10 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         # This loading is not supposed to fail, by construction
         authenticator_metadata = load_keystore_metadata(authenticator_dir)
 
-        keystore_uid_shortened = shorten_uid(authenticator_metadata["keystore_uid"])
         if not request_external_storage_dirs_access():
             return
+
+        keystore_uid_shortened = shorten_uid(authenticator_metadata["keystore_uid"])
         EXTERNAL_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
         archive_path_base = EXTERNAL_EXPORTS_DIR.joinpath("authenticator_%s_%s" % (keystore_uid_shortened, timestamp))
         archive_path = shutil.make_archive(base_name=archive_path_base, format=self.AUTHENTICATOR_ARCHIVE_FORMAT,

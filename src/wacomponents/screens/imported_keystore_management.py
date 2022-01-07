@@ -286,10 +286,10 @@ class AuthdeviceStoreScreen(Screen):
         for index, keypair_identifier in enumerate(keypair_identifiers, start=1):
 
             private_key_present_str = "Yes" if keypair_identifier["private_key_present"] else "No"
-            uuid_suffix = str(keypair_identifier["keychain_uid"]).split("-")[-1]
+            uuid_suffix = shorten_uid(keypair_identifier["keychain_uid"])
 
             message += (
-                tr._(" Key n° %s, id ...%s, type: %s") #, has_private_key:    %s\n"
+                tr._("Key n° %s, id %s, type: %s") #, has_private_key:    %s\n"
                 % (
                     index,
                     uuid_suffix,

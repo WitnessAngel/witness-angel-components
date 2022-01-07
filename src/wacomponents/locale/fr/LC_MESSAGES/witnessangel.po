@@ -1,13 +1,13 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# Pascal <pythoniks@gmail.com>, 2021.
+# Pascal <pythoniks@gmail.com>, 2021, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-25 13:12+0100\n"
-"PO-Revision-Date: 2021-12-25 13:13+0200\n"
+"POT-Creation-Date: 2022-01-07 14:46+0100\n"
+"PO-Revision-Date: 2022-01-07 14:47+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
@@ -17,28 +17,27 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Virtaal 0.7.1\n"
 
-#: src/wacomponents/application/__init__.py:98
-msgid ""
-"Some configuration changes only apply at next recording restart"
+#: src/wacomponents/application/recorder_gui.py:95
+msgid "Some configuration changes only apply at next recording restart"
 msgstr ""
-"Certains changements de configuration ne s'appliquent qu'au "
-"redémarrage de l'enregistrement"
+"Certains changements de configuration ne s'appliquent qu'au redémarrage de "
+"l'enregistrement"
 
-#: src/wacomponents/application/__init__.py:180
+#: src/wacomponents/application/recorder_gui.py:177
 msgid "Configuration errors prevent recording"
 msgstr "Des erreurs de configuration empêchent l'enregistrement"
 
-#: src/wacomponents/common_app_support.py:74
+#: src/wacomponents/application/_common_runtime_support.py:78
 #, python-brace-format
 msgid "Container storage: {cryptainer_dir}"
 msgstr "Stockage des conteneurs : {cryptainer_dir}"
 
-#: src/wacomponents/common_app_support.py:76
+#: src/wacomponents/application/_common_runtime_support.py:80
 #, python-brace-format
 msgid "Invalid container storage: \"{cryptainer_dir}\""
 msgstr "Stockage des conteneurs invalide : {cryptainer_dir}"
 
-#: src/wacomponents/common_app_support.py:80
+#: src/wacomponents/application/_common_runtime_support.py:84
 #, python-brace-format
 msgid ""
 "{keyguardian_count} key guardian(s) configured, {keyguardian_threshold} of "
@@ -47,86 +46,25 @@ msgstr ""
 "{keyguardian_count} gardien(s) de clés configuré(s), dont "
 "{keyguardian_threshold} nécessaire(s) pour le déchiffrement"
 
-#: src/wacomponents/common_app_support.py:92
+#: src/wacomponents/application/_common_runtime_support.py:96
 #, python-brace-format
 msgid "Camera url: {camera_url}"
 msgstr "Url de la caméra : {camera_url}"
 
-#: src/wacomponents/common_app_support.py:95
+#: src/wacomponents/application/_common_runtime_support.py:99
 #, python-brace-format
 msgid "Wrong camera url: \"{camera_url}\""
 msgstr "Mauvaise url de caméra : \"{camera_url}\""
 
-#: src/wacomponents/common_app_support.py:99
+#: src/wacomponents/application/_common_runtime_support.py:103
 #, python-brace-format
 msgid "Each container stores {video_recording_duration_mn} mn(s) of video"
 msgstr "Chaque conteneur stocke {video_recording_duration_mn} mn(s) de vidéo"
 
-#: src/wacomponents/common_app_support.py:106
+#: src/wacomponents/application/_common_runtime_support.py:110
 #, python-brace-format
 msgid "Containers are kept for {max_cryptainer_age_day} day(s)"
 msgstr "Les conteneurs sont gardés {max_cryptainer_age_day} jour(s)"
-
-#: src/wacomponents/screens/authdevice_store.kv:18
-msgid "Key Guardians"
-msgstr "Gardiens des Clés"
-
-#: src/wacomponents/screens/authdevice_store.kv:21
-#: src/wacomponents/screens/authenticator_management.kv:53
-#: src/wacomponents/screens/container_store.kv:30
-#: src/wacomponents/screens/launcher_with_image_preview.kv:16
-msgid "Refresh"
-msgstr "Rafraîchir"
-
-#: src/wacomponents/screens/authdevice_store.kv:21
-#: src/wacomponents/screens/container_store.kv:30
-msgid "Back to home"
-msgstr "Retour"
-
-#: src/wacomponents/screens/authdevice_store.kv:26
-msgid "Please select the key guardians used to secure recordings"
-msgstr "Veuillez sélectionner les gardiens de clés utilisés pour sécuriser les enregistrements"
-
-#: src/wacomponents/screens/authdevice_store.kv:40
-msgid "Import from USB"
-msgstr "Import depuis USB"
-
-#: src/wacomponents/screens/authdevice_store.kv:46
-#: src/wacomponents/screens/container_store.kv:48
-msgid "Delete"
-msgstr "Supprimer"
-
-#: src/wacomponents/screens/authdevice_store.py:68
-msgid "No connected authentication devices found"
-msgstr "Aucun périphérique d'authentification trouvé"
-
-#: src/wacomponents/screens/authdevice_store.py:74
-msgid "No initialized authentication devices found"
-msgstr "Aucun périphérique d'authentification initialisé trouvé"
-
-#: src/wacomponents/screens/authdevice_store.py:167
-#, python-brace-format
-msgid "User {user} - Uid {uid}"
-msgstr "Utilisateur {user} - Uid {uid}"
-
-#: src/wacomponents/screens/authdevice_store.py:187
-msgid "Refreshed imported authenticators"
-msgstr "Authentifieurs importés rafraîchis"
-
-#: src/wacomponents/screens/authdevice_store.py:239
-msgid "No imported authentication device found"
-msgstr "Aucun périphérique d'authentification importé trouvé"
-
-#: src/wacomponents/screens/authdevice_store.py:284
-#: src/wacomponents/screens/container_store.py:184
-#: src/wacomponents/widgets/popups.py:50
-msgid "Close"
-msgstr "Fermer"
-
-#: src/wacomponents/screens/authdevice_store.py:285
-#, python-format
-msgid "Key Guardian %s"
-msgstr "Gardiens de Clé %s"
 
 #: src/wacomponents/screens/authenticator_creation_form.kv:13
 msgid "Create Authenticator"
@@ -163,43 +101,43 @@ msgstr "Indice de phrase secrète"
 msgid "Initialize"
 msgstr "Initialiser"
 
-#: src/wacomponents/screens/authenticator_creation_form.py:63
+#: src/wacomponents/screens/authenticator_creation_form.py:60
 msgid "Please enter a username, passphrase and passphrase hint."
 msgstr ""
 "Veuillez entrer un nom d'utilisateur, une phrase secrète et son indice."
 
-#: src/wacomponents/screens/authenticator_creation_form.py:65
+#: src/wacomponents/screens/authenticator_creation_form.py:62
 #, python-format
 msgid "Passphrase must be at least %s characters long."
 msgstr "La phrase secrète doit faire au moins %s caractères de long."
 
-#: src/wacomponents/screens/authenticator_creation_form.py:75
+#: src/wacomponents/screens/authenticator_creation_form.py:72
 msgid "Validation error"
 msgstr "Erreur de validation"
 
-#: src/wacomponents/screens/authenticator_creation_form.py:157
+#: src/wacomponents/screens/authenticator_creation_form.py:155
 msgid "Please wait, initialization might take a few minutes."
 msgstr "Veuillez attendre, l'initialisation peut prendre quelques minutes."
 
-#: src/wacomponents/screens/authenticator_creation_form.py:168
+#: src/wacomponents/screens/authenticator_creation_form.py:166
 msgid "Initialization successfully completed."
 msgstr "Initialisation complétée avec succès."
 
-#: src/wacomponents/screens/authenticator_creation_form.py:169
-#: src/wacomponents/screens/authenticator_management.py:317
+#: src/wacomponents/screens/authenticator_creation_form.py:167
+#: src/wacomponents/screens/authenticator_management.py:358
 msgid "Success"
 msgstr "Succès"
 
-#: src/wacomponents/screens/authenticator_creation_form.py:171
+#: src/wacomponents/screens/authenticator_creation_form.py:169
 msgid "Operation failed, check logs."
 msgstr "Opération échouée, vérifiez les logs."
 
-#: src/wacomponents/screens/authenticator_creation_form.py:172
-#: src/wacomponents/screens/authenticator_management.py:320
+#: src/wacomponents/screens/authenticator_creation_form.py:170
+#: src/wacomponents/screens/authenticator_management.py:361
 msgid "Failure"
 msgstr "Échec"
 
-#: src/wacomponents/screens/authenticator_creation_form.py:175
+#: src/wacomponents/screens/authenticator_creation_form.py:173
 msgid ""
 "        On this page, you can initialize an authenticator inside an empty "
 "folder; this authenticator actually consists in metadata files as well as a "
@@ -230,7 +168,7 @@ msgstr ""
 "accents, espaces...), il n'y a aucun moyen de la récupérer.\n"
 "        "
 
-#: src/wacomponents/screens/authenticator_creation_form.py:183
+#: src/wacomponents/screens/authenticator_creation_form.py:181
 msgid "Authenticator creation page"
 msgstr "Page de création d'authentifieur"
 
@@ -259,7 +197,14 @@ msgid "Manage Authenticators"
 msgstr "Gérer les Authentifieurs"
 
 #: src/wacomponents/screens/authenticator_management.kv:53
-#: src/wacomponents/screens/launcher_with_image_preview.kv:16
+#: src/wacomponents/screens/cryptainer_storage_management.kv:30
+#: src/wacomponents/screens/imported_keystore_management.kv:21
+#: src/wacomponents/screens/recorder_homepage.kv:16
+msgid "Refresh"
+msgstr "Rafraîchir"
+
+#: src/wacomponents/screens/authenticator_management.kv:53
+#: src/wacomponents/screens/recorder_homepage.kv:16
 msgid "Language"
 msgstr "Langue"
 
@@ -280,7 +225,7 @@ msgid "Export"
 msgstr "Exporter"
 
 #: src/wacomponents/screens/authenticator_management.kv:111
-#: src/wacomponents/screens/authenticator_management.py:298
+#: src/wacomponents/screens/authenticator_management.py:339
 msgid "Check"
 msgstr "Vérifier"
 
@@ -288,37 +233,37 @@ msgstr "Vérifier"
 msgid "Destroy"
 msgstr "Détruire"
 
-#: src/wacomponents/screens/authenticator_management.py:177
+#: src/wacomponents/screens/authenticator_management.py:120
 #, python-brace-format
 msgid "Drive: {drive} ({label})"
 msgstr "Disque : {drive} ({label})"
 
-#: src/wacomponents/screens/authenticator_management.py:177
+#: src/wacomponents/screens/authenticator_management.py:120
 msgid "no name"
 msgstr "sans nom"
 
-#: src/wacomponents/screens/authenticator_management.py:178
+#: src/wacomponents/screens/authenticator_management.py:121
 #, python-brace-format
 msgid "Size: {size}, Filesystem: {filesystem}"
 msgstr "Taille : {size}, Format : {filesystem}"
 
-#: src/wacomponents/screens/authenticator_management.py:201
+#: src/wacomponents/screens/authenticator_management.py:185
 msgid "No valid location selected"
 msgstr "Aucun emplacement valide sélectionné"
 
-#: src/wacomponents/screens/authenticator_management.py:203
+#: src/wacomponents/screens/authenticator_management.py:187
 msgid "Authenticator not initialized"
 msgstr "Authentifieur non initialisé"
 
-#: src/wacomponents/screens/authenticator_management.py:205
+#: src/wacomponents/screens/authenticator_management.py:189
 msgid "Authenticator initialized"
 msgstr "Authentifieur initialisé"
 
-#: src/wacomponents/screens/authenticator_management.py:223
+#: src/wacomponents/screens/authenticator_management.py:206
 msgid "Please select an authenticator folder"
 msgstr "Veuillez sélectionner un dossier d'authentifieur"
 
-#: src/wacomponents/screens/authenticator_management.py:227
+#: src/wacomponents/screens/authenticator_management.py:210
 #, python-format
 msgid ""
 "Selected folder is invalid\n"
@@ -327,51 +272,78 @@ msgstr ""
 "Le dossier sélectionné est invalide\n"
 "Chemin : %s"
 
-#: src/wacomponents/screens/authenticator_management.py:231
+#: src/wacomponents/screens/authenticator_management.py:214
 #, python-format
 msgid "Path: %s"
 msgstr "Chemin : %s"
 
-#: src/wacomponents/screens/authenticator_management.py:245
+#: src/wacomponents/screens/authenticator_management.py:223
+#, python-format
+msgid "Invalid authenticator data in %s"
+msgstr "Données d'authentifieur invalides dans %s"
+
+#: src/wacomponents/screens/authenticator_management.py:235
 #, python-brace-format
 msgid ""
-"                Path: {authenticator_dir}\n"
-"                ID: {keystore_uid}\n"
-"                User: {keystore_owner}\n"
-"                Password hint: {keystore_passphrase_hint}\n"
-"            "
+"                    Path: {authenticator_dir}\n"
+"                    ID: {keystore_uid}\n"
+"                    User: {keystore_owner}\n"
+"                    Password hint: {keystore_passphrase_hint}\n"
+"                "
 msgstr ""
-"                Chemin : {authenticator_dir}\n"
-"                ID : {keystore_uid}\n"
-"                Utilisateur : {keystore_owner}\n"
-"                Indice de phrase secrète : {keystore_passphrase_hint}"
+"                    Chemin : {authenticator_dir}\n"
+"                    ID : {keystore_uid}\n"
+"                    Utilisateur : {keystore_owner}\n"
+"                    Indice de phrase secrète : {keystore_passphrase_hint}"
 
-#: src/wacomponents/screens/authenticator_management.py:260
-#: src/wacomponents/screens/authenticator_management.py:270
-#: src/wacomponents/screens/authenticator_management.py:294
-#: src/wacomponents/screens/container_store.py:222
-#: src/wacomponents/screens/container_store.py:302
+#: src/wacomponents/screens/authenticator_management.py:266
+msgid "Import successful"
+msgstr "Importation réussie"
+
+#: src/wacomponents/screens/authenticator_management.py:267
+#, python-format
+msgid ""
+"Authenticator archive unpacked from %s, its integrity has not been checked "
+"though."
+msgstr ""
+"L'archive d'authentifieur a été décompressée depuis %s, son intégrité n'a "
+"cependant pas été vérifiée."
+
+#: src/wacomponents/screens/authenticator_management.py:274
+#: src/wacomponents/screens/authenticator_management.py:307
+#: src/wacomponents/screens/authenticator_management.py:335
+#: src/wacomponents/screens/cryptainer_storage_management.py:222
+#: src/wacomponents/screens/cryptainer_storage_management.py:302
 msgid "Cancel"
 msgstr "Annuler"
 
-#: src/wacomponents/screens/authenticator_management.py:261
+#: src/wacomponents/screens/authenticator_management.py:275
 msgid "Export authenticator"
 msgstr "Exporter l'authentifieur"
 
-#: src/wacomponents/screens/authenticator_management.py:262
+#: src/wacomponents/screens/authenticator_management.py:276
 msgid "The exported archive should be kept in a secure place."
 msgstr "L'archive exportée doit être gardée en lieu sûr."
 
-#: src/wacomponents/screens/authenticator_management.py:264
-#: src/wacomponents/screens/authenticator_management.py:274
+#: src/wacomponents/screens/authenticator_management.py:278
+#: src/wacomponents/screens/authenticator_management.py:311
 msgid "Confirm"
 msgstr "Confirmer"
 
-#: src/wacomponents/screens/authenticator_management.py:271
+#: src/wacomponents/screens/authenticator_management.py:300
+msgid "Export successful"
+msgstr "Exportation réussie"
+
+#: src/wacomponents/screens/authenticator_management.py:301
+#, python-format
+msgid "Authenticator archive exported to %s"
+msgstr "L'archive de l'authentifieur a été exportée vers %s"
+
+#: src/wacomponents/screens/authenticator_management.py:308
 msgid "Destroy authenticator"
 msgstr "Détruire l'authentifieur"
 
-#: src/wacomponents/screens/authenticator_management.py:272
+#: src/wacomponents/screens/authenticator_management.py:309
 msgid ""
 "Beware, this might make encrypted data using these keys impossible to "
 "decrypt."
@@ -379,25 +351,25 @@ msgstr ""
 "Attention, cela peut rendre impossible le déchiffrement des données "
 "chiffrées utilisant ces clés."
 
-#: src/wacomponents/screens/authenticator_management.py:285
+#: src/wacomponents/screens/authenticator_management.py:326
 msgid "Deletion is over"
 msgstr "Destruction terminée"
 
-#: src/wacomponents/screens/authenticator_management.py:286
+#: src/wacomponents/screens/authenticator_management.py:327
 #, python-format
 msgid "All authentication data from folder %s has been removed."
 msgstr "Toutes les données d'authentifieur du dossier %s ont été supprimées."
 
-#: src/wacomponents/screens/authenticator_management.py:295
+#: src/wacomponents/screens/authenticator_management.py:336
 msgid "Sanity check"
 msgstr "Contrôle d'intégrité"
 
-#: src/wacomponents/screens/authenticator_management.py:318
+#: src/wacomponents/screens/authenticator_management.py:359
 #, python-format
 msgid "Keypairs successfully tested: %s"
 msgstr "Paires de clés testées avec succès : %s"
 
-#: src/wacomponents/screens/authenticator_management.py:323
+#: src/wacomponents/screens/authenticator_management.py:364
 #, python-brace-format
 msgid ""
 "Keypairs tested: {keypair_count}\n"
@@ -408,34 +380,12 @@ msgstr ""
 "Clés privées manquantes : {missing_private_keys}\n"
 "Mauvaise phrase secrète pour les clés :  {undecodable_private_keys}"
 
-#: src/wacomponents/screens/authenticator_management.py:329
+#: src/wacomponents/screens/authenticator_management.py:370
 #, python-format
 msgid "Checkup result: %s"
 msgstr "Résultat du contrôle : %s"
 
-#: src/wacomponents/screens/authenticator_management.py:375
-msgid "Export successful"
-msgstr "Exportation réussie"
-
-#: src/wacomponents/screens/authenticator_management.py:376
-#, python-format
-msgid "Authenticator archive exported to %s"
-msgstr "L'archive de l'authentifieur a été exportée vers %s"
-
-#: src/wacomponents/screens/authenticator_management.py:389
-msgid "Import successful"
-msgstr "Importation réussie"
-
-#: src/wacomponents/screens/authenticator_management.py:390
-#, python-format
-msgid ""
-"Authenticator archive unpacked from %s, its integrity has not been checked "
-"though."
-msgstr ""
-"L'archive d'authentifieur a été décompressée depuis %s, son intégrité n'a "
-"cependant pas été vérifiée."
-
-#: src/wacomponents/screens/authenticator_management.py:396
+#: src/wacomponents/screens/authenticator_management.py:402
 msgid ""
 "        On this page, you can manage your authenticators, which are actually "
 "digital keychains identified by unique IDs.\n"
@@ -477,60 +427,132 @@ msgstr ""
 "que tiers de confiance risquent de ne plus pouvoir être déchiffrés (à moins "
 "qu'ils n'aient utilisé un secret partagé avec d'autres tiers de confiance)."
 
-#: src/wacomponents/screens/authenticator_management.py:408
+#: src/wacomponents/screens/authenticator_management.py:414
 msgid "Authenticator management page"
 msgstr "Page de gestion des authentifieurs"
 
-#: src/wacomponents/screens/container_store.kv:28
+#: src/wacomponents/screens/cryptainer_storage_management.kv:28
 msgid "Containers"
 msgstr "Conteneurs"
 
-#: src/wacomponents/screens/container_store.kv:35
-msgid "View and manage encrypted containers"
+#: src/wacomponents/screens/cryptainer_storage_management.kv:30
+#: src/wacomponents/screens/imported_keystore_management.kv:21
+msgid "Back to home"
+msgstr "Retour"
+
+#: src/wacomponents/screens/cryptainer_storage_management.kv:35
+msgid "View and manage encrypted cryptainers"
 msgstr "Voir et gérer les conteneurs chiffrés"
 
-#: src/wacomponents/screens/container_store.kv:54
+#: src/wacomponents/screens/cryptainer_storage_management.kv:48
+#: src/wacomponents/screens/imported_keystore_management.kv:46
+msgid "Delete"
+msgstr "Supprimer"
+
+#: src/wacomponents/screens/cryptainer_storage_management.kv:54
 msgid "Decrypt"
 msgstr "Déchiffrer"
 
-#: src/wacomponents/screens/container_store.py:75
+#: src/wacomponents/screens/cryptainer_storage_management.py:75
 msgid "Container storage is invalid"
 msgstr "Le dépôt de conteneurs est invalide"
 
-#: src/wacomponents/screens/container_store.py:83
+#: src/wacomponents/screens/cryptainer_storage_management.py:83
 msgid "No containers found"
 msgstr "Aucun conteneur trouvé"
 
-#: src/wacomponents/screens/container_store.py:94
+#: src/wacomponents/screens/cryptainer_storage_management.py:94
 #, python-brace-format
-msgid "N° {index}: {container_name}"
-msgstr "N° {index}: {container_name}"
+msgid "N° {index}: {cryptainer_name}"
+msgstr "N° {index}: {cryptainer_name}"
 
-#: src/wacomponents/screens/container_store.py:178
+#: src/wacomponents/screens/cryptainer_storage_management.py:178
 msgid "Key Guardians used:"
 msgstr "Gardiens des Clés utilisés :"
 
-#: src/wacomponents/screens/container_store.py:223
+#: src/wacomponents/screens/cryptainer_storage_management.py:184
+#: src/wacomponents/screens/imported_keystore_management.py:305
+#: src/wacomponents/widgets/popups.py:50
+msgid "Close"
+msgstr "Fermer"
+
+#: src/wacomponents/screens/cryptainer_storage_management.py:223
 msgid "Container deletion confirmation"
 msgstr "Confirmation de suppression de conteneur"
 
-#: src/wacomponents/screens/container_store.py:303
+#: src/wacomponents/screens/cryptainer_storage_management.py:303
 msgid "Container decryption confirmation"
 msgstr "Confirmation de déchiffrement de conteneur"
 
-#: src/wacomponents/screens/launcher_with_image_preview.kv:14
+#: src/wacomponents/screens/imported_keystore_management.kv:18
+msgid "Key Guardians"
+msgstr "Gardiens des Clés"
+
+#: src/wacomponents/screens/imported_keystore_management.kv:26
+msgid "Please select the key guardians used to secure recordings"
+msgstr ""
+"Veuillez sélectionner les gardiens de clés utilisés pour sécuriser les "
+"enregistrements"
+
+#: src/wacomponents/screens/imported_keystore_management.kv:40
+msgid "Import from USB"
+msgstr "Import depuis USB"
+
+#: src/wacomponents/screens/imported_keystore_management.py:72
+msgid "No connected authentication devices found"
+msgstr "Aucun périphérique d'authentification trouvé"
+
+#: src/wacomponents/screens/imported_keystore_management.py:79
+msgid "No initialized authentication devices found"
+msgstr "Aucun périphérique d'authentification initialisé trouvé"
+
+#: src/wacomponents/screens/imported_keystore_management.py:104
+#, python-brace-format
+msgid ""
+"{imported_keystore_count} authenticators properly imported, "
+"{already_existing_keystore_count} already existing, "
+"{corrupted_keystore_count} skipped because corrupted"
+msgstr ""
+"{imported_keystore_count} authentifieurs importé(s) avec succès, "
+"{already_existing_keystore_count} déjà existant(s), "
+"{corrupted_keystore_count} ignoré(s) car corrompu(s)"
+
+#: src/wacomponents/screens/imported_keystore_management.py:187
+#, python-brace-format
+msgid "User {keystore_owner}, id {keystore_uid}"
+msgstr "Utilisateur {keystore_owner}, id {keystore_uid}"
+
+#: src/wacomponents/screens/imported_keystore_management.py:207
+msgid "Refreshed imported authenticators"
+msgstr "Authentifieurs importés rafraîchis"
+
+#: src/wacomponents/screens/imported_keystore_management.py:259
+msgid "No imported authentication device found"
+msgstr "Aucun périphérique d'authentification importé trouvé"
+
+#: src/wacomponents/screens/imported_keystore_management.py:292
+#, python-format
+msgid "Key n° %s, id %s, type: %s"
+msgstr "Clé n° %s, id %s, type : %s"
+
+#: src/wacomponents/screens/imported_keystore_management.py:306
+#, python-format
+msgid "Key Guardian %s"
+msgstr "Gardiens de Clé %s"
+
+#: src/wacomponents/screens/recorder_homepage.kv:14
 msgid "Control Recorder"
 msgstr "Contrôler Enregistreur"
 
-#: src/wacomponents/screens/launcher_with_image_preview.kv:16
+#: src/wacomponents/screens/recorder_homepage.kv:16
 msgid "Settings"
 msgstr "Paramètres"
 
-#: src/wacomponents/screens/launcher_with_image_preview.kv:20
+#: src/wacomponents/screens/recorder_homepage.kv:20
 msgid "Start Recording"
 msgstr "Lancer Enregistrement"
 
-#: src/wacomponents/screens/launcher_with_image_preview.kv:20
+#: src/wacomponents/screens/recorder_homepage.kv:20
 msgid "Stop Recording"
 msgstr "Arrêter Enregistrement"
 
@@ -541,9 +563,6 @@ msgstr "Erreur anormale détectée : %s"
 
 #~ msgid "N° %s: %s"
 #~ msgstr "N° %s: %s"
-
-#~ msgid "Key n°%s, User %s, Uid %s"
-#~ msgstr "Clé n°%s, Utilisateur %s, Uid %s"
 
 #, fuzzy
 #~ msgid "Please select authenticators to use for encryption"
