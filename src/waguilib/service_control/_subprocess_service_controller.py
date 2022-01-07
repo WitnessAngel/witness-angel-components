@@ -5,7 +5,7 @@ import sys
 
 from kivy.logger import Logger as logger
 
-from .base_service_controller import ServiceControllerBase
+from ._base_service_controller import ServiceControllerBase
 
 
 WA_SERVICE_SCRIPT = os.getenv("WA_SERVICE_SCRIPT")

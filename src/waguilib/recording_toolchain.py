@@ -14,14 +14,8 @@ from waguilib.importable_settings import IS_ANDROID
 #osc = OSCThreadServer(encoding="utf8")
 
 
-if IS_ANDROID:
-    # Due to bug in JNI, we must ensure some classes are found first from MAIN process thread!
-    from jnius import autoclass
 
-    autoclass("org.jnius.NativeInvocationHandler")
-
-
-# EXAMPLE IMPLEMENTATION
+# EXAMPLE IMPLEMENTATION - TO DELETE??
 def ___build_recording_toolchain(config, keystore_pool, cryptoconf):
     """Instantiate the whole toolchain of sensors and aggregators, depending on the config.
 

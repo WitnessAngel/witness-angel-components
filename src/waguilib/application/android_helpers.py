@@ -7,10 +7,13 @@ CHANNEL_ID = PACKAGE_NAME
 
 def preload_java_classes():
     """
-    Workaround so that pyjnius finds java classes even from secondary thread.
-    To be called from main process thread.
+    Workaround so that pyjnius/JNI finds java classes even from secondary thread.
+
+    Function to be called from main process thread!
     """
     from jnius import autoclass
+
+    autoclass("org.jnius.NativeInvocationHandler")
     autoclass('android.graphics.BitmapFactory')
     autoclass("{}.R$drawable".format(PACKAGE_NAME))
     autoclass('android.content.Intent')
@@ -129,7 +132,7 @@ def display_notification(context, notification):
     notification_service.notify(0, notification)
 
 
-def patch_ctypes_module():
+def patch_ctypes_module_for_android():
     """ctypes.pythonapi fails on Android due to wrong ctypes.PyDLL(None) setup"""
     import ctypes, sys
     ctypes.pythonapi = ctypes.PyDLL("libpython%d.%d.so" % sys.version_info[:2])

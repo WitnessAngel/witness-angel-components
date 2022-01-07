@@ -23,7 +23,7 @@ from kivy.uix.settings import SettingsWithSpinner
 from oscpy.server import ServerClass
 from waguilib.service_control import ServiceController
 from waguilib.logging.handlers import CallbackHandler, safe_catch_unhandled_exception
-from waguilib.service_control.osc_transport import get_osc_server
+from waguilib.service_control import get_osc_server
 from waguilib.i18n import tr
 
 

@@ -10,7 +10,7 @@ from waguilib.importable_settings import IS_ANDROID, WIP_RECORDING_MARKER, CONTE
 from waguilib.recording_toolchain import start_recording_toolchain, stop_recording_toolchain
 from waguilib.utilities import InterruptableEvent
 from waguilib.logging.handlers import CallbackHandler, safe_catch_unhandled_exception
-from waguilib.service_control.osc_transport import get_osc_server, get_osc_client
+from waguilib.service_control import get_osc_server, get_osc_client
 
 # os.environ["KIVY_NO_CONSOLELOG"] = "1"  # IMPORTANT
 
@@ -25,7 +25,7 @@ logger = logging.getLogger()  # FIXME take a particular logger here!!
 
 
 if IS_ANDROID:
-    from waguilib.android_helpers import preload_java_classes
+    from waguilib.application.android_helpers import preload_java_classes
     preload_java_classes()
 
 
@@ -159,7 +159,7 @@ class WaRecorderService(WaRuntimeSupportMixin):
             logger.info("Offloaded recording started")
 
             if IS_ANDROID:
-                from waguilib.android_helpers import build_notification_channel, build_notification
+                from waguilib.application.android_helpers import build_notification_channel, build_notification
                 build_notification_channel(CONTEXT, "Witness Angel Service")
                 notification = build_notification(CONTEXT, title="Sensors are active",
                                                   message="Click to manage Witness Angel state",

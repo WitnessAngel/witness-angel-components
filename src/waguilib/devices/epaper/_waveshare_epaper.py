@@ -1,6 +1,6 @@
 
 from pathlib import Path
-from waguilib.epaper._epaper_base import EpaperStatusDisplayBase
+from waguilib.devices.epaper._epaper_base import EpaperStatusDisplayBase
 from waveshare_epd import epd2in7
 
 

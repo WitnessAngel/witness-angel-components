@@ -16,9 +16,9 @@ def _presetup_app_environment(setup_kivy):
 
     try:
         from waguilib.importable_settings import IS_ANDROID
-        from waguilib.android_helpers import patch_ctypes_module
+        from waguilib.application.android_helpers import patch_ctypes_module_for_android
         if IS_ANDROID:
-            patch_ctypes_module()  # Necessary for wacryptolib
+            patch_ctypes_module_for_android()  # Necessary for wacryptolib
 
     except Exception as exc:
         print(">>>>>>>> FAILED CTYPES PATCHING ON ANDROID: %r" % exc)
@@ -85,7 +85,7 @@ def _presetup_app_environment(setup_kivy):
                 Window.raise_window()
             Window.bind(on_cursor_enter=force_window_focus)
 
-            from waguilib.widgets.layout_helpers import load_layout_helper_widgets
+            from waguilib.widgets.layout_components import load_layout_helper_widgets
             load_layout_helper_widgets()
 
     except Exception as exc:

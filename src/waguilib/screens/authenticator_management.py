@@ -15,7 +15,7 @@ from kivymd.uix.list import IconLeftWidget
 from kivymd.uix.screen import Screen
 from kivy.logger import Logger as logger
 
-from waguilib.widgets.layout_helpers import LanguageSwitcherScreenMixin
+from waguilib.widgets.layout_components import LanguageSwitcherScreenMixin
 from waguilib.widgets.popups import dialog_with_close_button, register_current_dialog, close_current_dialog, \
     help_text_popup
 from wacryptolib.authdevice import list_available_authdevices

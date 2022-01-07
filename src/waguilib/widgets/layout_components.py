@@ -5,6 +5,7 @@ from kivy.lang import Builder
 from kivymd.uix.menu import MDDropdownMenu
 from waguilib.i18n import tr
 
+
 def activate_widget_debug_outline():
     """Create a dotted outline around widgets, to help layout setup."""
     widget_outline_hack = textwrap.dedent("""
@@ -20,7 +21,7 @@ def activate_widget_debug_outline():
 
 
 def load_layout_helper_widgets():
-    Builder.load_file(str(Path(__file__).parent / 'layout_helpers.kv'))  # TODO use "with_name"
+    Builder.load_file(str(Path(__file__).parent / 'layout_components.kv'))  # TODO use "with_name"
 
 # FIXME use or remove?
 #<ConsoleOutput>:

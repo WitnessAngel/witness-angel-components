@@ -25,7 +25,7 @@ class CallbackHandler(Handler):
 
 
 @decorator
-def safe_catch_unhandled_exception(f, *args, **kwargs):
+def safe_catch_unhandled_exception(f, *args, **kwargs):  # FIXME move to utilities??
     try:
         return f(*args, **kwargs)
     except Exception as exc:

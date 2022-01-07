@@ -25,7 +25,7 @@ from waguilib.importable_settings import EXTERNAL_EXPORTS_DIR
 from waguilib.logging.handlers import safe_catch_unhandled_exception
 
 from wacryptolib.cryptainer import gather_trustee_dependencies
-from waguilib.widgets.layout_helpers import LanguageSwitcherScreenMixin
+from waguilib.widgets.layout_components import LanguageSwitcherScreenMixin
 
 Builder.load_file(str(Path(__file__).parent / 'recorder_homepage.kv'))
 
