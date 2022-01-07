@@ -84,8 +84,8 @@ msgid "Back to home"
 msgstr "Retour"
 
 #: src/waguilib/screens/authdevice_store.kv:26
-msgid "Please select the key guardians to be used to secure recordings"
-msgstr "Veuillez sélectionner les gardiens de clés à utiliser pour sécuriser les enregistrements"
+msgid "Please select the key guardians used to secure recordings"
+msgstr "Veuillez sélectionner les gardiens de clés utilisés pour sécuriser les enregistrements"
 
 #: src/waguilib/screens/authdevice_store.kv:40
 msgid "Import from USB"
