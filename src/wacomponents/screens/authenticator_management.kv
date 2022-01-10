@@ -117,3 +117,9 @@
                     text: tr._("Destroy")
                     on_press: root.show_authenticator_destroy_confirmation_dialog()
                     size_hint_x: 1  # HACK
+
+                WAOperationButton:
+                    icon: "share-all"
+                    text: tr._("Synchronize")
+                    size_hint_x: 1
+                    on_press: root.manager.current = "authenticator_synchronization_screen"
