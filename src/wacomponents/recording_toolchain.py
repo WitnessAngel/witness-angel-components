@@ -5,7 +5,7 @@ from kivy.logger import Logger as logger
 from wacryptolib.cryptainer import CryptainerStorage
 from wacryptolib.keystore import get_free_keypair_generator_worker
 from wacryptolib.sensor import (
-    TarfileRecordsAggregator,
+    TarfileRecordAggregator,
     JsonDataAggregator,
     SensorManager,
 )
@@ -79,7 +79,7 @@ def ___build_recording_toolchain(config, keystore_pool, cryptoconf):
 
     # Tarfile builder level
 
-    tarfile_aggregator = TarfileRecordsAggregator(
+    tarfile_aggregator = TarfileRecordAggregator(
         cryptainer_storage=cryptainer_storage,
         max_duration_s=cryptainer_recording_duration_s,
     )

@@ -7,7 +7,7 @@ from datetime import timezone, datetime
 from pathlib import Path
 
 from wacryptolib.cryptainer import CRYPTAINER_DATETIME_FORMAT
-from wacryptolib.sensor import TarfileRecordsAggregator
+from wacryptolib.sensor import TarfileRecordAggregator
 from wacryptolib.utilities import PeriodicTaskHandler, synchronized
 
 
@@ -40,7 +40,7 @@ class PeriodicStreamPusher__old(PeriodicTaskHandler):
 
     def __init__(self,
                  interval_s: float,
-                 tarfile_aggregator: TarfileRecordsAggregator):
+                 tarfile_aggregator: TarfileRecordAggregator):
         super().__init__(interval_s=interval_s, runonstart=False)
         self._tarfile_aggregator = tarfile_aggregator
         assert self.sensor_name, self.sensor_name

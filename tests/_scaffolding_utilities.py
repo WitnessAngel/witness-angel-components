@@ -5,7 +5,7 @@ import time
 from ffprobe import FFProbe
 
 from wacryptolib.cryptainer import CryptainerStorage
-from wacryptolib.sensor import TarfileRecordsAggregator
+from wacryptolib.sensor import TarfileRecordAggregator
 from wacomponents.sensors.camera.rtsp_stream import PeriodicStreamPusher
 
 
@@ -27,16 +27,16 @@ class FakeTestCryptainerStorage(CryptainerStorage):
 
 
 # FIXME REMOVE THIS USELESS
-class FakeTarfileRecordsAggregator(TarfileRecordsAggregator):  # USELESS ????
+class FakeTarfileRecordAggregator(TarfileRecordAggregator):  # USELESS ????
     def __init__(self):
         self._test_records = []
 
     def add_record(self, **kwargs):
-        print("FakeTarfileRecordsAggregator->add_record()")
+        print("FakeTarfileRecordAggregator->add_record()")
         self._test_records.append(kwargs)
 
     def finalize_tarfile(self):
-        print("FakeTarfileRecordsAggregator->finalize_tarfile()")
+        print("FakeTarfileRecordAggregator->finalize_tarfile()")
         self._test_records = []
 
 
@@ -52,7 +52,7 @@ def check_periodic_stream_pusher_basic_behaviour(sensor_class: PeriodicStreamPus
     )
     """
 
-    tarfile_aggregator = FakeTarfileRecordsAggregator()  #container_storage=container_storage, max_duration_s=100)
+    tarfile_aggregator = FakeTarfileRecordAggregator()  #container_storage=container_storage, max_duration_s=100)
 
     sensor = sensor_class(interval_s=recording_interval_s, tarfile_aggregator=tarfile_aggregator)
 
