@@ -1,5 +1,3 @@
-import pprint
-import uuid
 from concurrent.futures.thread import ThreadPoolExecutor
 from pathlib import Path
 from textwrap import dedent
@@ -7,23 +5,18 @@ from textwrap import dedent
 from functools import partial
 from uuid import UUID
 
-from Crypto.Random import get_random_bytes
-from kivy.animation import Animation
 from kivy.clock import Clock
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty, StringProperty
 from kivymd.app import MDApp
 from kivymd.uix.screen import Screen
-from wacryptolib.exceptions import ExistenceError, KeyDoesNotExist
+from wacryptolib.exceptions import ExistenceError
 from wacryptolib.jsonrpc_client import JsonRpcProxy, status_slugs_response_error_handler
+from wacryptolib.keystore import load_keystore_metadata, ReadonlyFilesystemKeystore
 
 from wacomponents.screens.authenticator_management import shorten_uid
 from wacomponents.widgets.popups import dialog_with_close_button, process_method_with_gui_spinner, register_current_dialog, \
     close_current_dialog, help_text_popup
-from wacryptolib.authenticator import initialize_authenticator, load_authenticator_metadata
-from wacryptolib.key_generation import generate_asymmetric_keypair
-from wacryptolib.key_storage import FilesystemKeyStorage
-from wacryptolib.utilities import generate_uuid0, load_from_json_file, get_metadata_file_path
 
 from wacomponents.i18n import tr
 
@@ -82,7 +75,7 @@ class AuthenticatorSynchronizationScreen(Screen):
         close_current_dialog()
         self.go_to_home_screen()
 
-    def _query_remote_athenticator_status(self, username: str, authenticator_secret: str):
+    def _query_remote_athenticator_status(self, keystore_uid: UUID):
         gateway = "http://127.0.0.1:8000"
 
         # try:
@@ -97,21 +90,20 @@ class AuthenticatorSynchronizationScreen(Screen):
         # raise AuthenticatorDoesNotExist("Authenticator does not exist".format(e))from e
 
         try:
-            public_authenticator = self.escrow_proxy.get_public_authenticator_view(username=username,
-                                                                                   authenticator_secret=authenticator_secret)
+            public_authenticator = self.escrow_proxy.get_public_authenticator_view(keystore_uid=keystore_uid)
             self.is_synchronized = None
             remote_metadata_status = {
-                'device_uid': public_authenticator['username'],
+                'keystore_owner': public_authenticator['keystore_owner'],
+                'keystore_uid': public_authenticator['keystore_uid'],
                 'public_keys': public_authenticator['public_keys'],
-                'user': public_authenticator['description']
             }
 
         except ExistenceError:
             self.is_synchronized = True
             remote_metadata_status = {
-                'device_uid': '',
-                'public_keys': '',
-                'user': ''
+                'keystore_owner': "",
+                'keystore_uid': "",
+                'public_keys': "",
             }
 
         return remote_metadata_status, self.is_synchronized
@@ -119,10 +111,10 @@ class AuthenticatorSynchronizationScreen(Screen):
     @staticmethod
     def _compare_local_and_remote_status(local_metadata_status, remote_metadata_status, is_synchronized) -> dict:
 
-        local_keys_tuple = [(public_key["keychain_uid"], public_key["key_type"]) for public_key in
+        local_keys_tuple = [(public_key["keychain_uid"], public_key["key_algo"]) for public_key in
                             local_metadata_status["public_keys"]]
 
-        remote_keys_tuple = [(public_key["keychain_uid"], public_key["key_type"]) for public_key in
+        remote_keys_tuple = [(public_key["keychain_uid"], public_key["key_algo"]) for public_key in
                              remote_metadata_status["public_keys"]]
 
         missing_public_keys_in_remote = set(local_keys_tuple) - set(remote_keys_tuple)
@@ -142,23 +134,20 @@ class AuthenticatorSynchronizationScreen(Screen):
 
         authenticator_path = self.selected_authenticator_dir
 
-        authenticator_metadata = load_authenticator_metadata(authenticator_path)
-        filesystem_key_storage = FilesystemKeyStorage(authenticator_path)
-        local_keys_status = filesystem_key_storage.list_keypair_identifiers()
+        authenticator_metadata = load_keystore_metadata(authenticator_path)
+        readonly_filesystem_keystorage = ReadonlyFilesystemKeystore(authenticator_path)
+        local_keys_status = readonly_filesystem_keystorage.list_keypair_identifiers()
+
         for x in local_keys_status:
             del x["private_key_present"]
 
         local_keys_and_authenticator_metadata_reformatted = {
-            'device_uid': authenticator_metadata["device_uid"],
-            'user': authenticator_metadata["user"],
+            'keystore_owner': authenticator_metadata["keystore_owner"],
+            'keystore_uid': authenticator_metadata["keystore_uid"],
             'public_keys': local_keys_status
         }
 
-        device_uid = str(authenticator_metadata["device_uid"])
-        secret_key_uuid = str(authenticator_metadata["secret_key_uuid"])
-
-        remote_metadata_status, self.is_synchronized = self._query_remote_athenticator_status(username=device_uid,
-                                                                                              authenticator_secret=secret_key_uuid)
+        remote_metadata_status, self.is_synchronized = self._query_remote_athenticator_status(keystore_uid=authenticator_metadata["keystore_uid"])
 
         self.report = self._compare_local_and_remote_status(local_keys_and_authenticator_metadata_reformatted,
                                                             remote_metadata_status, self.is_synchronized)
@@ -209,19 +198,18 @@ class AuthenticatorSynchronizationScreen(Screen):
         public_keys = []
         if self.report["missing_keys_in_remote"]:
             authenticator_path = self.selected_authenticator_dir
-            authenticator_metadata = load_authenticator_metadata(authenticator_path)
-            print(self.report)
+            authenticator_metadata = load_keystore_metadata(authenticator_path)
             for missing_key in self.report["missing_keys_in_remote"]:
                 public_keys.append({
                     "keychain_uid": missing_key[0],
-                    "key_type": missing_key[1],
-                    "payload": b"azertyuiopppp"
+                    "key_algo": missing_key[1],
+                    "payload": b"azertyuiopppp"  # TODO Review this function
                 })
 
-            self.escrow_proxy.set_public_authenticator_view(username=authenticator_metadata["device_uid"],
-                                                            description=authenticator_metadata["user"],
-                                                            authenticator_secret=authenticator_metadata[
-                                                                "secret_key_uuid"],
+            self.escrow_proxy.set_public_authenticator_view(keystore_owner=authenticator_metadata["keystore_owner"],
+                                                            keystore_uid=authenticator_metadata["keystore_uid"],
+                                                            keystore_secret=authenticator_metadata[
+                                                                "keystore_secret"],
                                                             public_keys=public_keys)
 
             self.refresh_status()
