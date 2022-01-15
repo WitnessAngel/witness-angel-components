@@ -441,7 +441,7 @@ msgid "Back to home"
 msgstr "Retour"
 
 #: src/wacomponents/screens/cryptainer_storage_management.kv:35
-msgid "View and manage encrypted cryptainers"
+msgid "View and manage encrypted containers"
 msgstr "Voir et gérer les conteneurs chiffrés"
 
 #: src/wacomponents/screens/cryptainer_storage_management.kv:48

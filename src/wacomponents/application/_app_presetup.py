@@ -15,6 +15,7 @@ def _presetup_app_environment(setup_kivy):
         print(">>>>>>>> FAILED INITIALIZATION OF TYPEGUARD: %r" % exc)
 
     try:
+
         from wacomponents.default_settings import IS_ANDROID
         from wacomponents.application.android_helpers import patch_ctypes_module_for_android
         if IS_ANDROID:
@@ -22,6 +23,15 @@ def _presetup_app_environment(setup_kivy):
 
     except Exception as exc:
         print(">>>>>>>> FAILED CTYPES PATCHING ON ANDROID: %r" % exc)
+
+    try:
+
+        # Add paths to image/font/sound assets, for e-paper too!
+        from wacomponents.assets import register_common_resources
+        register_common_resources()
+
+    except Exception as exc:
+        print(">>>>>>>> FAILED REGISTERING COMMON RESOURCES: %r" % exc)
 
     if not setup_kivy:
         return  # Cancel the rest of setups
@@ -54,11 +64,7 @@ def _presetup_app_environment(setup_kivy):
 
     try:
 
-        # SETUP THE APP WINDOW AND ITS ASSETS/HELPERS
-
-        # Add paths to image/font/sound assets
-        from wacomponents.assets import register_common_resources
-        register_common_resources()
+        # SETUP THE APP WINDOW AND ITS HELPERS
 
         from wacomponents.default_settings import WACLIENT_TYPE, IS_ANDROID
 

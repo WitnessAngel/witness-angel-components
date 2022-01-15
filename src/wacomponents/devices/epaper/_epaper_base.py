@@ -70,6 +70,7 @@ class EpaperStatusDisplayBase:
         text_offset_y = text_offset_y if text_offset_y is not None else self.TEXT_OFFSET_Y
         #source_image_path = source_image_path or str(THIS_DIR / "preview.png")
         font_file_path = font_file_path or resource_find("fonts/epaper_font.ttc")
+        assert font_file_path, font_file_path
 
         thumbnail_image_path = preview_image_path + ".thumb.jpg"
         try:
