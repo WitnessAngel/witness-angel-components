@@ -52,4 +52,5 @@
                     id: cryptainer_decrypt_btn
                     icon: "eye-circle-outline"
                     text: tr._("Decrypt")
-                    on_press: root.open_cryptainer_decryption_dialog()
+                    # on_press: root.open_cryptainer_decryption_dialog()
+                    on_press: root.manager.current = "CryptainerDecryption"

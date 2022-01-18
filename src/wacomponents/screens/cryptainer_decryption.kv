@@ -1,0 +1,59 @@
+#:import tr wacomponents.i18n.tr
+#:import strip_external_app_root_prefix wacomponents.default_settings.strip_external_app_root_prefix
+
+<CheckPassphraseContent@MDBoxLayout>
+    orientation: "vertical"
+    spacing: "12dp"
+    size_hint_y: None
+    height: "90dp"
+
+    MDLabel:
+        text: tr._("Enter the passphrase to decrypt the selected containers:")
+
+    MDTextField:
+        id: passphrase
+        hint_text: tr._("Passphrase")
+
+
+
+<CryptainerDecryptionScreen>:
+
+    on_pre_enter:
+        # Lazy-init hack to workaround Clock iteration troubles
+        container_delete_btn.size_hint_x = 0.5
+        container_decrypt_btn.size_hint_x = 0.5
+        root.get_container_summary()
+
+    WAMainVerticalScrollView:
+
+        WAVerticalPanel:
+
+            WAToolbar:
+                title: "Witness Angel"
+                left_action_items: [["arrow-left", lambda x: root.go_to_previous_screen(), tr._("Back")]]
+                right_action_items: [["refresh", lambda x: root.get_container_summary(), tr._("Refresh")], ["home", lambda x: app.get_back_to_home_screen(), tr._("Back to home")],]
+
+            WAElevatedBoxLayout:
+
+                MDLabel:
+                    text: tr._("Container decryption page")
+                    padding_x: "10dp"
+
+            WAVerticalScrollView:
+                MDList:
+                    id: selected_cryptainer_table
+
+            WAButtonsGridLayout:
+                padding: [10, 10]
+
+                WAOperationButton:
+                    id: container_delete_btn
+                    icon: "delete-alert-outline"
+                    text: tr._("Add a passphrase")
+                    on_press: root.open_dialog_check_passphrase()
+
+                WAOperationButton:
+                    id: container_decrypt_btn
+                    icon: "eye-circle-outline"
+                    text: tr._("Decrypt")
+                    # on_press: root.open_dialog_decipher_container()
