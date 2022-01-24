@@ -50,6 +50,10 @@ class WaRecorderGui(WaGenericGui):  # FIXME WaGui instead?
         osc_starter_callback()  # Opens server port
         #print("FINISHED INIT OF WitnessAngelClientApp")
 
+    def close_settings(self, *args, **kwargs):
+        super().close_settings(*args, **kwargs)
+        display_info_toast(tr._("Some configuration changes might only apply at next recording restart"))
+
     # APP LIFECYCLE AND RECORDING STATE #
 
     def _update_app_after_config_change(self):

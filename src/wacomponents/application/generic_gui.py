@@ -67,9 +67,8 @@ class WaGenericGui(WaRuntimeSupportMixin, MDApp):
         )
 
     def close_settings(self, *args, **kwargs):
+        # Hook in case of need
         super().close_settings(*args, **kwargs)
-        # FIXME - track if some settings have been modified or not?
-        display_info_toast(tr._("Some configuration changes only apply at next recording restart"))
 
     def save_config(self):
         """Dump current config to local INI file."""

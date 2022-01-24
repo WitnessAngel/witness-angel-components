@@ -66,7 +66,7 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
 
     selected_authenticator_dir = ObjectProperty(None, allownone=True) # Path of selected authenticator entry
 
-    _selected_custom_folder_path = ObjectProperty(None, allownone=True)  # Custom folder selected for FolderKeyStoreListItem entry
+    selected_custom_folder_path = ObjectProperty(None, allownone=True)  # Custom folder selected for FolderKeyStoreListItem entry
 
     authenticator_status = ObjectProperty(None, allownone=True)
 
@@ -106,8 +106,8 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         authenticator_list_entries.append((profile_authenticator_widget, dict(authenticator_type=AuthenticatorType.USER_PROFILE)))
 
         folder_authenticator_widget = Factory.FolderKeyStoreListItem()
-        folder_authenticator_widget.selected_path = self._selected_custom_folder_path
-        self.bind(_selected_custom_folder_path = folder_authenticator_widget.setter('selected_path'))
+        folder_authenticator_widget.selected_path = self.selected_custom_folder_path
+        self.bind(selected_custom_folder_path = folder_authenticator_widget.setter('selected_path'))
         folder_authenticator_widget.ids.open_folder_btn.bind(on_press=self.folder_chooser_open)  #
         authenticator_list_entries.append((folder_authenticator_widget, dict(authenticator_type=AuthenticatorType.CUSTOM_FOLDER)))
 
@@ -136,14 +136,14 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         if authenticator_type == AuthenticatorType.USER_PROFILE:
             authenticator_dir = INTERNAL_AUTHENTICATOR_DIR
         elif authenticator_type == AuthenticatorType.CUSTOM_FOLDER:
-            authenticator_dir = self._selected_custom_folder_path
+            authenticator_dir = self.selected_custom_folder_path
         else:
             assert authenticator_type == AuthenticatorType.USB_DEVICE
             authenticator_dir = authenticator_metadata["authenticator_dir"]
         return authenticator_dir
 
     def _folder_chooser_select_path(self, path, *args):
-        self._selected_custom_folder_path = Path(path)
+        self.selected_custom_folder_path = Path(path)
         authenticator_widget = self.ids.authenticator_list.children[-2]  # AUTOSELECT "custom folder" item
         authenticator_widget._onrelease_callback(authenticator_widget)
 
@@ -151,7 +151,7 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         if not request_external_storage_dirs_access():
             return
         file_manager_path = EXTERNAL_APP_ROOT
-        previously_selected_custom_folder_path = self._selected_custom_folder_path
+        previously_selected_custom_folder_path = self.selected_custom_folder_path
         if previously_selected_custom_folder_path and previously_selected_custom_folder_path.is_dir():
             file_manager_path = previously_selected_custom_folder_path
         self._folder_chooser.show(str(file_manager_path))  # Soon use .show_disks!!

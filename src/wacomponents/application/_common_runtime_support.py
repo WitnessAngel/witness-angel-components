@@ -14,7 +14,7 @@ class WaRuntimeSupportMixin:
     checkup_status_text = None
 
     #: The actual basename of local configuration file, to be overridden
-    _config_file_basename = None
+    config_file_basename = None
 
     def _get_class_package_path(self):
         """Guess the Path of the folder where the object's real (sub)class is defined"""
@@ -33,7 +33,7 @@ class WaRuntimeSupportMixin:
     @property
     def config_file_path(self) -> Path:
         """"Return the actual, runtime configuration file."""
-        return INTERNAL_APP_ROOT / self._config_file_basename  # Might no exist yet
+        return INTERNAL_APP_ROOT / self.config_file_basename  # Might no exist yet
 
     @property
     def internal_keys_dir(self) -> str:  # FIXME switch to Path!
