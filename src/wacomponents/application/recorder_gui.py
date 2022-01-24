@@ -36,23 +36,10 @@ class WaRecorderGui(WaGenericGui):  # FIXME WaGui instead?
     Main GUI app, which controls the recording service (via OSC protocol), and
     exposes settings as well as existing containers.
     """
-
-    # CLASS VARIABLES TO BE OVERRIDEN #
-    title: str = None
-    title_conf_panel: str = None
-
-    #app_config_file: str = None
-    #default_config_template: str = None
-    #default_config_schema: str = None
-
-    dialog = None  # Any current modal dialog must be stored here
-
     service_querying_interval = 1  # To check when service is ready, at app start
-    use_kivy_settings = False  # No need
-
-    settings_cls = SettingsWithSpinner
 
     # Overridden as property to allow event dispatching in GUI
+    assert hasattr(WaGenericGui, "checkup_status_text")
     checkup_status_text = StringProperty("")
 
     def __init__(self, **kwargs):
@@ -62,49 +49,6 @@ class WaRecorderGui(WaGenericGui):  # FIXME WaGui instead?
         #print("AFTER PARENT INIT OF WitnessAngelClientApp")
         osc_starter_callback()  # Opens server port
         #print("FINISHED INIT OF WitnessAngelClientApp")
-
-    # SETTINGS BUILDING AND SAVING #
-
-    def load_config(self):
-        # Hook here if needed
-        ##Path(self.get_application_config()).touch(exist_ok=True)  # For initial creation
-        config = super().load_config()
-        return config  # Might have unsaved new DEFAULTS in it, which will be saved on any setting update
-
-    def build_config(self, config):
-        """Populate config with default values, before the loading of user preferences."""
-        assert self.config_template_path.exists(), self.config_template_path
-        #print(">>>>>>>>>>>>>>READING config_template_path"),
-        config.read(str(self.config_template_path))
-        '''
-        config.filename = self.get_application_config()
-        if not os.path.exists(config.filename):
-            config.write()  # Initial user preferences file
-            '''
-
-    def build_settings(self, settings):
-        """Read the user settings schema and create a panel from it."""
-        settings_file = self.config_schema_path
-        settings.add_json_panel(
-            title=self.title_conf_panel, config=self.config, filename=settings_file
-        )
-
-    def close_settings(self, *args, **kwargs):
-        super().close_settings(*args, **kwargs)
-        # FIXME - track if some settings have been modified or not?
-        display_info_toast(tr._("Some configuration changes only apply at next recording restart"))
-
-    def save_config(self):
-        """Dump current config to local INI file."""
-        assert self.config.filename, self.config.filename
-        #print(">>>>>>>>>>>>>>WRITING save_config", self.config_file_path),
-        self.config.filename = self.config_file_path
-        self.config.write()
-
-    def get_application_config(self, *args, **kwargs):
-        # IMPORTANT override of Kivy method #
-        #print(">>>>>>>>>>>>>>READING get_application_config"),
-        return str(self.config_file_path)
 
     # APP LIFECYCLE AND RECORDING STATE #
 
@@ -119,20 +63,6 @@ class WaRecorderGui(WaGenericGui):  # FIXME WaGui instead?
             recording_btn.state = "down" if pushed else "normal"
         if disabled is not None:
             recording_btn.disabled = disabled
-
-    def on_pause(self):
-        """Enables the user to switch to another application, causing the app to wait
-        until the user switches back to it eventually.
-        """
-        #print(">>>>>>>>>>>>>>>>>>>>>>>>>>> ON PAUSE HOOK WAS CALLED")
-        return True  # ACCEPT pausing
-
-    def on_resume(self):
-        """Called when the app is resumed. Used to restore data that has been
-        stored in on_pause().
-        """
-        #print(">>>>>>>>>>>>>>>>>>>>>>>>>>> ON RESUME HOOK WAS CALLED")
-        pass
 
     def on_start(self):
         """Event handler for the `on_start` event which is fired after
@@ -220,17 +150,3 @@ class WaRecorderGui(WaGenericGui):  # FIXME WaGui instead?
     def log_output(self, msg, *args, **kwargs):  # OVERRIDE THIS TO DISPLAY OUTPUT
         pass  # Do nothing by default
 
-    # MISC UTILITIES #
-
-    def _schedule_once(self, callable, *args, **kwargs):
-        """Schedule a task for single launch on main GUI thread."""
-        callback = functools.partial(callable, *args, **kwargs)
-        Clock.schedule_once(callback)
-
-    @staticmethod
-    def get_nice_size(size):
-        for unit in filesize_units:
-            if size < 1024.0:
-                return "%1.0f %s" % (size, unit)
-            size /= 1024.0
-        return size

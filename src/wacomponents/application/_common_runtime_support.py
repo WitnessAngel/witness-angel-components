@@ -1,8 +1,6 @@
 import inspect
 from pathlib import Path
 
-from kivy.properties import StringProperty
-
 from wacomponents.default_settings import INTERNAL_APP_ROOT, INTERNAL_CRYPTAINER_DIR, INTERNAL_KEYSTORE_POOL_DIR, \
     INTERNAL_LOGS_DIR
 from wacomponents.i18n import tr

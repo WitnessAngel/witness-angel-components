@@ -2,6 +2,7 @@ import threading
 from datetime import datetime
 from pathlib import Path
 
+from kivy.uix.filechooser import filesize_units
 
 ASSETS_PATH = Path(__file__).parents[1].joinpath("assets")
 
@@ -73,3 +74,11 @@ def convert_bytes_to_human_representation(size):
 
 def shorten_uid(uid):
    return "..." + str(uid).split("-")[-1]
+
+
+def get_nice_size(size):
+   for unit in filesize_units:
+       if size < 1024.0:
+           return "%1.0f %s" % (size, unit)
+       size /= 1024.0
+   return size
