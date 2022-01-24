@@ -342,6 +342,13 @@ class CryptainerStoreScreen(Screen):
             duration=5,
         ).open()
 
+    def _launch_cryptainer_decryption(self):
+        cryptainer_decryption_screen = self.manager.get_screen("CryptainerDecryption")
+        selected_cryptainer_names = self._get_selected_cryptainer_names()
+        print(">>>>>> selected_cryptainer_names in _launch_cryptainer_decryption()", selected_cryptainer_names)
+        cryptainer_decryption_screen.selected_cryptainer_names = selected_cryptainer_names
+        self.manager.current = "CryptainerDecryption"
+
     @safe_catch_unhandled_exception
     def __UNUSED_offloaded_attempt_cryptainer_decryption(self, cryptainer_filepath):  #FIXME move out of here
         logger.info("Decryption requested for container %s", cryptainer_filepath)
@@ -365,6 +372,8 @@ class CryptainerStoreScreen(Screen):
             "Container content was successfully decrypted into folder %s",
             target_directory,
         )
+
+
 
     ##@osc.address_method("/attempt_cryptainer_decryption")
     @safe_catch_unhandled_exception

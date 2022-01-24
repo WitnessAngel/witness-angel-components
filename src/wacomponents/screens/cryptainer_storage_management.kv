@@ -38,7 +38,6 @@
             WAVerticalScrollView:
                 MDList:
                     id: cryptainer_table
-
             WAButtonsGridLayout:
                 padding: [10, 10]
 
@@ -51,6 +50,7 @@
                 WAOperationButton:
                     id: cryptainer_decrypt_btn
                     icon: "eye-circle-outline"
-                    text: tr._("Decrypt")
+                    text: tr._("Decryption process")
                     # on_press: root.open_cryptainer_decryption_dialog()
-                    on_press: root.manager.current = "CryptainerDecryption"
+                    on_press: root._launch_cryptainer_decryption()
+

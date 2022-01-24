@@ -23,6 +23,7 @@
         container_delete_btn.size_hint_x = 0.5
         container_decrypt_btn.size_hint_x = 0.5
         root.get_container_summary()
+        root.get_cryptainer_trustee_dependency_status()
 
     WAMainVerticalScrollView:
 
@@ -40,8 +41,27 @@
                     padding_x: "10dp"
 
             WAVerticalScrollView:
+                size_hint_y: 0.5
                 MDList:
                     id: selected_cryptainer_table
+
+            WAElevatedBoxLayout:
+                md_bg_color: app.theme_cls.bg_normal
+
+                MDIcon:
+                    icon: "information-outline"
+                    halign: "center"
+                    width: dp(80)
+                    size_hint_x: None
+
+                MDLabel:
+                    text: "SUMMARY OF TRUSTEE DEPENDENCIES"
+
+            WAVerticalScrollView:
+
+                MDList:
+                    padding: [10, 10]
+                    id: information_text
 
             WAButtonsGridLayout:
                 padding: [10, 10]

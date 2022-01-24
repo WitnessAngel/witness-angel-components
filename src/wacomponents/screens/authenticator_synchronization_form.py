@@ -198,12 +198,13 @@ class AuthenticatorSynchronizationScreen(Screen):
         public_keys = []
         if self.report["missing_keys_in_remote"]:
             authenticator_path = self.selected_authenticator_dir
+            readonly_filesystem_keystorage = ReadonlyFilesystemKeystore(authenticator_path)
             authenticator_metadata = load_keystore_metadata(authenticator_path)
             for missing_key in self.report["missing_keys_in_remote"]:
                 public_keys.append({
                     "keychain_uid": missing_key[0],
                     "key_algo": missing_key[1],
-                    "payload": b"azertyuiopppp"  # TODO Review this function
+                    "payload":readonly_filesystem_keystorage.get_public_key(keychain_uid= missing_key[0], key_algo= missing_key[1])
                 })
 
             self.escrow_proxy.set_public_authenticator_view(keystore_owner=authenticator_metadata["keystore_owner"],

@@ -1,26 +1,31 @@
 from pathlib import Path
 from pprint import pprint
+from textwrap import dedent
 
 from kivy.lang import Builder
-from kivy.uix.screenmanager import Screen
+from kivymd.uix.screen import Screen
 from kivymd.app import MDApp
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.snackbar import Snackbar
-from wacryptolib.cryptainer import gather_trustee_dependencies, request_decryption_authorizations, _get_trustee_id
+from wacryptolib.cryptainer import gather_trustee_dependencies, request_decryption_authorizations, _get_trustee_id, \
+    CRYPTAINER_TRUSTEE_TYPES
 from kivy.properties import StringProperty, ListProperty, ObjectProperty
 from wacryptolib.exceptions import KeystoreDoesNotExist, KeyDoesNotExist, KeyLoadingError
 from wacryptolib.keygen import load_asymmetric_key_from_pem_bytestring
-from wacryptolib.keystore import FilesystemKeystore
+from wacryptolib.keystore import FilesystemKeystore, load_keystore_metadata
 
 from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
 from kivy.factory import Factory
+
+from wacomponents.utilities import shorten_uid
 from wacomponents.widgets.popups import dialog_with_close_button, close_current_dialog
 
 Builder.load_file(str(Path(__file__).parent / 'cryptainer_decryption.kv'))
 
 
 class CryptainerDecryptionScreen(Screen):
+    selected_cryptainer_names = ObjectProperty(None, allownone=True)
     filesystem_cryptainer_storage = ObjectProperty(None, allownone=True)
     filesystem_keystore_pool = ObjectProperty(None)
     passphrase_mapper = {}
@@ -29,28 +34,77 @@ class CryptainerDecryptionScreen(Screen):
         self.manager.current = "CryptainerManagement"
 
     def get_container_summary(self):
-        cryptainer_management_screen = self.manager.get_screen("CryptainerManagement")
-        cryptainer_names = cryptainer_management_screen._get_selected_cryptainer_names()
-
-        for index, cryptainer_name in enumerate(cryptainer_names, start=1):  # TODO Create a private function
-            cryptainer_label = tr._("N° %s:  %s") % (index, cryptainer_name)
-            cryptainer_entry = Factory.WASelectableListItemEntry(text=cryptainer_label)  # FIXME RENAME THIS
+        self.ids.selected_cryptainer_table.clear_widgets()
+        for index, cryptainer_name in enumerate(reversed(self.selected_cryptainer_names), start=1):  # TODO Create a private function
+            cryptainer_label = tr._(" N° {index}: {cryptainer_name}").format(index=index, cryptainer_name=cryptainer_name)
+            cryptainer_entry = Factory.WAListItemEntry(text=cryptainer_label)  # FIXME RENAME THIS
             cryptainer_entry.unique_identifier = cryptainer_name
 
-            # selection_checkbox = container_entry.ids.selection_checkbox
-
-            # def selection_callback(widget, value, container_name=container_name):  # Force container_name save here, else scope bug
-            #    self.check_box_authentication_device_checked(device_uid=device_uid, is_selected=value)
-            # selection_checkbox.bind(active=selection_callback)
-
-            def information_callback(widget,
-                                     cryptainer_name=cryptainer_name):  # Force device_uid save here, else scope bug
-                cryptainer_management_screen.show_container_details(cryptainer_name=cryptainer_name)
-
-            information_icon = cryptainer_entry.ids.information_icon
-            information_icon.bind(on_press=information_callback)
-
             self.ids.selected_cryptainer_table.add_widget(cryptainer_entry)
+
+    def _keypair_identifiers_status(self, filesystem_keystore, trustee_type, keystore_uid, keystore_owner):
+        trustee_keys_missing = []
+        keypair_identifiers = filesystem_keystore.list_keypair_identifiers()
+        for keypair_identifier in keypair_identifiers:
+            if keypair_identifier["private_key_present"] == False:
+                trustee_keys_missing.append(keypair_identifier["keychain_uid"])
+
+        status = dict(trustee_data=shorten_uid(keystore_uid),
+                      keystore_owner=keystore_owner,
+                      trustee_type=trustee_type,
+                      trustee_present=True,
+                      trustee_keys_missing=trustee_keys_missing
+                      )
+        return status
+
+    def get_cryptainer_trustee_dependency_status(self) -> dict:
+        display_layout = Factory.WABigInformationBox()
+
+        if not self.selected_cryptainer_names:
+            display_layout.ids.inner_label.text = tr._("No containers selected")
+            self.ids.selected_cryptainer_table.add_widget(display_layout)
+            return
+
+        cryptainers = []
+        for cryptainer_name in self.selected_cryptainer_names:
+            cryptainer = self.filesystem_cryptainer_storage.load_cryptainer_from_storage(cryptainer_name)
+            cryptainers.append(cryptainer)
+
+        trustee_dependencies = gather_trustee_dependencies(cryptainers)
+
+        trustees = [(trustee[0]["keystore_uid"], trustee[0]["trustee_type"]) for trustee in
+                                  trustee_dependencies["encryption"].values()]
+        for trustee in trustees:
+            trustee_type = trustee[1]
+            print(trustee_type)
+            if trustee_type == CRYPTAINER_TRUSTEE_TYPES.AUTHENTICATOR_TRUSTEE:  # FIXME utiliser Enums python TrusteeTypes.xxx
+                try:
+                    filesystem_keystore = self.filesystem_keystore_pool.get_imported_keystore(keystore_uid=trustee[0])
+                    filesystem_keystore_dir = self.filesystem_keystore_pool._get_imported_keystore_dir(keystore_uid=trustee[0])
+                    metadata = load_keystore_metadata(filesystem_keystore_dir)
+                    keystore_owner = metadata["keystore_owner"]
+
+                    status = self._keypair_identifiers_status(filesystem_keystore, trustee[1], trustee[0], keystore_owner)
+                except KeystoreDoesNotExist:
+                    status = dict(trustee_data=trustee[0], trustee_type=trustee[1],
+                                  trustee_present=False)
+            else:
+                # FIXME add the case if trustee_type != "authenticator"
+                pass
+            self._display_cryptainer_trustee_dependency_status(status)
+
+        return status
+
+    def _display_cryptainer_trustee_dependency_status(self, status):
+
+        dependencies_status_text = dedent(tr._("""\
+                            {trustee_type}({trustee_data})
+                                    Trustee owner: {keystore_owner}
+                                    Trustee found : {trustee_present}
+                                    Trustee keys missing : {trustee_keys_missing}
+                            """)).format(**status)
+
+        self.ids.information_text.text = dependencies_status_text
 
     def check_passphrase(self, dialog):
 
@@ -65,15 +119,15 @@ class CryptainerDecryptionScreen(Screen):
             cryptainers.append(cryptainer)
 
         dependencies = gather_trustee_dependencies(cryptainers)
-        # print(dependencies)
 
         relevant_keystore_uids = [trustee[0]["keystore_uid"] for trustee in dependencies["encryption"].values()]
         # print(relevant_keystore_uids)
+
         for keystore_uid in relevant_keystore_uids:
             try:
                 filesystem_keystore = self.filesystem_keystore_pool.get_imported_keystore(keystore_uid=keystore_uid)
                 keypair_identifiers = filesystem_keystore.list_keypair_identifiers()
-                # print(keypair_identifiers)
+                print(keypair_identifiers)
 
             except KeystoreDoesNotExist:
                 result = tr._("Failure")
