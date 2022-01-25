@@ -32,12 +32,12 @@ from kivymd.uix.screen import Screen
 from kivymd.uix.snackbar import Snackbar
 
 from wacryptolib.authenticator import is_authenticator_initialized
-from wacryptolib.keystore import load_keystore_metadata, _get_keystore_metadata_file_path
+from wacryptolib.keystore import load_keystore_metadata, _get_keystore_metadata_file_path, _validate_keystore_metadata
 from wacryptolib.authdevice import list_available_authdevices
 from wacryptolib.exceptions import KeystoreAlreadyExists, SchemaValidationError, ExistenceError
 from wacryptolib.utilities import dump_to_json_file
 from wacryptolib.jsonrpc_client import JsonRpcProxy, status_slugs_response_error_handler
-from jsonrpc_requests import TransportError
+from jsonrpc_requests import JSONRPCError
 
 from wacomponents.i18n import tr
 from wacomponents.utilities import shorten_uid
@@ -307,11 +307,11 @@ class AuthdeviceStoreScreen(Screen):
             uuid_suffix = shorten_uid(keypair_identifier["keychain_uid"])
 
             message += (
-                    tr._("Key n° %s, Uid: ...%s, type: %s, has_private_key: %s\n")
+                    tr._("Key n° %s, %s: %s, private_key: %s\n")
                     % (
                         index,
-                        uuid_suffix,
                         keypair_identifier["key_algo"],
+                        uuid_suffix,
                         private_key_present_str,
                     )
                     + "\n"
@@ -338,12 +338,9 @@ class AuthdeviceStoreScreen(Screen):
         )
 
     @staticmethod
-    def _dump_authenticator_folder(imported_key_storage_path: Path, public_authenticator: dict):
-        """creer le dossier et dumper les metadata"""
-        # FIXME Create directory
-
+    def _dump_metadata_to_folder(imported_key_storage_path: Path, public_authenticator: dict):
         metadata_file = _get_keystore_metadata_file_path(imported_key_storage_path)
-        metadata_file.parent.mkdir(parents=True, exist_ok=True)  # Only LAST directory might be created
+        metadata_file.parent.mkdir(parents=True, exist_ok=True)  # FIXME Create a temporary folder
         metadata = {}
         metadata.update(
             {"keystore_type": "authenticator",
@@ -352,26 +349,16 @@ class AuthdeviceStoreScreen(Screen):
              "keystore_owner": public_authenticator["keystore_owner"],
              "keystore_secret": secrets.token_urlsafe(64),
              })
+        _validate_keystore_metadata(metadata)
         dump_to_json_file(metadata_file, metadata)
         return metadata
 
     def import_key_storage_from_data_tree(self, dialog):
-        keystore_uid = dialog.content_cls.ids.tester_keystore_uid.text
+        keystore_str = dialog.content_cls.ids.tester_keystore_uid.text
         close_current_dialog()
-
         try:
-            public_authenticator = self.escrow_proxy.get_public_authenticator_view(keystore_uid=keystore_uid)
 
-        except ExistenceError:
-            result = tr._("Failure")
-            details = tr._("Authenticator does not exist")
-
-        except TransportError:
-            result = tr._("Failure")
-            details = tr._("Error calling method, check the server url")
-
-        else:
-            keystore_uid = public_authenticator["keystore_uid"]
+            keystore_uid = uuid.UUID(keystore_str)
 
             try:
                 self.filesystem_keystore_pool._ensure_keystore_does_not_exist(keystore_uid)
@@ -381,36 +368,54 @@ class AuthdeviceStoreScreen(Screen):
                 details = tr._("Key storage with UUID %s was already imported locally" % keystore_uid)
 
             else:
-                imported_keystore_dir = self.filesystem_keystore_pool._get_imported_keystore_dir(
-                    keystore_uid=keystore_uid)
+                try:
+                    public_authenticator = self.escrow_proxy.get_public_authenticator_view(keystore_uid=keystore_uid)
 
-                self._dump_authenticator_folder(imported_keystore_dir, public_authenticator)
+                except ExistenceError:
+                    result = tr._("Failure")
+                    details = tr._("Authenticator does not exist")
 
-                filesystem_keystore = self.filesystem_keystore_pool.get_imported_keystore(keystore_uid=keystore_uid)
+                except (JSONRPCError, OSError):
+                    result = tr._("Failure")
+                    details = tr._("Error calling method, check the server url")
 
-                for public_key in public_authenticator["public_keys"]:
-                    filesystem_keystore.set_keys_from_web(
-                        keychain_uid=public_key["keychain_uid"],
-                        key_algo=public_key["key_algo"],
-                        public_key=public_key["payload"],
-                    )
+                else:
 
-                assert imported_keystore_dir.exists()
+                    imported_keystore_dir = self.filesystem_keystore_pool._get_imported_keystore_dir(
+                        keystore_uid=keystore_uid)
 
-                msg = "An authentication device(s) updated"
+                    self._dump_metadata_to_folder(imported_keystore_dir, public_authenticator)
 
-                # Autoselect freshly imported keys
+                    filesystem_keystore = self.filesystem_keystore_pool.get_imported_keystore(keystore_uid=keystore_uid)
 
-                new_keystore_uids = [public_authenticator["keystore_uid"]]
-                self._change_authenticator_selection_status(keystore_uids=new_keystore_uids, is_selected=True)
+                    for public_key in public_authenticator["public_keys"]:
+                        filesystem_keystore.set_keys_from_web(
+                            keychain_uid=public_key["keychain_uid"],
+                            key_algo=public_key["key_algo"],
+                            public_key=public_key["payload"],
+                        )
 
-                display_info_toast(msg)
+                    assert imported_keystore_dir.exists()
 
-                # update the display of authentication_device saved in the local folder .keys_storage_ward
-                self.list_imported_keystores(display_toast=False)
+                    msg = "An authentication device(s) updated"
 
-                result = tr._("Success")
-                details = tr._("Authenticator has been imported successfully")
+                    # Autoselect freshly imported keys
+
+                    new_keystore_uids = [public_authenticator["keystore_uid"]]
+                    self._change_authenticator_selection_status(keystore_uids=new_keystore_uids, is_selected=True)
+
+                    display_info_toast(msg)
+
+                    # update the display of authentication_device saved in the local folder .keys_storage_ward
+                    self.list_imported_keystores(display_toast=False)
+
+                    result = tr._("Success")
+                    details = tr._("Authenticator has been imported successfully")
+
+
+        except ValueError:
+            result = tr._("Failure")
+            details = tr._("Badly formed hexadecimal UUID string")
 
         dialog_with_close_button(
             title=tr._("Checkup result: %s") % result,
