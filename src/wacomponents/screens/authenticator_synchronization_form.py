@@ -163,7 +163,7 @@ class AuthenticatorSynchronizationScreen(Screen):
 
         if is_synchronized is None:
             synchronization_status = tr._("PUBLISHED")
-            message = tr._("Une incohérence a été detectée entre l'authentifieur local et distant.")
+            message = tr._("An inconsistency has been detected between the local and remote authenticator.")
             publication_details = dict(
                 exceeding_keys_in_remote=(", ".join(exceeding_public_keys_cast) or "-"),
                 missing_keys_in_remote=(", ".join(missing_public_keys_cast) or "-"),
@@ -179,13 +179,11 @@ class AuthenticatorSynchronizationScreen(Screen):
 
         elif not is_synchronized:
             synchronization_status = tr._("PUBLISHED")
-            message = tr._("L'authentifieur distant est bien à jour.")
+            message = tr._("The remote authenticator is up to date. up to date.")
 
         else:
             synchronization_status = tr._("NOT PUBLISHED")
-            message = tr._("L'authentifieur local n'existe pas sur le dépôt distant.")
-
-
+            message = tr._("The local authenticator does not exist on the remote repository.")
 
         displayed_values = dict(
             gateway="https://witnessangel.com/",
