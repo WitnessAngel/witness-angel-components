@@ -15,8 +15,9 @@ from wacryptolib.jsonrpc_client import JsonRpcProxy, status_slugs_response_error
 from wacryptolib.keystore import load_keystore_metadata, ReadonlyFilesystemKeystore
 
 from wacomponents.screens.authenticator_management import shorten_uid
-from wacomponents.widgets.popups import dialog_with_close_button, process_method_with_gui_spinner, register_current_dialog, \
-    close_current_dialog, help_text_popup
+from wacomponents.widgets.popups import dialog_with_close_button, process_method_with_gui_spinner, \
+    register_current_dialog, \
+    close_current_dialog, help_text_popup, display_info_toast
 
 from wacomponents.i18n import tr
 
@@ -131,6 +132,7 @@ class AuthenticatorSynchronizationScreen(Screen):
         return report
 
     def refresh_status(self):
+        self.ids.publication_details.text = ""
 
         authenticator_path = self.selected_authenticator_dir
 
@@ -156,35 +158,45 @@ class AuthenticatorSynchronizationScreen(Screen):
 
         is_synchronized = self.report["is_synchronized"]
 
+        exceeding_public_keys_cast = [shorten_uid(k[0]) for k in self.report["exceeding_keys_in_remote"]]
+        missing_public_keys_cast = [shorten_uid(k[0]) for k in self.report["missing_keys_in_remote"]]
+
         if is_synchronized is None:
             synchronization_status = tr._("PUBLISHED")
-            message = tr._("Incohérence detectée entre les versions locale et distante")
+            message = tr._("Une incohérence a été detectée entre l'authentifieur local et distant.")
+            publication_details = dict(
+                exceeding_keys_in_remote=(", ".join(exceeding_public_keys_cast) or "-"),
+                missing_keys_in_remote=(", ".join(missing_public_keys_cast) or "-"),
+            )
+
+            publication_details_text = dedent(tr._("""\
+                                              Details:
+                                                   Exceeding key(s) in remote : {exceeding_keys_in_remote}
+                                                   Missing key(s) in remote : {missing_keys_in_remote}
+                                          """)).format(**publication_details)
+
+            self.ids.publication_details.text = publication_details_text
 
         elif not is_synchronized:
             synchronization_status = tr._("PUBLISHED")
-            message = tr._("Authentfieur local est bien à jour")
+            message = tr._("L'authentifieur distant est bien à jour.")
+
         else:
             synchronization_status = tr._("NOT PUBLISHED")
-            message = tr._("Authentfieur local n'existe pas sur le depôt distant")
+            message = tr._("L'authentifieur local n'existe pas sur le dépôt distant.")
 
-        exceeding_public_keys_cast = [shorten_uid(k[0]) for k in self.report["exceeding_keys_in_remote"]]
-        missing_public_keys_cast = [shorten_uid(k[0]) for k in self.report["missing_keys_in_remote"]]
+
 
         displayed_values = dict(
             gateway="https://witnessangel.com/",
             status=synchronization_status,
             message=message,
-            exceeding_keys_in_remote=(", ".join(exceeding_public_keys_cast) or "-"),
-            missing_keys_in_remote=(", ".join(missing_public_keys_cast) or "-"),
         )
 
         synchronization_info_text = dedent(tr._("""\
                         Gateway : {gateway}
                         Remote status : {status}
                         Message : {message}
-                        Details : 
-                                Exceeding keys in remote : {exceeding_keys_in_remote}
-                                Missing keys in remote : {missing_keys_in_remote}
                     """)).format(**displayed_values)
 
         textarea = self.ids.synchronization_information
@@ -192,9 +204,12 @@ class AuthenticatorSynchronizationScreen(Screen):
 
         self.is_synchronized = is_synchronized
 
+        msg = "Publication of authenticators has been updated"
+        display_info_toast(msg)
+
         # print("self is synchronized :", repr(self.is_synchronized), type(self.is_synchronized))
 
-    def synchronize_keys(self):
+    def publish_athenticator(self):
         public_keys = []
         if self.report["missing_keys_in_remote"]:
             authenticator_path = self.selected_authenticator_dir
@@ -204,7 +219,7 @@ class AuthenticatorSynchronizationScreen(Screen):
                 public_keys.append({
                     "keychain_uid": missing_key[0],
                     "key_algo": missing_key[1],
-                    "payload":readonly_filesystem_keystorage.get_public_key(keychain_uid= missing_key[0], key_algo= missing_key[1])
+                    "payload": readonly_filesystem_keystorage.get_public_key(keychain_uid= missing_key[0], key_algo= missing_key[1])
                 })
 
             self.escrow_proxy.set_public_authenticator_view(keystore_owner=authenticator_metadata["keystore_owner"],
