@@ -70,10 +70,11 @@
                     id: container_delete_btn
                     icon: "delete-alert-outline"
                     text: tr._("Add a passphrase")
+                    disabled: root.found_trustees_lacking_passphrase == 0
                     on_press: root.open_dialog_check_passphrase()
 
                 WAOperationButton:
                     id: container_decrypt_btn
                     icon: "eye-circle-outline"
                     text: tr._("Decrypt")
-                    # on_press: root.open_dialog_decipher_container()
+                    on_press: root.decipher_cryptainers()
