@@ -412,7 +412,6 @@ class AuthdeviceStoreScreen(Screen):
                     result = tr._("Success")
                     details = tr._("Authenticator has been imported successfully")
 
-
         except ValueError:
             result = tr._("Failure")
             details = tr._("Badly formed hexadecimal UUID string")

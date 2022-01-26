@@ -373,8 +373,6 @@ class CryptainerStoreScreen(Screen):
             target_directory,
         )
 
-
-
     ##@osc.address_method("/attempt_cryptainer_decryption")
     @safe_catch_unhandled_exception
     def __UNUSED_attempt_cryptainer_decryption(self, cryptainer_filepath: str):  #FIXME move out of here
