@@ -37,6 +37,13 @@ class CryptainerDecryptionScreen(Screen):
 
     def get_container_summary(self):
         self.ids.selected_cryptainer_table.clear_widgets()
+
+        if not self.selected_cryptainer_names:
+            display_layout = Factory.WABigInformationBox()
+            display_layout.ids.inner_label.text = tr._("No containers selected")
+            self.ids.selected_cryptainer_table.add_widget(display_layout)
+            return
+
         for index, cryptainer_name in enumerate(reversed(self.selected_cryptainer_names),
                                                 start=1):  # TODO Create a private function
             cryptainer_label = tr._(" N° {index}: {cryptainer_name}").format(index=index, cryptainer_name=cryptainer_name)
@@ -45,7 +52,7 @@ class CryptainerDecryptionScreen(Screen):
 
             self.ids.selected_cryptainer_table.add_widget(cryptainer_entry)
 
-    def _keypair_identifiers_status(self, trustee_uid, trustee_type, trustee_id):
+    def _get_cryptainer_trustee_dependency_status(self, trustee_uid, trustee_type, trustee_id):
         trustee_keys_missing = []
         passphrase = tr._("NOT Set")
 
@@ -93,31 +100,27 @@ class CryptainerDecryptionScreen(Screen):
     def get_cryptainer_trustee_dependency_status(self) -> dict:
         self.ids.information_text.clear_widgets()
 
-        if not self.selected_cryptainer_names:
-            display_layout = Factory.WABigInformationBox()
-            display_layout.ids.inner_label.text = tr._("No containers selected")
-            self.ids.selected_cryptainer_table.add_widget(display_layout)
-            return
+        if self.selected_cryptainer_names:
 
-        cryptainers = self._get_cryptainers_with_cryptainer_names(self.selected_cryptainer_names)
+            cryptainers = self._get_cryptainers_with_cryptainer_names(self.selected_cryptainer_names)
 
-        trustee_dependencies = gather_trustee_dependencies(cryptainers)
+            trustee_dependencies = gather_trustee_dependencies(cryptainers)
 
-        trustee_conf = [trustee[0] for trustee in trustee_dependencies["encryption"].values()]
-        trustee_id = _get_trustee_id(trustee_conf[0])
+            trustee_conf = [trustee[0] for trustee in trustee_dependencies["encryption"].values()]
+            trustee_id = _get_trustee_id(trustee_conf[0])
 
-        for trustee in trustee_conf:
-            trustee_uid = trustee["keystore_uid"]
-            trustee_type = trustee["trustee_type"]
+            for trustee in trustee_conf:
+                trustee_uid = trustee["keystore_uid"]
+                trustee_type = trustee["trustee_type"]
 
-            if trustee_type == CRYPTAINER_TRUSTEE_TYPES.AUTHENTICATOR_TRUSTEE:  # FIXME utiliser Enums python TrusteeTypes.xxx
+                if trustee_type == CRYPTAINER_TRUSTEE_TYPES.AUTHENTICATOR_TRUSTEE:  # FIXME utiliser Enums python TrusteeTypes.xxx
 
-                status = self._keypair_identifiers_status(trustee_uid, trustee_type, trustee_id)
+                    status = self._get_cryptainer_trustee_dependency_status(trustee_uid, trustee_type, trustee_id)
 
-            else:
-                # FIXME add the case if trustee_type != "authenticator"
-                continue
-            self._display_cryptainer_trustee_dependency_status(status)
+                else:
+                    # FIXME add the case if trustee_type != "authenticator"
+                    continue
+                self._display_cryptainer_trustee_dependency_status(status)
 
     def _display_cryptainer_trustee_dependency_status(self, status):
 
@@ -127,12 +130,13 @@ class CryptainerDecryptionScreen(Screen):
         trustee_keys_missing = ""
         passphrase = tr._(" Passphrase: {passphrase}").format(passphrase=status["passphrase"])
         trustee_owner = ""
-        if status["trustee_present"]:
-            trustee_owner = tr._(" Owner: {trustee_owner}").format(trustee_owner=status["keystore_owner"])
+        if status["trustee_present"] == "Found":
+            trustee_owner = tr._("( Owner: {trustee_owner})").format(trustee_owner=status["keystore_owner"])
             if status["trustee_keys_missing"]:
-                trustee_keys_missing = tr._(" Missing key(s): {trustee_keys_missing}").format(trustee_keys_missing=status["trustee_keys_missing"])
+                trustee_keys_missing = tr._(" Missing key(s): {trustee_keys_missing}").format(
+                    trustee_keys_missing=status["trustee_keys_missing"])
 
-        dependencies_status_text = Factory.WAThreeListItemEntry(text=trustee_data + '(' + trustee_owner + ')', secondary_text=trustee_present + ',' + passphrase, tertiary_text=trustee_keys_missing)  # FIXME RENAME THIS
+        dependencies_status_text = Factory.WAThreeListItemEntry(text=trustee_data + trustee_owner , secondary_text=trustee_present + ',' + passphrase, tertiary_text=trustee_keys_missing)  # FIXME RENAME THIS
 
         self.ids.information_text.add_widget(dependencies_status_text)
 
@@ -224,4 +228,3 @@ class CryptainerDecryptionScreen(Screen):
             font_size="12sp",
             duration=5,
         ).open()
-

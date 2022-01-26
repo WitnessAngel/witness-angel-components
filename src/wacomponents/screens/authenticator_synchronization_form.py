@@ -228,7 +228,6 @@ class AuthenticatorSynchronizationScreen(Screen):
                 msg = tr._("Error calling method, check the server url")
                 display_info_toast(msg)
 
-
     def update_progress_bar(self, percent):
         Clock.schedule_once(partial(self._do_update_progress_bar, percent))
 

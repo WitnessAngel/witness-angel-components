@@ -361,7 +361,7 @@ class AuthdeviceStoreScreen(Screen):
             keystore_uid = uuid.UUID(keystore_str)
 
             try:
-                self.filesystem_keystore_pool._ensure_keystore_does_not_exist(keystore_uid)
+                self.filesystem_keystore_pool.ensure_imported_keystore_does_not_exist(keystore_uid)
 
             except KeystoreAlreadyExists:
                 result = tr._("Failure")
