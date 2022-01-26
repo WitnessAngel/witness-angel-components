@@ -102,7 +102,7 @@ class AuthenticatorCreationScreen(Screen):
                     key_algo="RSA_OAEP",
                     passphrase=form_values["keystore_passphrase"]
                 )
-                filesystem_keystore.set_keys(
+                filesystem_keystore.set_keypair(
                     keychain_uid=generate_uuid0(),
                     key_algo="RSA_OAEP",
                     public_key=key_pair["public_key"],

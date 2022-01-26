@@ -56,7 +56,7 @@ def ___build_recording_toolchain(config, keystore_pool, cryptoconf):
         "cryptainer_member_duration_s", 60, converter=float
     )
     polling_interval_s = get_conf_value("polling_interval_s", 0.5, converter=float)
-    max_free_keys_per_type = get_conf_value("max_free_keys_per_type", 1, converter=int)
+    max_free_keys_per_algo = get_conf_value("max_free_keys_per_algo", 1, converter=int)
 
     logger.info(
         "Toolchain configuration is %s",
@@ -130,10 +130,10 @@ def ___build_recording_toolchain(config, keystore_pool, cryptoconf):
 
     # Off-band workers
 
-    if max_free_keys_per_type:
+    if max_free_keys_per_algo:
         free_keys_generator_worker = get_free_keypair_generator_worker(
             keystore=local_keystore,
-            max_free_keys_per_type=max_free_keys_per_type,
+            max_free_keys_per_algo=max_free_keys_per_algo,
             sleep_on_overflow_s=0.5
             * max_free_keys_per_type
             * cryptainer_member_duration_s,  # TODO make it configurable?
