@@ -5,6 +5,7 @@ from textwrap import dedent
 from functools import partial
 import shutil
 
+from jsonrpc_requests import JSONRPCError
 from kivy.clock import Clock
 from kivy.factory import Factory
 from kivy.lang import Builder
@@ -17,7 +18,7 @@ from kivy.logger import Logger as logger
 
 from wacomponents.widgets.layout_components import LanguageSwitcherScreenMixin
 from wacomponents.widgets.popups import dialog_with_close_button, register_current_dialog, close_current_dialog, \
-    help_text_popup
+    help_text_popup, display_info_toast
 from wacryptolib.authdevice import list_available_authdevices
 from wacryptolib.authenticator import is_authenticator_initialized
 from wacryptolib.exceptions import KeyLoadingError, SchemaValidationError
@@ -397,6 +398,17 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         return dict(keypair_count=len(keypair_identifiers),
                     missing_private_keys=missing_private_keys,
                     undecodable_private_keys=undecodable_private_keys)
+
+    def _launch_publish_authenticator(self):
+        publish_authenticator_screen = self.manager.get_screen("authenticator_synchronization_screen")
+
+        try:
+            publish_authenticator_screen.refresh_status()
+            self.manager.current = "authenticator_synchronization_screen"
+
+        except(JSONRPCError, OSError):
+            msg = tr._("Error calling method, check the server url")
+            display_info_toast(msg)
 
     def display_help_popup(self):
         help_text = dedent(tr._("""\

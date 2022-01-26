@@ -5,6 +5,7 @@ from textwrap import dedent
 from functools import partial
 from uuid import UUID
 
+from jsonrpc_requests import JSONRPCError
 from kivy.clock import Clock
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty, StringProperty
@@ -151,10 +152,7 @@ class AuthenticatorSynchronizationScreen(Screen):
 
         remote_metadata_status, self.is_synchronized = self._query_remote_athenticator_status(keystore_uid=authenticator_metadata["keystore_uid"])
 
-        self.report = self._compare_local_and_remote_status(local_keys_and_authenticator_metadata_reformatted,
-                                                            remote_metadata_status, self.is_synchronized)
-
-        # pprint.pprint(report)
+        self.report = self._compare_local_and_remote_status(local_keys_and_authenticator_metadata_reformatted, remote_metadata_status, self.is_synchronized)
 
         is_synchronized = self.report["is_synchronized"]
 
@@ -205,9 +203,7 @@ class AuthenticatorSynchronizationScreen(Screen):
         msg = "Publication of authenticators has been updated"
         display_info_toast(msg)
 
-        # print("self is synchronized :", repr(self.is_synchronized), type(self.is_synchronized))
-
-    def publish_athenticator(self):
+    def publish_authenticator(self):
         public_keys = []
         if self.report["missing_keys_in_remote"]:
             authenticator_path = self.selected_authenticator_dir
@@ -226,7 +222,12 @@ class AuthenticatorSynchronizationScreen(Screen):
                                                                 "keystore_secret"],
                                                             public_keys=public_keys)
 
-            self.refresh_status()
+            try:
+                self.refresh_status()
+            except(JSONRPCError, OSError):
+                msg = tr._("Error calling method, check the server url")
+                display_info_toast(msg)
+
 
     def update_progress_bar(self, percent):
         Clock.schedule_once(partial(self._do_update_progress_bar, percent))

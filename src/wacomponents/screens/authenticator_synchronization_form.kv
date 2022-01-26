@@ -5,7 +5,7 @@
 
 <AuthenticatorSynchronizationScreen>:
 
-    on_pre_enter: root.refresh_status()
+    # on_pre_enter: root.refresh_status()
 
     MDBoxLayout:
         orientation: "vertical"
@@ -61,7 +61,7 @@
                     size_hint_max_y: dp(50)
                     pos_hint: {'x': .25}
                     disabled: root.is_synchronized is not True
-                    on_press: root.publish_athenticator()
+                    on_press: root.publish_authenticator()
 
             Widget:
 
