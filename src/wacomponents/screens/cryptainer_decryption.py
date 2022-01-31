@@ -44,8 +44,7 @@ class CryptainerDecryptionScreen(Screen):
             self.ids.selected_cryptainer_table.add_widget(display_layout)
             return
 
-        for index, cryptainer_name in enumerate(reversed(self.selected_cryptainer_names),
-                                                start=1):  # TODO Create a private function
+        for index, cryptainer_name in enumerate(reversed(self.selected_cryptainer_names), start=1):
             cryptainer_label = tr._(" N° {index}: {cryptainer_name}").format(index=index, cryptainer_name=cryptainer_name)
             cryptainer_entry = Factory.WAListItemEntry(text=cryptainer_label)  # FIXME RENAME THIS
             cryptainer_entry.unique_identifier = cryptainer_name

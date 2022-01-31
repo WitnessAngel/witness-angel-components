@@ -48,7 +48,7 @@ class AuthenticatorSynchronizationScreen(Screen):
     synchronization_status = StringProperty()
     is_synchronized = ObjectProperty(None, allownone=True)
 
-    jsonrpc_url = "http://127.0.0.1:8000" + "/json/"  # FIXME change url!!
+    jsonrpc_url = "http://127.0.0.1:8000" + "/gateway/jsonrpc/"  # FIXME change url!!
 
     escrow_proxy = JsonRpcProxy(
         url=jsonrpc_url, response_error_handler=status_slugs_response_error_handler
@@ -132,7 +132,7 @@ class AuthenticatorSynchronizationScreen(Screen):
 
         return report
 
-    def refresh_status(self):
+    def _refresh_status(self):
         self.ids.publication_details.text = ""
 
         authenticator_path = self.selected_authenticator_dir
@@ -203,6 +203,15 @@ class AuthenticatorSynchronizationScreen(Screen):
         msg = "Publication of authenticators has been updated"
         display_info_toast(msg)
 
+    def refresh_status(self):
+        try:
+            self._refresh_status()
+            self.manager.current = "authenticator_synchronization_screen"
+
+        except(JSONRPCError, OSError):
+            msg = tr._("Error calling method, check the server url")
+            display_info_toast(msg)
+
     def publish_authenticator(self):
         public_keys = []
         if self.report["missing_keys_in_remote"]:
@@ -222,11 +231,8 @@ class AuthenticatorSynchronizationScreen(Screen):
                                                                 "keystore_secret"],
                                                             public_keys=public_keys)
 
-            try:
-                self.refresh_status()
-            except(JSONRPCError, OSError):
-                msg = tr._("Error calling method, check the server url")
-                display_info_toast(msg)
+        self.refresh_status()
+
 
     def update_progress_bar(self, percent):
         Clock.schedule_once(partial(self._do_update_progress_bar, percent))

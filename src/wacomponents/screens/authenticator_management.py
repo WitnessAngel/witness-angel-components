@@ -402,13 +402,8 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
     def _launch_publish_authenticator(self):
         publish_authenticator_screen = self.manager.get_screen("authenticator_synchronization_screen")
 
-        try:
-            publish_authenticator_screen.refresh_status()
-            self.manager.current = "authenticator_synchronization_screen"
+        publish_authenticator_screen.refresh_status()
 
-        except(JSONRPCError, OSError):
-            msg = tr._("Error calling method, check the server url")
-            display_info_toast(msg)
 
     def display_help_popup(self):
         help_text = dedent(tr._("""\
