@@ -6,7 +6,7 @@ from uuid import UUID
 
 from jsonrpc_requests import JSONRPCError
 from kivy.lang import Builder
-from kivy.properties import ObjectProperty, StringProperty, BooleanProperty
+from kivy.properties import ObjectProperty, BooleanProperty
 from kivymd.app import MDApp
 from kivymd.uix.screen import Screen
 from kivy.logger import Logger as logger
@@ -18,7 +18,6 @@ from wacryptolib.keystore import load_keystore_metadata, ReadonlyFilesystemKeyst
 
 from wacomponents.screens.authenticator_management import shorten_uid
 from wacomponents.widgets.popups import help_text_popup, display_info_toast
-
 from wacomponents.i18n import tr
 
 
@@ -47,7 +46,7 @@ class AuthenticatorSynchronizationScreen(Screen):
         )
         return gateway_proxy
 
-    def _query_remote_authenticator_status(self, keystore_uid: UUID):
+    def _query_remote_authenticator_status(self, keystore_uid: UUID):  #Fixme rename?
 
         gateway_proxy = self._get_gateway_proxy()
 
@@ -194,7 +193,7 @@ class AuthenticatorSynchronizationScreen(Screen):
             })
 
         gateway_proxy = self._get_gateway_proxy()
-        gateway_proxy.set_public_authenticator_view(keystore_owner=local_metadata["keystore_owner"],
+        gateway_proxy.set_public_authenticator(keystore_owner=local_metadata["keystore_owner"],
                                                             keystore_uid=local_metadata["keystore_uid"],
                                                             keystore_secret=local_metadata["keystore_secret"],
                                                             public_keys=public_keys)
