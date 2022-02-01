@@ -399,10 +399,10 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
                     missing_private_keys=missing_private_keys,
                     undecodable_private_keys=undecodable_private_keys)
 
-    def _launch_publish_authenticator(self):
-        publish_authenticator_screen = self.manager.get_screen("authenticator_synchronization_screen")
-
-        publish_authenticator_screen.refresh_status()
+    def showh_authenticator_publish_page(self):
+        self.manager.current = "authenticator_synchronization_screen"
+        #publish_authenticator_screen = self.manager.get_screen("authenticator_synchronization_screen")
+        #publish_authenticator_screen.refresh_status()
 
 
     def display_help_popup(self):
