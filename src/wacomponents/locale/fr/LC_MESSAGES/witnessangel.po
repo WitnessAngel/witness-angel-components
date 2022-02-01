@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-01 22:46+0100\n"
+"POT-Creation-Date: 2022-02-01 22:54+0100\n"
 "PO-Revision-Date: 2022-02-01 22:47+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
@@ -509,8 +509,9 @@ msgstr ""
 "{exceeding_keys_in_remote}\n"
 "                           Clés manquantes côté distant : "
 "{missing_keys_in_remote}\n"
+"                  "
 
-#: src/wacomponents/screens/authenticator_synchronization_form.py:162
+#: src/wacomponents/screens/authenticator_synchronization_form.py:163
 #, python-brace-format
 msgid ""
 "                        Gateway: {gateway}\n"
@@ -522,13 +523,14 @@ msgstr ""
 "                        Passerelle : {gateway}\n"
 "                        Statut distant : {status}\n"
 "                        Message : {message}\n"
-"                        ID: {keystore_uid}\n"
+"                        ID : {keystore_uid}\n"
+"                    "
 
-#: src/wacomponents/screens/authenticator_synchronization_form.py:175
+#: src/wacomponents/screens/authenticator_synchronization_form.py:176
 msgid "Remote authenticator status has been updated"
 msgstr "Le statut de l'authentifieur distant a été actualisé"
 
-#: src/wacomponents/screens/authenticator_synchronization_form.py:207
+#: src/wacomponents/screens/authenticator_synchronization_form.py:208
 msgid ""
 "        This page allows to publish the PUBLIC part of an authenticator to a "
 "remote Witness Angel Gateway, so that other users may import it to secure "
@@ -550,7 +552,7 @@ msgstr ""
 "        En cas d'incohérences entre les clés stockées localement et à "
 "distance, des erreurs sont affichées ici."
 
-#: src/wacomponents/screens/authenticator_synchronization_form.py:215
+#: src/wacomponents/screens/authenticator_synchronization_form.py:216
 msgid "Authenticator publishing"
 msgstr "Publication de l'authentifieur"
 
