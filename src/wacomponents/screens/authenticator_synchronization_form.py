@@ -167,17 +167,17 @@ class AuthenticatorSynchronizationScreen(Screen):
                 missing_keys_in_remote=(", ".join(missing_public_keys_cast) or "-"),
             )
 
-            publication_details_text = dedent(tr._("""\
+            publication_details_text = tr._(dedent("""\
                                               Details:
                                                    Exceeding key(s) in remote : {exceeding_keys_in_remote}
                                                    Missing key(s) in remote : {missing_keys_in_remote}
-                                          """)).format(**publication_details)
+                                          )""")).format(**publication_details)
 
             self.ids.publication_details.text = publication_details_text
 
         elif not is_synchronized:
             synchronization_status = tr._("PUBLISHED")
-            message = tr._("The remote authenticator is up to date. up to date.")
+            message = tr._("The remote authenticator is up to date.")
 
         else:
             synchronization_status = tr._("NOT PUBLISHED")
