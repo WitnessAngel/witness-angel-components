@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-01 12:26+0100\n"
+"POT-Creation-Date: 2022-02-01 12:36+0100\n"
 "PO-Revision-Date: 2022-02-01 12:26+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
@@ -121,7 +121,7 @@ msgid "Validation error"
 msgstr "Erreur de validation"
 
 #: src/wacomponents/screens/authenticator_creation_form.py:155
-#: src/wacomponents/screens/authenticator_synchronization_form.py:249
+#: src/wacomponents/screens/authenticator_synchronization_form.py:251
 msgid "Please wait, initialization might take a few minutes."
 msgstr "Veuillez attendre, l'initialisation peut prendre quelques minutes."
 
@@ -184,7 +184,7 @@ msgstr ""
 "        "
 
 #: src/wacomponents/screens/authenticator_creation_form.py:181
-#: src/wacomponents/screens/authenticator_synchronization_form.py:267
+#: src/wacomponents/screens/authenticator_synchronization_form.py:269
 msgid "Authenticator creation page"
 msgstr "Page de création d'authentifieur"
 
@@ -470,30 +470,30 @@ msgstr "Page de gestion des authentifieurs"
 msgid "Publish authenticator"
 msgstr "Publier l'authentifieur"
 
-#: src/wacomponents/screens/authenticator_synchronization_form.py:163
-#: src/wacomponents/screens/authenticator_synchronization_form.py:179
+#: src/wacomponents/screens/authenticator_synchronization_form.py:165
+#: src/wacomponents/screens/authenticator_synchronization_form.py:181
 msgid "PUBLISHED"
 msgstr "PUBLIÉ"
 
-#: src/wacomponents/screens/authenticator_synchronization_form.py:164
+#: src/wacomponents/screens/authenticator_synchronization_form.py:166
 msgid ""
 "An inconsistency has been detected between the local and remote "
 "authenticator."
 msgstr "Une incohérence a été détectée entre l'authentifieur local et distant"
 
-#: src/wacomponents/screens/authenticator_synchronization_form.py:180
+#: src/wacomponents/screens/authenticator_synchronization_form.py:182
 msgid "The remote authenticator is up to date."
 msgstr "L'authentifieur distant est à jour."
 
-#: src/wacomponents/screens/authenticator_synchronization_form.py:183
+#: src/wacomponents/screens/authenticator_synchronization_form.py:185
 msgid "NOT PUBLISHED"
 msgstr "NON PUBLIÉ"
 
-#: src/wacomponents/screens/authenticator_synchronization_form.py:184
+#: src/wacomponents/screens/authenticator_synchronization_form.py:186
 msgid "The local authenticator does not exist on the remote repository."
 msgstr "L'authentifieur local n'existe pas dans le dépôt distant"
 
-#: src/wacomponents/screens/authenticator_synchronization_form.py:192
+#: src/wacomponents/screens/authenticator_synchronization_form.py:194
 #, python-brace-format
 msgid ""
 "                        Gateway : {gateway}\n"
@@ -501,16 +501,15 @@ msgid ""
 "                        Message : {message}\n"
 "                    "
 msgstr ""
-"                        Passerelle : {gateway_dir}\n"
-"                        Statut distant : {status_uid}\n"
+"                        Passerelle : {gateway}\n"
+"                        Statut distant : {status}\n"
 "                        Message : {message}\n"
 
-#: src/wacomponents/screens/authenticator_synchronization_form.py:212
-#: src/wacomponents/screens/imported_keystore_management.py:380
-msgid "Error calling method, check the server url"
-msgstr "Erreur à l'appel de la méthode, vérifier l'url du serveur"
+#: src/wacomponents/screens/authenticator_synchronization_form.py:214
+msgid "Error querying gateway server, please check its url"
+msgstr ""
 
-#: src/wacomponents/screens/authenticator_synchronization_form.py:259
+#: src/wacomponents/screens/authenticator_synchronization_form.py:261
 msgid ""
 "        On this page, you can initialize an authenticator inside an empty "
 "folder; this authenticator actually consists in metadata files as well as a "
@@ -758,6 +757,10 @@ msgstr ""
 #, fuzzy
 msgid "Authenticator does not exist"
 msgstr "Authentifieur non initialisé"
+
+#: src/wacomponents/screens/imported_keystore_management.py:380
+msgid "Error calling method, check the server url"
+msgstr "Erreur à l'appel de la méthode, vérifier l'url du serveur"
 
 #: src/wacomponents/screens/imported_keystore_management.py:413
 #, fuzzy
