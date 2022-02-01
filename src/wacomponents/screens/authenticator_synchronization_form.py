@@ -103,7 +103,6 @@ class AuthenticatorSynchronizationScreen(Screen):
 
         return report
 
-
     @safe_catch_unhandled_exception
     def refresh_synchronization_status(self):
 
@@ -120,7 +119,7 @@ class AuthenticatorSynchronizationScreen(Screen):
             display_info_toast(msg)
             return  # Do not touch anything of the GUI
 
-        synchronization_details_text = None
+        synchronization_details_text = ""
 
         if remote_metadata is None:
             synchronization_status = tr._("NOT PUBLISHED")
@@ -166,18 +165,15 @@ class AuthenticatorSynchronizationScreen(Screen):
                         Message : {message}
                     """)).format(**_displayed_values)
 
+        if synchronization_details_text:
+            synchronization_info_text += "\n\n" + synchronization_details_text
+
         # Update the GUI
 
         self.ids.synchronization_information.text = synchronization_info_text
-        self.ids.publication_details.text = synchronization_details_text or ""
         display_info_toast(tr._("Remote authenticator status has been updated"))
 
         self.enable_publish_button = enable_publish_button
-
-
-    #def refresh_status(self):
-        #self._refresh_synchronization_status()
-        #self.manager.current = "authenticator_synchronization_screen"
 
 
     @safe_catch_unhandled_exception
@@ -197,18 +193,6 @@ class AuthenticatorSynchronizationScreen(Screen):
                     keychain_uid=public_key["keychain_uid"], key_algo=public_key["key_algo"])
             })
 
-        '''
-        if self.report["missing_keys_in_remote"]:  # FIXME not a good idea?
-            authenticator_path = self.selected_authenticator_dir
-            readonly_filesystem_keystorage = ReadonlyFilesystemKeystore(authenticator_path)
-            authenticator_metadata = load_keystore_metadata(authenticator_path)
-            for missing_key in self.report["missing_keys_in_remote"]:
-                public_keys.append({
-                    "keychain_uid": missing_key[0],
-                    "key_algo": missing_key[1],
-                    "key_value": readonly_filesystem_keystorage.get_public_key(keychain_uid= missing_key[0], key_algo=missing_key[1])
-                })'''
-
         gateway_proxy = self._get_gateway_proxy()
         gateway_proxy.set_public_authenticator_view(keystore_owner=local_metadata["keystore_owner"],
                                                             keystore_uid=local_metadata["keystore_uid"],
@@ -220,7 +204,11 @@ class AuthenticatorSynchronizationScreen(Screen):
 
     def display_help_popup(self):
         help_text = dedent(tr._("""\
-        TODO
+        This page allows to publish the PUBLIC part of an authenticator to a remote Witness Angel Gateway, so that other users may import it to secure their recordings.
+        
+        For now, a published authenticator can't be modified or deleted.
+        
+        In case of incoherences between the keys locally and remotely stored, errors are displayed here.
         """))
         help_text_popup(
             title=tr._("Authenticator publishing"),
