@@ -11,6 +11,9 @@ from kivy.lang import Builder
 from kivy.properties import ObjectProperty, StringProperty
 from kivymd.app import MDApp
 from kivymd.uix.screen import Screen
+from kivy.logger import Logger as logger
+
+from wacomponents.logging.handlers import safe_catch_unhandled_exception
 from wacryptolib.exceptions import ExistenceError
 from wacryptolib.jsonrpc_client import JsonRpcProxy, status_slugs_response_error_handler
 from wacryptolib.keystore import load_keystore_metadata, ReadonlyFilesystemKeystore
@@ -26,6 +29,7 @@ import requests
 
 Builder.load_file(str(Path(__file__).parent / 'authenticator_synchronization_form.kv'))
 
+'''
 THREAD_POOL_EXECUTOR = ThreadPoolExecutor(
     max_workers=1, thread_name_prefix="authenticator_keygen_worker"  # SINGLE worker for now, to avoid concurrency
 )
@@ -40,19 +44,13 @@ class AuthenticatorDoesNotExist(ExistenceError):  # TODO add this in exceptions.
 
 class AuthenticatorAlreadyExists(ExistenceError):  # TODO add this in exceptions.py of cryptolib project
     pass
-
+'''
 
 class AuthenticatorSynchronizationScreen(Screen):
     selected_authenticator_dir = ObjectProperty(None, allownone=True)
 
     synchronization_status = StringProperty()
     is_synchronized = ObjectProperty(None, allownone=True)
-
-    jsonrpc_url = "http://127.0.0.1:8000" + "/gateway/jsonrpc/"  # FIXME change url!!
-
-    escrow_proxy = JsonRpcProxy(
-        url=jsonrpc_url, response_error_handler=status_slugs_response_error_handler
-    )
 
     report = {}
 
@@ -63,55 +61,36 @@ class AuthenticatorSynchronizationScreen(Screen):
     def go_to_home_screen(self):
         self.manager.current = "authenticator_selector_screen"
 
-    def open_dialog(self, text, title, on_dismiss=None):
-        dialog_with_close_button(
-            title=title,
-            text=text,
-            **({"on_dismiss": on_dismiss} if on_dismiss else {})
+    def _get_gateway_proxy(self):
+
+        jsonrpc_url = self._app.get_witness_angel_gateway_url()
+
+        gateway_proxy = JsonRpcProxy(
+            url=jsonrpc_url, response_error_handler=status_slugs_response_error_handler
         )
-
-    def close_dialog(self, obj):
-        close_current_dialog()
-
-    def close_dialog_and_leave(self, obj):
-        close_current_dialog()
-        self.go_to_home_screen()
+        return gateway_proxy
 
     def _query_remote_athenticator_status(self, keystore_uid: UUID):
-        gateway = "http://127.0.0.1:8000"
 
-        # try:
-        # response = requests.get(gateway)
-        # response.raise_for_status()
-
-        # access Json content
-        # remote_metadata_status = response.json()
-
-        # except requests.exceptions.HTTPError as e:  # TODO manage only the case where the http error is 404
-        # is_synchronized = None
-        # raise AuthenticatorDoesNotExist("Authenticator does not exist".format(e))from e
+        gateway_proxy = self._get_gateway_proxy()
 
         try:
-            public_authenticator = self.escrow_proxy.get_public_authenticator_view(keystore_uid=keystore_uid)
-            self.is_synchronized = None
-            remote_metadata_status = {
+            public_authenticator = gateway_proxy.get_public_authenticator_view(keystore_uid=keystore_uid)
+            is_published = True
+            remote_metadata = {
                 'keystore_owner': public_authenticator['keystore_owner'],
                 'keystore_uid': public_authenticator['keystore_uid'],
                 'public_keys': public_authenticator['public_keys'],
             }
 
         except ExistenceError:
-            self.is_synchronized = True
-            remote_metadata_status = {
-                'keystore_owner': "",
-                'keystore_uid': "",
-                'public_keys': "",
-            }
+            is_published = False
+            remote_metadata = None
 
-        return remote_metadata_status, self.is_synchronized
+        return is_published, remote_metadata
 
     @staticmethod
-    def _compare_local_and_remote_status(local_metadata_status, remote_metadata_status, is_synchronized) -> dict:
+    def _compare_local_and_remote_status(local_metadata, remote_metadata) -> dict:
 
         local_keys_tuple = [(public_key["keychain_uid"], public_key["key_algo"]) for public_key in
                             local_metadata_status["public_keys"]]
@@ -132,11 +111,12 @@ class AuthenticatorSynchronizationScreen(Screen):
 
         return report
 
-    def _refresh_status(self):
+    def _refresh_synchronization_status(self):
         self.ids.publication_details.text = ""
 
         authenticator_path = self.selected_authenticator_dir
 
+        # METHOD _get_local_authenticator_tree()  # mettre FIXME use export_keystore_tree()
         authenticator_metadata = load_keystore_metadata(authenticator_path)
         readonly_filesystem_keystorage = ReadonlyFilesystemKeystore(authenticator_path)
         local_keys_status = readonly_filesystem_keystorage.list_keypair_identifiers()
@@ -150,9 +130,21 @@ class AuthenticatorSynchronizationScreen(Screen):
             'public_keys': local_keys_status
         }
 
-        remote_metadata_status, self.is_synchronized = self._query_remote_athenticator_status(keystore_uid=authenticator_metadata["keystore_uid"])
+        # METHOD _query_remote_athenticator_status() -> remote_metadata || None
 
-        self.report = self._compare_local_and_remote_status(local_keys_and_authenticator_metadata_reformatted, remote_metadata_status, self.is_synchronized)
+        is_published, remote_metadata= self._query_remote_athenticator_status(
+            keystore_uid=authenticator_metadata["keystore_uid"])
+
+        # Body de cette méthod _refresh_synchronization_status():
+        # if remote_metadata is None : <cas non publié>
+        # else: appeler _compare_local_and_remote_status()
+        #       if synchronized : <gérer cas full synchro ok>
+        #       else: <afficher détails erreur>
+
+        # Ne mettre à jour la GUI que tout à la fin de cette fonction
+
+
+        self.report = self._compare_local_and_remote_status(local_keys_and_authenticator_metadata_reformatted, remote_metadata, is_published=is_published)
 
         is_synchronized = self.report["is_synchronized"]
 
@@ -203,18 +195,20 @@ class AuthenticatorSynchronizationScreen(Screen):
         msg = "Publication of authenticators has been updated"
         display_info_toast(msg)
 
+    @safe_catch_unhandled_exception
     def refresh_status(self):
         try:
             self._refresh_status()
             self.manager.current = "authenticator_synchronization_screen"
-
-        except(JSONRPCError, OSError):
-            msg = tr._("Error calling method, check the server url")
+        except(JSONRPCError, OSError) as exc:
+            logger.error("Error calling gateway server: %r", exc)
+            msg = tr._("Error querying gateway server, please check its url")
             display_info_toast(msg)
 
+    @safe_catch_unhandled_exception
     def publish_authenticator(self):
         public_keys = []
-        if self.report["missing_keys_in_remote"]:
+        if self.report["missing_keys_in_remote"]:  # FIXME not a good idea?
             authenticator_path = self.selected_authenticator_dir
             readonly_filesystem_keystorage = ReadonlyFilesystemKeystore(authenticator_path)
             authenticator_metadata = load_keystore_metadata(authenticator_path)
@@ -222,47 +216,23 @@ class AuthenticatorSynchronizationScreen(Screen):
                 public_keys.append({
                     "keychain_uid": missing_key[0],
                     "key_algo": missing_key[1],
-                    "payload": readonly_filesystem_keystorage.get_public_key(keychain_uid= missing_key[0], key_algo= missing_key[1])
+                    "key_value": readonly_filesystem_keystorage.get_public_key(keychain_uid= missing_key[0], key_algo=missing_key[1])
                 })
 
+            # tODO fixme
             self.escrow_proxy.set_public_authenticator_view(keystore_owner=authenticator_metadata["keystore_owner"],
                                                             keystore_uid=authenticator_metadata["keystore_uid"],
                                                             keystore_secret=authenticator_metadata[
                                                                 "keystore_secret"],
                                                             public_keys=public_keys)
 
+        # tODO fixme
         self.refresh_status()
-
-
-    def update_progress_bar(self, percent):
-        Clock.schedule_once(partial(self._do_update_progress_bar, percent))
-
-    def _do_update_progress_bar(self, percent, *args, **kwargs):
-        self.ids.progress_bar.value = percent
-
-    def _launch_synchronization_initialization(self, form_values):
-        authenticator_path = self.selected_authenticator_dir
-        assert authenticator_path and authenticator_path.is_dir(), authenticator_path
-
-        self.ids.button_initialize.disabled = True
-        self.ids.formfield_passphrase.text = "***"  # PRIVACY
-        self.operation_status = tr._("Please wait, initialization might take a few minutes.")
-
-        self.set_form_fields_status(enabled=False)
-        self.ids.initialization_form_toolbar.disabled = True
-
-        THREAD_POOL_EXECUTOR.submit(self._offloaded_initialize_authenticator,
-                                    form_values=form_values,
-                                    authenticator_path=authenticator_path)
 
     def display_help_popup(self):
         help_text = dedent(tr._("""\
-        On this page, you can initialize an authenticator inside an empty folder; this authenticator actually consists in metadata files as well as a set of asymmetric keypairs.
-
-        To proceed, you have to input your user name or pseudo, a long passphrase (e.g. consisting of 4 different words), and a public hint to help your remember your passphrase later.
-
-        You should keep your passphrase somewhere safe (in a digital password manager, on a paper in a vault...), because if you forget any of its aspects (upper/lower case, accents, spaces...), there is no way to recover it.
+        TODO
         """))
         help_text_popup(
-            title=tr._("Authenticator creation page"),
+            title=tr._("Authenticator publishing"),
             text=help_text, )
