@@ -108,6 +108,7 @@ class AuthenticatorSynchronizationScreen(Screen):
         self.enable_publish_button = enable_publish_button = False  # Preventive setup
 
         local_metadata = self._query_local_authenticator_status()
+        keystore_uid = local_metadata["keystore_uid"]
 
         try:
             remote_metadata = self._query_remote_authenticator_status(
@@ -146,7 +147,7 @@ class AuthenticatorSynchronizationScreen(Screen):
                     missing_keys_in_remote=(", ".join(missing_public_keys_shortened) or "-"),
                 )
 
-                synchronization_details_text = tr._(dedent("""\
+                synchronization_details_text = dedent(tr._("""\
                       Error details:
                            Exceeding key(s) in remote: {exceeding_keys_in_remote}
                            Missing key(s) in remote: {missing_keys_in_remote}
@@ -156,12 +157,14 @@ class AuthenticatorSynchronizationScreen(Screen):
             gateway="https://witnessangel.com/",
             status=synchronization_status,
             message=message,
+            keystore_uid=keystore_uid,
         )
 
         synchronization_info_text = dedent(tr._("""\
-                        Gateway : {gateway}
-                        Remote status : {status}
-                        Message : {message}
+                        Gateway: {gateway}
+                        Remote status: {status}
+                        Message: {message}
+                        ID: {keystore_uid}
                     """)).format(**_displayed_values)
 
         if synchronization_details_text:

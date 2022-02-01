@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-01 15:38+0100\n"
-"PO-Revision-Date: 2022-02-01 16:07+0200\n"
+"POT-Creation-Date: 2022-02-01 22:46+0100\n"
+"PO-Revision-Date: 2022-02-01 22:47+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
@@ -494,24 +494,41 @@ msgid ""
 "authenticator."
 msgstr "Une incohérence a été détectée entre l'authentifieur local et distant"
 
+#: src/wacomponents/screens/authenticator_synchronization_form.py:150
+#, python-brace-format
+msgid ""
+"                      Error details:\n"
+"                           Exceeding key(s) in remote: "
+"{exceeding_keys_in_remote}\n"
+"                           Missing key(s) in remote: "
+"{missing_keys_in_remote}\n"
+"                  "
+msgstr ""
+"                      Détails d'erreurs :\n"
+"                           Clés en excès côté distant : "
+"{exceeding_keys_in_remote}\n"
+"                           Clés manquantes côté distant : "
+"{missing_keys_in_remote}\n"
+
 #: src/wacomponents/screens/authenticator_synchronization_form.py:162
 #, python-brace-format
 msgid ""
-"                        Gateway : {gateway}\n"
-"                        Remote status : {status}\n"
-"                        Message : {message}\n"
+"                        Gateway: {gateway}\n"
+"                        Remote status: {status}\n"
+"                        Message: {message}\n"
+"                        ID: {keystore_uid}\n"
 "                    "
 msgstr ""
 "                        Passerelle : {gateway}\n"
 "                        Statut distant : {status}\n"
 "                        Message : {message}\n"
-"                    "
+"                        ID: {keystore_uid}\n"
 
-#: src/wacomponents/screens/authenticator_synchronization_form.py:174
+#: src/wacomponents/screens/authenticator_synchronization_form.py:175
 msgid "Remote authenticator status has been updated"
 msgstr "Le statut de l'authentifieur distant a été actualisé"
 
-#: src/wacomponents/screens/authenticator_synchronization_form.py:206
+#: src/wacomponents/screens/authenticator_synchronization_form.py:207
 msgid ""
 "        This page allows to publish the PUBLIC part of an authenticator to a "
 "remote Witness Angel Gateway, so that other users may import it to secure "
@@ -533,7 +550,7 @@ msgstr ""
 "        En cas d'incohérences entre les clés stockées localement et à "
 "distance, des erreurs sont affichées ici."
 
-#: src/wacomponents/screens/authenticator_synchronization_form.py:214
+#: src/wacomponents/screens/authenticator_synchronization_form.py:215
 msgid "Authenticator publishing"
 msgstr "Publication de l'authentifieur"
 
@@ -814,20 +831,6 @@ msgstr "Erreur anormale détectée : %s"
 #, fuzzy
 #~ msgid " N° {index}: {cryptainer_name}"
 #~ msgstr "N° {index}: {cryptainer_name}"
-
-#~ msgid ""
-#~ "                                              Details:\n"
-#~ "                                                   Exceeding key(s) in "
-#~ "remote : {exceeding_keys_in_remote}\n"
-#~ "                                                   Missing key(s) in "
-#~ "remote : {missing_keys_in_remote}\n"
-#~ "                                          "
-#~ msgstr ""
-#~ "                                              Détails :\n"
-#~ "                                                   Clés en excès côté "
-#~ "distant : {exceeding_keys_in_remote}\n"
-#~ "                                                   Clés manquantes côté "
-#~ "distant : {missing_keys_in_remote}"
 
 #~ msgid "Target:"
 #~ msgstr "Cible :"
