@@ -369,7 +369,7 @@ class AuthdeviceStoreScreen(Screen):
 
             else:
                 try:
-                    public_authenticator = self.escrow_proxy.get_public_authenticator_view(keystore_uid=keystore_uid)
+                    public_authenticator = self.escrow_proxy.get_public_authenticator(keystore_uid=keystore_uid)
 
                 except ExistenceError:
                     result = tr._("Failure")

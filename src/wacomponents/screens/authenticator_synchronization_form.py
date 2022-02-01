@@ -51,7 +51,7 @@ class AuthenticatorSynchronizationScreen(Screen):
         gateway_proxy = self._get_gateway_proxy()
 
         try:
-            public_authenticator = gateway_proxy.get_public_authenticator_view(keystore_uid=keystore_uid)
+            public_authenticator = gateway_proxy.get_public_authenticator(keystore_uid=keystore_uid)
             remote_metadata = {  # FIXME simplify
                 'keystore_owner': public_authenticator['keystore_owner'],
                 'keystore_uid': public_authenticator['keystore_uid'],
