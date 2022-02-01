@@ -49,7 +49,7 @@ Builder.load_file(str(Path(__file__).parent / 'imported_keystore_management.kv')
 class AuthdeviceStoreScreen(Screen):
     filesystem_keystore_pool = ObjectProperty(None)
 
-    jsonrpc_url = "http://127.0.0.1:8000" + "/json/"  # FIXME change url!!
+    jsonrpc_url = "http://127.0.0.1:8000" + "/gateway/jsonrpc/"  # FIXME change url!!
 
     escrow_proxy = JsonRpcProxy(
         url=jsonrpc_url, response_error_handler=status_slugs_response_error_handler
@@ -389,7 +389,7 @@ class AuthdeviceStoreScreen(Screen):
                     filesystem_keystore = self.filesystem_keystore_pool.get_imported_keystore(keystore_uid=keystore_uid)
 
                     for public_key in public_authenticator["public_keys"]:
-                        filesystem_keystore.set_keys_from_web(
+                        filesystem_keystore.set_public_key(
                             keychain_uid=public_key["keychain_uid"],
                             key_algo=public_key["key_algo"],
                             public_key=public_key["payload"],
