@@ -4,6 +4,7 @@ from pathlib import Path
 
 from kivy.factory import Factory
 from kivy.lang import Builder
+from kivy.uix.recycleview import RecycleView
 from kivy.uix.screenmanager import Screen
 from kivy.clock import Clock
 from kivy.config import Config
@@ -36,10 +37,33 @@ class PassphrasesDialogContent(BoxLayout):
     pass
 
 
-class CryptainerStoreScreen(Screen):
-
+class CryptainerStoreScreen(Screen, RecycleView):
     #: The container storage managed by this Screen, might be None if unset
     filesystem_cryptainer_storage = ObjectProperty(None, allownone=True)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.data = [{'text': str(x)} for x in range(20)]
+
+        cryptainers_page_ids = self.ids
+        cryptainers_page_ids.cryptainer_table.clear_widgets()
+        cryptainers_page_ids.cryptainer_table.do_layout()
+
+        if self.filesystem_cryptainer_storage is None:
+            display_layout = Factory.WABigInformationBox()
+            display_layout.ids.inner_label.text = tr._("Container storage is invalid")  # FIXME simplify this
+            cryptainers_page_ids.cryptainer_table.add_widget(display_layout)
+            return
+
+        cryptainer_names = self.filesystem_cryptainer_storage.list_cryptainer_names(as_sorted_list=True)
+
+        self.cryptainer = [{'text': str(cryptainer_name)} for index, cryptainer_name in
+                           enumerate(reversed(cryptainer_names))]
+        print(self.cryptainer)
+
+    def _get_selected_cryptainer_namesbis(self):
+        cryptainer_names = self.filesystem_cryptainer_storage.list_cryptainer_names(as_sorted_list=True)
+        self.cryptainer = [{'text': str(cryptainer_name)} for index, cryptainer_name in enumerate(reversed(cryptainer_names))]
 
     def _get_selected_cryptainer_names(self):
         cryptainer_names = []
@@ -47,14 +71,14 @@ class CryptainerStoreScreen(Screen):
             if getattr(cryptainer_entry, "selected", None):  # Beware of WABigInformationBox
                 assert cryptainer_entry.unique_identifier, cryptainer_entry.unique_identifier
                 cryptainer_names.append(cryptainer_entry.unique_identifier)
-        #print(">>>>> extract_selected_cryptainer_names", container_names)
+        # print(">>>>> extract_selected_cryptainer_names", container_names)
         return cryptainer_names
 
     @safe_catch_unhandled_exception
     def get_detected_cryptainer(self):
         # Use this to profile slow list creation
-        #import cProfile
-        #cProfile.runctx("self._get_detected_cryptainer()", locals=locals(), globals=globals(), sort="cumulative")
+        # import cProfile
+        # cProfile.runctx("self._get_detected_cryptainer()", locals=locals(), globals=globals(), sort="cumulative")
         self._get_detected_cryptainer()
 
     def _get_detected_cryptainer(self):
@@ -63,13 +87,13 @@ class CryptainerStoreScreen(Screen):
 
         cryptainers_page_ids = self.ids
 
-        #self.root.ids.screen_manager.get_screen(
+        # self.root.ids.screen_manager.get_screen(
         #    "Container_management"
-        #).ids
+        # ).ids
         cryptainers_page_ids.cryptainer_table.clear_widgets()
         cryptainers_page_ids.cryptainer_table.do_layout()  # Prevents bug with "not found" message position
 
-        #print(">>>>>>>>>>>>>self.filesystem_cryptainer_storage, ", self.filesystem_cryptainer_storage)
+        # print(">>>>>>>>>>>>>self.filesystem_cryptainer_storage, ", self.filesystem_cryptainer_storage)
         if self.filesystem_cryptainer_storage is None:
             display_layout = Factory.WABigInformationBox()
             display_layout.ids.inner_label.text = tr._("Container storage is invalid")  # FIXME simplify this
@@ -90,19 +114,22 @@ class CryptainerStoreScreen(Screen):
         self.cryptainer_checkboxes = []
 
         for index, cryptainer_name in enumerate(reversed(cryptainer_names), start=1):
-
-            cryptainer_label = tr._("N° {index}: {cryptainer_name}").format(index=index, cryptainer_name=cryptainer_name)
+            cryptainer_label = tr._("N° {index}: {cryptainer_name}").format(index=index,
+                                                                            cryptainer_name=cryptainer_name)
             cryptainer_entry = Factory.WASelectableListItemEntry(
-                    text=cryptainer_label)  # FIXME RENAME THIS
+                text=cryptainer_label)  # FIXME RENAME THIS
             cryptainer_entry.unique_identifier = cryptainer_name
-            #selection_checkbox = container_entry.ids.selection_checkbox
 
-            #def selection_callback(widget, value, container_name=container_name):  # Force container_name save here, else scope bug
+            # selection_checkbox = container_entry.ids.selection_checkbox
+
+            # def selection_callback(widget, value, container_name=container_name):  # Force container_name save here, else scope bug
             #    self.on_keystore_checkbox_click(keystore_uid=keystore_uid, is_selected=value)
-            #selection_checkbox.bind(active=selection_callback)
+            # selection_checkbox.bind(active=selection_callback)
 
-            def information_callback(widget, cryptainer_name=cryptainer_name):  # Force keystore_uid save here, else scope bug
+            def information_callback(widget,
+                                     cryptainer_name=cryptainer_name):  # Force keystore_uid save here, else scope bug
                 self.show_cryptainer_details(cryptainer_name=cryptainer_name)
+
             information_icon = cryptainer_entry.ids.information_icon
             information_icon.bind(on_press=information_callback)
 
@@ -141,10 +168,10 @@ class CryptainerStoreScreen(Screen):
             layout.add_widget(my_check_box)
             layout.add_widget(my_check_btn)
             """
-            #containers_page_ids.container_table.add_widget(my_check_box)
-            #containers_page_ids.container_table.add_widget(my_check_btn)
+            # containers_page_ids.container_table.add_widget(my_check_box)
+            # containers_page_ids.container_table.add_widget(my_check_btn)
 
-        #print("self.container_checkboxes", self.container_checkboxes)
+        # print("self.container_checkboxes", self.container_checkboxes)
 
     def get_selected_cryptainer_names(self):
 
@@ -158,7 +185,7 @@ class CryptainerStoreScreen(Screen):
             if checkbox.active:
                 cryptainer_names.append(checkbox._cryptainer_name)
 
-        #print("container_names", container_names)
+        # print("container_names", container_names)
         return cryptainer_names
 
     def show_cryptainer_details(self, cryptainer_name):
@@ -171,7 +198,7 @@ class CryptainerStoreScreen(Screen):
             all_dependencies = gather_trustee_dependencies([cryptainer])
             interesting_dependencies = [d[0] for d in list(all_dependencies["encryption"].values())]
             cryptainer_repr = "\n".join(str(trustee) for trustee in interesting_dependencies)
-            #container_repr = pprint.pformat(interesting_dependencies, indent=2)[:800]  # LIMIT else pygame.error: Width or height is too large
+            # container_repr = pprint.pformat(interesting_dependencies, indent=2)[:800]  # LIMIT else pygame.error: Width or height is too large
         except Exception as exc:
             cryptainer_repr = repr(exc)
 
@@ -194,7 +221,6 @@ class CryptainerStoreScreen(Screen):
         )
         self.dialog.open()
         '''
-
 
     def open_cryptainer_deletion_dialog(self):
 
@@ -224,8 +250,9 @@ class CryptainerStoreScreen(Screen):
             text=message,
             buttons=[
                 MDFlatButton(
-                    text="Confirm deletion", on_release=lambda *args: (close_current_dialog(), self.delete_cryptainers(cryptainer_names=cryptainer_names))
-                ),]
+                    text="Confirm deletion", on_release=lambda *args: (
+                        close_current_dialog(), self.delete_cryptainers(cryptainer_names=cryptainer_names))
+                ), ]
         )
 
     def delete_cryptainers(self, cryptainer_names):
@@ -237,7 +264,6 @@ class CryptainerStoreScreen(Screen):
                 pass  # File has probably been puregd already
 
         self.get_detected_cryptainer()  # FIXME rename
-
 
     def open_cryptainer_decryption_dialog(self):
 
@@ -274,18 +300,18 @@ class CryptainerStoreScreen(Screen):
         # TODO make this more generic with support for remote trustee!
         relevant_keystore_uids = [trustee[0]["keystore_uid"] for trustee in dependencies["encryption"].values()]
 
-        relevant_keystore_metadata = sorted([y for (x,y) in keystore_metadata.items()
-                                                if x in relevant_keystore_uids], key = lambda d: d["keystore_owner"])
+        relevant_keystore_metadata = sorted([y for (x, y) in keystore_metadata.items()
+                                             if x in relevant_keystore_uids], key=lambda d: d["keystore_owner"])
 
-        #print("--------------")
-        #pprint.pprint(relevant_keystore_metadata)
-
+        # print("--------------")
+        # pprint.pprint(relevant_keystore_metadata)
 
         content_cls = PassphrasesDialogContent()
 
-        #print(">>>>>>relevant_keystore_metadata", relevant_keystore_metadata)
+        # print(">>>>>>relevant_keystore_metadata", relevant_keystore_metadata)
         for metadata in relevant_keystore_metadata:
-            hint_text="Passphrase for user %s (hint: %s)" % (metadata["keystore_owner"], metadata["keystore_passphrase_hint"])
+            hint_text = "Passphrase for user %s (hint: %s)" % (
+                metadata["keystore_owner"], metadata["keystore_passphrase_hint"])
             _widget = TextInput(hint_text=hint_text)
 
             '''MDTextField(hint_text="S SSSSSSSS z z",
@@ -306,8 +332,10 @@ class CryptainerStoreScreen(Screen):
             buttons=[
                 MDFlatButton(
                     text="Launch decryption",
-                    on_release=lambda *args: (close_current_dialog(), self.decipher_cryptainers(cryptainer_names=cryptainer_names, input_content_cls=content_cls)),
-                ),]
+                    on_release=lambda *args: (close_current_dialog(),
+                                              self.decipher_cryptainers(cryptainer_names=cryptainer_names,
+                                                                        input_content_cls=content_cls)),
+                ), ]
         )
 
     def decipher_cryptainers(self, cryptainer_names, input_content_cls):
@@ -323,12 +351,13 @@ class CryptainerStoreScreen(Screen):
             try:
                 EXTERNAL_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
                 # FIXME make this asynchronous, to avoid stalling the app!
-                result = self.filesystem_cryptainer_storage.decrypt_cryptainer_from_storage(cryptainer_name, passphrase_mapper=passphrase_mapper)
+                result = self.filesystem_cryptainer_storage.decrypt_cryptainer_from_storage(cryptainer_name,
+                                                                                            passphrase_mapper=passphrase_mapper)
                 target_path = EXTERNAL_EXPORTS_DIR / (Path(cryptainer_name).with_suffix(""))
                 target_path.write_bytes(result)
-                #print(">> Successfully exported data file to %s" % target_path)
+                # print(">> Successfully exported data file to %s" % target_path)
             except Exception as exc:
-                #print(">>>>> close_dialog_decipher_cryptainer() exception thrown:", exc)  # TEMPORARY
+                # print(">>>>> close_dialog_decipher_cryptainer() exception thrown:", exc)  # TEMPORARY
                 errors.append(exc)
 
         if errors:
@@ -350,7 +379,7 @@ class CryptainerStoreScreen(Screen):
         self.manager.current = "CryptainerDecryption"
 
     @safe_catch_unhandled_exception
-    def __UNUSED_offloaded_attempt_cryptainer_decryption(self, cryptainer_filepath):  #FIXME move out of here
+    def __UNUSED_offloaded_attempt_cryptainer_decryption(self, cryptainer_filepath):  # FIXME move out of here
         logger.info("Decryption requested for container %s", cryptainer_filepath)
         target_directory = EXTERNAL_EXPORTS_DIR.joinpath(
             os.path.basename(cryptainer_filepath)
@@ -375,9 +404,10 @@ class CryptainerStoreScreen(Screen):
 
     ##@osc.address_method("/attempt_cryptainer_decryption")
     @safe_catch_unhandled_exception
-    def __UNUSED_attempt_cryptainer_decryption(self, cryptainer_filepath: str):  #FIXME move out of here
+    def __UNUSED_attempt_cryptainer_decryption(self, cryptainer_filepath: str):  # FIXME move out of here
         cryptainer_filepath = Path(cryptainer_filepath)
-        return self._offload_task(self._offloaded_attempt_cryptainer_decryption, cryptainer_filepath=cryptainer_filepath)
+        return self._offload_task(self._offloaded_attempt_cryptainer_decryption,
+                                  cryptainer_filepath=cryptainer_filepath)
 
         """
         print("The written sentence is passphrase : %s" % input)
