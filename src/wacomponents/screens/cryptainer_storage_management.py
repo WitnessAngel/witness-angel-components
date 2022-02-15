@@ -7,21 +7,14 @@ from kivy.lang import Builder
 from kivy.uix.recycleview import RecycleView
 from kivy.uix.screenmanager import Screen
 from kivy.clock import Clock
-from kivy.config import Config
 from kivy.properties import StringProperty, ListProperty, ObjectProperty
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.button import Button
-from kivy.uix.checkbox import CheckBox
-from kivy.uix.screenmanager import ScreenManager
 from kivy.uix.textinput import TextInput
-from kivymd.uix.textfield import MDTextField
-from kivymd.app import MDApp
-from kivymd.theming import ThemableBehavior
 from kivymd.uix.button import MDFlatButton
-from kivymd.uix.dialog import MDDialog
-from kivymd.uix.list import OneLineIconListItem, MDList
 from kivymd.uix.screen import Screen
 from kivymd.uix.snackbar import Snackbar
+from functools import partial
+
 
 from wacomponents.i18n import tr
 from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
@@ -37,33 +30,9 @@ class PassphrasesDialogContent(BoxLayout):
     pass
 
 
-class CryptainerStoreScreen(Screen, RecycleView):
+class CryptainerStoreScreen(Screen):
     #: The container storage managed by this Screen, might be None if unset
     filesystem_cryptainer_storage = ObjectProperty(None, allownone=True)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.data = [{'text': str(x)} for x in range(20)]
-
-        cryptainers_page_ids = self.ids
-        cryptainers_page_ids.cryptainer_table.clear_widgets()
-        cryptainers_page_ids.cryptainer_table.do_layout()
-
-        if self.filesystem_cryptainer_storage is None:
-            display_layout = Factory.WABigInformationBox()
-            display_layout.ids.inner_label.text = tr._("Container storage is invalid")  # FIXME simplify this
-            cryptainers_page_ids.cryptainer_table.add_widget(display_layout)
-            return
-
-        cryptainer_names = self.filesystem_cryptainer_storage.list_cryptainer_names(as_sorted_list=True)
-
-        self.cryptainer = [{'text': str(cryptainer_name)} for index, cryptainer_name in
-                           enumerate(reversed(cryptainer_names))]
-        print(self.cryptainer)
-
-    def _get_selected_cryptainer_namesbis(self):
-        cryptainer_names = self.filesystem_cryptainer_storage.list_cryptainer_names(as_sorted_list=True)
-        self.cryptainer = [{'text': str(cryptainer_name)} for index, cryptainer_name in enumerate(reversed(cryptainer_names))]
 
     def _get_selected_cryptainer_names(self):
         cryptainer_names = []
@@ -76,9 +45,6 @@ class CryptainerStoreScreen(Screen, RecycleView):
 
     @safe_catch_unhandled_exception
     def get_detected_cryptainer(self):
-        # Use this to profile slow list creation
-        # import cProfile
-        # cProfile.runctx("self._get_detected_cryptainer()", locals=locals(), globals=globals(), sort="cumulative")
         self._get_detected_cryptainer()
 
     def _get_detected_cryptainer(self):
@@ -114,64 +80,21 @@ class CryptainerStoreScreen(Screen, RecycleView):
         self.cryptainer_checkboxes = []
 
         for index, cryptainer_name in enumerate(reversed(cryptainer_names), start=1):
-            cryptainer_label = tr._("N° {index}: {cryptainer_name}").format(index=index,
-                                                                            cryptainer_name=cryptainer_name)
-            cryptainer_entry = Factory.WASelectableListItemEntry(
-                text=cryptainer_label)  # FIXME RENAME THIS
-            cryptainer_entry.unique_identifier = cryptainer_name
+            Clock.schedule_once(partial(self.load_cryptainer, index, cryptainer_name), 1)
 
-            # selection_checkbox = container_entry.ids.selection_checkbox
 
-            # def selection_callback(widget, value, container_name=container_name):  # Force container_name save here, else scope bug
-            #    self.on_keystore_checkbox_click(keystore_uid=keystore_uid, is_selected=value)
-            # selection_checkbox.bind(active=selection_callback)
+    def load_cryptainer(self,index, cryptainer_name, *args):
+        cryptainer_label = tr._("N° {index}: {cryptainer_name}").format(index=index, cryptainer_name=cryptainer_name)
+        cryptainer_entry = Factory.WASelectableListItemEntry(text=cryptainer_label)  # FIXME RENAME THIS
+        cryptainer_entry.unique_identifier = cryptainer_name
 
-            def information_callback(widget,
-                                     cryptainer_name=cryptainer_name):  # Force keystore_uid save here, else scope bug
-                self.show_cryptainer_details(cryptainer_name=cryptainer_name)
+        def information_callback(widget, cryptainer_name=cryptainer_name):  # Force keystore_uid save here, else scope bug
+            self.show_cryptainer_details(cryptainer_name=cryptainer_name)
 
-            information_icon = cryptainer_entry.ids.information_icon
-            information_icon.bind(on_press=information_callback)
+        information_icon = cryptainer_entry.ids.information_icon
+        information_icon.bind(on_press=information_callback)
 
-            cryptainers_page_ids.cryptainer_table.add_widget(cryptainer_entry)
-            """
-            my_check_box = CheckBox(active=False,
-                                    size_hint=(0.1, None), height=40)
-            my_check_box._cryptainer_name = container_name
-            #my_check_box.bind(active=self.check_box_cryptainer_checked)
-            self.container_checkboxes.append(my_check_box)
-
-            my_check_btn = Button(
-                text="N° %s:  %s"
-                % (index, container_name),
-                size_hint=(0.9, None),
-                background_color=(1, 1, 1, 0.01),
-                on_release=functools.partial(self.show_cryptainer_details, container_name=container_name),
-                height=40,
-            )"""
-            '''
-            self.check_box_cryptainer_uuid_dict[my_check_box] = [
-                str(container[0]["container_uid"]),
-                str(container[1]),
-            ]
-            self.btn_cryptainer_uuid_dict[my_check_btn] = [
-                str(container[0]["container_uid"]),
-                str(container[1]),
-            ]
-            '''
-            """
-            layout = BoxLayout(
-                orientation="horizontal",
-                pos_hint={"center": 1, "top": 1},
-                padding=[20, 0],
-            )
-            layout.add_widget(my_check_box)
-            layout.add_widget(my_check_btn)
-            """
-            # containers_page_ids.container_table.add_widget(my_check_box)
-            # containers_page_ids.container_table.add_widget(my_check_btn)
-
-        # print("self.container_checkboxes", self.container_checkboxes)
+        self.ids.cryptainer_table.add_widget(cryptainer_entry)
 
     def get_selected_cryptainer_names(self):
 
