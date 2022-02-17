@@ -33,6 +33,18 @@ class PassphrasesDialogContent(BoxLayout):
 class CryptainerStoreScreen(Screen):
     #: The container storage managed by this Screen, might be None if unset
     filesystem_cryptainer_storage = ObjectProperty(None, allownone=True)
+    cryptainer_names_to_be_loaded = ObjectProperty(None, allownone=True)
+    cryptainer_loading_schedule = ObjectProperty(None, allownone=True)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # print("CREATED CryptainerStoreScreen")
+
+    def on_pre_leave(self, *args):
+        if self.cryptainer_loading_schedule:
+            self.cryptainer_loading_schedule.cancel()
+        self.cryptainer_loading_schedule=None
+
 
     def _get_selected_cryptainer_names(self):
         cryptainer_names = []
@@ -66,9 +78,10 @@ class CryptainerStoreScreen(Screen):
             cryptainers_page_ids.cryptainer_table.add_widget(display_layout)
             return
 
-        cryptainer_names = self.filesystem_cryptainer_storage.list_cryptainer_names(as_sorted_list=True)
+        self.cryptainer_names_to_be_loaded = self.filesystem_cryptainer_storage.list_cryptainer_names(
+            as_sorted_list=True)
 
-        if not cryptainer_names:
+        if not self.cryptainer_names_to_be_loaded:
             display_layout = Factory.WABigInformationBox()
             display_layout.ids.inner_label.text = tr._("No containers found")
             cryptainers_page_ids.cryptainer_table.add_widget(display_layout)
@@ -78,12 +91,19 @@ class CryptainerStoreScreen(Screen):
         self.btn_cryptainer_uuid_dict = {}
 
         self.cryptainer_checkboxes = []
+        # print(self.cryptainer_names_to_be_loaded)
 
-        for index, cryptainer_name in enumerate(reversed(cryptainer_names), start=1):
-            Clock.schedule_once(partial(self.load_cryptainer, index, cryptainer_name), 1)
+        for index, cryptainer_name in enumerate(reversed(self.cryptainer_names_to_be_loaded), start=1):
+            if self.cryptainer_names_to_be_loaded:
 
+                self.cryptainer_loading_schedule = Clock.schedule_interval(partial(self.load_cryptainer, index, cryptainer_name), 0.5 + 5 * index)
+                # Clock.unschedule(self.cryptainer_loading_schedule)
+                self.cryptainer_names_to_be_loaded.remove(cryptainer_name)
+            else:
+                Clock.unschedule(self.cryptainer_loading_schedule)
+                self.load_cryptainer=False
 
-    def load_cryptainer(self,index, cryptainer_name, *args):
+    def load_cryptainer(self, index, cryptainer_name, *args):
         cryptainer_label = tr._("N° {index}: {cryptainer_name}").format(index=index, cryptainer_name=cryptainer_name)
         cryptainer_entry = Factory.WASelectableListItemEntry(text=cryptainer_label)  # FIXME RENAME THIS
         cryptainer_entry.unique_identifier = cryptainer_name
@@ -95,6 +115,7 @@ class CryptainerStoreScreen(Screen):
         information_icon.bind(on_press=information_callback)
 
         self.ids.cryptainer_table.add_widget(cryptainer_entry)
+        print("ADDED CRYPTAINER", cryptainer_name)
 
     def get_selected_cryptainer_names(self):
 

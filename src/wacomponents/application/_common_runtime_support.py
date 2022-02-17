@@ -97,6 +97,13 @@ class WaRuntimeSupportMixin:
         return False, tr.f(tr._("Wrong camera url: \"{camera_url}\""))
 
     @staticmethod
+    def check_gateway_url(gateway_url):
+        message = tr.f(tr._("The gateway url is: {gateway_url}"))
+        if gateway_url:
+            return True, message
+        return False, message
+
+    @staticmethod
     def check_video_recording_duration_mn(video_recording_duration_mn):
         message = tr.f(tr._("Each container stores {video_recording_duration_mn} mn(s) of video"))
         if video_recording_duration_mn > 0:

@@ -19,6 +19,11 @@
         cryptainer_delete_btn.size_hint_x = 0.5
         cryptainer_decrypt_btn.size_hint_x = 0.5
         root.get_detected_cryptainer()  # FIXME rename this!!!
+
+    on_pre_leave:
+        root.on_pre_leave()
+
+
     viewclass: 'Label'
     RecycleBoxLayout:
         default_size: None, dp(56)
