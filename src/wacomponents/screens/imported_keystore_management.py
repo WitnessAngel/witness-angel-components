@@ -18,6 +18,7 @@ from wacryptolib.authdevice import list_available_authdevices
 from wacryptolib.exceptions import KeystoreAlreadyExists, SchemaValidationError, ExistenceError, KeyAlreadyExists
 from wacryptolib.jsonrpc_client import JsonRpcProxy, status_slugs_response_error_handler
 from jsonrpc_requests import JSONRPCError
+from kivymd.app import MDApp
 
 from wacomponents.i18n import tr
 from wacomponents.utilities import shorten_uid
@@ -29,11 +30,18 @@ Builder.load_file(str(Path(__file__).parent / 'imported_keystore_management.kv')
 class AuthdeviceStoreScreen(Screen):
     filesystem_keystore_pool = ObjectProperty(None)
 
-    jsonrpc_url = "http://127.0.0.1:8000" + "/gateway/jsonrpc/"  # FIXME change url!!
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._app = MDApp.get_running_app()
 
-    escrow_proxy = JsonRpcProxy(
-        url=jsonrpc_url, response_error_handler=status_slugs_response_error_handler
-    )
+    def _get_gateway_proxy(self):
+
+        #jsonrpc_url = self._app.get_witness_angel_gateway_url()
+        jsonrpc_url = "https://api.witnessangel.com/gateway/jsonrpc/"
+        gateway_proxy = JsonRpcProxy(
+            url=jsonrpc_url, response_error_handler=status_slugs_response_error_handler
+        )
+        return gateway_proxy
 
     def __init__(self, *args, **kwargs):
         self.selected_keystore_uids = []  # List of STRINGS
@@ -44,71 +52,74 @@ class AuthdeviceStoreScreen(Screen):
         pass
         # print("I am dispatched on_selected_keyguardians_changed", args)
 
-    def import_keystores_from_usb(self, include_private_keys):
+    @staticmethod
+    def _check_if_auth_devices_connected_or_initialized():
+
+        authdevices = list_available_authdevices()
+        # print("DETECTED AUTH DEVICES", authdevices)
+
+        close_current_dialog()
+        if not authdevices:
+            msg = tr._("No connected authentication devices found")
+            display_info_toast(msg)
+            return False
+        else:
+            authdevices_initialized = [x for x in authdevices if is_authenticator_initialized(x["authenticator_dir"])]
+
+            if not authdevices_initialized:
+                msg = tr._("No initialized authentication devices found")
+                display_info_toast(msg)
+                return False
+
+        return authdevices_initialized
+
+
+    def import_keystores_from_usb(self, include_private_keys, authdevices_initialized):
         """
         loop through the “authdevices” present,
         and for those who are initialize, copy (with different Keystore for each folder)
         their content in a <KEYS_ROOT> / <keystore_uid> / folder (taking the keystore_uid from metadata.json)
         """
-        # list_devices = list_available_authdevices()
-        # print(list_devices)
-        # for index, authdevice in enumerate(list_devices):
-        # print(">>>>>>>>>> import_keystores_from_usb started")
-        authdevices = list_available_authdevices()
-        # print("DETECTED AUTH DEVICES", authdevices)
-        print("Francinette")
 
-        if not authdevices:
-            msg = tr._("No connected authentication devices found")
-        else:
+        imported_keystore_metadata = []
+        already_existing_keystore_metadata = []
+        corrupted_keystore_count = 0
 
-            authdevices_initialized = [x for x in authdevices
-                                       if is_authenticator_initialized(x["authenticator_dir"])]
+        for authdevice in authdevices_initialized:
+            # print(">>>>>>>>>> importing,", authdevice)
+            remote_keystore_dir = authdevice["authenticator_dir"]
 
-            if not authdevices_initialized:
-                msg = tr._("No initialized authentication devices found")
+            try:
+                remote_keystore = FilesystemKeystore(remote_keystore_dir)
+                keystore_tree = remote_keystore.export_to_keystore_tree(
+                    include_private_keys=include_private_keys)
+                keystore_tree_copy = keystore_tree.copy()
+                del keystore_tree_copy['keypairs']
+                keystore_metadata = keystore_tree_copy
+                # pprint.pprint(keystore_metadata)
+            except SchemaValidationError:
+                corrupted_keystore_count += 1
+                continue
 
+            try:
+                self.filesystem_keystore_pool.import_keystore_from_keystore_tree(keystore_tree)
+            except KeyAlreadyExists:
+                already_existing_keystore_metadata.append(keystore_metadata)
             else:
+                imported_keystore_metadata.append(keystore_metadata)
 
-                imported_keystore_metadata = []
-                already_existing_keystore_metadata = []
-                corrupted_keystore_count = 0
+        msg = tr._(
+            "{imported_keystore_count} authenticators properly imported, {already_existing_keystore_count} already existing, {corrupted_keystore_count} skipped because corrupted").format(
+            imported_keystore_count=len(imported_keystore_metadata),
+            already_existing_keystore_count=len(already_existing_keystore_metadata),
+            corrupted_keystore_count=corrupted_keystore_count
+        )
+        # print(imported_keystore_metadata)
 
-                for authdevice in authdevices_initialized:
-                    # print(">>>>>>>>>> importing,", authdevice)
-                    remote_keystore_dir = authdevice["authenticator_dir"]
+        # Autoselect freshly imported keys
+        new_keystore_uids = [metadata["keystore_uid"] for metadata in imported_keystore_metadata]
+        self._change_authenticator_selection_status(keystore_uids=new_keystore_uids, is_selected=True)
 
-                    try:
-                        remote_keystore = FilesystemKeystore(remote_keystore_dir)
-                        keystore_tree = remote_keystore.export_to_keystore_tree(
-                            include_private_keys=include_private_keys)
-                        keystore_tree_copy = keystore_tree.copy()
-                        del keystore_tree_copy['keypairs']
-                        keystore_metadata = keystore_tree_copy
-                        # pprint.pprint(keystore_metadata)
-                    except SchemaValidationError:
-                        corrupted_keystore_count += 1
-                        continue
-
-                    try:
-                        self.filesystem_keystore_pool.import_keystore_from_keystore_tree(keystore_tree)
-                    except KeyAlreadyExists:
-                        already_existing_keystore_metadata.append(keystore_metadata)
-                    else:
-                        imported_keystore_metadata.append(keystore_metadata)
-                        pprint.pprint(imported_keystore_metadata)
-
-                msg = tr._(
-                    "{imported_keystore_count} authenticators properly imported, {already_existing_keystore_count} already existing, {corrupted_keystore_count} skipped because corrupted").format(
-                    imported_keystore_count=len(imported_keystore_metadata),
-                    already_existing_keystore_count=len(already_existing_keystore_metadata),
-                    corrupted_keystore_count=corrupted_keystore_count
-                )
-                # print(imported_keystore_metadata)
-
-                # Autoselect freshly imported keys
-                new_keystore_uids = [metadata["keystore_uid"] for metadata in imported_keystore_metadata]
-                self._change_authenticator_selection_status(keystore_uids=new_keystore_uids, is_selected=True)
 
         close_current_dialog()
         display_info_toast(msg)
@@ -165,27 +176,7 @@ class AuthdeviceStoreScreen(Screen):
 
         for (index, (keystore_uid, metadata)) in enumerate(sorted(keystore_metadata.items()), start=1):
             keystore_uid_shortened = shorten_uid(keystore_uid)
-            # print("COMPARING", str(keystore_uid), self.selected_keystore_uids)
-            # my_check_box = CheckBox(
-            #     active=(str(keystore_uid) in self.selected_keystore_uids),
-            #     size_hint=(0.15, None),
-            #     on_release=self.on_keystore_checkbox_click,
-            #     height=40,
-            # )
-            # my_check_btn = Button(
-            #     text="Key n°%s, User %s, Uid %s" % (index, metadata["keystore_owner"], uuid_suffix),
-            #     size_hint=(0.85, None),
-            #     #background_color=(0, 1, 1, 0.1),
-            #     on_release=functools.partial(self.display_keystore_details, keystore_uid=keystore_uid, keystore_owner=metadata["keystore_owner"]),
-            #     height=40,
-            # )
-            # self.chbx_lbls[my_check_box] = str(keystore_uid)
-            # self.btn_lbls[my_check_btn] = str(keystore_uid)
-            # device_row = BoxLayout(
-            #    orientation="horizontal",
-            # pos_hint={"center": 1, "top": 1},
-            # padding=[20, 0],
-            # )
+
             authenticator_label = tr._("User {keystore_owner}, id {keystore_uid}").format(
                 keystore_owner=metadata["keystore_owner"], keystore_uid=keystore_uid_shortened)
             authenticator_entry = Factory.WASelectableListItemEntry(text=authenticator_label)  # FIXME RENAME THIS
@@ -328,19 +319,21 @@ class AuthdeviceStoreScreen(Screen):
         )
 
     def choice_import_private_key_or_no_dialog(self):
+        authdevices_initialized = self._check_if_auth_devices_connected_or_initialized()
 
-        dialog = dialog_with_close_button(
-            close_btn_label=tr._("Cancel"),
-            title=tr._("Import the private keys"),
-            type="custom",
-            content_cls=Factory.IncludePrivateKeysContent(),
-            buttons=[
-                MDFlatButton(text=tr._("Yes"),
-                             on_release=lambda *args: self.import_keystores_from_usb(include_private_keys=True)),
-                MDFlatButton(text=tr._("No"),
-                             on_release=lambda *args: self.import_keystores_from_usb(include_private_keys=False))
-            ],
-        )
+        if authdevices_initialized:
+            dialog = dialog_with_close_button(
+                close_btn_label=tr._("Cancel"),
+                title=tr._("Import the private keys"),
+                type="custom",
+                content_cls=Factory.IncludePrivateKeysContent(),
+                buttons=[
+                    MDFlatButton(text=tr._("Yes"),
+                                 on_release=lambda *args: self.import_keystores_from_usb(include_private_keys=True, authdevices_initialized=authdevices_initialized)),
+                    MDFlatButton(text=tr._("No"),
+                                 on_release=lambda *args: self.import_keystores_from_usb(include_private_keys=False, authdevices_initialized=authdevices_initialized))
+                ],
+            )
 
     @staticmethod
     def _convert_from_public_authenticator_to_keystore_tree(public_authenticator):
@@ -351,8 +344,7 @@ class AuthdeviceStoreScreen(Screen):
                 dict(
                     keychain_uid=public_key["keychain_uid"],
                     key_algo=public_key["key_algo"],
-                    public_key=public_key["key_value"],
-                    private_key=None
+                    public_key=public_key["key_value"]
                 )
             )
 
@@ -371,9 +363,10 @@ class AuthdeviceStoreScreen(Screen):
 
         keystore_str = dialog.content_cls.ids.tester_keystore_uid.text
         close_current_dialog()
+        gateway_proxy = self._get_gateway_proxy()
         try:
             keystore_uid = uuid.UUID(keystore_str)
-            public_authenticator = self.escrow_proxy.get_public_authenticator(keystore_uid=keystore_uid)
+            public_authenticator = gateway_proxy.get_public_authenticator(keystore_uid=keystore_uid)
 
             keystore_tree = self._convert_from_public_authenticator_to_keystore_tree(public_authenticator)
 
