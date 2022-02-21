@@ -1,5 +1,6 @@
 import inspect
 from pathlib import Path
+from urllib.parse import urlparse
 
 from wacomponents.default_settings import INTERNAL_APP_ROOT, INTERNAL_CRYPTAINER_DIR, INTERNAL_KEYSTORE_POOL_DIR, \
     INTERNAL_LOGS_DIR
@@ -86,7 +87,6 @@ class WaRuntimeSupportMixin:
 
     @staticmethod
     def check_camera_url(camera_url):
-        from urllib.parse import urlparse
         if camera_url:
             try:
                 parsed = urlparse(camera_url)
@@ -97,11 +97,15 @@ class WaRuntimeSupportMixin:
         return False, tr.f(tr._("Wrong camera url: \"{camera_url}\""))
 
     @staticmethod
-    def check_gateway_url(gateway_url):
-        message = tr.f(tr._("The gateway url is: {gateway_url}"))
-        if gateway_url:
-            return True, message
-        return False, message
+    def check_witness_angel_gateway_url(witness_angel_gateway_url):
+        if witness_angel_gateway_url:
+            try:
+                parsed = urlparse(witness_angel_gateway_url)
+                if parsed.scheme:
+                    return True, tr.f(tr._("Witness Angel gateway url: {witness_angel_gateway_url}"))
+            except ValueError:
+                pass
+        return False, tr.f(tr._("Wrong Witness Angel gateway url: \"{witness_angel_gateway_url}\""))
 
     @staticmethod
     def check_video_recording_duration_mn(video_recording_duration_mn):
