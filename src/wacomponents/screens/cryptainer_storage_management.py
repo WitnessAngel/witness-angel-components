@@ -40,10 +40,11 @@ class CryptainerStoreScreen(Screen):
         super().__init__(*args, **kwargs)
         # print("CREATED CryptainerStoreScreen")
 
-    def on_pre_leave(self, *args):
+    def cancel_cryptainer_loading(self, *args):
         if self.cryptainer_loading_schedule:
             self.cryptainer_loading_schedule.cancel()
-        self.cryptainer_loading_schedule=None
+            self.cryptainer_loading_schedule = None
+            self.cryptainer_names_to_be_loaded = []
 
 
     def _get_selected_cryptainer_names(self):
@@ -60,6 +61,8 @@ class CryptainerStoreScreen(Screen):
         self._get_detected_cryptainer()
 
     def _get_detected_cryptainer(self):
+        self.cancel_cryptainer_loading()
+
         # FIXME use RecycleView instead for performance!!
         # https://stackoverflow.com/questions/70333878/kivymd-recycleview-has-low-fps-lags
 
@@ -78,8 +81,8 @@ class CryptainerStoreScreen(Screen):
             cryptainers_page_ids.cryptainer_table.add_widget(display_layout)
             return
 
-        self.cryptainer_names_to_be_loaded = self.filesystem_cryptainer_storage.list_cryptainer_names(
-            as_sorted_list=True)
+        sorted_cryptainers = list(enumerate(self.filesystem_cryptainer_storage.list_cryptainer_names(as_sorted_list=True), start=1))
+        self.cryptainer_names_to_be_loaded = list(reversed(sorted_cryptainers))
 
         if not self.cryptainer_names_to_be_loaded:
             display_layout = Factory.WABigInformationBox()
@@ -91,19 +94,18 @@ class CryptainerStoreScreen(Screen):
         self.btn_cryptainer_uuid_dict = {}
 
         self.cryptainer_checkboxes = []
-        # print(self.cryptainer_names_to_be_loaded)
 
-        for index, cryptainer_name in enumerate(reversed(self.cryptainer_names_to_be_loaded), start=1):
-            if self.cryptainer_names_to_be_loaded:
+        assert not self.cryptainer_loading_schedule
+        self.cryptainer_loading_schedule = Clock.schedule_interval(partial(self.load_next_scheduled_cryptainer), 0.02)
 
-                self.cryptainer_loading_schedule = Clock.schedule_interval(partial(self.load_cryptainer, index, cryptainer_name), 0.5 + 5 * index)
-                # Clock.unschedule(self.cryptainer_loading_schedule)
-                self.cryptainer_names_to_be_loaded.remove(cryptainer_name)
-            else:
-                Clock.unschedule(self.cryptainer_loading_schedule)
-                self.load_cryptainer=False
+    def load_next_scheduled_cryptainer(self, *args):
+        if self.cryptainer_names_to_be_loaded:
+            cryptainer_idx, cryptainer_name = self.cryptainer_names_to_be_loaded.pop()
+            self._load_cryptainer(index=cryptainer_idx, cryptainer_name=cryptainer_name)
+        else:
+            self.cryptainer_loading_schedule.cancel()
 
-    def load_cryptainer(self, index, cryptainer_name, *args):
+    def _load_cryptainer(self, index, cryptainer_name):
         cryptainer_label = tr._("N° {index}: {cryptainer_name}").format(index=index, cryptainer_name=cryptainer_name)
         cryptainer_entry = Factory.WASelectableListItemEntry(text=cryptainer_label)  # FIXME RENAME THIS
         cryptainer_entry.unique_identifier = cryptainer_name

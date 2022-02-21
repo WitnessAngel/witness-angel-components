@@ -21,7 +21,7 @@
         root.get_detected_cryptainer()  # FIXME rename this!!!
 
     on_pre_leave:
-        root.on_pre_leave()
+        root.cancel_cryptainer_loading()
 
 
     viewclass: 'Label'
