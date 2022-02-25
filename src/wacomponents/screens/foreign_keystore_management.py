@@ -13,7 +13,7 @@ from kivymd.uix.button import MDFlatButton
 from kivymd.uix.screen import Screen
 
 from wacryptolib.authenticator import is_authenticator_initialized
-from wacryptolib.keystore import FilesystemKeystore
+from wacryptolib.keystore import FilesystemKeystore, KEYSTORE_FORMAT, validate_keystore_tree
 from wacryptolib.authdevice import list_available_authdevices
 from wacryptolib.exceptions import KeystoreAlreadyExists, SchemaValidationError, ExistenceError, KeyAlreadyExists
 from wacryptolib.jsonrpc_client import JsonRpcProxy, status_slugs_response_error_handler
@@ -102,7 +102,7 @@ class AuthdeviceStoreScreen(Screen):
                 continue
 
             try:
-                self.filesystem_keystore_pool.import_keystore_from_keystore_tree(keystore_tree)
+                self.filesystem_keystore_pool.import_foreign_keystore_from_keystore_tree(keystore_tree)
             except KeyAlreadyExists:
                 already_existing_keystore_metadata.append(keystore_metadata)
             else:
@@ -336,7 +336,7 @@ class AuthdeviceStoreScreen(Screen):
             )
 
     @staticmethod
-    def _convert_from_public_authenticator_to_keystore_tree(public_authenticator):
+    def _convert_public_authenticator_to_keystore_tree(public_authenticator):
         keypairs = []
 
         for public_key in public_authenticator["public_keys"]:
@@ -344,19 +344,19 @@ class AuthdeviceStoreScreen(Screen):
                 dict(
                     keychain_uid=public_key["keychain_uid"],
                     key_algo=public_key["key_algo"],
-                    public_key=public_key["key_value"]
+                    public_key=public_key["key_value"],
+                    private_key=None  # FIXME invalid
                 )
             )
 
         keystore_tree = {
             "keystore_type": "authenticator",
-            "keystore_format": "keystore_1.0",
+            "keystore_format": KEYSTORE_FORMAT,
             "keystore_owner": public_authenticator["keystore_owner"],
             "keystore_uid": public_authenticator["keystore_uid"],
-            "keystore_secret": secrets.token_urlsafe(64),
             "keypairs": keypairs
         }
-
+        validate_keystore_tree(keystore_tree)  # SAFETY
         return keystore_tree
 
     def import_key_storage_from_data_tree(self, dialog):
@@ -368,7 +368,7 @@ class AuthdeviceStoreScreen(Screen):
             keystore_uid = uuid.UUID(keystore_str)
             public_authenticator = gateway_proxy.get_public_authenticator(keystore_uid=keystore_uid)
 
-            keystore_tree = self._convert_from_public_authenticator_to_keystore_tree(public_authenticator)
+            keystore_tree = self._convert_public_authenticator_to_keystore_tree(public_authenticator)
 
         except ValueError:
             result = tr._("Failure")
@@ -384,7 +384,7 @@ class AuthdeviceStoreScreen(Screen):
 
         else:
             try:
-                self.filesystem_keystore_pool.import_keystore_from_keystore_tree(keystore_tree)
+                self.filesystem_keystore_pool.import_foreign_keystore_from_keystore_tree(keystore_tree)
 
             except KeyAlreadyExists:
                 result = tr._("Failure")

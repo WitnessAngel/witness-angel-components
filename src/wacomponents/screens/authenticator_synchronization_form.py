@@ -164,7 +164,7 @@ class AuthenticatorSynchronizationScreen(Screen):
                         Gateway: {gateway}
                         Remote status: {status}
                         Message: {message}
-                        ID: {keystore_uid}
+                        Authenticator ID: {keystore_uid}
                     """)).format(**_displayed_values)
 
         if synchronization_details_text:
