@@ -130,6 +130,8 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
             authenticator_widget.bind(on_release=authenticator_widget._onrelease_callback)
             authenticator_list_widget.add_widget(authenticator_widget)
 
+        display_info_toast(tr._("Refreshed authenticator locations"))
+
         self.reselect_previously_selected_authenticator()  # Preserve previous selection across refreshes
 
     def _get_authenticator_dir_from_metadata(self, authenticator_metadata):
