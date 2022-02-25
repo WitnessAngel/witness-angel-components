@@ -24,7 +24,7 @@ from wacomponents.i18n import tr
 from wacomponents.utilities import shorten_uid
 from wacomponents.widgets.popups import display_info_toast, close_current_dialog, dialog_with_close_button
 
-Builder.load_file(str(Path(__file__).parent / 'imported_keystore_management.kv'))
+Builder.load_file(str(Path(__file__).parent / 'foreign_keystore_management.kv'))
 
 
 class AuthdeviceStoreScreen(Screen):
@@ -81,7 +81,7 @@ class AuthdeviceStoreScreen(Screen):
         their content in a <KEYS_ROOT> / <keystore_uid> / folder (taking the keystore_uid from metadata.json)
         """
 
-        imported_keystore_metadata = []
+        foreign_keystore_metadata = []
         already_existing_keystore_metadata = []
         corrupted_keystore_count = 0
 
@@ -106,18 +106,18 @@ class AuthdeviceStoreScreen(Screen):
             except KeyAlreadyExists:
                 already_existing_keystore_metadata.append(keystore_metadata)
             else:
-                imported_keystore_metadata.append(keystore_metadata)
+                foreign_keystore_metadata.append(keystore_metadata)
 
         msg = tr._(
-            "{imported_keystore_count} authenticators properly imported, {already_existing_keystore_count} already existing, {corrupted_keystore_count} skipped because corrupted").format(
-            imported_keystore_count=len(imported_keystore_metadata),
+            "{foreign_keystore_count} authenticators properly imported, {already_existing_keystore_count} already existing, {corrupted_keystore_count} skipped because corrupted").format(
+            foreign_keystore_count=len(foreign_keystore_metadata),
             already_existing_keystore_count=len(already_existing_keystore_metadata),
             corrupted_keystore_count=corrupted_keystore_count
         )
-        # print(imported_keystore_metadata)
+        # print(foreign_keystore_metadata)
 
         # Autoselect freshly imported keys
-        new_keystore_uids = [metadata["keystore_uid"] for metadata in imported_keystore_metadata]
+        new_keystore_uids = [metadata["keystore_uid"] for metadata in foreign_keystore_metadata]
         self._change_authenticator_selection_status(keystore_uids=new_keystore_uids, is_selected=True)
 
 
@@ -125,7 +125,7 @@ class AuthdeviceStoreScreen(Screen):
         display_info_toast(msg)
 
         # update the display of authdevice saved in the local folder .keys_storage_ward
-        self.list_imported_keystores(display_toast=False)
+        self.list_foreign_keystores(display_toast=False)
 
     def delete_keystores(self):
 
@@ -138,7 +138,7 @@ class AuthdeviceStoreScreen(Screen):
         else:
             # TODO move this to WACRYPTOLIB!
             for keystore_uid in keystore_uids:
-                path = self.filesystem_keystore_pool._get_imported_keystore_dir(keystore_uid)
+                path = self.filesystem_keystore_pool._get_foreign_keystore_dir(keystore_uid)
                 try:
                     shutil.rmtree(path)
                 except OSError as exc:
@@ -150,9 +150,9 @@ class AuthdeviceStoreScreen(Screen):
 
         display_info_toast(msg)
 
-        self.list_imported_keystores(display_toast=False)
+        self.list_foreign_keystores(display_toast=False)
 
-    def list_imported_keystores(self, display_toast=True):
+    def list_foreign_keystores(self, display_toast=True):
         """
         loop through the KEYS_ROOT / files, and read their metadata.json,
         to display in the interface their USER and the start of their UUID
@@ -165,7 +165,7 @@ class AuthdeviceStoreScreen(Screen):
         Keys_page_ids.imported_authenticator_list.clear_widgets()  # FIXME naming
         Keys_page_ids.imported_authenticator_list.do_layout()  # Prevents bug with "not found" message position
 
-        keystore_metadata = self.filesystem_keystore_pool.get_imported_keystore_metadata()
+        keystore_metadata = self.filesystem_keystore_pool.get_foreign_keystore_metadata()
 
         if not keystore_metadata:
             self.display_message_no_device_found()
@@ -279,8 +279,8 @@ class AuthdeviceStoreScreen(Screen):
         display the information of the keys stored in the selected usb
 
         """
-        imported_keystore = self.filesystem_keystore_pool.get_imported_keystore(keystore_uid=keystore_uid)
-        keypair_identifiers = imported_keystore.list_keypair_identifiers()
+        foreign_keystore = self.filesystem_keystore_pool.get_foreign_keystore(keystore_uid=keystore_uid)
+        keypair_identifiers = foreign_keystore.list_keypair_identifiers()
 
         message = ""
         for index, keypair_identifier in enumerate(keypair_identifiers, start=1):
@@ -401,7 +401,7 @@ class AuthdeviceStoreScreen(Screen):
                 display_info_toast(msg)
 
                 # update the display of authentication_device saved in the local folder .keys_storage_ward
-                self.list_imported_keystores(display_toast=False)
+                self.list_foreign_keystores(display_toast=False)
 
                 result = tr._("Success")
                 details = tr._("Authenticator has been imported successfully")

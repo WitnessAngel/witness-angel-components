@@ -56,10 +56,10 @@ class CryptainerDecryptionScreen(Screen):
         passphrase = tr._("NOT Set")
 
         try:
-            filesystem_keystore = self.filesystem_keystore_pool.get_imported_keystore(keystore_uid=trustee_uid)
+            filesystem_keystore = self.filesystem_keystore_pool.get_foreign_keystore(keystore_uid=trustee_uid)
 
-            imported_keystore_dir = self.filesystem_keystore_pool._get_imported_keystore_dir(keystore_uid=trustee_uid)
-            metadata = load_keystore_metadata(imported_keystore_dir)
+            foreign_keystore_dir = self.filesystem_keystore_pool._get_foreign_keystore_dir(keystore_uid=trustee_uid)
+            metadata = load_keystore_metadata(foreign_keystore_dir)
             keystore_owner = metadata["keystore_owner"]
 
             if trustee_id in self.passphrase_mapper:
@@ -156,7 +156,7 @@ class CryptainerDecryptionScreen(Screen):
             relevant_keystore_uids = [trustee[0]["keystore_uid"] for trustee in dependencies["encryption"].values()]
             for keystore_uid in relevant_keystore_uids:
 
-                filesystem_keystore = self.filesystem_keystore_pool.get_imported_keystore(keystore_uid=keystore_uid)
+                filesystem_keystore = self.filesystem_keystore_pool.get_foreign_keystore(keystore_uid=keystore_uid)
                 keypair_identifiers = filesystem_keystore.list_keypair_identifiers()
 
                 keychain_uid = keypair_identifiers[0]["keychain_uid"]

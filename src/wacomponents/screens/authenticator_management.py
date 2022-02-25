@@ -230,7 +230,7 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
                     authenticator_dir=authenticator_dir_shortened,
                     keystore_uid=authenticator_metadata["keystore_uid"],
                     keystore_owner=authenticator_metadata["keystore_owner"],
-                    keystore_passphrase_hint=authenticator_metadata["keystore_passphrase_hint"],
+                    keystore_passphrase_hint=authenticator_metadata["keystore_passphrase_hint"],  # FIXME might be missing because OPTIONAL!!!
                 )
 
                 authenticator_info_text = dedent(tr._("""\
