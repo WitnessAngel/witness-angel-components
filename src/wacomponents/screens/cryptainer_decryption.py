@@ -10,7 +10,7 @@ from kivymd.uix.button import MDFlatButton
 from kivymd.uix.snackbar import Snackbar
 from wacryptolib.cryptainer import gather_trustee_dependencies, request_decryption_authorizations, _get_trustee_id, \
     CRYPTAINER_TRUSTEE_TYPES
-from kivy.properties import StringProperty, ListProperty, ObjectProperty, NumericProperty
+from kivy.properties import StringProperty, ListProperty, ObjectProperty, NumericProperty, BooleanProperty
 from wacryptolib.exceptions import KeystoreDoesNotExist, KeyDoesNotExist, KeyLoadingError
 from wacryptolib.keygen import load_asymmetric_key_from_pem_bytestring
 from wacryptolib.keystore import FilesystemKeystore, load_keystore_metadata
@@ -29,7 +29,7 @@ class CryptainerDecryptionScreen(Screen):
     selected_cryptainer_names = ObjectProperty(None, allownone=True)
     filesystem_cryptainer_storage = ObjectProperty(None, allownone=True)
     filesystem_keystore_pool = ObjectProperty(None)
-    found_trustees_lacking_passphrase = NumericProperty(0)
+    found_trustees_lacking_passphrase = BooleanProperty(0)
     passphrase_mapper = {}
 
     def go_to_previous_screen(self):
@@ -51,41 +51,47 @@ class CryptainerDecryptionScreen(Screen):
 
             self.ids.selected_cryptainer_table.add_widget(cryptainer_entry)
 
-    def _get_cryptainer_trustee_dependency_status(self, trustee_uid, trustee_type, trustee_id):
-        trustee_keys_missing = []
-        passphrase = tr._("NOT Set")
+    def _get_cryptainer_trustee_dependency_status(self, keystore_uid, trustee_type, trustee_id, trustee_keypair_identifiers):
+
+        trustee_is_present = False
+        trustee_status = tr._("NOT found")
+        trustee_owner = None
+        trustee_private_keys_missing = []
+        passphrase_status = tr._("NOT set")
 
         try:
-            filesystem_keystore = self.filesystem_keystore_pool.get_foreign_keystore(keystore_uid=trustee_uid)
+            filesystem_keystore = self.filesystem_keystore_pool.get_foreign_keystore(keystore_uid=keystore_uid)
 
-            foreign_keystore_dir = self.filesystem_keystore_pool._get_foreign_keystore_dir(keystore_uid=trustee_uid)
+            trustee_is_present = True
+            trustee_status = tr._("Found")
+
+            foreign_keystore_dir = self.filesystem_keystore_pool._get_foreign_keystore_dir(keystore_uid=keystore_uid)
             metadata = load_keystore_metadata(foreign_keystore_dir)
-            keystore_owner = metadata["keystore_owner"]
+            trustee_owner = metadata["keystore_owner"]
 
-            if trustee_id in self.passphrase_mapper:
-                passphrase = tr._("Set")
-                self.found_trustees_lacking_passphrase = 0
+            if self.passphrase_mapper.get(trustee_id):
+                passphrase_status = tr._("Set")
+                self.found_trustees_lacking_passphrase = False
             else:
-                self.found_trustees_lacking_passphrase = 1
+                self.found_trustees_lacking_passphrase = True
 
-            keypair_identifiers = filesystem_keystore.list_keypair_identifiers()
-            for keypair_identifier in keypair_identifiers:
-                if keypair_identifier["private_key_present"] == False:
-                    trustee_keys_missing.append(keypair_identifier["keychain_uid"])
-
-            status = dict(trustee_data=shorten_uid(trustee_uid),
-                          keystore_owner=keystore_owner,
-                          trustee_type=trustee_type,
-                          trustee_present=tr._("Found"),
-                          passphrase=passphrase,
-                          trustee_keys_missing=trustee_keys_missing
-                          )
+            for keypair_identifier in trustee_keypair_identifiers:
+                try:
+                    filesystem_keystore.get_private_key(**keypair_identifier)
+                except KeyDoesNotExist:
+                    trustee_private_keys_missing.append(keypair_identifier)
         except KeystoreDoesNotExist:
-            status = dict(trustee_data=shorten_uid(trustee_uid),
-                          trustee_type=trustee_type,
-                          trustee_present=tr._("NOT Found"),
-                          passphrase=passphrase,
-                          )
+            pass
+
+        status = dict(
+            keystore_uid=shorten_uid(keystore_uid),
+            trustee_is_present=trustee_is_present,
+            trustee_status=trustee_status,
+            trustee_owner=trustee_owner,
+            trustee_type=trustee_type,
+            trustee_private_keys_missing=trustee_private_keys_missing,
+            passphrase_status=passphrase_status,
+        )
 
         return status
 
@@ -105,37 +111,37 @@ class CryptainerDecryptionScreen(Screen):
 
             trustee_dependencies = gather_trustee_dependencies(cryptainers)
 
-            trustee_conf = [trustee[0] for trustee in trustee_dependencies["encryption"].values()]
-            trustee_id = _get_trustee_id(trustee_conf[0])
+            print(list(trustee_dependencies["encryption"].values()))
 
-            for trustee in trustee_conf:
-                trustee_uid = trustee["keystore_uid"]
-                trustee_type = trustee["trustee_type"]
+            trustee_data = [trustee for trustee in trustee_dependencies["encryption"].values()]
+
+            for trustee_info, trustee_keypair_identifiers in trustee_data:
+                trustee_id = _get_trustee_id(trustee_info)
+                trustee_type = trustee_info["trustee_type"]
+                keystore_uid = trustee_info["keystore_uid"]
 
                 if trustee_type == CRYPTAINER_TRUSTEE_TYPES.AUTHENTICATOR_TRUSTEE:  # FIXME utiliser Enums python TrusteeTypes.xxx
-
-                    status = self._get_cryptainer_trustee_dependency_status(trustee_uid, trustee_type, trustee_id)
-
+                    status = self._get_cryptainer_trustee_dependency_status(keystore_uid, trustee_type=trustee_type, trustee_id=trustee_id, trustee_keypair_identifiers=trustee_keypair_identifiers)
+                    self._display_cryptainer_trustee_dependency_status(status)
                 else:
-                    # FIXME add the case if trustee_type != "authenticator"
-                    continue
-                self._display_cryptainer_trustee_dependency_status(status)
+                    pass  # FIXME handle other types of trustee?
+
 
     def _display_cryptainer_trustee_dependency_status(self, status):
 
-        trustee_data = tr._(" {trustee_type}: {trustee_data}").format(trustee_type=status["trustee_type"],
-                                                                      trustee_data=status["trustee_data"])
-        trustee_present = tr._(" Trustee: {trustee_present}").format(trustee_present=status["trustee_present"])
-        trustee_keys_missing = ""
-        passphrase = tr._(" Passphrase: {passphrase}").format(passphrase=status["passphrase"])
+        trustee_data = tr._("{trustee_type} {keystore_uid}").format(**status)
+        trustee_present = tr._("Key guardian: {trustee_status}").format(**status)
+        trustee_private_keys_missing_text = ""
+        passphrase = tr._("Passphrase: {passphrase_status}").format(**status)
         trustee_owner = ""
-        if status["trustee_present"] == "Found":
-            trustee_owner = tr._("( Owner: {trustee_owner})").format(trustee_owner=status["keystore_owner"])
-            if status["trustee_keys_missing"]:
-                trustee_keys_missing = tr._(" Missing key(s): {trustee_keys_missing}").format(
-                    trustee_keys_missing=status["trustee_keys_missing"])
+        if status["trustee_is_present"]:
+            trustee_owner = " " + tr._("(Owner: {trustee_owner})").format(**status)
+            if status["trustee_private_keys_missing"]:
+                trustee_private_keys_missing_text = tr._("Missing key(s): {trustee_keys_missing}").format(
+                    trustee_keys_missing=", ".join(shorten_uid(keypair_identifier["keychain_uid"])
+                                                   for keypair_identifier in status["trustee_private_keys_missing"]))
 
-        dependencies_status_text = Factory.WAThreeListItemEntry(text=trustee_data + trustee_owner , secondary_text=trustee_present + ',' + passphrase, tertiary_text=trustee_keys_missing)  # FIXME RENAME THIS
+        dependencies_status_text = Factory.WAThreeListItemEntry(text=trustee_data + trustee_owner , secondary_text=trustee_present + ', ' + passphrase, tertiary_text=trustee_private_keys_missing_text)  # FIXME RENAME THIS
 
         self.ids.information_text.add_widget(dependencies_status_text)
 
@@ -148,37 +154,39 @@ class CryptainerDecryptionScreen(Screen):
             details = tr._("Already existing passphrase %s" % (passphrase))
 
         else:
+            result = tr._("Failure")
+            details = tr._("Passphrase doesn't match any relevant private key")
 
             cryptainers = self._get_cryptainers_with_cryptainer_names(self.selected_cryptainer_names)
 
             dependencies = gather_trustee_dependencies(cryptainers)
 
-            relevant_keystore_uids = [trustee[0]["keystore_uid"] for trustee in dependencies["encryption"].values()]
-            for keystore_uid in relevant_keystore_uids:
-
+            trustee_confs = [trustee[0] for trustee in dependencies["encryption"].values()]
+            for trustee_conf in trustee_confs:
+                keystore_uid = trustee_conf["keystore_uid"]
                 filesystem_keystore = self.filesystem_keystore_pool.get_foreign_keystore(keystore_uid=keystore_uid)
                 keypair_identifiers = filesystem_keystore.list_keypair_identifiers()
 
+                if not keypair_identifiers:
+                    continue  # Keystore without keypairs in it
+
+                # We test only the FIRST keypair of foreign keystore, assuming all are treated the same in it
+                # TODO handle more finely keystores having different passphrases or presence per private key??
                 keychain_uid = keypair_identifiers[0]["keychain_uid"]
                 key_algo = keypair_identifiers[0]["key_algo"]
+
                 try:
                     private_key_pem = filesystem_keystore.get_private_key(keychain_uid=keychain_uid, key_algo=key_algo)
                     key_obj = load_asymmetric_key_from_pem_bytestring(key_pem=private_key_pem, key_algo=key_algo, passphrase=passphrase)
                     assert key_obj, key_obj
 
-                    trustee_conf = [trustee[0] for trustee in dependencies["encryption"].values()]
-                    trustee_id = _get_trustee_id(trustee_conf[0])
-                    self.passphrase_mapper[trustee_id] = [passphrase]
+                    trustee_id = _get_trustee_id(trustee_conf)
+                    self.passphrase_mapper[trustee_id] = [passphrase]  # For now we assume only ONE PASSPHRASE per trustee, here
                     result = tr._("Success")
-                    details = tr._("Accepted passphrase")
+                    details = tr._("Passphrase")
 
-                except KeyLoadingError:
-                    result = tr._("Failure")
-                    details = tr._("Failed loading key from pem bytestring with passphrase")
-
-                except KeyDoesNotExist:
-                    result = tr._("Failure")
-                    details = tr._("Private key does not exist")
+                except (KeyLoadingError, KeyDoesNotExist):
+                    pass  # This was not the right keystore
 
         self.get_cryptainer_trustee_dependency_status()
 

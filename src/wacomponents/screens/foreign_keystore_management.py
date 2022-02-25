@@ -272,11 +272,11 @@ class AuthdeviceStoreScreen(Screen):
 
         message = ""
         for index, keypair_identifier in enumerate(keypair_identifiers, start=1):
-            private_key_present_str = "Yes" if keypair_identifier["private_key_present"] else "No"
+            private_key_present_str = tr._("Yes") if keypair_identifier["private_key_present"] else tr._("No")
             uuid_suffix = shorten_uid(keypair_identifier["keychain_uid"])
 
             message += (
-                    tr._("Key n° %s, %s: %s, private_key: %s\n")
+                    tr._("Key n° %s, %s %s, private keys: %s\n")
                     % (
                         index,
                         keypair_identifier["key_algo"],
@@ -310,9 +310,9 @@ class AuthdeviceStoreScreen(Screen):
         authdevices_initialized = self._check_if_auth_devices_connected_or_initialized()
 
         if authdevices_initialized:
-            dialog = dialog_with_close_button(
+            dialog_with_close_button(
                 close_btn_label=tr._("Cancel"),
-                title=tr._("Import the private keys"),
+                title=tr._("Import keys from USB"),
                 type="custom",
                 content_cls=Factory.IncludePrivateKeysContent(),
                 buttons=[
@@ -358,16 +358,17 @@ class AuthdeviceStoreScreen(Screen):
 
     def import_key_storage_from_data_tree(self, dialog):
 
-        keystore_str = dialog.content_cls.ids.tester_keystore_uid.text
+        keystore_str = dialog.content_cls.ids.tester_keystore_uid.text.strip().lower()
         close_current_dialog()
         gateway_proxy = self._get_gateway_proxy()
         try:
             keystore_uid = uuid.UUID(keystore_str)
+
             public_authenticator = gateway_proxy.get_public_authenticator(keystore_uid=keystore_uid)
 
             keystore_tree = self._convert_public_authenticator_to_keystore_tree(public_authenticator)
 
-        except ValueError:
+        except ValueError:  # FIXME dangerous position of this "except"
             result = tr._("Failure")
             details = tr._("Badly formed hexadecimal UUID string")
 
