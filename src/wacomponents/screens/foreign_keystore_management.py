@@ -1,11 +1,9 @@
 import logging
-import pprint
-import secrets
 import uuid
-
 import shutil
 from pathlib import Path
 
+from kivy.logger import Logger as logger
 from kivy.factory import Factory
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty
@@ -15,7 +13,7 @@ from kivymd.uix.screen import Screen
 from wacryptolib.authenticator import is_authenticator_initialized
 from wacryptolib.keystore import FilesystemKeystore, KEYSTORE_FORMAT, validate_keystore_tree
 from wacryptolib.authdevice import list_available_authdevices
-from wacryptolib.exceptions import KeystoreAlreadyExists, SchemaValidationError, ExistenceError, KeyAlreadyExists
+from wacryptolib.exceptions import SchemaValidationError, ExistenceError, KeyAlreadyExists
 from wacryptolib.jsonrpc_client import JsonRpcProxy, status_slugs_response_error_handler
 from jsonrpc_requests import JSONRPCError
 from kivymd.app import MDApp
@@ -85,7 +83,8 @@ class AuthdeviceStoreScreen(Screen):
                 del keystore_tree_copy['keypairs']
                 keystore_metadata = keystore_tree_copy
                 # pprint.pprint(keystore_metadata)
-            except SchemaValidationError:
+            except SchemaValidationError as exc:
+                logger.warning("Corrupted keystore encountered: %r", exc)
                 corrupted_keystore_count += 1
                 continue
 
@@ -273,18 +272,17 @@ class AuthdeviceStoreScreen(Screen):
         message = ""
         for index, keypair_identifier in enumerate(keypair_identifiers, start=1):
             private_key_present_str = tr._("Yes") if keypair_identifier["private_key_present"] else tr._("No")
-            uuid_suffix = shorten_uid(keypair_identifier["keychain_uid"])
+            keychain_uid = shorten_uid(keypair_identifier["keychain_uid"])
 
             message += (
-                    tr._("Key n° %s, %s %s, private keys: %s\n")
-                    % (
-                        index,
-                        keypair_identifier["key_algo"],
-                        uuid_suffix,
-                        private_key_present_str,
+                    tr._("Key n° {index}, {key_algo} {keychain_uid}, private keys: {private_key_present_str}\n").format(
+                        index=index,
+                        key_algo=keypair_identifier["key_algo"],
+                        keychain_uid=keychain_uid,
+                        private_key_present_str=private_key_present_str,
                     )
-                    + "\n"
-            )
+                    + "\n")
+
         self.open_keystore_details_dialog(message, keystore_owner=keystore_owner)
 
     def open_keystore_details_dialog(self, message, keystore_owner):
