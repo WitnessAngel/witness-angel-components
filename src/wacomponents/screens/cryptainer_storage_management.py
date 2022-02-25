@@ -36,6 +36,8 @@ class CryptainerStoreScreen(Screen):
     cryptainer_names_to_be_loaded = ObjectProperty(None, allownone=True)
     cryptainer_loading_schedule = ObjectProperty(None, allownone=True)
 
+    CRYPTAINER_LOADING_INTERVAL = 0.05
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # print("CREATED CryptainerStoreScreen")
@@ -96,7 +98,7 @@ class CryptainerStoreScreen(Screen):
         self.cryptainer_checkboxes = []
 
         assert not self.cryptainer_loading_schedule
-        self.cryptainer_loading_schedule = Clock.schedule_interval(partial(self.load_next_scheduled_cryptainer), 0.02)
+        self.cryptainer_loading_schedule = Clock.schedule_interval(partial(self.load_next_scheduled_cryptainer), self.CRYPTAINER_LOADING_INTERVAL)
 
     def load_next_scheduled_cryptainer(self, *args):
         if self.cryptainer_names_to_be_loaded:
