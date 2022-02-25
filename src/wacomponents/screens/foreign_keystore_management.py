@@ -31,21 +31,9 @@ class AuthdeviceStoreScreen(Screen):
     filesystem_keystore_pool = ObjectProperty(None)
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._app = MDApp.get_running_app()
-
-    def _get_gateway_proxy(self):
-
-        #jsonrpc_url = self._app.get_witness_angel_gateway_url()
-        jsonrpc_url = "https://api.witnessangel.com/gateway/jsonrpc/"
-        gateway_proxy = JsonRpcProxy(
-            url=jsonrpc_url, response_error_handler=status_slugs_response_error_handler
-        )
-        return gateway_proxy
-
-    def __init__(self, *args, **kwargs):
         self.selected_keystore_uids = []  # List of STRINGS
         self.register_event_type('on_selected_keyguardians_changed')
+        self._app = MDApp.get_running_app()
         super().__init__(*args, **kwargs)
 
     def on_selected_keyguardians_changed(self, *args):
@@ -358,6 +346,15 @@ class AuthdeviceStoreScreen(Screen):
         }
         validate_keystore_tree(keystore_tree)  # SAFETY
         return keystore_tree
+
+
+    def _get_gateway_proxy(self):
+
+        jsonrpc_url = self._app.get_wagateway_url()
+        gateway_proxy = JsonRpcProxy(
+            url=jsonrpc_url, response_error_handler=status_slugs_response_error_handler
+        )
+        return gateway_proxy
 
     def import_key_storage_from_data_tree(self, dialog):
 

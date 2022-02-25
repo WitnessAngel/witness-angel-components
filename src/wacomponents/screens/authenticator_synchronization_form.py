@@ -39,7 +39,7 @@ class AuthenticatorSynchronizationScreen(Screen):
 
     def _get_gateway_proxy(self):
 
-        jsonrpc_url = self._app.get_witness_angel_gateway_url()
+        jsonrpc_url = self._app.get_wagateway_url()
 
         gateway_proxy = JsonRpcProxy(
             url=jsonrpc_url, response_error_handler=status_slugs_response_error_handler
@@ -154,7 +154,7 @@ class AuthenticatorSynchronizationScreen(Screen):
                   """)).format(**publication_details)
 
         _displayed_values = dict(
-            gateway="https://witnessangel.com/",
+            gateway=self._app.get_wagateway_url(),
             status=synchronization_status,
             message=message,
             keystore_uid=keystore_uid,

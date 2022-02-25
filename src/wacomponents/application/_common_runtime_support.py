@@ -97,15 +97,15 @@ class WaRuntimeSupportMixin:
         return False, tr.f(tr._("Wrong camera url: \"{camera_url}\""))
 
     @staticmethod
-    def check_witness_angel_gateway_url(witness_angel_gateway_url):
-        if witness_angel_gateway_url:
+    def check_witness_angel_gateway_url(wagateway_url):
+        if wagateway_url:
             try:
-                parsed = urlparse(witness_angel_gateway_url)
+                parsed = urlparse(wagateway_url)
                 if parsed.scheme:
-                    return True, tr.f(tr._("Witness Angel gateway url: {witness_angel_gateway_url}"))
+                    return True, tr.f(tr._("Gateway url: {wagateway_url}"))
             except ValueError:
                 pass
-        return False, tr.f(tr._("Wrong Witness Angel gateway url: \"{witness_angel_gateway_url}\""))
+        return False, tr.f(tr._("Wrong gateway url: '{wagateway_url}'"))
 
     @staticmethod
     def check_video_recording_duration_mn(video_recording_duration_mn):
