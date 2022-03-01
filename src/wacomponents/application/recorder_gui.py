@@ -1,24 +1,14 @@
 # -*- coding: utf-8 -*-
 import atexit
-
-import functools
 import logging
 import os
-from kivy.properties import StringProperty
 
 from wacomponents.application.generic_gui import WaGenericGui
 from wacomponents.widgets.popups import display_info_snackbar, display_info_toast
 
-os.environ["KIVY_NO_ARGS"] = "1"
-
-import kivy
-kivy.require("2.0.0")
-
-from kivymd.app import MDApp
 from kivy.clock import Clock
 from kivy.logger import Logger as logger
-from kivy.uix.filechooser import filesize_units
-from kivy.uix.settings import SettingsWithSpinner
+from kivy.properties import StringProperty
 
 from oscpy.server import ServerClass
 from wacomponents.service_control import ServiceController

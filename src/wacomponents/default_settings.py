@@ -1,13 +1,11 @@
 """
 These settings should preferably be star-imported by setting files of actual projects, not directly referenced.
 """
-import os
 from pathlib import Path
 
+import os
 from kivy import platform
-
 from plyer import storagepath
-
 
 ACTIVITY_CLASS = "org.kivy.android.PythonActivity"
 SERVICE_START_ARGUMENT = ""

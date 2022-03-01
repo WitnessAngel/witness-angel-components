@@ -10,14 +10,12 @@ from kivy.lang import Builder
 from kivy.properties import ObjectProperty, StringProperty
 from kivymd.uix.screen import Screen
 
+from wacomponents.i18n import tr
 from wacomponents.widgets.popups import dialog_with_close_button, process_method_with_gui_spinner, help_text_popup
 from wacryptolib.authenticator import initialize_authenticator
 from wacryptolib.keygen import generate_keypair
 from wacryptolib.keystore import FilesystemKeystore
 from wacryptolib.utilities import generate_uuid0
-
-from wacomponents.i18n import tr
-
 
 Builder.load_file(str(Path(__file__).parent / 'authenticator_creation_form.kv'))
 

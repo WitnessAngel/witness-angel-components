@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import gettext
-import locale
 from gettext import NullTranslations
 
-import kivy
+import locale
 from kivy.lang import Observable
 
 from wacomponents.default_settings import IS_ANDROID

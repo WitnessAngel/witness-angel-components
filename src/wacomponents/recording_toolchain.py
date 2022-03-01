@@ -1,7 +1,7 @@
 
 from kivy.logger import Logger as logger
 
-#from oscpy.server import OSCThreadServer
+# from oscpy.server import OSCThreadServer
 from wacryptolib.cryptainer import CryptainerStorage
 from wacryptolib.keystore import get_free_keypair_generator_worker
 from wacryptolib.sensor import (
@@ -9,7 +9,7 @@ from wacryptolib.sensor import (
     JsonDataAggregator,
     SensorManager,
 )
-from wacomponents.default_settings import IS_ANDROID
+
 
 #osc = OSCThreadServer(encoding="utf8")
 
@@ -25,7 +25,6 @@ def ___build_recording_toolchain(config, keystore_pool, cryptoconf):
     from waclient.common_config import (
         INTERNAL_CRYPTAINER_DIR,
         PREGENERATED_KEY_TYPES,
-        IS_ANDROID,
         warn_if_permission_missing)
     from waclient.sensors.gps import get_gps_sensor
     from waclient.sensors.gyroscope import get_gyroscope_sensor

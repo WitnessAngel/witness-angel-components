@@ -1,12 +1,9 @@
 import functools
-
 from kivy.clock import Clock
 from kivy.uix.settings import SettingsWithSpinner
 from kivymd.app import MDApp
 
 from wacomponents.application._common_runtime_support import WaRuntimeSupportMixin
-from wacomponents.i18n import tr
-from wacomponents.widgets.popups import display_info_toast
 
 
 class WaGenericGui(WaRuntimeSupportMixin, MDApp):

@@ -3,17 +3,15 @@ from pathlib import Path
 
 from kivy.app import App
 from kivy.base import runTouchApp
+from kivy.lang import Builder
 from kivy.properties import (
     ObjectProperty,
     ListProperty,
     StringProperty,
     NumericProperty,
 )
-
-from kivy.lang import Builder
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
-
 
 Builder.load_file(str(Path(__file__).parent / 'logging_console.kv'))
 

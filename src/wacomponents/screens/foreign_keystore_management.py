@@ -1,26 +1,25 @@
 import logging
 import uuid
-import shutil
 from pathlib import Path
 
-from kivy.logger import Logger as logger
+import shutil
+from jsonrpc_requests import JSONRPCError
 from kivy.factory import Factory
 from kivy.lang import Builder
+from kivy.logger import Logger as logger
 from kivy.properties import ObjectProperty
+from kivymd.app import MDApp
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.screen import Screen
-
-from wacryptolib.authenticator import is_authenticator_initialized
-from wacryptolib.keystore import FilesystemKeystore, KEYSTORE_FORMAT, validate_keystore_tree
-from wacryptolib.authdevice import list_available_authdevices
-from wacryptolib.exceptions import SchemaValidationError, ExistenceError, KeyAlreadyExists
-from wacryptolib.jsonrpc_client import JsonRpcProxy, status_slugs_response_error_handler
-from jsonrpc_requests import JSONRPCError
-from kivymd.app import MDApp
 
 from wacomponents.i18n import tr
 from wacomponents.utilities import shorten_uid
 from wacomponents.widgets.popups import display_info_toast, close_current_dialog, dialog_with_close_button
+from wacryptolib.authdevice import list_available_authdevices
+from wacryptolib.authenticator import is_authenticator_initialized
+from wacryptolib.exceptions import SchemaValidationError, ExistenceError, KeyAlreadyExists
+from wacryptolib.jsonrpc_client import JsonRpcProxy, status_slugs_response_error_handler
+from wacryptolib.keystore import FilesystemKeystore, KEYSTORE_FORMAT, validate_keystore_tree
 
 Builder.load_file(str(Path(__file__).parent / 'foreign_keystore_management.kv'))
 

@@ -1,5 +1,7 @@
-from wacomponents.devices.epaper._epaper_base import EpaperStatusDisplayBase
 from devices import dfrobot_epaper
+
+from wacomponents.devices.epaper._epaper_base import EpaperStatusDisplayBase
+
 
 class DfrobotEpaperStatusDisplay(EpaperStatusDisplayBase):
 

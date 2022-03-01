@@ -1,8 +1,9 @@
 
 from pathlib import Path
-from wacomponents.devices.epaper._epaper_base import EpaperStatusDisplayBase
+
 from waveshare_epd import epd2in7
 
+from wacomponents.devices.epaper._epaper_base import EpaperStatusDisplayBase
 
 FONT_PATH = str(Path(__file__).parent.joinpath('Font.ttc'))  # FIXME put assets elsewhere
 

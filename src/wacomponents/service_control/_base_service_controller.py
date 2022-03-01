@@ -1,5 +1,3 @@
-from kivy.logger import Logger as logger
-
 from wacomponents.service_control import get_osc_client
 
 

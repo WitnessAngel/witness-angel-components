@@ -3,6 +3,7 @@ from pathlib import Path
 
 from kivy.lang import Builder
 from kivymd.uix.menu import MDDropdownMenu
+
 from wacomponents.i18n import tr
 
 

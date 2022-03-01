@@ -1,26 +1,21 @@
 from pathlib import Path
-from pprint import pprint
-from textwrap import dedent
 
+from kivy.factory import Factory
 from kivy.lang import Builder
-from kivy.uix.textinput import TextInput
-from kivymd.uix.screen import Screen
-from kivymd.app import MDApp
+from kivy.properties import ObjectProperty, BooleanProperty
 from kivymd.uix.button import MDFlatButton
+from kivymd.uix.screen import Screen
 from kivymd.uix.snackbar import Snackbar
-from wacryptolib.cryptainer import gather_trustee_dependencies, request_decryption_authorizations, _get_trustee_id, \
-    CRYPTAINER_TRUSTEE_TYPES
-from kivy.properties import StringProperty, ListProperty, ObjectProperty, NumericProperty, BooleanProperty
-from wacryptolib.exceptions import KeystoreDoesNotExist, KeyDoesNotExist, KeyLoadingError
-from wacryptolib.keygen import load_asymmetric_key_from_pem_bytestring
-from wacryptolib.keystore import FilesystemKeystore, load_keystore_metadata
 
 from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
-from kivy.factory import Factory
-
 from wacomponents.utilities import shorten_uid
 from wacomponents.widgets.popups import dialog_with_close_button, close_current_dialog
+from wacryptolib.cryptainer import gather_trustee_dependencies, _get_trustee_id, \
+    CRYPTAINER_TRUSTEE_TYPES
+from wacryptolib.exceptions import KeystoreDoesNotExist, KeyDoesNotExist, KeyLoadingError
+from wacryptolib.keygen import load_asymmetric_key_from_pem_bytestring
+from wacryptolib.keystore import load_keystore_metadata
 
 Builder.load_file(str(Path(__file__).parent / 'cryptainer_decryption.kv'))
 

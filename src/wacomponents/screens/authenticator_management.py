@@ -2,34 +2,33 @@ from datetime import datetime
 from enum import Enum, unique
 from pathlib import Path
 from textwrap import dedent
-from functools import partial
-import shutil
 
-from jsonrpc_requests import JSONRPCError
+import shutil
+from functools import partial
 from kivy.clock import Clock
 from kivy.factory import Factory
 from kivy.lang import Builder
+from kivy.logger import Logger as logger
 from kivy.properties import ObjectProperty
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.filemanager import MDFileManager
 from kivymd.uix.list import IconLeftWidget
 from kivymd.uix.screen import Screen
-from kivy.logger import Logger as logger
 
+from wacomponents.default_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_APP_ROOT, EXTERNAL_EXPORTS_DIR, \
+    strip_external_app_root_prefix
+from wacomponents.i18n import tr
+from wacomponents.system_permissions import request_external_storage_dirs_access
+from wacomponents.utilities import convert_bytes_to_human_representation, shorten_uid
 from wacomponents.widgets.layout_components import LanguageSwitcherScreenMixin
 from wacomponents.widgets.popups import dialog_with_close_button, register_current_dialog, close_current_dialog, \
     help_text_popup, display_info_toast
+from wacomponents.widgets.popups import safe_catch_unhandled_exception_and_display_popup
 from wacryptolib.authdevice import list_available_authdevices
 from wacryptolib.authenticator import is_authenticator_initialized
 from wacryptolib.exceptions import KeyLoadingError, SchemaValidationError
 from wacryptolib.keygen import load_asymmetric_key_from_pem_bytestring
 from wacryptolib.keystore import FilesystemKeystore, load_keystore_metadata, _get_keystore_metadata_file_path
-from wacomponents.default_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_APP_ROOT, EXTERNAL_EXPORTS_DIR, strip_external_app_root_prefix
-from wacomponents.system_permissions import request_external_storage_dirs_access
-from wacomponents.utilities import convert_bytes_to_human_representation, shorten_uid
-
-from wacomponents.i18n import tr
-from wacomponents.widgets.popups import safe_catch_unhandled_exception_and_display_popup
 
 Builder.load_file(str(Path(__file__).parent / 'authenticator_management.kv'))
 

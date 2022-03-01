@@ -1,27 +1,21 @@
-import functools
-import pprint
 from pathlib import Path
 
+from functools import partial
+from kivy.clock import Clock
 from kivy.factory import Factory
 from kivy.lang import Builder
-from kivy.uix.recycleview import RecycleView
-from kivy.uix.screenmanager import Screen
-from kivy.clock import Clock
-from kivy.properties import StringProperty, ListProperty, ObjectProperty
+from kivy.properties import ObjectProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.screen import Screen
 from kivymd.uix.snackbar import Snackbar
-from functools import partial
 
-
-from wacomponents.i18n import tr
 from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
+from wacomponents.i18n import tr
 from wacomponents.logging.handlers import safe_catch_unhandled_exception
-
-from wacryptolib.cryptainer import gather_trustee_dependencies
 from wacomponents.widgets.popups import close_current_dialog, dialog_with_close_button
+from wacryptolib.cryptainer import gather_trustee_dependencies
 
 Builder.load_file(str(Path(__file__).parent / 'cryptainer_storage_management.kv'))
 

@@ -1,15 +1,12 @@
-import io
+import logging
 import logging
 import subprocess
 import threading
-
 from datetime import timezone, datetime
 from pathlib import Path
 
 from wacryptolib.cryptainer import CRYPTAINER_DATETIME_FORMAT
-from wacryptolib.sensor import TarfileRecordAggregator
 from wacryptolib.utilities import PeriodicTaskHandler, synchronized
-
 
 logger = logging.getLogger(__name__)
 

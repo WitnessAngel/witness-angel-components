@@ -1,7 +1,7 @@
 
-import RPi.GPIO as GPIO
 import atexit
 
+import RPi.GPIO as GPIO
 
 # We have to disable this remote GPIO.cleanup function, since some E-Paper screens calls it wrongly on sleep #
 

@@ -1,25 +1,22 @@
 
 from pathlib import Path
 from textwrap import dedent
-
 from uuid import UUID
 
 from jsonrpc_requests import JSONRPCError
 from kivy.lang import Builder
+from kivy.logger import Logger as logger
 from kivy.properties import ObjectProperty, BooleanProperty
 from kivymd.app import MDApp
 from kivymd.uix.screen import Screen
-from kivy.logger import Logger as logger
 
+from wacomponents.i18n import tr
 from wacomponents.logging.handlers import safe_catch_unhandled_exception
+from wacomponents.screens.authenticator_management import shorten_uid
+from wacomponents.widgets.popups import help_text_popup, display_info_toast
 from wacryptolib.exceptions import ExistenceError
 from wacryptolib.jsonrpc_client import JsonRpcProxy, status_slugs_response_error_handler
 from wacryptolib.keystore import load_keystore_metadata, ReadonlyFilesystemKeystore
-
-from wacomponents.screens.authenticator_management import shorten_uid
-from wacomponents.widgets.popups import help_text_popup, display_info_toast
-from wacomponents.i18n import tr
-
 
 Builder.load_file(str(Path(__file__).parent / 'authenticator_synchronization_form.kv'))
 
