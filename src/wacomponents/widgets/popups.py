@@ -13,9 +13,9 @@ from wacomponents.i18n import tr
 from wacomponents.logging.handlers import safe_catch_unhandled_exception
 
 
-def display_info_toast(msg, duration=2.5):
+def display_info_toast(msg):
     """Small temporary popup"""
-    toast(msg, duration=duration)
+    toast(msg)  # Exact signature is different on Android and Desktop!!
 
 
 def display_info_snackbar(msg, duration=3.5):
