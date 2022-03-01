@@ -15,10 +15,10 @@ def launch_app_or_service_with_crash_handler(main_module: str, client_type: str)
     except Exception:
         if 'ANDROID_ARGUMENT' not in os.environ:
             raise  # Dev should not be impacted
-        print(">> FATAL ERROR IN %s LAUNCHER (is_service=%s) ON MOBILE PLATFORM, SENDING CRASH REPORT <<"
-              % client_type)
+        print(">> FATAL ERROR IN %s LAUNCHER ON MOBILE PLATFORM, SENDING CRASH REPORT <<" % client_type)
         exc_info = sys.exc_info()
-        target_url = "https://watrustee.prolifik.net/crashdumps/"  # Can't access common config safely here
+        target_url = "https://api.witnessangel.com/support/crashdumps/"  # HARDCODED - Can't access common config safely here
         from wacomponents.logging.crashdumps import generate_and_send_crashdump  # Should be mostly safe to import
         report = generate_and_send_crashdump(exc_info=exc_info, target_url=target_url)
         print(report)  # Not to stderr for now, since it is hooked by Kivy logging
+        raise
