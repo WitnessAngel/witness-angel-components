@@ -102,7 +102,7 @@ class AuthenticatorSynchronizationScreen(Screen):
     @safe_catch_unhandled_exception
     def refresh_synchronization_status(self):
 
-        self.enable_publish_button = enable_publish_button = False  # Preventive setup
+        self.enable_publish_button = enable_publish_button = False  # Defensive setup
 
         local_metadata = self._query_local_authenticator_status()
         keystore_uid = local_metadata["keystore_uid"]
@@ -119,12 +119,14 @@ class AuthenticatorSynchronizationScreen(Screen):
         synchronization_details_text = ""
 
         if remote_metadata is None:
+            is_published = False
             synchronization_status = tr._("NOT PUBLISHED")
             message = tr._("The local authenticator does not exist in the remote repository.")
             enable_publish_button = True
 
         else:
 
+            is_published = True
             synchronization_status = tr._("PUBLISHED")
 
             report = self._compare_local_and_remote_status(
@@ -161,11 +163,15 @@ class AuthenticatorSynchronizationScreen(Screen):
                         Gateway: {gateway}
                         Remote status: {status}
                         Message: {message}
+                        
                         Authenticator ID: {keystore_uid}
                     """)).format(**_displayed_values)
 
+        if is_published:
+            synchronization_info_text += tr._("Provide this ID to users wanting to rely on you as a Key Guardian") + "\n"
+
         if synchronization_details_text:
-            synchronization_info_text += "\n\n" + synchronization_details_text
+            synchronization_info_text += "\n" + synchronization_details_text
 
         # Update the GUI
 
@@ -173,7 +179,6 @@ class AuthenticatorSynchronizationScreen(Screen):
         display_info_toast(tr._("Remote authenticator status has been updated"))
 
         self.enable_publish_button = enable_publish_button
-
 
     @safe_catch_unhandled_exception
     def publish_authenticator(self):
