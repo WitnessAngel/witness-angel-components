@@ -121,11 +121,11 @@ class AuthdeviceStoreScreen(Screen):
 
         keystore_uids = self.selected_keystore_uids
         if not keystore_uids:
-            msg = tr._("Please select authentication devices to delete")
+            msg = tr._("Please select key guardians to remove")
             display_info_toast(msg)
             return
 
-        message = "Are you sure you want to remove %s key guardians?" % len(keystore_uids)
+        message = tr._("Are you sure you want to remove %s key guardian(s)?") % len(keystore_uids)
 
         dialog_with_close_button(
             close_btn_label=tr._("Cancel"),

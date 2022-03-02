@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-02 13:02+0100\n"
-"PO-Revision-Date: 2022-03-02 13:03+0200\n"
+"POT-Creation-Date: 2022-03-02 13:20+0100\n"
+"PO-Revision-Date: 2022-03-02 13:20+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
@@ -142,7 +142,7 @@ msgstr "Initialisation complétée avec succès."
 #: src/wacomponents/screens/authenticator_creation_form.py:165
 #: src/wacomponents/screens/authenticator_management.py:360
 #: src/wacomponents/screens/cryptainer_decryption.py:182
-#: src/wacomponents/screens/foreign_keystore_management.py:408
+#: src/wacomponents/screens/foreign_keystore_management.py:422
 msgid "Success"
 msgstr "Succès"
 
@@ -154,10 +154,10 @@ msgstr "Opération échouée, vérifiez les logs."
 #: src/wacomponents/screens/authenticator_management.py:363
 #: src/wacomponents/screens/cryptainer_decryption.py:150
 #: src/wacomponents/screens/cryptainer_decryption.py:154
-#: src/wacomponents/screens/foreign_keystore_management.py:376
-#: src/wacomponents/screens/foreign_keystore_management.py:380
-#: src/wacomponents/screens/foreign_keystore_management.py:384
-#: src/wacomponents/screens/foreign_keystore_management.py:392
+#: src/wacomponents/screens/foreign_keystore_management.py:390
+#: src/wacomponents/screens/foreign_keystore_management.py:394
+#: src/wacomponents/screens/foreign_keystore_management.py:398
+#: src/wacomponents/screens/foreign_keystore_management.py:406
 msgid "Failure"
 msgstr "Échec"
 
@@ -249,7 +249,7 @@ msgid "No information available"
 msgstr "Aucune information disponible"
 
 #: src/wacomponents/screens/authenticator_management.kv:95
-#: src/wacomponents/screens/foreign_keystore_management.py:307
+#: src/wacomponents/screens/foreign_keystore_management.py:321
 msgid "Import"
 msgstr "Importer"
 
@@ -356,10 +356,11 @@ msgstr ""
 #: src/wacomponents/screens/authenticator_management.py:309
 #: src/wacomponents/screens/authenticator_management.py:337
 #: src/wacomponents/screens/cryptainer_decryption.py:197
-#: src/wacomponents/screens/cryptainer_storage_management.py:190
-#: src/wacomponents/screens/cryptainer_storage_management.py:271
-#: src/wacomponents/screens/foreign_keystore_management.py:302
+#: src/wacomponents/screens/cryptainer_storage_management.py:192
+#: src/wacomponents/screens/cryptainer_storage_management.py:273
+#: src/wacomponents/screens/foreign_keystore_management.py:131
 #: src/wacomponents/screens/foreign_keystore_management.py:316
+#: src/wacomponents/screens/foreign_keystore_management.py:330
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -428,7 +429,7 @@ msgstr ""
 
 #: src/wacomponents/screens/authenticator_management.py:372
 #: src/wacomponents/screens/cryptainer_decryption.py:191
-#: src/wacomponents/screens/foreign_keystore_management.py:412
+#: src/wacomponents/screens/foreign_keystore_management.py:426
 #, python-format
 msgid "Checkup result: %s"
 msgstr "Résultat du contrôle : %s"
@@ -699,26 +700,30 @@ msgid "Key Guardians used:"
 msgstr "Gardiens des Clés utilisés :"
 
 #: src/wacomponents/screens/cryptainer_storage_management.py:153
-#: src/wacomponents/screens/foreign_keystore_management.py:294
+#: src/wacomponents/screens/foreign_keystore_management.py:308
 #: src/wacomponents/widgets/popups.py:50
 msgid "Close"
 msgstr "Fermer"
 
-#: src/wacomponents/screens/cryptainer_storage_management.py:191
+#: src/wacomponents/screens/cryptainer_storage_management.py:171
+msgid "Please select containers to delete"
+msgstr "Veuillez sélectionner les conteneurs à supprimer"
+
+#: src/wacomponents/screens/cryptainer_storage_management.py:193
 msgid "Container deletion confirmation"
 msgstr "Confirmation de suppression de conteneur"
 
-#: src/wacomponents/screens/cryptainer_storage_management.py:272
+#: src/wacomponents/screens/cryptainer_storage_management.py:274
 msgid "Container decryption confirmation"
 msgstr "Confirmation de déchiffrement de conteneur"
 
 #: src/wacomponents/screens/foreign_keystore_management.kv:10
-msgid "Enter the keystore uid of the authenticator:"
-msgstr "Entrez l'uid du keystore de l'authentifieur :"
+msgid "Enter the ID of the authenticator:"
+msgstr "Entrez l'ID de l'authentifieur :"
 
 #: src/wacomponents/screens/foreign_keystore_management.kv:14
-msgid "Keystore uid"
-msgstr "Uid du keystore"
+msgid "Authenticator ID"
+msgstr "ID d'authentifieur :"
 
 #: src/wacomponents/screens/foreign_keystore_management.kv:24
 msgid "Do you want to import the private keys (passphrase-protected) as well?"
@@ -758,30 +763,43 @@ msgstr ""
 "{already_existing_keystore_count} mis à jour, {corrupted_keystore_count} "
 "ignoré(s) car corrompu(s)"
 
-#: src/wacomponents/screens/foreign_keystore_management.py:171
+#: src/wacomponents/screens/foreign_keystore_management.py:124
+msgid "Please select key guardians to remove"
+msgstr "Veuillez sélectionner les gardiens de clé à supprimer"
+
+#: src/wacomponents/screens/foreign_keystore_management.py:128
+#, python-format
+msgid "Are you sure you want to remove %s key guardian(s)?"
+msgstr "Êtes-vous sûr de vouloir supprimer %s gardien(s) de clé"
+
+#: src/wacomponents/screens/foreign_keystore_management.py:132
+msgid "Key guardian removal confirmation"
+msgstr "Confirmation de suppression de gardiens de clé"
+
+#: src/wacomponents/screens/foreign_keystore_management.py:187
 #, python-brace-format
 msgid "User {keystore_owner}, id {keystore_uid}"
 msgstr "Utilisateur {keystore_owner}, id {keystore_uid}"
 
-#: src/wacomponents/screens/foreign_keystore_management.py:198
+#: src/wacomponents/screens/foreign_keystore_management.py:214
 msgid "Refreshed imported authenticators"
 msgstr "Authentifieurs importés rafraîchis"
 
-#: src/wacomponents/screens/foreign_keystore_management.py:250
+#: src/wacomponents/screens/foreign_keystore_management.py:266
 msgid "No imported authentication device found"
 msgstr "Aucun périphérique d'authentification importé trouvé"
 
-#: src/wacomponents/screens/foreign_keystore_management.py:278
-#: src/wacomponents/screens/foreign_keystore_management.py:321
+#: src/wacomponents/screens/foreign_keystore_management.py:294
+#: src/wacomponents/screens/foreign_keystore_management.py:335
 msgid "Yes"
 msgstr "Oui"
 
-#: src/wacomponents/screens/foreign_keystore_management.py:278
-#: src/wacomponents/screens/foreign_keystore_management.py:323
+#: src/wacomponents/screens/foreign_keystore_management.py:294
+#: src/wacomponents/screens/foreign_keystore_management.py:337
 msgid "No"
 msgstr "Non"
 
-#: src/wacomponents/screens/foreign_keystore_management.py:282
+#: src/wacomponents/screens/foreign_keystore_management.py:297
 #, python-brace-format
 msgid ""
 "Key n° {index}, {key_algo} {keychain_uid}, private keys: "
@@ -790,36 +808,36 @@ msgstr ""
 "Clé n° {index}, {key_algo} {keychain_uid}, clés privées: "
 "{private_key_present_str}\n"
 
-#: src/wacomponents/screens/foreign_keystore_management.py:295
+#: src/wacomponents/screens/foreign_keystore_management.py:309
 #, python-format
 msgid "Key Guardian %s"
 msgstr "Gardien de Clés %s"
 
-#: src/wacomponents/screens/foreign_keystore_management.py:303
+#: src/wacomponents/screens/foreign_keystore_management.py:317
 msgid "Import keys from web"
 msgstr "Import depuis WEB"
 
-#: src/wacomponents/screens/foreign_keystore_management.py:317
+#: src/wacomponents/screens/foreign_keystore_management.py:331
 msgid "Import keys from USB"
 msgstr "Import de clés depuis USB"
 
-#: src/wacomponents/screens/foreign_keystore_management.py:377
+#: src/wacomponents/screens/foreign_keystore_management.py:391
 msgid "Badly formed hexadecimal UUID string"
 msgstr "Chaîne UUID hexadécimale mal formée"
 
-#: src/wacomponents/screens/foreign_keystore_management.py:381
+#: src/wacomponents/screens/foreign_keystore_management.py:395
 msgid "Authenticator does not exist"
 msgstr "Authentifieur non existant"
 
-#: src/wacomponents/screens/foreign_keystore_management.py:385
+#: src/wacomponents/screens/foreign_keystore_management.py:399
 msgid "Error calling method, check the server url"
 msgstr "Erreur à l'appel de la méthode, vérifier l'url du serveur"
 
-#: src/wacomponents/screens/foreign_keystore_management.py:393
+#: src/wacomponents/screens/foreign_keystore_management.py:407
 msgid "Error calling method, already existing"
 msgstr "Erreur à l'appel de la méthode, déjà existant"
 
-#: src/wacomponents/screens/foreign_keystore_management.py:409
+#: src/wacomponents/screens/foreign_keystore_management.py:423
 msgid "Authenticator has been imported successfully"
 msgstr "L'authentifieur a été importé avec succès"
 
@@ -839,6 +857,13 @@ msgstr "Arrêter Enregistrement"
 #, python-format
 msgid "Abnormal error caught: %s"
 msgstr "Erreur anormale détectée : %s"
+
+#, fuzzy
+#~ msgid "Please select authentication devices to delete"
+#~ msgstr "Veuillez sélectionner les"
+
+#~ msgid "Keystore uid"
+#~ msgstr "Uid du keystore"
 
 #, fuzzy
 #~ msgid "Key n° %s, %s %s, private keys: %s\n"
