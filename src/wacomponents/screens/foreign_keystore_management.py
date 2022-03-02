@@ -117,27 +117,43 @@ class AuthdeviceStoreScreen(Screen):
         # update the display of authdevice saved in the local folder .keys_storage_ward
         self.list_foreign_keystores(display_toast=False)
 
-    def delete_keystores(self):
-
-        # FIXME add confirmation dialog!!
+    def open_keystore_deletion_dialog(self):
 
         keystore_uids = self.selected_keystore_uids
-
         if not keystore_uids:
-            msg = "Please select authentication devices to delete"
-        else:
-            # TODO move this to WACRYPTOLIB!
-            for keystore_uid in keystore_uids:
-                path = self.filesystem_keystore_pool._get_foreign_keystore_dir(keystore_uid)
-                try:
-                    shutil.rmtree(path)
-                except OSError as exc:
-                    logging.error("Failed deletion of imported authentication device %s: %r", keystore_uid, exc)
-            msg = "Selected imported authentication devices were deleted"
+            msg = tr._("Please select authentication devices to delete")
+            display_info_toast(msg)
+            return
 
-            self._change_authenticator_selection_status(keystore_uids=keystore_uids,
-                                                        is_selected=False)  # Update selection list
+        message = "Are you sure you want to remove %s key guardians?" % len(keystore_uids)
 
+        dialog_with_close_button(
+            close_btn_label=tr._("Cancel"),
+            title=tr._("Key guardian removal confirmation"),
+            text=message,
+            buttons=[
+                MDFlatButton(
+                    text="Confirm removal", on_release=lambda *args: (
+                        close_current_dialog(), self.delete_keystores(keystore_uids=keystore_uids))
+                ), ]
+        )
+
+    @safe_catch_unhandled_exception
+    def delete_keystores(self, keystore_uids):
+        assert keystore_uids  # By construction
+
+        # TODO move this to WACRYPTOLIB!
+        for keystore_uid in keystore_uids:
+            path = self.filesystem_keystore_pool._get_foreign_keystore_dir(keystore_uid)
+            try:
+                shutil.rmtree(path)
+            except OSError as exc:
+                logging.error("Failed deletion of imported authentication device %s: %r", keystore_uid, exc)
+
+        self._change_authenticator_selection_status(keystore_uids=keystore_uids,
+                                                    is_selected=False)  # Update selection list
+
+        msg = "Selected imported authentication devices were deleted"
         display_info_toast(msg)
 
         self.list_foreign_keystores(display_toast=False)
@@ -278,14 +294,12 @@ class AuthdeviceStoreScreen(Screen):
             private_key_present_str = tr._("Yes") if keypair_identifier["private_key_present"] else tr._("No")
             keychain_uid = shorten_uid(keypair_identifier["keychain_uid"])
 
-            message += (
-                    tr._("Key n° {index}, {key_algo} {keychain_uid}, private keys: {private_key_present_str}\n").format(
+            message += tr._("Key n° {index}, {key_algo} {keychain_uid}, private keys: {private_key_present_str}\n").format(
                         index=index,
                         key_algo=keypair_identifier["key_algo"],
                         keychain_uid=keychain_uid,
                         private_key_present_str=private_key_present_str,
                     )
-                    + "\n")
 
         self.open_keystore_details_dialog(message, keystore_owner=keystore_owner)
 

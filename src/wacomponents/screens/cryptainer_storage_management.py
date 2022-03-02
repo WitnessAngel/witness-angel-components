@@ -14,7 +14,7 @@ from kivymd.uix.snackbar import Snackbar
 from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
 from wacomponents.logging.handlers import safe_catch_unhandled_exception
-from wacomponents.widgets.popups import close_current_dialog, dialog_with_close_button
+from wacomponents.widgets.popups import close_current_dialog, dialog_with_close_button, display_info_toast
 from wacryptolib.cryptainer import gather_trustee_dependencies
 
 Builder.load_file(str(Path(__file__).parent / 'cryptainer_storage_management.kv'))
@@ -168,6 +168,8 @@ class CryptainerStoreScreen(Screen):
 
         cryptainer_names = self._get_selected_cryptainer_names()
         if not cryptainer_names:
+            msg = tr._("Please select containers to delete")
+            display_info_toast(msg)
             return
 
         message = "Are you sure you want to delete %s container(s)?" % len(cryptainer_names)
