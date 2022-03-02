@@ -13,11 +13,12 @@ from kivymd.uix.button import MDFlatButton
 from kivymd.uix.screen import Screen
 
 from wacomponents.i18n import tr
+from wacomponents.logging.handlers import safe_catch_unhandled_exception
 from wacomponents.utilities import shorten_uid
 from wacomponents.widgets.popups import display_info_toast, close_current_dialog, dialog_with_close_button
 from wacryptolib.authdevice import list_available_authdevices
 from wacryptolib.authenticator import is_authenticator_initialized
-from wacryptolib.exceptions import SchemaValidationError, ExistenceError, KeyAlreadyExists
+from wacryptolib.exceptions import SchemaValidationError, ExistenceError, KeyAlreadyExists, ValidationError
 from wacryptolib.jsonrpc_client import JsonRpcProxy, status_slugs_response_error_handler
 from wacryptolib.keystore import FilesystemKeystore, KEYSTORE_FORMAT, validate_keystore_tree
 
@@ -58,7 +59,7 @@ class AuthdeviceStoreScreen(Screen):
 
         return authdevices_initialized
 
-
+    @safe_catch_unhandled_exception
     def import_keystores_from_usb(self, include_private_keys, authdevices_initialized):
         """
         loop through the “authdevices” present,
@@ -88,9 +89,16 @@ class AuthdeviceStoreScreen(Screen):
                 continue
 
             try:
-                self.filesystem_keystore_pool.import_foreign_keystore_from_keystore_tree(keystore_tree)
-            except KeyAlreadyExists:
-                already_existing_keystore_metadata.append(keystore_metadata)
+                updated = self.filesystem_keystore_pool.import_foreign_keystore_from_keystore_tree(keystore_tree)
+
+                if updated:
+                    already_existing_keystore_metadata.append(keystore_metadata)
+                else:
+                    foreign_keystore_metadata.append(keystore_metadata)
+
+            except ValidationError:  # Mismatch between keystore UIDs
+                corrupted_keystore_count += 1
+
             else:
                 foreign_keystore_metadata.append(keystore_metadata)
 
@@ -138,6 +146,7 @@ class AuthdeviceStoreScreen(Screen):
 
         self.list_foreign_keystores(display_toast=False)
 
+    @safe_catch_unhandled_exception
     def list_foreign_keystores(self, display_toast=True):
         """
         loop through the KEYS_ROOT / files, and read their metadata.json,
@@ -300,10 +309,10 @@ class AuthdeviceStoreScreen(Screen):
             content_cls=Factory.AuthenticatorTesterContent(),
             buttons=[
                 MDFlatButton(text=tr._("Import"),
-                             on_release=lambda *args: self.import_key_storage_from_data_tree(dialog))],
+                             on_release=lambda *args: self.import_key_storage_from_web_gateway(dialog.content_cls.ids.tester_keystore_uid.text))],
         )
 
-    def choice_import_private_key_or_no_dialog(self):
+    def choice_import_private_key_or_no_dialog(self):  # FIXME rename
         authdevices_initialized = self._check_if_auth_devices_connected_or_initialized()
 
         if authdevices_initialized:
@@ -353,13 +362,15 @@ class AuthdeviceStoreScreen(Screen):
         )
         return gateway_proxy
 
-    def import_key_storage_from_data_tree(self, dialog):
+    def import_key_storage_from_web_gateway(self, keystore_uid_str):  # FIXME bad name
 
-        keystore_str = dialog.content_cls.ids.tester_keystore_uid.text.strip().lower()
+        keystore_uid_str = keystore_uid_str.strip().lower()
+
         close_current_dialog()
+
         gateway_proxy = self._get_gateway_proxy()
         try:
-            keystore_uid = uuid.UUID(keystore_str)
+            keystore_uid = uuid.UUID(keystore_uid_str)
 
             public_authenticator = gateway_proxy.get_public_authenticator(keystore_uid=keystore_uid)
 

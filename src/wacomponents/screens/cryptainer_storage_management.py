@@ -53,7 +53,7 @@ class CryptainerStoreScreen(Screen):
         return cryptainer_names
 
     @safe_catch_unhandled_exception
-    def get_detected_cryptainer(self):
+    def get_detected_cryptainer(self):  # FIXME rename and mereg with private method?
         self._get_detected_cryptainer()
 
     def _get_detected_cryptainer(self):
@@ -94,7 +94,7 @@ class CryptainerStoreScreen(Screen):
         assert not self.cryptainer_loading_schedule
         self.cryptainer_loading_schedule = Clock.schedule_interval(partial(self.load_next_scheduled_cryptainer), self.CRYPTAINER_LOADING_INTERVAL)
 
-    def load_next_scheduled_cryptainer(self, *args):
+    def load_next_scheduled_cryptainer(self, *args):  # FIXME make private
         if self.cryptainer_names_to_be_loaded:
             cryptainer_idx, cryptainer_name = self.cryptainer_names_to_be_loaded.pop()
             self._load_cryptainer(index=cryptainer_idx, cryptainer_name=cryptainer_name)
@@ -207,6 +207,7 @@ class CryptainerStoreScreen(Screen):
 
         self.get_detected_cryptainer()  # FIXME rename
 
+    @safe_catch_unhandled_exception
     def open_cryptainer_decryption_dialog(self):
 
         cryptainer_names = self._get_selected_cryptainer_names()
@@ -280,6 +281,7 @@ class CryptainerStoreScreen(Screen):
                 ), ]
         )
 
+    @safe_catch_unhandled_exception
     def decipher_cryptainers(self, cryptainer_names, input_content_cls):
         assert self.filesystem_cryptainer_storage, self.filesystem_cryptainer_storage  # By construction...
 

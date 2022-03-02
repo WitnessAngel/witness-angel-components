@@ -10,7 +10,8 @@ from kivymd.uix.snackbar import Snackbar
 from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
 from wacomponents.utilities import shorten_uid
-from wacomponents.widgets.popups import dialog_with_close_button, close_current_dialog
+from wacomponents.widgets.popups import dialog_with_close_button, close_current_dialog, \
+    safe_catch_unhandled_exception_and_display_popup
 from wacryptolib.cryptainer import gather_trustee_dependencies, _get_trustee_id, \
     CRYPTAINER_TRUSTEE_TYPES
 from wacryptolib.exceptions import KeystoreDoesNotExist, KeyDoesNotExist, KeyLoadingError
@@ -97,7 +98,8 @@ class CryptainerDecryptionScreen(Screen):
             cryptainers.append(cryptainer)
         return cryptainers
 
-    def get_cryptainer_trustee_dependency_status(self) -> dict:
+    @safe_catch_unhandled_exception_and_display_popup
+    def get_cryptainer_trustee_dependency_status(self):
         self.ids.information_text.clear_widgets()
 
         if self.selected_cryptainer_names:
@@ -121,7 +123,6 @@ class CryptainerDecryptionScreen(Screen):
                 else:
                     pass  # FIXME handle other types of trustee?
 
-
     def _display_cryptainer_trustee_dependency_status(self, status):
 
         trustee_data = tr._("{trustee_type} {keystore_uid}").format(**status)
@@ -140,9 +141,10 @@ class CryptainerDecryptionScreen(Screen):
 
         self.ids.information_text.add_widget(dependencies_status_text)
 
-    def check_passphrase(self, dialog):
+    @safe_catch_unhandled_exception_and_display_popup
+    def check_passphrase(self, passphrase):
 
-        passphrase = dialog.content_cls.ids.passphrase.text
+        close_current_dialog()
 
         if [passphrase] in self.passphrase_mapper.values():
             result = tr._("Failure")
@@ -185,8 +187,6 @@ class CryptainerDecryptionScreen(Screen):
 
         self.get_cryptainer_trustee_dependency_status()
 
-        close_current_dialog()
-
         dialog_with_close_button(
             title=tr._("Checkup result: %s") % result,
             text=details,
@@ -200,9 +200,10 @@ class CryptainerDecryptionScreen(Screen):
             content_cls=Factory.CheckPassphraseContent(),
             buttons=[
                 MDFlatButton(text=tr._("Check"),
-                             on_release=lambda *args: self.check_passphrase(dialog))],
+                             on_release=lambda *args: self.check_passphrase(dialog.content_cls.ids.passphrase.text))],
         )
 
+    @safe_catch_unhandled_exception_and_display_popup
     def decipher_cryptainers(self):
         assert self.filesystem_cryptainer_storage, self.filesystem_cryptainer_storage  # By construction...
 
