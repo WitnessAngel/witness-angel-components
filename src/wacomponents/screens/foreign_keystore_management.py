@@ -99,11 +99,8 @@ class AuthdeviceStoreScreen(Screen):
             except ValidationError:  # Mismatch between keystore UIDs
                 corrupted_keystore_count += 1
 
-            else:
-                foreign_keystore_metadata.append(keystore_metadata)
-
         msg = tr._(
-            "{foreign_keystore_count} authenticators properly imported, {already_existing_keystore_count} already existing, {corrupted_keystore_count} skipped because corrupted").format(
+            "{foreign_keystore_count} new authenticators imported, {already_existing_keystore_count} updated, {corrupted_keystore_count} skipped because corrupted").format(
             foreign_keystore_count=len(foreign_keystore_metadata),
             already_existing_keystore_count=len(already_existing_keystore_metadata),
             corrupted_keystore_count=corrupted_keystore_count
@@ -113,7 +110,6 @@ class AuthdeviceStoreScreen(Screen):
         # Autoselect freshly imported keys
         new_keystore_uids = [metadata["keystore_uid"] for metadata in foreign_keystore_metadata]
         self._change_authenticator_selection_status(keystore_uids=new_keystore_uids, is_selected=True)
-
 
         close_current_dialog()
         display_info_toast(msg)
