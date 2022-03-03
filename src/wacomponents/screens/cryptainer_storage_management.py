@@ -317,7 +317,7 @@ class CryptainerStoreScreen(Screen):
             duration=5,
         ).open()
 
-    def _launch_cryptainer_decryption(self):
+    def launch_cryptainer_decryption(self):
         cryptainer_decryption_screen = self.manager.get_screen("CryptainerDecryption")
         selected_cryptainer_names = self._get_selected_cryptainer_names()
         # print(">>>>>> selected_cryptainer_names in _launch_cryptainer_decryption()", selected_cryptainer_names)

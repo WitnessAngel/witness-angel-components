@@ -9,7 +9,7 @@ from kivy.clock import Clock
 from kivy.factory import Factory
 from kivy.lang import Builder
 from kivy.logger import Logger as logger
-from kivy.properties import ObjectProperty
+from kivy.properties import ObjectProperty, StringProperty
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.filemanager import MDFileManager
 from kivymd.uix.list import IconLeftWidget
@@ -69,6 +69,7 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
     selected_custom_folder_path = ObjectProperty(None, allownone=True)  # Custom folder selected for FolderKeyStoreListItem entry
 
     authenticator_status = ObjectProperty(None, allownone=True)
+    authenticator_status_message = StringProperty("")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -182,7 +183,7 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
                 return True
         return False
 
-    def get_authenticator_status_message(self, authenticator_status):
+    def _get_authenticator_status_message(self, authenticator_status):
         if authenticator_status is None:
             return tr._("No valid location selected")
         elif not authenticator_status:
@@ -246,6 +247,7 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
 
         self.selected_authenticator_dir = authenticator_dir  # Might be None
         self.authenticator_status = authenticator_status
+        self.authenticator_status_message = self._get_authenticator_status_message(authenticator_status)
 
 
     def archive_chooser_open(self, *args):
