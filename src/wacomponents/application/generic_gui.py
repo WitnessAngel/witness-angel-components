@@ -1,3 +1,5 @@
+import json
+
 import functools
 from kivy.clock import Clock
 from kivy.uix.settings import SettingsWithSpinner
@@ -47,9 +49,9 @@ class WaGenericGui(WaRuntimeSupportMixin, MDApp):
 
     def build_config(self, config):
         """Populate config with default values, before the loading of user preferences."""
-        assert self.config_template_path.exists(), self.config_template_path
+        assert self.config_defaults_path.exists(), self.config_template_path
         #print(">>>>>>>>>>>>>>READING config_template_path"),
-        config.read(str(self.config_template_path))
+        config.read(str(self.config_defaults_path))
         '''
         config.filename = self.get_application_config()
         if not os.path.exists(config.filename):
@@ -57,10 +59,10 @@ class WaGenericGui(WaRuntimeSupportMixin, MDApp):
             '''
 
     def build_settings(self, settings):
-        """Read the user settings schema and create a panel from it."""
-        settings_file = self.config_schema_path
+        """Read the settings schema and create a panel from it."""
+        data = json.dumps(self.get_config_schema_data())
         settings.add_json_panel(
-            title=self.title_conf_panel, config=self.config, filename=settings_file
+            title=self.title_conf_panel, config=self.config, data=data
         )
 
     def close_settings(self, *args, **kwargs):

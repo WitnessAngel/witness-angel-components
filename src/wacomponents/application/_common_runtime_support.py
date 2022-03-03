@@ -22,19 +22,18 @@ class WaRuntimeSupportMixin:
         return Path(inspect.getfile(self.__class__)).parent
 
     @property
-    def config_schema_path(self) -> Path:
-        """Return the schema to validate config files. """
-        return self._get_class_package_path().joinpath("config_schema.json")
-
-    @property
-    def config_template_path(self) -> Path:  # FIXME rename to DEFAULTS!!
+    def config_defaults_path(self) -> Path:
         """Return the model for config file initialization."""
-        return self._get_class_package_path().joinpath("config_template.ini")
+        return self._get_class_package_path().joinpath("config_defaults.ini")
 
     @property
     def config_file_path(self) -> Path:
         """"Return the actual, runtime configuration file."""
         return INTERNAL_APP_ROOT / self.config_file_basename  # Might no exist yet
+
+    def get_config_schema_data(self) -> list:
+        """Returns a list of config options to expose in Settings panel, to be overridden"""
+        raise NotImplementedError("get_config_schema_data")
 
     @property
     def internal_keys_dir(self) -> str:  # FIXME switch to Path!

@@ -87,7 +87,7 @@ class WaRecorderService(WaRuntimeSupportMixin):
 
         # No NAME here, since named parsers must be Singletons in process!
         config = ConfigParser()
-        config.read(str(self.config_template_path))  # Default values
+        config.read(str(self.config_defaults_path))  # Default values
 
         try:
             if not os.path.exists(filename):
