@@ -2,6 +2,8 @@ import textwrap
 from pathlib import Path
 
 from kivy.lang import Builder
+from kivy.properties import ObjectProperty
+from kivy.uix.settings import SettingItem, SettingString
 from kivymd.uix.menu import MDDropdownMenu
 
 from wacomponents.i18n import tr
@@ -29,6 +31,19 @@ def load_layout_helper_widgets():
 #    readonly: True
 #    padding: 6, 6
 #    size_hint: (1, None)
+
+
+class SettingStringTruncated(SettingItem):
+
+    # We recopy interesting bits from SettingString, we can't inherit it due to KV styles applied
+
+    popup = ObjectProperty(None, allownone=True)
+    textinput = ObjectProperty(None)
+
+    on_panel = SettingString.on_panel
+    _dismiss = SettingString._dismiss
+    _validate = SettingString._validate
+    _create_popup = SettingString._create_popup
 
 
 class LanguageSwitcherScreenMixin:

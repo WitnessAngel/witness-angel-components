@@ -6,6 +6,13 @@ from kivy.uix.settings import SettingsWithSpinner
 from kivymd.app import MDApp
 
 from wacomponents.application._common_runtime_support import WaRuntimeSupportMixin
+from wacomponents.widgets.layout_components import SettingStringTruncated
+
+
+class ImprovedSettingsWithSpinner(SettingsWithSpinner):
+    def __init__(self, *args, **kargs):
+        super().__init__(*args, **kargs)
+        self.register_type('string_truncated', SettingStringTruncated)
 
 
 class WaGenericGui(WaRuntimeSupportMixin, MDApp):
@@ -19,7 +26,7 @@ class WaGenericGui(WaRuntimeSupportMixin, MDApp):
 
     use_kivy_settings = False  # No need
 
-    settings_cls = SettingsWithSpinner
+    settings_cls = ImprovedSettingsWithSpinner
 
     def build(self):
         self.title = self.title_app_window  # We properly use this Kivy property

@@ -57,6 +57,13 @@
     size_hint_y: None
     height: self.minimum_height
 
+<SettingStringTruncated>:
+    Label:
+        text: root.value or ''
+        text_size: self.width, None
+        shorten: True
+        pos: root.pos
+        font_size: '15sp'
 
 ## List items ##
 
