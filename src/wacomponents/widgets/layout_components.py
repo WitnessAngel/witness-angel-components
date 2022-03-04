@@ -55,7 +55,7 @@ class LanguageSwitcherScreenMixin:
                 "text": lang,
                 "viewclass": "OneLineListItem",
                 "on_release": lambda x=lang_code: self.language_menu_select(x),
-            } for (lang, lang_code) in [("English", "en"), ("French", "fr")]
+            } for (lang, lang_code) in [("English", "en"), ("Français", "fr")]
         ]
 
         self._language_selector_menu = MDDropdownMenu(
