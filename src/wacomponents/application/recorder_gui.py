@@ -89,6 +89,9 @@ class WaRecorderGui(WaGenericGui):  # FIXME WaGui instead?
         if not self.get_daemonize_service():
             self.service_controller.stop_service()  # Will wait for termination, then kill it
 
+    def force_stop_service(self):
+        self.service_controller.stop_service()
+
     def switch_to_recording_state(self, is_recording):
         """
         Might also be called as a reaction to the service broadcasting a changed state.
