@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-03 12:12+0100\n"
-"PO-Revision-Date: 2022-03-02 13:20+0200\n"
+"POT-Creation-Date: 2022-03-05 17:41+0100\n"
+"PO-Revision-Date: 2022-03-05 17:44+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
@@ -27,17 +27,17 @@ msgstr ""
 msgid "Configuration errors prevent recording"
 msgstr "Des erreurs de configuration empêchent l'enregistrement"
 
-#: src/wacomponents/application/_common_runtime_support.py:77
+#: src/wacomponents/application/_common_runtime_support.py:76
 #, python-brace-format
 msgid "Container storage: {cryptainer_dir}"
 msgstr "Stockage des conteneurs : {cryptainer_dir}"
 
-#: src/wacomponents/application/_common_runtime_support.py:79
+#: src/wacomponents/application/_common_runtime_support.py:78
 #, python-brace-format
 msgid "Invalid container storage: \"{cryptainer_dir}\""
 msgstr "Stockage des conteneurs invalide : {cryptainer_dir}"
 
-#: src/wacomponents/application/_common_runtime_support.py:83
+#: src/wacomponents/application/_common_runtime_support.py:82
 #, python-brace-format
 msgid ""
 "{keyguardian_count} key guardian(s) configured, {keyguardian_threshold} of "
@@ -46,32 +46,32 @@ msgstr ""
 "{keyguardian_count} gardien(s) de clés configuré(s), dont "
 "{keyguardian_threshold} nécessaire(s) pour le déchiffrement"
 
-#: src/wacomponents/application/_common_runtime_support.py:94
+#: src/wacomponents/application/_common_runtime_support.py:93
 #, python-brace-format
 msgid "Camera url: {camera_url}"
 msgstr "Url de la caméra : {camera_url}"
 
-#: src/wacomponents/application/_common_runtime_support.py:97
+#: src/wacomponents/application/_common_runtime_support.py:96
 #, python-brace-format
 msgid "Wrong camera url: \"{camera_url}\""
 msgstr "Mauvaise url de caméra : \"{camera_url}\""
 
-#: src/wacomponents/application/_common_runtime_support.py:105
+#: src/wacomponents/application/_common_runtime_support.py:104
 #, python-brace-format
 msgid "Gateway url: {wagateway_url}"
 msgstr "Url de la passerelle : {wagateway_url}"
 
-#: src/wacomponents/application/_common_runtime_support.py:108
+#: src/wacomponents/application/_common_runtime_support.py:107
 #, python-brace-format
 msgid "Wrong gateway url: '{wagateway_url}'"
 msgstr "Mauvaise url de passerelle : '{wagateway_url}'"
 
-#: src/wacomponents/application/_common_runtime_support.py:112
+#: src/wacomponents/application/_common_runtime_support.py:111
 #, python-brace-format
 msgid "Each container stores {video_recording_duration_mn} mn(s) of video"
 msgstr "Chaque conteneur stocke {video_recording_duration_mn} mn(s) de vidéo"
 
-#: src/wacomponents/application/_common_runtime_support.py:119
+#: src/wacomponents/application/_common_runtime_support.py:118
 #, python-brace-format
 msgid "Containers are kept for {max_cryptainer_age_day} day(s)"
 msgstr "Les conteneurs sont gardés {max_cryptainer_age_day} jour(s)"
@@ -717,6 +717,10 @@ msgstr "Confirmation de suppression de conteneur"
 msgid "Container decryption confirmation"
 msgstr "Confirmation de déchiffrement de conteneur"
 
+#: src/wacomponents/screens/cryptainer_storage_management.py:323
+msgid "Please select containers to decrypt"
+msgstr "Veuillez sélectionner les conteneurs à déchiffrer"
+
 #: src/wacomponents/screens/foreign_keystore_management.kv:10
 msgid "Enter the ID of the authenticator:"
 msgstr "Entrez l'ID de l'authentifieur :"
@@ -743,6 +747,10 @@ msgstr ""
 #: src/wacomponents/screens/foreign_keystore_management.kv:64
 msgid "Import from USB"
 msgstr "Import depuis USB"
+
+#: src/wacomponents/screens/foreign_keystore_management.kv:70
+msgid "Import from Web"
+msgstr "Import depuis Web"
 
 #: src/wacomponents/screens/foreign_keystore_management.py:49
 msgid "No connected authentication devices found"
@@ -814,12 +822,12 @@ msgid "Key Guardian %s"
 msgstr "Gardien de Clés %s"
 
 #: src/wacomponents/screens/foreign_keystore_management.py:317
-msgid "Import keys from web"
-msgstr "Import depuis WEB"
+msgid "Import keys from web gateway"
+msgstr "Import de clés depuis la passerelle web"
 
 #: src/wacomponents/screens/foreign_keystore_management.py:331
-msgid "Import keys from USB"
-msgstr "Import de clés depuis USB"
+msgid "Import keys from USB drives"
+msgstr "Import de clés depuis les stockages USB"
 
 #: src/wacomponents/screens/foreign_keystore_management.py:391
 msgid "Badly formed hexadecimal UUID string"
