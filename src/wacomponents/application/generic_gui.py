@@ -56,7 +56,7 @@ class WaGenericGui(WaRuntimeSupportMixin, MDApp):
 
     def build_config(self, config):
         """Populate config with default values, before the loading of user preferences."""
-        assert self.config_defaults_path.exists(), self.config_template_path
+        assert self.config_defaults_path.exists(), self.config_defaults_path
         #print(">>>>>>>>>>>>>>READING config_template_path"),
         config.read(str(self.config_defaults_path))
         '''

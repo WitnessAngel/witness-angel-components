@@ -314,7 +314,7 @@ class AuthdeviceStoreScreen(Screen):
 
         dialog = dialog_with_close_button(
             close_btn_label=tr._("Cancel"),
-            title=tr._("Import keys from web"),
+            title=tr._("Import keys from web gateway"),
             type="custom",
             content_cls=Factory.AuthenticatorTesterContent(),
             buttons=[
@@ -328,7 +328,7 @@ class AuthdeviceStoreScreen(Screen):
         if authdevices_initialized:
             dialog_with_close_button(
                 close_btn_label=tr._("Cancel"),
-                title=tr._("Import keys from USB"),
+                title=tr._("Import keys from USB drives"),
                 type="custom",
                 content_cls=Factory.IncludePrivateKeysContent(),
                 buttons=[
