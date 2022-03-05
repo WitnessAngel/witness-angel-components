@@ -11,7 +11,6 @@ from kivy.lang import Builder
 from kivy.logger import Logger as logger
 from kivy.properties import ObjectProperty, StringProperty
 from kivymd.uix.button import MDFlatButton
-from kivymd.uix.filemanager import MDFileManager
 from kivymd.uix.list import IconLeftWidget
 from kivymd.uix.screen import Screen
 
@@ -73,7 +72,10 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        Clock.schedule_once(lambda *args, **kwargs: self.refresh_authenticator_list())  # "on_pre_enter" is not called for initial screen
+        # Do NOT display toast here as it blocks Android screen appearance
+        Clock.schedule_once(lambda *args, **kwargs: self.refresh_authenticator_list(display_toast=False))  # "on_pre_enter" is not called for initial screen
+
+        '''
         self._folder_chooser = MDFileManager(
             selector="folder",
             exit_manager=lambda x: close_current_dialog(),
@@ -84,14 +86,14 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
             ext=["." + self.AUTHENTICATOR_ARCHIVE_FORMAT],
             exit_manager=lambda x: close_current_dialog(),
             select_path=lambda x: (close_current_dialog(), self._import_authenticator_from_archive(x)),
-        )
+        )'''
 
     def language_menu_select(self, lang_code):
         super().language_menu_select(lang_code)
         self.refresh_authenticator_list()  # Refresh translation of Drive etc.
 
     @safe_catch_unhandled_exception_and_display_popup
-    def refresh_authenticator_list(self):
+    def refresh_authenticator_list(self, display_toast=True):
 
         try:
             authdevice_list = list_available_authdevices()
@@ -130,7 +132,8 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
             authenticator_widget.bind(on_release=authenticator_widget._onrelease_callback)
             authenticator_list_widget.add_widget(authenticator_widget)
 
-        display_info_toast(tr._("Refreshed authenticator locations"))
+        if display_toast:
+            display_info_toast(tr._("Refreshed authenticator locations"))
 
         self.reselect_previously_selected_authenticator()  # Preserve previous selection across refreshes
 
@@ -146,6 +149,11 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         return authenticator_dir
 
     def _folder_chooser_select_path(self, path, *args):
+        if not path:
+            return  # Defensive
+        if isinstance(path, (list, tuple)):  # Normalize multi-select outputs
+            path = path[0]
+        print(">>>>>>>>>_folder_chooser_select_path", path)
         self.selected_custom_folder_path = Path(path)
         authenticator_widget = self.ids.authenticator_list.children[-2]  # AUTOSELECT "custom folder" item
         authenticator_widget._onrelease_callback(authenticator_widget)
@@ -157,8 +165,26 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         previously_selected_custom_folder_path = self.selected_custom_folder_path
         if previously_selected_custom_folder_path and previously_selected_custom_folder_path.is_dir():
             file_manager_path = previously_selected_custom_folder_path
-        self._folder_chooser.show(str(file_manager_path))  # Soon use .show_disks!!
-        register_current_dialog(self._folder_chooser)
+
+        from plyer import filechooser
+        #path = filechooser.open_file(title="Pick a CSV file..",
+        #                             filters=[("Comma-separated Values", "*.csv")])
+        path = filechooser.choose_dir(
+            path=str(file_manager_path),
+            title="Pick a FOLDER..",
+            on_selection=self._folder_chooser_select_path
+            #filters=[("Comma-separated Values", "*.csv")]
+            )
+        print(">>>>>>>>>>DIR>>>>>>>", path)
+        '''
+        path = filechooser.open_file(
+            path=str(file_manager_path),
+            title="Pick a FILE..",
+            #filters=[("Comma-separated Values", "*.csv")]
+            )
+        print(">>>>>>>>>>PATH>>>>>>>", path)'''
+        #self._folder_chooser.show(str(file_manager_path))  # Soon use .show_disks!!
+        #register_current_dialog(self._folder_chooser)
 
     def reselect_previously_selected_authenticator(self):
         previouslyselected_authenticator_dir = self.selected_authenticator_dir
