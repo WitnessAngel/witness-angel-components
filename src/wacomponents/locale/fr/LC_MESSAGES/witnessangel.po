@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-05 21:17+0100\n"
-"PO-Revision-Date: 2022-03-05 21:17+0200\n"
+"POT-Creation-Date: 2022-03-06 21:04+0100\n"
+"PO-Revision-Date: 2022-03-06 21:05+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
@@ -783,6 +783,10 @@ msgstr "Êtes-vous sûr de vouloir supprimer %s gardien(s) de clé"
 #: src/wacomponents/screens/foreign_keystore_management.py:132
 msgid "Key guardian removal confirmation"
 msgstr "Confirmation de suppression de gardiens de clé"
+
+#: src/wacomponents/screens/foreign_keystore_management.py:136
+msgid "Confirm removal"
+msgstr "Confirmer suppression"
 
 #: src/wacomponents/screens/foreign_keystore_management.py:187
 #, python-brace-format

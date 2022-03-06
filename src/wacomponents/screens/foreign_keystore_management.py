@@ -133,7 +133,7 @@ class AuthdeviceStoreScreen(Screen):
             text=message,
             buttons=[
                 MDFlatButton(
-                    text="Confirm removal", on_release=lambda *args: (
+                    text=tr._("Confirm removal"), on_release=lambda *args: (
                         close_current_dialog(), self.delete_keystores(keystore_uids=keystore_uids))
                 ), ]
         )
