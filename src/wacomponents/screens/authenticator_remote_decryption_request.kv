@@ -1,0 +1,42 @@
+#:import tr wacomponents.i18n.tr
+#:import strip_external_app_root_prefix wacomponents.default_settings.strip_external_app_root_prefix
+
+
+
+<RemoteDecryptionRequestScreen>:
+
+    on_pre_enter: root.add_many_accordion_test()
+
+    MDBoxLayout:
+        orientation: "vertical"
+
+        MDToolbar:
+            title: tr._("Remote Decryption Request")
+            id: initialization_form_toolbar
+            left_action_items: [["arrow-left", lambda x: root.go_to_home_screen(), tr._("Back")]]
+            right_action_items: [["refresh", lambda x: root.refresh_synchronization_status(), tr._("Refresh")],["help-circle-outline", lambda x: root.display_help_popup(), tr._("Help")]]
+
+        MDTabs:
+            id: tabs
+            tab_hint_x: True
+            allow_stretch: True
+
+            Tab:
+                title: tr._("Pending")
+
+                Accordion:
+                    id: pending_decryption_request
+                    orientation: "vertical"
+
+            Tab:
+                title: tr._("Accepted")
+                Accordion:
+                    id: accepted_decryption_request
+                    orientation: "vertical"
+
+            Tab:
+                title: tr._("Rejected")
+                Accordion:
+                    id: rejected_decryption_request
+                    orientation: "vertical"
+
