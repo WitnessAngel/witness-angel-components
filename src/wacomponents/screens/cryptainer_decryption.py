@@ -11,7 +11,7 @@ from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
 from wacomponents.utilities import shorten_uid
 from wacomponents.widgets.popups import dialog_with_close_button, close_current_dialog, \
-    safe_catch_unhandled_exception_and_display_popup
+    safe_catch_unhandled_exception_and_display_popup, display_info_toast
 from wacryptolib.cryptainer import gather_trustee_dependencies, _get_trustee_id, \
     CRYPTAINER_TRUSTEE_TYPES
 from wacryptolib.exceptions import KeystoreDoesNotExist, KeyDoesNotExist, KeyLoadingError
@@ -46,6 +46,8 @@ class CryptainerDecryptionScreen(Screen):
             cryptainer_entry.unique_identifier = cryptainer_name
 
             self.ids.selected_cryptainer_table.add_widget(cryptainer_entry)
+
+        display_info_toast(tr._("Refreshed concerned containers"))
 
     def _get_cryptainer_trustee_dependency_status(self, keystore_uid, trustee_type, trustee_id, trustee_keypair_identifiers):
 
@@ -180,7 +182,7 @@ class CryptainerDecryptionScreen(Screen):
                     trustee_id = _get_trustee_id(trustee_conf)
                     self.passphrase_mapper[trustee_id] = [passphrase]  # For now we assume only ONE PASSPHRASE per trustee, here
                     result = tr._("Success")
-                    details = tr._("Passphrase")
+                    details = tr._("Passphrase recognized")
 
                 except (KeyLoadingError, KeyDoesNotExist):
                     pass  # This was not the right keystore

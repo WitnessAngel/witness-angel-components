@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-06 21:04+0100\n"
-"PO-Revision-Date: 2022-03-06 21:05+0200\n"
+"POT-Creation-Date: 2022-03-10 12:19+0100\n"
+"PO-Revision-Date: 2022-03-10 12:21+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
@@ -104,7 +104,6 @@ msgstr "Utilisateur"
 #: src/wacomponents/screens/authenticator_creation_form.kv:40
 #: src/wacomponents/screens/authenticator_management.kv:40
 #: src/wacomponents/screens/cryptainer_decryption.kv:15
-#: src/wacomponents/screens/cryptainer_decryption.py:183
 msgid "Passphrase"
 msgstr "Phrase secrète"
 
@@ -141,7 +140,7 @@ msgstr "Initialisation complétée avec succès."
 
 #: src/wacomponents/screens/authenticator_creation_form.py:165
 #: src/wacomponents/screens/authenticator_management.py:362
-#: src/wacomponents/screens/cryptainer_decryption.py:182
+#: src/wacomponents/screens/cryptainer_decryption.py:184
 #: src/wacomponents/screens/foreign_keystore_management.py:422
 msgid "Success"
 msgstr "Succès"
@@ -152,8 +151,8 @@ msgstr "Opération échouée, vérifiez les logs."
 
 #: src/wacomponents/screens/authenticator_creation_form.py:168
 #: src/wacomponents/screens/authenticator_management.py:365
-#: src/wacomponents/screens/cryptainer_decryption.py:150
-#: src/wacomponents/screens/cryptainer_decryption.py:154
+#: src/wacomponents/screens/cryptainer_decryption.py:152
+#: src/wacomponents/screens/cryptainer_decryption.py:156
 #: src/wacomponents/screens/foreign_keystore_management.py:390
 #: src/wacomponents/screens/foreign_keystore_management.py:394
 #: src/wacomponents/screens/foreign_keystore_management.py:398
@@ -259,7 +258,7 @@ msgstr "Exporter"
 
 #: src/wacomponents/screens/authenticator_management.kv:111
 #: src/wacomponents/screens/authenticator_management.py:343
-#: src/wacomponents/screens/cryptainer_decryption.py:202
+#: src/wacomponents/screens/cryptainer_decryption.py:204
 msgid "Check"
 msgstr "Vérifier"
 
@@ -355,7 +354,7 @@ msgstr ""
 #: src/wacomponents/screens/authenticator_management.py:278
 #: src/wacomponents/screens/authenticator_management.py:311
 #: src/wacomponents/screens/authenticator_management.py:339
-#: src/wacomponents/screens/cryptainer_decryption.py:197
+#: src/wacomponents/screens/cryptainer_decryption.py:199
 #: src/wacomponents/screens/cryptainer_storage_management.py:192
 #: src/wacomponents/screens/cryptainer_storage_management.py:273
 #: src/wacomponents/screens/foreign_keystore_management.py:131
@@ -428,7 +427,7 @@ msgstr ""
 "Mauvaise phrase secrète pour les clés :  {undecodable_private_keys}"
 
 #: src/wacomponents/screens/authenticator_management.py:374
-#: src/wacomponents/screens/cryptainer_decryption.py:191
+#: src/wacomponents/screens/cryptainer_decryption.py:193
 #: src/wacomponents/screens/foreign_keystore_management.py:426
 #, python-format
 msgid "Checkup result: %s"
@@ -616,57 +615,65 @@ msgstr "Aucun conteneur sélectionné"
 msgid "N° {index}: {cryptainer_name}"
 msgstr "N° {index}: {cryptainer_name}"
 
-#: src/wacomponents/screens/cryptainer_decryption.py:53
+#: src/wacomponents/screens/cryptainer_decryption.py:50
+msgid "Refreshed concerned containers"
+msgstr "Liste des conteneurs concernés rafraichie"
+
+#: src/wacomponents/screens/cryptainer_decryption.py:55
 msgid "NOT found"
-msgstr "NON trouvé"
+msgstr "NON trouvé(e)"
 
-#: src/wacomponents/screens/cryptainer_decryption.py:56
+#: src/wacomponents/screens/cryptainer_decryption.py:58
 msgid "NOT set"
-msgstr "NON renseigné"
+msgstr "NON renseigné(e)"
 
-#: src/wacomponents/screens/cryptainer_decryption.py:62
+#: src/wacomponents/screens/cryptainer_decryption.py:64
 msgid "Found"
 msgstr "Trouvé"
 
-#: src/wacomponents/screens/cryptainer_decryption.py:69
+#: src/wacomponents/screens/cryptainer_decryption.py:71
 msgid "Set"
 msgstr "Renseigné"
 
-#: src/wacomponents/screens/cryptainer_decryption.py:128
+#: src/wacomponents/screens/cryptainer_decryption.py:130
 #, python-brace-format
 msgid "{trustee_type} {keystore_uid}"
 msgstr "{trustee_type} {keystore_uid}"
 
-#: src/wacomponents/screens/cryptainer_decryption.py:129
+#: src/wacomponents/screens/cryptainer_decryption.py:131
 #, python-brace-format
 msgid "Key guardian: {trustee_status}"
 msgstr "Gardien des clés : {trustee_status}"
 
-#: src/wacomponents/screens/cryptainer_decryption.py:131
+#: src/wacomponents/screens/cryptainer_decryption.py:133
 #, python-brace-format
 msgid "Passphrase: {passphrase_status}"
 msgstr "Phrase secrète : {passphrase_status}"
 
-#: src/wacomponents/screens/cryptainer_decryption.py:134
+#: src/wacomponents/screens/cryptainer_decryption.py:136
 #, python-brace-format
 msgid "(Owner: {trustee_owner})"
 msgstr "(Propriétaire : {trustee_owner})"
 
-#: src/wacomponents/screens/cryptainer_decryption.py:136
+#: src/wacomponents/screens/cryptainer_decryption.py:138
 #, python-brace-format
 msgid "Missing key(s): {trustee_keys_missing}"
 msgstr "Clé(s) manquante(s) : {trustee_keys_missing}"
 
-#: src/wacomponents/screens/cryptainer_decryption.py:151
+#: src/wacomponents/screens/cryptainer_decryption.py:153
 #, python-format
 msgid "Already existing passphrase %s"
 msgstr "Phrase secrète déjà existante %s"
 
-#: src/wacomponents/screens/cryptainer_decryption.py:155
+#: src/wacomponents/screens/cryptainer_decryption.py:157
 msgid "Passphrase doesn't match any relevant private key"
 msgstr "La phrase secrète ne correspond à aucune clé privée pertinente"
 
-#: src/wacomponents/screens/cryptainer_decryption.py:198
+#: src/wacomponents/screens/cryptainer_decryption.py:185
+msgid "Passphrase recognized"
+msgstr "Phrase secrète reconnue"
+
+#: src/wacomponents/screens/cryptainer_decryption.py:200
 msgid "Check passphrase"
 msgstr "Vérifier la phrase secrète"
 
