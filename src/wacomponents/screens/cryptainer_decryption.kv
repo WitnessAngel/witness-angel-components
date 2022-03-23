@@ -67,10 +67,10 @@
                 padding: [10, 10]
 
                 WAOperationButton:
-                    id: container_delete_btn
+                    id: add_passphrase_btn
                     icon: "delete-alert-outline"
                     text: tr._("Add a passphrase")
-                    disabled: root.found_trustees_lacking_passphrase == 0
+                    ##disabled: root.found_trustees_lacking_passphrase == 0  FIXME NEED REAL ALGO
                     on_press: root.open_dialog_check_passphrase()
 
                 WAOperationButton:

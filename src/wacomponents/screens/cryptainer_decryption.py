@@ -20,12 +20,14 @@ from wacryptolib.keystore import load_keystore_metadata
 
 Builder.load_file(str(Path(__file__).parent / 'cryptainer_decryption.kv'))
 
+from kivy.logger import Logger as logger
+
 
 class CryptainerDecryptionScreen(Screen):
     selected_cryptainer_names = ObjectProperty(None, allownone=True)
     filesystem_cryptainer_storage = ObjectProperty(None, allownone=True)
     filesystem_keystore_pool = ObjectProperty(None)
-    found_trustees_lacking_passphrase = BooleanProperty(0)
+    ##found_trustees_lacking_passphrase = BooleanProperty(0)
     passphrase_mapper = {}
 
     def go_to_previous_screen(self):
@@ -69,9 +71,10 @@ class CryptainerDecryptionScreen(Screen):
 
             if self.passphrase_mapper.get(trustee_id):
                 passphrase_status = tr._("Set")
-                self.found_trustees_lacking_passphrase = False
+                ##self.found_trustees_lacking_passphrase = False
             else:
-                self.found_trustees_lacking_passphrase = True
+                pass
+                ##self.found_trustees_lacking_passphrase = True
 
             for keypair_identifier in trustee_keypair_identifiers:
                 try:
@@ -153,6 +156,7 @@ class CryptainerDecryptionScreen(Screen):
             details = tr._("Already existing passphrase %s" % (passphrase))
 
         else:
+            # Default values
             result = tr._("Failure")
             details = tr._("Passphrase doesn't match any relevant private key")
 
@@ -178,23 +182,23 @@ class CryptainerDecryptionScreen(Screen):
                     private_key_pem = filesystem_keystore.get_private_key(keychain_uid=keychain_uid, key_algo=key_algo)
                     key_obj = load_asymmetric_key_from_pem_bytestring(key_pem=private_key_pem, key_algo=key_algo, passphrase=passphrase)
                     assert key_obj, key_obj
-
+                except (KeyLoadingError, KeyDoesNotExist):
+                    pass  # This was not the right keystore
+                else:
                     trustee_id = _get_trustee_id(trustee_conf)
                     self.passphrase_mapper[trustee_id] = [passphrase]  # For now we assume only ONE PASSPHRASE per trustee, here
                     result = tr._("Success")
                     details = tr._("Passphrase recognized")
 
-                except (KeyLoadingError, KeyDoesNotExist):
-                    pass  # This was not the right keystore
-
         self.get_cryptainer_trustee_dependency_status()
-
+        #import pprint
+        #pprint.pprint(self.passphrase_mapper)
         dialog_with_close_button(
             title=tr._("Checkup result: %s") % result,
             text=details,
         )
 
-    def open_dialog_check_passphrase(self):
+    def open_dialog_check_passphrase(self):  # FIXME RENAME
         dialog = dialog_with_close_button(
             close_btn_label=tr._("Cancel"),
             title=tr._("Check passphrase"),
@@ -221,12 +225,13 @@ class CryptainerDecryptionScreen(Screen):
                 # print(">> Successfully exported data file to %s" % target_path)
             except Exception as exc:
                 # print(">>>>> close_dialog_decipher_cryptainer() exception thrown:", exc)  # TEMPORARY
+                logger.warning("Error decrypting container %s: %r" % (cryptainer_name, exc))
                 errors.append(exc)
 
         if errors:
-            message = "Errors happened during decryption, see logs"
+            message = "Errors happened during decryption, see logs"  # TODO TRADUIRE
         else:
-            message = "Decryption successful, see export folder for results"
+            message = "Decryption successful, see export folder for results"  # TODO TRADUIRE
 
         Snackbar(
             text=message,

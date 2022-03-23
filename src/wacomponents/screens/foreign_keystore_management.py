@@ -294,6 +294,7 @@ class AuthdeviceStoreScreen(Screen):
             private_key_present_str = tr._("Yes") if keypair_identifier["private_key_present"] else tr._("No")
             keychain_uid = shorten_uid(keypair_identifier["keychain_uid"])
 
+            # FIXME it's private key SINGULAR HERE!!
             message += tr._("Key n° {index}, {key_algo} {keychain_uid}, private keys: {private_key_present_str}\n").format(
                         index=index,
                         key_algo=keypair_identifier["key_algo"],
