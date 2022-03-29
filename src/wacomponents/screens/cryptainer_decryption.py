@@ -252,6 +252,8 @@ class CryptainerDecryptionScreen(Screen):
                 # print(">>>>> close_dialog_decipher_cryptainer() exception thrown:", exc)  # TEMPORARY
                 logger.warning("Error decrypting container %s: %r" % (cryptainer_name, exc))
                 errors.append(exc)
+                print(errors)
+
 
         if errors:
             message = "Errors happened during decryption, see logs"  # TODO TRADUIRE
