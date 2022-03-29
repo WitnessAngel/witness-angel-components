@@ -113,7 +113,7 @@ class CryptainerDecryptionScreen(Screen):
 
             trustee_dependencies = gather_trustee_dependencies(cryptainers)
 
-            print(list(trustee_dependencies["encryption"].values()))
+            # print(list(trustee_dependencies["encryption"].values()))
 
             trustee_data = [trustee for trustee in trustee_dependencies["encryption"].values()]
 
@@ -142,7 +142,7 @@ class CryptainerDecryptionScreen(Screen):
                     trustee_keys_missing=", ".join(shorten_uid(keypair_identifier["keychain_uid"])
                                                    for keypair_identifier in status["trustee_private_keys_missing"]))
 
-        dependencies_status_text = Factory.WAThreeListItemEntry(text=trustee_data + trustee_owner , secondary_text=trustee_present + ', ' + passphrase, tertiary_text=trustee_private_keys_missing_text)  # FIXME RENAME THIS
+        dependencies_status_text = Factory.WAThreeListItemEntry(text=trustee_data + trustee_owner, secondary_text=trustee_present + ', ' + passphrase, tertiary_text=trustee_private_keys_missing_text)  # FIXME RENAME THIS
 
         self.ids.information_text.add_widget(dependencies_status_text)
 
@@ -165,9 +165,14 @@ class CryptainerDecryptionScreen(Screen):
             dependencies = gather_trustee_dependencies(cryptainers)
 
             trustee_confs = [trustee[0] for trustee in dependencies["encryption"].values()]
+
             for trustee_conf in trustee_confs:
                 keystore_uid = trustee_conf["keystore_uid"]
-                filesystem_keystore = self.filesystem_keystore_pool.get_foreign_keystore(keystore_uid=keystore_uid)
+                try:
+                    filesystem_keystore = self.filesystem_keystore_pool.get_foreign_keystore(keystore_uid=keystore_uid)
+                except KeystoreDoesNotExist:
+                    continue
+
                 keypair_identifiers = filesystem_keystore.list_keypair_identifiers()
 
                 if not keypair_identifiers:
@@ -191,8 +196,6 @@ class CryptainerDecryptionScreen(Screen):
                     details = tr._("Passphrase recognized")
 
         self.get_cryptainer_trustee_dependency_status()
-        #import pprint
-        #pprint.pprint(self.passphrase_mapper)
         dialog_with_close_button(
             title=tr._("Checkup result: %s") % result,
             text=details,
