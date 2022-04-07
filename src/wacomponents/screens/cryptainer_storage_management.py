@@ -14,6 +14,7 @@ from kivymd.uix.snackbar import Snackbar
 from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
 from wacomponents.logging.handlers import safe_catch_unhandled_exception
+from wacomponents.utilities import shorten_uid
 from wacomponents.widgets.popups import close_current_dialog, dialog_with_close_button, display_info_toast
 from wacryptolib.cryptainer import gather_trustee_dependencies
 
@@ -139,14 +140,22 @@ class CryptainerStoreScreen(Screen):
             cryptainer = self.filesystem_cryptainer_storage.load_cryptainer_from_storage(cryptainer_name)
             all_dependencies = gather_trustee_dependencies([cryptainer])
             interesting_dependencies = [d[0] for d in list(all_dependencies["encryption"].values())]
-            cryptainer_repr = "\n".join(str(trustee) for trustee in interesting_dependencies)
+            cryptainer_repr = [trustee for trustee in interesting_dependencies]
             # container_repr = pprint.pformat(interesting_dependencies, indent=2)[:800]  # LIMIT else pygame.error: Width or height is too large
         except Exception as exc:
             cryptainer_repr = repr(exc)
 
-        cryptainer_repr = tr._("Key Guardians used:") + "\n\n" + cryptainer_repr
+        message = "Key Guardians used: " + "\n\n"
+        for index, key_guardian_used in enumerate(cryptainer_repr, start=1):
 
-        self.open_cryptainer_details_dialog(cryptainer_repr, info_cryptainer=cryptainer_name)
+            message += tr._(
+                 "N° {index}: type...{trustee_type}, Uid...{keystore_uid}\n").format(
+                index=index,
+                trustee_type=key_guardian_used["trustee_type"],
+                keystore_uid=shorten_uid(key_guardian_used["keystore_uid"]),
+            )
+
+        self.open_cryptainer_details_dialog(message, info_cryptainer=cryptainer_name)
 
     def open_cryptainer_details_dialog(self, message, info_cryptainer):
         dialog_with_close_button(
