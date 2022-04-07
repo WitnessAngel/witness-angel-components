@@ -90,6 +90,7 @@ class CryptainerDecryptionScreen(Screen):
             trustee_status=trustee_status,
             trustee_owner=trustee_owner,
             trustee_type=trustee_type,
+            trustee_keypair_identifiers=trustee_keypair_identifiers,
             trustee_private_keys_missing=trustee_private_keys_missing,
             passphrase_status=passphrase_status,
         )
@@ -138,13 +139,34 @@ class CryptainerDecryptionScreen(Screen):
         if status["trustee_is_present"]:
             trustee_owner = " " + tr._("(Owner: {trustee_owner})").format(**status)
             if status["trustee_private_keys_missing"]:
-                trustee_private_keys_missing_text = tr._("Missing key(s): {trustee_keys_missing}").format(
+                trustee_private_keys_missing_text = tr._("Missing private key(s): {trustee_keys_missing}").format(
                     trustee_keys_missing=", ".join(shorten_uid(keypair_identifier["keychain_uid"])
                                                    for keypair_identifier in status["trustee_private_keys_missing"]))
 
         dependencies_status_text = Factory.WAThreeListItemEntry(text=trustee_data + trustee_owner, secondary_text=trustee_present + ', ' + passphrase, tertiary_text=trustee_private_keys_missing_text)  # FIXME RENAME THIS
 
+        message = ""
+        for index, keypair_identifier in enumerate(status["trustee_keypair_identifiers"], start=1):
+            message += tr._("Key n° {index}: type...{key_algo}, Uid...{keychain_uid}\n").format(
+                index=index,
+                key_algo=keypair_identifier["key_algo"],
+                keychain_uid=shorten_uid(keypair_identifier["keychain_uid"])
+            )
+
+        def information_callback(widget, message=message):
+            self.show_trustee_keypair_identifiers(message=message)
+
+        information_icon = dependencies_status_text.ids.information_icon
+        information_icon.bind(on_press=information_callback)
+
         self.ids.information_text.add_widget(dependencies_status_text)
+
+    def show_trustee_keypair_identifiers(self, message):
+        dialog_with_close_button(
+            close_btn_label=tr._("Close"),
+            title=tr._("Keypairs used"),
+            text=message,
+        )
 
     @safe_catch_unhandled_exception_and_display_popup
     def check_passphrase(self, passphrase):
