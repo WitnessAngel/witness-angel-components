@@ -218,6 +218,7 @@ class CryptainerDecryptionScreen(Screen):
                     details = tr._("Passphrase recognized")
 
         self.get_cryptainer_trustee_dependency_status()
+
         dialog_with_close_button(
             title=tr._("Checkup result: %s") % result,
             text=details,
