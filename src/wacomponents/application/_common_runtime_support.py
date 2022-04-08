@@ -1,4 +1,6 @@
 import inspect
+import re
+import subprocess
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -120,3 +122,27 @@ class WaRuntimeSupportMixin:
             return True, message
         return False, message
 
+    @staticmethod
+    def check_ffmpeg(min_ffmpeg_version: float):
+        print('Check_ffmpeg')
+
+        def check_install(*args):
+            try:
+                output = subprocess.check_output(args, stderr=subprocess.STDOUT)
+                regex = 'ffmpeg version (\d\.\d)'
+                match = re.search(regex, str(output))
+                message = tr.f(tr._("The ffmpeg module is installed but beware the version was not found"))
+                status = True
+                if match is not None:
+                    ffmpeg_version = match.group(1)
+                    if float(ffmpeg_version) >= min_ffmpeg_version:
+                        message = tr.f(tr._("The ffmpeg module is installed and the version is compatible"))
+                    else:
+                        status= False
+                        message = tr.f(tr._("The ffmpeg module is installed but the version is below {min_ffmpeg_version} "))
+                return status, message
+            except OSError as e:
+                print(e)
+                return False, tr.f(tr._("Unable to find the ffmpeg module, please install it"))
+
+        return check_install("ffmpeg", "-version")
