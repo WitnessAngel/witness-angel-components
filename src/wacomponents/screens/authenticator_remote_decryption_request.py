@@ -1,28 +1,21 @@
 from pathlib import Path
-from textwrap import dedent
-from uuid import UUID
 
-from jsonrpc_requests import JSONRPCError
 from kivy.lang import Builder
 from kivy.logger import Logger as logger
 from kivy.properties import ObjectProperty, BooleanProperty, StringProperty
 from kivy.uix.accordion import AccordionItem
-from kivy.uix.label import Label
+from kivy.uix.boxlayout import BoxLayout
+
 from kivymd.app import MDApp
 from kivy.factory import Factory
-from kivymd.uix.button import MDFlatButton
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.screen import Screen
 from kivymd.uix.tab import MDTabsBase
 from kivymd.uix.list import MDList
 
 from wacomponents.i18n import tr
-from wacomponents.logging.handlers import safe_catch_unhandled_exception
-from wacomponents.screens.authenticator_management import shorten_uid
 from wacomponents.widgets.popups import help_text_popup, display_info_toast, dialog_with_close_button
-from wacryptolib.exceptions import ExistenceError
-from wacryptolib.jsonrpc_client import JsonRpcProxy, status_slugs_response_error_handler
-from wacryptolib.keystore import load_keystore_metadata, ReadonlyFilesystemKeystore
+
 
 Builder.load_file(str(Path(__file__).parent / 'authenticator_remote_decryption_request.kv'))
 
@@ -45,8 +38,17 @@ class RemoteDecryptionRequestScreen(Screen):
 
         decryption_request_item = AccordionItem(title='Title %s' % decryption_request_uid)
 
-        scrollview = Factory.WAVerticalScrollView()
+        layout = BoxLayout(orientation='vertical')
 
+        buttongrid = Factory.WAButtonsGridLayout()
+
+        acceptedbutton = Factory.WAGreenButton(text="Accepted")
+        rejectedbutton = Factory.WARedButton(text="Rejected")
+
+        buttongrid.add_widget(acceptedbutton)
+        buttongrid.add_widget(rejectedbutton)
+
+        scrollview = Factory.WAVerticalScrollView()
         symkey_decryption_list = MDList()
 
         for key_index in range(1, 4):
@@ -63,7 +65,11 @@ class RemoteDecryptionRequestScreen(Screen):
 
         scrollview.add_widget(symkey_decryption_list)
 
-        decryption_request_item.add_widget(scrollview)
+        layout.add_widget(buttongrid)
+
+        layout.add_widget(scrollview)
+
+        decryption_request_item.add_widget(layout)
 
         self.ids.pending_decryption_request.add_widget(decryption_request_item)
 
@@ -75,5 +81,13 @@ class RemoteDecryptionRequestScreen(Screen):
         )
 
     def add_many_accordion_test(self):
+        # TODO add list_decryption_request to parameter of this function
+
+       # if self.list_decryption_request is None:
+           # display_layout = Factory.WABigInformationBox()
+            #display_layout.ids.inner_label.text = tr._("Aucune demande de déchiffrement")  # FIXME simplify this
+            #self.ids.pending_decryption_request.add_widget(display_layout)
+            #return
+
         for i in range(1, 6):
-            self.add_remote_decryption_request(decryption_request_uid="decryption_request_uid "+ str(i))
+            self.add_remote_decryption_request(decryption_request_uid="decryption_request_uid " + str(i))
