@@ -5,7 +5,7 @@
 
 <RemoteDecryptionRequestScreen>:
 
-    on_pre_enter: root.add_many_accordion_test()
+    on_pre_enter: root.fetch_and_display_decryption_requests()
 
     MDBoxLayout:
         orientation: "vertical"
@@ -23,20 +23,16 @@
 
             Tab:
                 title: tr._("Pending")
+                id: pending_decryption_request
 
-                Accordion:
-                    id: pending_decryption_request
-                    orientation: "vertical"
 
             Tab:
                 title: tr._("Accepted")
-                Accordion:
-                    id: accepted_decryption_request
-                    orientation: "vertical"
+                id: accepted_decryption_request
+
 
             Tab:
                 title: tr._("Rejected")
-                Accordion:
-                    id: rejected_decryption_request
-                    orientation: "vertical"
+                id: rejected_decryption_request
+
 
