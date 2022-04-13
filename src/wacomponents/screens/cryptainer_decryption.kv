@@ -20,8 +20,8 @@
 
     on_pre_enter:
         # Lazy-init hack to workaround Clock iteration troubles
-        container_delete_btn.size_hint_x = 0.5
-        container_decrypt_btn.size_hint_x = 0.5
+        add_passphrase_btn.size_hint_x = 0.5
+        add_passphrase_btn.size_hint_x = 0.5
         root.get_container_summary()
         root.get_cryptainer_trustee_dependency_status()
 

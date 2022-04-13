@@ -7,6 +7,7 @@ from urllib.parse import urlparse
 from wacomponents.default_settings import INTERNAL_APP_ROOT, INTERNAL_CRYPTAINER_DIR, INTERNAL_KEYSTORE_POOL_DIR, \
     INTERNAL_LOGS_DIR
 from wacomponents.i18n import tr
+from kivy.logger import Logger as logger
 
 
 class WaRuntimeSupportMixin:
@@ -124,25 +125,25 @@ class WaRuntimeSupportMixin:
 
     @staticmethod
     def check_ffmpeg(min_ffmpeg_version: float):
-        print('Check_ffmpeg')
 
-        def check_install(*args):
-            try:
-                output = subprocess.check_output(args, stderr=subprocess.STDOUT)
-                regex = 'ffmpeg version (\d\.\d)'
-                match = re.search(regex, str(output))
-                message = tr.f(tr._("The ffmpeg module is installed but beware the version was not found"))
-                status = True
-                if match is not None:
-                    ffmpeg_version = match.group(1)
-                    if float(ffmpeg_version) >= min_ffmpeg_version:
-                        message = tr.f(tr._("The ffmpeg module is installed and the version is compatible"))
-                    else:
-                        status= False
-                        message = tr.f(tr._("The ffmpeg module is installed but the version is below {min_ffmpeg_version} "))
-                return status, message
-            except OSError as e:
-                print(e)
-                return False, tr.f(tr._("Unable to find the ffmpeg module, please install it"))
+        try:
+            output = subprocess.check_output(["ffmpeg", "-version"], stderr=subprocess.STDOUT)
+        except OSError:
+            logger.warning("Error while calling ffmpeg", exc_info=True)
+            return False, tr.f(tr._("Ffmpeg module not found, please ensure it is in your PATH"))
 
-        return check_install("ffmpeg", "-version")
+        output = output.decode("ascii", "ignore")
+
+        regex = r'ffmpeg version (\d\.\d)'
+        match = re.search(regex, output)
+
+        if match is None:
+            return True, tr.f(tr._("Ffmpeg module is installed, but beware its version couldn't be determined"))
+
+        ffmpeg_version = match.group(1)
+        if float(ffmpeg_version) >= min_ffmpeg_version:
+            return True, tr.f(tr._("Ffmpeg module is installed with a compatible version"))
+        else:
+            return False, tr.f(tr._("Ffmpeg module is installed but its version is below {min_ffmpeg_version} "))
+
+

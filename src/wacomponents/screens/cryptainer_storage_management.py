@@ -143,7 +143,7 @@ class CryptainerStoreScreen(Screen):
             # container_repr = pprint.pformat(interesting_dependencies, indent=2)[:800]  # LIMIT else pygame.error: Width or height is too large
 
 
-            message = "Key Guardians used: " + "\n\n"
+            message = tr._("Key Guardians used: ") + "\n\n"
             for index, key_guardian_used in enumerate(interesting_dependencies, start=1):
 
                 message += tr._(
