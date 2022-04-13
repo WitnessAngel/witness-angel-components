@@ -147,7 +147,7 @@ class CryptainerStoreScreen(Screen):
             for index, key_guardian_used in enumerate(interesting_dependencies, start=1):
 
                 message += tr._(
-                     "N° {index}: type {trustee_type}, uid...{keystore_uid}\n").format(
+                     "N° {index}: type {trustee_type}, uid ...{keystore_uid}\n").format(
                     index=index,
                     trustee_type=key_guardian_used["trustee_type"],
                     keystore_uid=shorten_uid(key_guardian_used["keystore_uid"]),

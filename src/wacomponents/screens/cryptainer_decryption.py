@@ -147,7 +147,7 @@ class CryptainerDecryptionScreen(Screen):
 
         message = ""
         for index, keypair_identifier in enumerate(status["trustee_keypair_identifiers"], start=1):
-            message += tr._("Key n° {index}: type {key_algo}, uid...{keychain_uid}\n").format(
+            message += tr._("Key n° {index}: type {key_algo}, uid ...{keychain_uid}\n").format(
                 index=index,
                 key_algo=keypair_identifier["key_algo"],
                 keychain_uid=shorten_uid(keypair_identifier["keychain_uid"])
