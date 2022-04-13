@@ -140,20 +140,21 @@ class CryptainerStoreScreen(Screen):
             cryptainer = self.filesystem_cryptainer_storage.load_cryptainer_from_storage(cryptainer_name)
             all_dependencies = gather_trustee_dependencies([cryptainer])
             interesting_dependencies = [d[0] for d in list(all_dependencies["encryption"].values())]
-            cryptainer_repr = [trustee for trustee in interesting_dependencies]
             # container_repr = pprint.pformat(interesting_dependencies, indent=2)[:800]  # LIMIT else pygame.error: Width or height is too large
+
+
+            message = "Key Guardians used: " + "\n\n"
+            for index, key_guardian_used in enumerate(interesting_dependencies, start=1):
+
+                message += tr._(
+                     "N° {index}: type {trustee_type}, uid...{keystore_uid}\n").format(
+                    index=index,
+                    trustee_type=key_guardian_used["trustee_type"],
+                    keystore_uid=shorten_uid(key_guardian_used["keystore_uid"]),
+                )
+
         except Exception as exc:
-            cryptainer_repr = repr(exc)
-
-        message = "Key Guardians used: " + "\n\n"
-        for index, key_guardian_used in enumerate(cryptainer_repr, start=1):
-
-            message += tr._(
-                 "N° {index}: type...{trustee_type}, Uid...{keystore_uid}\n").format(
-                index=index,
-                trustee_type=key_guardian_used["trustee_type"],
-                keystore_uid=shorten_uid(key_guardian_used["keystore_uid"]),
-            )
+            message = repr(exc)[:800]
 
         self.open_cryptainer_details_dialog(message, info_cryptainer=cryptainer_name)
 
