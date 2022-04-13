@@ -28,6 +28,7 @@ def detect_default_language():
         lang_code, _charset = locale.getlocale()
         #print("######### DEFAULT LOCALE DETECTED: %s %s #########" % (_lang_code, _charset))
 
+    lang_code = lang_code or ""  # lang_code might be None if undetected
     return "fr" if lang_code.strip().lower().startswith("fr") else "en"
 
 DEFAULT_LANGUAGE = detect_default_language()
