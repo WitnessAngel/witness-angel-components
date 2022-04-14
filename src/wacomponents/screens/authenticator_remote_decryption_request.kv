@@ -1,6 +1,54 @@
 #:import tr wacomponents.i18n.tr
 #:import strip_external_app_root_prefix wacomponents.default_settings.strip_external_app_root_prefix
 
+<DecryptionRequestEntry@AccordionItem>
+    decryption_request_summary : decryption_request_summary
+    symkeys_decryption : symkeys_decryption
+    accepted_button : accepted_button
+    rejected_button : rejected_button
+
+    MDGridLayout:
+        cols: 1
+        #adaptive_height: True
+
+        WAVerticalScrollView:
+            size_hint_y: 0.5
+            id: decryption_request_summary_scrollview
+
+            WASelectableLabel:
+                id: decryption_request_summary
+                padding_x: [10,0]
+                halign: "left"
+                size_hint: 1, None
+                height: max((len(self._lines)+1) * self.line_height, decryption_request_summary_scrollview.height)
+
+        WAVerticalScrollView:
+            size_hint_y: 1
+
+            MDList:
+                #padding: [10, 10]
+                id: symkeys_decryption
+
+
+        MDGridLayout:
+            cols: 2
+            spacing: 10
+            padding: [10, 0]
+
+            WAOperationButton:
+                id: rejected_button
+                icon: "check"
+                text: tr._("Import")
+                #on_press: root.reject_decryption_request()
+                size_hint_x: 1  # HACK
+
+            WAOperationButton:
+                id: accepted_button
+                icon: "close"
+                text: tr._("Initialize")
+                #on_press: root.accept_decryption_request()
+                size_hint_x: 1  # HACK
+
 
 
 <RemoteDecryptionRequestScreen>:
@@ -14,7 +62,7 @@
             title: tr._("Remote Decryption Request")
             id: initialization_form_toolbar
             left_action_items: [["arrow-left", lambda x: root.go_to_home_screen(), tr._("Back")]]
-            right_action_items: [["refresh", lambda x: root.refresh_synchronization_status(), tr._("Refresh")],["help-circle-outline", lambda x: root.display_help_popup(), tr._("Help")]]
+            right_action_items: [["refresh", lambda x: root.fetch_and_display_decryption_requests(), tr._("Refresh")],["help-circle-outline", lambda x: root.display_help_popup(), tr._("Help")]]
 
         MDTabs:
             id: tabs
