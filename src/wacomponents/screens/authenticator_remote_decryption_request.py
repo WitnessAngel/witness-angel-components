@@ -1,13 +1,16 @@
 from collections import OrderedDict
+from functools import partial
 from pathlib import Path
 from textwrap import dedent
 from uuid import UUID
 
+from kivy.clock import Clock
 from kivy.lang import Builder
 from kivy.logger import Logger as logger
 from kivy.properties import ObjectProperty, BooleanProperty, StringProperty
 from kivy.uix.accordion import AccordionItem, Accordion
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.scrollview import ScrollView
 from kivy.uix.textinput import TextInput
 
 from kivymd.app import MDApp
@@ -43,6 +46,129 @@ class RemoteDecryptionRequestScreen(Screen):
 
         list_authenticator_decryption_requests = \
             [OrderedDict([('public_authenticator', OrderedDict([('keystore_owner', 'keystore_owner'),
+                                                                ('keystore_uid',
+                                                                 UUID('0f01264a-87b2-3651-65b8-7735576ec680')),
+                                                                ('public_keys', [OrderedDict([('keychain_uid', UUID(
+                                                                    '0f01264a-87b2-9630-5ce2-5c006421bb85')),
+                                                                                              ('key_algo', 'RSA_OAEP'),
+                                                                                              ('key_value',
+                                                                                               b'\xb1{\x1dr\x14\r!\xc1:\xd8\x1e\x95z\xa2\xea\x08\xf4g\xd8\xd0')]),
+                                                                                 OrderedDict([('keychain_uid', UUID(
+                                                                                     '0f01264a-87b2-05d9-fce4-e3566f06db24')),
+                                                                                              ('key_algo', 'RSA_OAEP'),
+                                                                                              ('key_value',
+                                                                                               b'\xf0\xab \x92#R\x12\xdb\xcc\xd6\xfbag\x0e-\xb23\xff%\xba')])])])),
+                          ('decryption_request_uid', '0f01264a-dd8d-4ee0-e7cf-41712f6c8acb'),
+                          ('requester_uid', UUID('0f01264a-dd8d-5302-fa31-d0dd2f290bfd')),
+                          ('description', 'Bien vouloir nous aider pour le dechiffrement de cette clé.'),
+                          ('response_public_key', b'-\x07\x7f3]#\xa1\x82\xb1\xea\xd7\xec\x04\x0c\xbb\x97\xcfR\xa2,'),
+                          ('request_status', 'PENDING'),
+                          ('symkeys_decryption', [OrderedDict([('authenticator_public_key', OrderedDict(
+                              [('keychain_uid', UUID('0f01264a-87b2-9630-5ce2-5c006421bb85')),
+                               ('key_algo', 'RSA_OAEP'),
+                               ('key_value', b'\xb1{\x1dr\x14\r!\xc1:\xd8\x1e\x95z\xa2\xea\x08\xf4g\xd8\xd0')])),
+                                                               ('cryptainer_uid',
+                                                                UUID('0f01264a-dd8d-482a-c54b-167e5d4363f7')),
+                                                               ('cryptainer_metadata', {}),
+                                                               ('request_data',
+                                                                b'\xb1{\x1dr\x14\r!\xc1:\xd8\x1e\x95z\xa2\xea\x08\xf4g\xd8\xd0'),
+                                                               ('response_data', b''),
+                                                               ('decryption_status', 'PENDING')]),
+                                                  OrderedDict([('authenticator_public_key', OrderedDict(
+                                                      [('keychain_uid', UUID('0f01264a-87b2-05d9-fce4-e3566f06db24')),
+                                                       ('key_algo', 'RSA_OAEP'),
+                                                       ('key_value',
+                                                        b'\xf0\xab \x92#R\x12\xdb\xcc\xd6\xfbag\x0e-\xb23\xff%\xba')])),
+                                                               ('cryptainer_uid',
+                                                                UUID('0f01264a-dd8d-8691-cf2d-613d29df23ad')),
+                                                               ('cryptainer_metadata', {}),
+                                                               ('request_data',
+                                                                b'\xf0\xab \x92#R\x12\xdb\xcc\xd6\xfbag\x0e-\xb23\xff%\xba'),
+                                                               ('response_data', b''),
+                                                               ('decryption_status', 'PENDING')])])]),
+             OrderedDict([('public_authenticator', OrderedDict([('keystore_owner', 'keystore_owner'),
+                                                                ('keystore_uid',
+                                                                 UUID('0f01264a-87b2-3651-65b8-7735576ec680')),
+                                                                ('public_keys', [OrderedDict([('keychain_uid', UUID(
+                                                                    '0f01264a-87b2-9630-5ce2-5c006421bb85')),
+                                                                                              ('key_algo', 'RSA_OAEP'),
+                                                                                              ('key_value',
+                                                                                               b'\xb1{\x1dr\x14\r!\xc1:\xd8\x1e\x95z\xa2\xea\x08\xf4g\xd8\xd0')]),
+                                                                                 OrderedDict([('keychain_uid', UUID(
+                                                                                     '0f01264a-87b2-05d9-fce4-e3566f06db24')),
+                                                                                              ('key_algo', 'RSA_OAEP'),
+                                                                                              ('key_value',
+                                                                                               b'\xf0\xab \x92#R\x12\xdb\xcc\xd6\xfbag\x0e-\xb23\xff%\xba')])])])),
+                          ('decryption_request_uid', '0f01264a-dd8d-4ee0-e7cf-41712f6c8acb'),
+                          ('requester_uid', UUID('0f01264a-dd8d-5302-fa31-d0dd2f290bfd')),
+                          ('description', 'Bien vouloir nous aider pour le dechiffrement de cette clé.'),
+                          ('response_public_key', b'-\x07\x7f3]#\xa1\x82\xb1\xea\xd7\xec\x04\x0c\xbb\x97\xcfR\xa2,'),
+                          ('request_status', 'PENDING'),
+                          ('symkeys_decryption', [OrderedDict([('authenticator_public_key', OrderedDict(
+                              [('keychain_uid', UUID('0f01264a-87b2-9630-5ce2-5c006421bb85')),
+                               ('key_algo', 'RSA_OAEP'),
+                               ('key_value', b'\xb1{\x1dr\x14\r!\xc1:\xd8\x1e\x95z\xa2\xea\x08\xf4g\xd8\xd0')])),
+                                                               ('cryptainer_uid',
+                                                                UUID('0f01264a-dd8d-482a-c54b-167e5d4363f7')),
+                                                               ('cryptainer_metadata', {}),
+                                                               ('request_data',
+                                                                b'\xb1{\x1dr\x14\r!\xc1:\xd8\x1e\x95z\xa2\xea\x08\xf4g\xd8\xd0'),
+                                                               ('response_data', b''),
+                                                               ('decryption_status', 'PENDING')]),
+                                                  OrderedDict([('authenticator_public_key', OrderedDict(
+                                                      [('keychain_uid', UUID('0f01264a-87b2-05d9-fce4-e3566f06db24')),
+                                                       ('key_algo', 'RSA_OAEP'),
+                                                       ('key_value',
+                                                        b'\xf0\xab \x92#R\x12\xdb\xcc\xd6\xfbag\x0e-\xb23\xff%\xba')])),
+                                                               ('cryptainer_uid',
+                                                                UUID('0f01264a-dd8d-8691-cf2d-613d29df23ad')),
+                                                               ('cryptainer_metadata', {}),
+                                                               ('request_data',
+                                                                b'\xf0\xab \x92#R\x12\xdb\xcc\xd6\xfbag\x0e-\xb23\xff%\xba'),
+                                                               ('response_data', b''),
+                                                               ('decryption_status', 'PENDING')])])]),
+             OrderedDict([('public_authenticator', OrderedDict([('keystore_owner', 'keystore_owner'),
+                                                                ('keystore_uid',
+                                                                 UUID('0f01264a-87b2-3651-65b8-7735576ec680')),
+                                                                ('public_keys', [OrderedDict([('keychain_uid', UUID(
+                                                                    '0f01264a-87b2-9630-5ce2-5c006421bb85')),
+                                                                                              ('key_algo', 'RSA_OAEP'),
+                                                                                              ('key_value',
+                                                                                               b'\xb1{\x1dr\x14\r!\xc1:\xd8\x1e\x95z\xa2\xea\x08\xf4g\xd8\xd0')]),
+                                                                                 OrderedDict([('keychain_uid', UUID(
+                                                                                     '0f01264a-87b2-05d9-fce4-e3566f06db24')),
+                                                                                              ('key_algo', 'RSA_OAEP'),
+                                                                                              ('key_value',
+                                                                                               b'\xf0\xab \x92#R\x12\xdb\xcc\xd6\xfbag\x0e-\xb23\xff%\xba')])])])),
+                          ('decryption_request_uid', '0f01264a-dd8d-4ee0-e7cf-41712f6c8acb'),
+                          ('requester_uid', UUID('0f01264a-dd8d-5302-fa31-d0dd2f290bfd')),
+                          ('description', 'Bien vouloir nous aider pour le dechiffrement de cette clé.'),
+                          ('response_public_key', b'-\x07\x7f3]#\xa1\x82\xb1\xea\xd7\xec\x04\x0c\xbb\x97\xcfR\xa2,'),
+                          ('request_status', 'PENDING'),
+                          ('symkeys_decryption', [OrderedDict([('authenticator_public_key', OrderedDict(
+                              [('keychain_uid', UUID('0f01264a-87b2-9630-5ce2-5c006421bb85')),
+                               ('key_algo', 'RSA_OAEP'),
+                               ('key_value', b'\xb1{\x1dr\x14\r!\xc1:\xd8\x1e\x95z\xa2\xea\x08\xf4g\xd8\xd0')])),
+                                                               ('cryptainer_uid',
+                                                                UUID('0f01264a-dd8d-482a-c54b-167e5d4363f7')),
+                                                               ('cryptainer_metadata', {}),
+                                                               ('request_data',
+                                                                b'\xb1{\x1dr\x14\r!\xc1:\xd8\x1e\x95z\xa2\xea\x08\xf4g\xd8\xd0'),
+                                                               ('response_data', b''),
+                                                               ('decryption_status', 'PENDING')]),
+                                                  OrderedDict([('authenticator_public_key', OrderedDict(
+                                                      [('keychain_uid', UUID('0f01264a-87b2-05d9-fce4-e3566f06db24')),
+                                                       ('key_algo', 'RSA_OAEP'),
+                                                       ('key_value',
+                                                        b'\xf0\xab \x92#R\x12\xdb\xcc\xd6\xfbag\x0e-\xb23\xff%\xba')])),
+                                                               ('cryptainer_uid',
+                                                                UUID('0f01264a-dd8d-8691-cf2d-613d29df23ad')),
+                                                               ('cryptainer_metadata', {}),
+                                                               ('request_data',
+                                                                b'\xf0\xab \x92#R\x12\xdb\xcc\xd6\xfbag\x0e-\xb23\xff%\xba'),
+                                                               ('response_data', b''),
+                                                               ('decryption_status', 'PENDING')])])]),
+             OrderedDict([('public_authenticator', OrderedDict([('keystore_owner', 'keystore_owner'),
                                                                 ('keystore_uid',
                                                                  UUID('0f01264a-87b2-3651-65b8-7735576ec680')),
                                                                 ('public_keys', [OrderedDict([('keychain_uid', UUID(
@@ -209,7 +335,7 @@ class RemoteDecryptionRequestScreen(Screen):
 
         return list_authenticator_decryption_requests
 
-    def _add_to_display_single_remote_decryption_request(self, decryption_request):
+    def _display_single_remote_decryption_request(self, decryption_request):
 
         decryptionRequestEntry = Factory.DecryptionRequestEntry()
 
@@ -231,7 +357,6 @@ class RemoteDecryptionRequestScreen(Screen):
                                 """)).format(**_displayed_values)
 
         decryptionRequestEntry.decryption_request_summary.text = decryption_request_summary_text
-
 
         for index, symkey_decryption in enumerate(decryption_request['symkeys_decryption'], start=1):
             symkey_decryption_label = tr._("N° {key_index}: {symkey_decryption} ({key_algo})"). \
@@ -272,14 +397,14 @@ class RemoteDecryptionRequestScreen(Screen):
             text= symkey_decryption_info_text,
         )
 
-    def add_remote_decryption_request(self, decryption_requests_per_status):  # TODO change name function
+    def display_remote_decryption_request(self, *args, list_decryption_requests_per_status, **kwargs):  # TODO change name function
         # TODO add list_decryption_request to parameter of this function
 
         tab_per_status = dict(PENDING=self.ids.pending_decryption_request,
                               REJECTED=self.ids.rejected_decryption_request,
                               ACCEPTED=self.ids.accepted_decryption_request)
 
-        for status, decryption_requests in decryption_requests_per_status.items():
+        for status, decryption_requests in list_decryption_requests_per_status.items():
 
             if not decryption_requests:
                 display_layout = Factory.WABigInformationBox()
@@ -289,7 +414,7 @@ class RemoteDecryptionRequestScreen(Screen):
 
             root = Accordion(orientation='vertical')
             for decryption_request in decryption_requests:
-                decryption_request_item = self._add_to_display_single_remote_decryption_request(decryption_request=decryption_request)
+                decryption_request_item = self._display_single_remote_decryption_request(decryption_request=decryption_request)
                 root.add_widget(decryption_request_item)
             tab_per_status[status].add_widget(root)
 
@@ -307,6 +432,7 @@ class RemoteDecryptionRequestScreen(Screen):
     def fetch_and_display_decryption_requests(self):
         list_authenticator_decryption_requests = self.list_authenticator_decryption_requests()
 
-        decryption_requests_per_status = self.sort_list_decryption_request_per_status(
+        list_decryption_requests_per_status = self.sort_list_decryption_request_per_status(
             list_authenticator_decryption_requests)
-        self.add_remote_decryption_request(decryption_requests_per_status)
+        Clock.schedule_once(partial(self.display_remote_decryption_request, list_decryption_requests_per_status=list_decryption_requests_per_status))
+
