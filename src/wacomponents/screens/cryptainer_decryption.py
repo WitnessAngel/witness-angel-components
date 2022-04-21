@@ -25,6 +25,7 @@ from kivy.logger import Logger as logger
 
 class CryptainerDecryptionScreen(Screen):
     selected_cryptainer_names = ObjectProperty(None, allownone=True)
+    trustee_data = ObjectProperty(None, allownone=True)
     filesystem_cryptainer_storage = ObjectProperty(None, allownone=True)
     filesystem_keystore_pool = ObjectProperty(None)
     ##found_trustees_lacking_passphrase = BooleanProperty(0)
@@ -114,11 +115,9 @@ class CryptainerDecryptionScreen(Screen):
 
             trustee_dependencies = gather_trustee_dependencies(cryptainers)
 
-            # print(list(trustee_dependencies["encryption"].values()))
+            self.trustee_data = [trustee for trustee in trustee_dependencies["encryption"].values()]
 
-            trustee_data = [trustee for trustee in trustee_dependencies["encryption"].values()]
-
-            for trustee_info, trustee_keypair_identifiers in trustee_data:
+            for trustee_info, trustee_keypair_identifiers in self.trustee_data:
                 trustee_id = get_trustee_id(trustee_info)
                 trustee_type = trustee_info["trustee_type"]
                 keystore_uid = trustee_info["keystore_uid"]
@@ -266,3 +265,11 @@ class CryptainerDecryptionScreen(Screen):
             font_size="12sp",
             duration=5,
         ).open()
+
+    def launch_remote_decryption_request(self):
+
+        remote_decryption_request_screen_name = "DecryptionRequestForm"
+        remote_decryption_request_screen = self.manager.get_screen(remote_decryption_request_screen_name)
+        remote_decryption_request_screen.selected_cryptainer_names = self.selected_cryptainer_names
+        remote_decryption_request_screen.trustee_data = self.trustee_data
+        self.manager.current = remote_decryption_request_screen_name

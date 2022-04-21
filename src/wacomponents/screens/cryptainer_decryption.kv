@@ -22,6 +22,7 @@
         # Lazy-init hack to workaround Clock iteration troubles
         add_passphrase_btn.size_hint_x = 0.5
         add_passphrase_btn.size_hint_x = 0.5
+        remote_decryption_request_btn.size_hint_x = 0.5
         root.get_container_summary()
         root.get_cryptainer_trustee_dependency_status()
 
@@ -78,3 +79,9 @@
                     icon: "eye-circle-outline"
                     text: tr._("Decrypt")
                     on_press: root.decipher_cryptainers()
+
+                WAOperationButton:
+                    id: remote_decryption_request_btn
+                    icon: "eye-circle-outline"  # TODO Change this icon
+                    text: tr._("Remote decryption request")
+                    on_press: root.launch_remote_decryption_request()
