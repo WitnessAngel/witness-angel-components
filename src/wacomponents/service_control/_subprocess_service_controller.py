@@ -17,8 +17,10 @@ class ServiceController(ServiceControllerBase):
     def start_service(self):
         assert WA_SERVICE_SCRIPT is not None, repr(WA_SERVICE_SCRIPT)
         # self._subprocess might already exist but have crashed
+        command = [sys.executable] + WA_SERVICE_SCRIPT.split("|")
+        print(">> Starting service via Popen command %s" % command)
         self._subprocess = subprocess.Popen(
-            [sys.executable] + WA_SERVICE_SCRIPT.split("|"),
+            command,
             shell=False,
             cwd=os.path.dirname(WA_SERVICE_SCRIPT),
         )

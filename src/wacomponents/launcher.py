@@ -5,8 +5,6 @@ import importlib
 import os
 import sys
 
-from kivy.utils import platform
-
 
 APP_IS_FROZEN = getattr(sys, 'frozen', False)
 
@@ -15,6 +13,7 @@ SERVICE_MARKER_CLI_PARAM = "--service"
 
 def _is_service_alive():
 
+    from kivy.utils import platform
     from wacomponents.service_control import get_osc_client
 
     osc_client = get_osc_client(to_app=False)
@@ -47,6 +46,12 @@ def launch_main_module_with_crash_handler(main_module: str, client_type: str):
     from wacomponents.application import setup_app_environment
     setup_app_environment(setup_kivy=(client_type=="APPLICATION"))
 
+    # We can only do it now that Kivy is setup!
+    if (client_type == "SERVICE" and _is_service_alive()):
+        dt = datetime.now()
+        print(">>> %s - WANVR service already started and listening on its UNIX socket, aborting relaunch" % dt)
+        return
+
     try:
         module = importlib.import_module(main_module)  # NOW ONLY we trigger conf loading
         module.main()
@@ -65,16 +70,10 @@ def launch_main_module_with_crash_handler(main_module: str, client_type: str):
 def launch_app_or_resurrect_service_with_crash_handler(app_module, service_module, main_file, sys_argv):
     if SERVICE_MARKER_CLI_PARAM in sys_argv:
 
-        # We try to launch/resurrect service
-        if _is_service_alive():
-            dt = datetime.now()
-            print(">>>>>>>>> %s - WANVR service already started and listening on its UNIX socket, aborting relaunch" % dt)
-            return
-
         launch_main_module_with_crash_handler(main_module=service_module, client_type="SERVICE")
 
     else:
-
+        
         if APP_IS_FROZEN:
             WA_SERVICE_SCRIPT = SERVICE_MARKER_CLI_PARAM  # sys.executable is sufficient for script itself
         else:
