@@ -4,14 +4,26 @@ import gettext
 from gettext import NullTranslations
 
 import locale
+import os
 from kivy.lang import Observable
 
 from wacomponents.default_settings import IS_ANDROID
 
 
 def detect_default_language():
-    """Rough language detection on multiple platforms"""
-    lang_code = "en"
+    """Rough language detection on multiple platforms
+
+    One can FORCE the GUI language with "LANG" environment variable.
+    """
+    ALLOWED_LANGUAGES = ["en", "fr"]
+
+    _normalize = lambda x: x.strip().lower()
+
+    lang_code = ALLOWED_LANGUAGES[0]
+
+    forced_lang_code = _normalize(os.environ.get("LANG", ""))
+    if forced_lang_code in ALLOWED_LANGUAGES:  # We don't deal with advanced forms like "en_US.UTF-8"...
+        return forced_lang_code
 
     if IS_ANDROID:
         try:
@@ -29,7 +41,7 @@ def detect_default_language():
         #print("######### DEFAULT LOCALE DETECTED: %s %s #########" % (_lang_code, _charset))
 
     lang_code = lang_code or ""  # lang_code might be None if undetected
-    return "fr" if lang_code.strip().lower().startswith("fr") else "en"
+    return "fr" if _normalize(lang_code).startswith("fr") else "en"
 
 DEFAULT_LANGUAGE = detect_default_language()
 
