@@ -5,10 +5,14 @@
 <RightCheckbox@IRightBodyTouch+MDCheckbox>
 
 <ListItemWithCheckbox@OneLineAvatarIconListItem>
+    text: ""
+    unique_identifier: None  # Use for save keystore uid
+
     IconLeftWidget:
         icon: "key"
 
     RightCheckbox:
+        id: check
 
 
 
@@ -58,7 +62,7 @@
                         text: tr._("Please enter the reason for the decryption request: ")
 
                     MDTextField:
-                        hint_text: tr._("Description")
+                        hint_text: tr._("Enter a description (minimum 10 characters):")
                         mode: "rectangle"
                         multiline: True
                         id: description
