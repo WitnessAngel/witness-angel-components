@@ -4,6 +4,8 @@ def _presetup_app_environment(setup_kivy):
     """Setup for both gui and console apps."""
     import os
 
+    os.environ["KIVY_NO_ARGS"] = "1"  # Important to bypass Kivy CLI system
+
     try:
 
         protected_app_package = os.getenv("ENABLE_TYPEGUARD")

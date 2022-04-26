@@ -15,10 +15,10 @@ class ServiceController(ServiceControllerBase):
     _subprocess = None
 
     def start_service(self):
-        assert WA_SERVICE_SCRIPT, WA_SERVICE_SCRIPT
-        # "self._subprocess" might already exist but have crashed
+        assert WA_SERVICE_SCRIPT is not None, repr(WA_SERVICE_SCRIPT)
+        # self._subprocess might already exist but have crashed
         self._subprocess = subprocess.Popen(
-            [sys.executable, WA_SERVICE_SCRIPT],
+            [sys.executable] + WA_SERVICE_SCRIPT.split("|"),
             shell=False,
             cwd=os.path.dirname(WA_SERVICE_SCRIPT),
         )
