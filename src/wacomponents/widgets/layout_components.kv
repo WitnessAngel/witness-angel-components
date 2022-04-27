@@ -124,6 +124,33 @@
         halign: "center"
         font_size: "20sp"
 
+<WATextInput@TextInput>:
+    size_hint: 1, 1
+    padding: [10,10]
+    halign: "left"
+    background_color: app.theme_cls.bg_normal
+
+    readonly: True
+    # Modified from kivy/data/style.kv
+    canvas.before:
+        # Clear (can be used to remove legacy canvas instructions)
+        Color:
+            rgba: self.background_color
+        Rectangle:
+            pos: self.pos
+            size: self.size
+        Color:
+            rgba:
+                (self.cursor_color
+                if self.focus and not self._cursor_blink
+                else (0, 0, 0, 0))
+        Rectangle:
+            pos: self._cursor_visual_pos
+            size: root.cursor_width, -self._cursor_visual_height
+        Color:
+            rgba: self.disabled_foreground_color if self.disabled else (self.hint_text_color if not self.text else self.foreground_color)
+
+
 
 <-WASelectableLabel@TextInput>:
     size_hint: 1, None

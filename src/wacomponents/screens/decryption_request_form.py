@@ -15,6 +15,7 @@ from wacryptolib.utilities import load_from_json_bytes, generate_uuid0
 from wacryptolib.exceptions import KeystoreDoesNotExist, KeyDoesNotExist
 
 from wacomponents.i18n import tr
+from wacomponents.utilities import shorten_uid
 from wacomponents.widgets.popups import display_info_toast, dialog_with_close_button
 
 Builder.load_file(str(Path(__file__).parent / 'decryption_request_form.kv'))
@@ -179,11 +180,11 @@ class DecryptionRequestFormScreen(Screen):
         response_keychain_uid, response_key_algo, response_public_key = self._create_and_return_response_keypair_from_local_factory()
 
         successful_request = 0
-        error_report = []
+        error = []
+        message = ""
         for trustee_id, decryptable_data in decryptable_symkeys_per_trustee.items():
             trustee_data, symkeys_data_to_decrypt = decryptable_data
             if trustee_data["keystore_uid"] in authenticator_selected:
-                # faire try except
                 try:
                     gateway_proxy.submit_decryption_request(keystore_uid=trustee_data["keystore_uid"],
                                                             requester_uid=self.requester_uid,
@@ -192,26 +193,44 @@ class DecryptionRequestFormScreen(Screen):
                                                             response_keychain_uid=response_keychain_uid,
                                                             response_key_algo=response_key_algo,
                                                             symkeys_data_to_decrypt=symkeys_data_to_decrypt)
+
                     # stocker les infos utiles dans operation_report
                     successful_request += 1
 
                 except (JSONRPCError, OSError):
                     message = tr._("Error calling method, check the server url")
-                    error_report.append(message)
+                    error.append(message)
+                    break
 
-                except (KeystoreDoesNotExist, KeyDoesNotExist) as exc:
-                    error_report.append((trustee_data["keystore_uid"], exc))
+                except KeystoreDoesNotExist:
+                    message = tr._(
+                        "Authenticator %s does not exists in sql storage" % shorten_uid(trustee_data["keystore_uid"]))
+                    error.append(message)
+
+                except KeyDoesNotExist as exc:
+                    message = tr._("Public key needed does not exists in key storage in %s authenticator" % shorten_uid(trustee_data["keystore_uid"]))
+                    error.append(message)
+
+        error_report = ",\n    - ".join(error)
 
         _displayed_values = dict(
             successful_request=successful_request,
             len_authenticator_selected=len(authenticator_selected),
-            errror_report=error_report
+            error_report=error_report
         )
 
         operation_report_text = dedent(tr._("""\
-                                                    Successful request(s): {successful_request} sur {len_authenticator_selected}
-                                                    Error(s) Report: {errror_report}                                           
+                        Successful requests: {successful_request} sur {len_authenticator_selected}
                                                 """)).format(**_displayed_values)
+
+        error_report_text = dedent(tr._("""\
+        
+                                                Error Report: 
+                                                    - {error_report}                                           
+                                                        """)).format(**_displayed_values)
+
+        if successful_request != len(authenticator_selected):
+            operation_report_text += error_report_text
 
         dialog_with_close_button(
             close_btn_label=tr._("Close"),
@@ -219,6 +238,3 @@ class DecryptionRequestFormScreen(Screen):
             text=operation_report_text,
             close_btn_callback=self.go_to_previous_screen()
         )
-
-        # afficher POPUP avec le rapport (X réussis, et erreurs : <liste à bulle>)
-        # quand on ferme popup, retourner sur page précédente
