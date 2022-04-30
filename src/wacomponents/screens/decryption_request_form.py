@@ -10,10 +10,11 @@ from kivymd.app import MDApp
 from kivymd.uix.screen import Screen
 from wacryptolib.cryptainer import SHARED_SECRET_ALGO_MARKER, _get_trustee_id
 from wacryptolib.jsonrpc_client import JsonRpcProxy, status_slugs_response_error_handler
-from wacryptolib.keystore import generate_keypair_for_storage
-from wacryptolib.utilities import load_from_json_bytes, generate_uuid0
+from wacryptolib.keystore import generate_keypair_for_storage, FilesystemKeystore
+from wacryptolib.utilities import load_from_json_bytes, generate_uuid0, dump_to_json_file, load_from_json_file
 from wacryptolib.exceptions import KeystoreDoesNotExist, KeyDoesNotExist
 
+from wacomponents.default_settings import INTERNAL_APP_ROOT
 from wacomponents.i18n import tr
 from wacomponents.utilities import shorten_uid
 from wacomponents.widgets.popups import display_info_toast, dialog_with_close_button
@@ -27,7 +28,6 @@ class DecryptionRequestFormScreen(Screen):
     selected_cryptainer_names = ObjectProperty(None, allownone=True)
     filesystem_keystore_pool = ObjectProperty(None)
     trustee_data = ObjectProperty(None, allownone=True)
-    requester_uid = generate_uuid0()
 
     def __init__(self, *args, **kwargs):
         self._app = MDApp.get_running_app()
@@ -154,7 +154,25 @@ class DecryptionRequestFormScreen(Screen):
                 selected_authenticator.append(authenticator_entry.unique_identifier)
         return selected_authenticator
 
+    def _get_wa_device_uid(self):
+        root_dir = INTERNAL_APP_ROOT
+        device_uid_file = root_dir.joinpath(".wa_device_uid.json")
+        try:
+            device_uid = load_from_json_file(device_uid_file)
+        except FileNotFoundError:
+
+            device_uid_file.parent.mkdir(exist_ok=True)
+
+            device_uid = {
+                "wa_device_uid": generate_uuid0()
+            }
+
+            dump_to_json_file(device_uid_file, device_uid)
+        return device_uid
+
     def submit_decryption_request(self):
+        wa_device_uid = self._get_wa_device_uid()
+        requester_uid = wa_device_uid["wa_device_uid"]
 
         gateway_proxy = self._get_gateway_proxy()
 
@@ -181,13 +199,13 @@ class DecryptionRequestFormScreen(Screen):
 
         successful_request = 0
         error = []
-        message = ""
+        # message = ""
         for trustee_id, decryptable_data in decryptable_symkeys_per_trustee.items():
             trustee_data, symkeys_data_to_decrypt = decryptable_data
             if trustee_data["keystore_uid"] in authenticator_selected:
                 try:
                     gateway_proxy.submit_decryption_request(keystore_uid=trustee_data["keystore_uid"],
-                                                            requester_uid=self.requester_uid,
+                                                            requester_uid=requester_uid,
                                                             description=description,
                                                             response_public_key=response_public_key,
                                                             response_keychain_uid=response_keychain_uid,
@@ -208,7 +226,8 @@ class DecryptionRequestFormScreen(Screen):
                     error.append(message)
 
                 except KeyDoesNotExist as exc:
-                    message = tr._("Public key needed does not exists in key storage in %s authenticator" % shorten_uid(trustee_data["keystore_uid"]))
+                    message = tr._("Public key needed does not exists in key storage in %s authenticator" % shorten_uid(
+                        trustee_data["keystore_uid"]))
                     error.append(message)
 
         error_report = ",\n    - ".join(error)
