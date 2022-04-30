@@ -1,0 +1,23 @@
+#:import tr wacomponents.i18n.tr
+#:import strip_external_app_root_prefix wacomponents.default_settings.strip_external_app_root_prefix
+
+<DecryptionRequestListScreen>:
+    on_pre_enter:
+        root.display_decryption_request_list()
+
+    WAMainVerticalScrollView:
+
+        WAVerticalPanel:
+
+            WAToolbar:
+                title: "Witness Angel"
+                left_action_items: [["arrow-left", lambda x: root.go_to_previous_screen(), tr._("Back")]]
+                right_action_items: [["refresh", lambda x: root.display_decryption_request_list(), tr._("Refresh")], ["home", lambda x: app.get_back_to_home_screen(), tr._("Back to home")],]
+
+            WAElevatedBoxLayout:
+                MDLabel:
+                    text: tr._("List of Remote Decryption Request")
+                    padding_x: "10dp"
+
+            WAVerticalScrollView:
+                id: list_decryption_request_scrollview
