@@ -61,11 +61,16 @@
                     WALabel:
                         text: tr._("Please enter the reason for the decryption request: ")
 
-                    MDTextField:
-                        hint_text: tr._("Enter a description (minimum 10 characters):")
-                        mode: "rectangle"
-                        multiline: True
-                        id: description
+                    BoxLayout:
+                        size_hint_y: None
+                        height: self.minimum_height
+                        padding: [10, 0]
+
+                        MDTextField:
+                            hint_text: tr._("Enter a description (minimum 10 characters):")
+                            mode: "rectangle"
+                            multiline: True
+                            id: description
 
                     RelativeLayout:
                         size_hint: 1, None

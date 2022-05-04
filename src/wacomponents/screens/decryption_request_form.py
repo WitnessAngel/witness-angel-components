@@ -66,6 +66,7 @@ class DecryptionRequestFormScreen(Screen):
 
         decryption_request_summary_text = dedent(tr._("""\
                                             Container(s) selected: {containers_selected}
+                                            
                                             Gateway url: {gateway_url}                                           
                                         """)).format(**_displayed_values)
 
@@ -154,24 +155,8 @@ class DecryptionRequestFormScreen(Screen):
                 selected_authenticator.append(authenticator_entry.unique_identifier)
         return selected_authenticator
 
-    def _get_wa_device_uid(self):
-        root_dir = INTERNAL_APP_ROOT
-        device_uid_file = root_dir.joinpath(".wa_device_uid.json")
-        try:
-            device_uid = load_from_json_file(device_uid_file)
-        except FileNotFoundError:
-
-            device_uid_file.parent.mkdir(exist_ok=True)
-
-            device_uid = {
-                "wa_device_uid": generate_uuid0()
-            }
-
-            dump_to_json_file(device_uid_file, device_uid)
-        return device_uid
-
     def submit_decryption_request(self):
-        wa_device_uid = self._get_wa_device_uid()
+        wa_device_uid = self._app.get_wa_device_uid()
         requester_uid = wa_device_uid["wa_device_uid"]
 
         gateway_proxy = self._get_gateway_proxy()

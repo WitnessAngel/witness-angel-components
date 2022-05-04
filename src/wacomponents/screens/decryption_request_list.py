@@ -9,10 +9,8 @@ from kivymd.app import MDApp
 from kivymd.uix.list import MDList
 from kivymd.uix.screen import Screen
 from wacryptolib.jsonrpc_client import JsonRpcProxy, status_slugs_response_error_handler
-from wacryptolib.utilities import generate_uuid0, dump_to_json_file, load_from_json_file
 from wacryptolib.exceptions import ExistenceError
 
-from wacomponents.default_settings import INTERNAL_APP_ROOT
 from wacomponents.i18n import tr
 from wacomponents.utilities import shorten_uid
 from wacomponents.widgets.popups import  dialog_with_close_button
@@ -38,23 +36,8 @@ class DecryptionRequestListScreen(Screen):
         )
         return gateway_proxy
 
-    def _get_wa_device_uid(self): # TODO already exist
-        root_dir = INTERNAL_APP_ROOT
-        device_uid_file = root_dir.joinpath(".wa_device_uid.json")
-        try:
-            device_uid = load_from_json_file(device_uid_file)
-        except FileNotFoundError:
-
-            device_uid_file.parent.mkdir(exist_ok=True)
-
-            device_uid = {
-                "wa_device_uid": generate_uuid0()
-            }
-
-            dump_to_json_file(device_uid_file, device_uid)
-        return device_uid
-
-    def _list_decryption_request_reformatted(self, list_decryption_request):
+    @staticmethod
+    def _list_decryption_request_reformatted(list_decryption_request):
         decryption_request_per_cryptainer = {}
 
         for decryption_request in list_decryption_request:
@@ -75,7 +58,7 @@ class DecryptionRequestListScreen(Screen):
         self.ids.list_decryption_request_scrollview.clear_widgets()
         gateway_proxy = self._get_gateway_proxy()
 
-        wa_device_uid = self._get_wa_device_uid()
+        wa_device_uid = self._app.get_wa_device_uid()
         requester_uid = wa_device_uid["wa_device_uid"]
 
         try:
@@ -96,9 +79,7 @@ class DecryptionRequestListScreen(Screen):
 
         decryption_requests_per_cryptainer = self._list_decryption_request_reformatted(list_decryption_requests)
 
-        display_layout = Accordion(orientation='vertical', size_hint=(1, None), height=150)
-        item_height = 75
-
+        display_layout = Accordion(orientation='vertical', size_hint=(1, None), height=20*30)
         for decryption_request_per_cryptainer in decryption_requests_per_cryptainer.items():
             item = AccordionItem(title='Cryptainer: %s ' % decryption_request_per_cryptainer[0])
             decryption_requests_list = MDList()
@@ -125,8 +106,7 @@ class DecryptionRequestListScreen(Screen):
                                                        """)).format(**_displayed_values)
 
                 decryption_request_entry = Factory.WAIconListItemEntry(text="Decryption request uid: %s, Status: %s" % (
-                shorten_uid(decryption_request["decryption_request_uid"]), decryption_request["request_status"]),
-                                                                       size_hint=(1, None), height=item_height)
+                shorten_uid(decryption_request["decryption_request_uid"]), decryption_request["request_status"]))
 
                 def information_callback(widget, decryption_request_info=decryption_request_summary_text):
                     self.show_decryption_request_info(decryption_request_info=decryption_request_info)
@@ -137,7 +117,6 @@ class DecryptionRequestListScreen(Screen):
                 decryption_requests_list.add_widget(decryption_request_entry)
 
             item.add_widget(decryption_requests_list)
-            display_layout.height += item_height
             display_layout.add_widget(item)
         self.ids.list_decryption_request_scrollview.add_widget(display_layout)
 
