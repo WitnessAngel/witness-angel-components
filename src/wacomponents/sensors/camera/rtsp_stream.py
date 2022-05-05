@@ -1,9 +1,12 @@
+
 import logging
-import logging
-import subprocess
 import threading
 from datetime import timezone, datetime
+import re
+import subprocess
 from pathlib import Path
+from wacomponents.i18n import tr
+from kivy.logger import Logger as logger
 
 from wacryptolib.cryptainer import CRYPTAINER_DATETIME_FORMAT
 from wacryptolib.utilities import PeriodicTaskHandler, synchronized
@@ -20,6 +23,27 @@ SUPROCESS_BUFFER_SIZE = DATA_CHUNK_SIZE * 6
 def get_utc_now_date():  # FIXME remove this
     """Return current datetime with UTC timezone."""
     return datetime.now(tz=timezone.utc)
+
+
+def get_ffmpeg_version() -> tuple:
+    """Returns a pair with version as a float(or None), along with an error message (or None if success)."""
+    try:
+        output = subprocess.check_output(["ffmpeg", "-version"], stderr=subprocess.STDOUT)
+    except OSError:
+        logger.warning("Error while calling ffmpeg", exc_info=True)
+        return None, tr.f(tr._("Ffmpeg module not found, please ensure it is in your PATH"))
+
+    output = output.decode("ascii", "ignore")
+
+    regex = r'ffmpeg version (\d\.\d)'
+    match = re.search(regex, output)
+
+    if match is None:
+        return None, tr.f(tr._("Ffmpeg module is installed, but beware its version couldn't be determined"))
+
+    ffmpeg_version = match.group(1)
+    return float(ffmpeg_version), None
+
 
 '''
 # FIXME move this to wacryptolib!
@@ -226,17 +250,27 @@ class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
         self._preview_image_path = preview_image_path
 
     def _launch_and_wait_ffmpeg_process(self):
+        ffmpeg_version, _error_msg = get_ffmpeg_version()
+
+        additional_input_args = []
+        timeout_microseconds = "5000000"
+        if ffmpeg_version is not None:
+            # Force failure if input can't be joined anymore (microseconds!)
+            if ffmpeg_version >= 5:
+                # This previously meant "listen timeout"
+                additional_input_args = ["-timeout", timeout_microseconds]
+            else:
+                additional_input_args = ["-stimeout", timeout_microseconds]
 
         exec = [
             "ffmpeg",
             "-y",  # Always say yes to questions
             "-hide_banner",  # Hide useless "library configuration mismatch" stuffs
         ]
-        input = [
+
+        input = additional_input_args + [
             "-rtsp_flags", "prefer_tcp",  # Safer alternative to ( "-rtsp_transport", "tcp", )
-            "-stimeout", "5000000",  # Force failure if input can't be joined anymore (microseconds!)
             "-fflags", "+igndts",  # Fix "non-monotonous DTS in output stream" error
-            # DO NOT use the "-timeout" argument since it's for LISTENING server
             # Beware these flags only concern HTTP, no use for them in RTPS!
             #  "-reconnect", "1", "-reconnect_at_eof", "1", "-reconnect_streamed", "1",
             #  "-reconnect_delay_max", "10",  "-reconnect_on_network_error", "1",

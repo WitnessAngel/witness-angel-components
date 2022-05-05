@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-13 12:22+0200\n"
-"PO-Revision-Date: 2022-04-13 12:23+0200\n"
+"POT-Creation-Date: 2022-05-05 17:29+0200\n"
+"PO-Revision-Date: 2022-05-05 17:33+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
@@ -77,25 +77,19 @@ msgid "Containers are kept for {max_cryptainer_age_day} day(s)"
 msgstr "Les conteneurs sont gardés {max_cryptainer_age_day} jour(s)"
 
 #: src/wacomponents/application/_common_runtime_support.py:133
-msgid "Ffmpeg module not found, please ensure it is in your PATH"
-msgstr "Module ffmpeg non trouvé, vérifiez qu'il est dans votre PATH"
-
-#: src/wacomponents/application/_common_runtime_support.py:141
-msgid ""
-"Ffmpeg module is installed, but beware its version couldn't be determined"
-msgstr ""
-"Module ffmpeg installé, mais attention sa version n'a pu être déterminée"
-
-#: src/wacomponents/application/_common_runtime_support.py:145
-msgid "Ffmpeg module is installed with a compatible version"
-msgstr "Module ffmpeg installé avec une version compatible"
-
-#: src/wacomponents/application/_common_runtime_support.py:147
 #, python-brace-format
 msgid ""
-"Ffmpeg module is installed but its version is below {min_ffmpeg_version} "
+"Ffmpeg module is installed with a compatible {ffmpeg_version:.1f} version"
+msgstr "Module ffmpeg installé avec une version {ffmpeg_version:.1f} compatible"
+
+#: src/wacomponents/application/_common_runtime_support.py:135
+#, python-brace-format
+msgid ""
+"Ffmpeg module is installed but this {ffmpeg_version:.1f} version is below "
+"required {min_ffmpeg_version} "
 msgstr ""
-"Module ffmpeg installé mais sa version est inférieure à {min_ffmpeg_version} "
+"Module ffmpeg installé mais sa version {ffmpeg_version:.1f} est inférieure à "
+"{min_ffmpeg_version} requise"
 
 #: src/wacomponents/screens/authenticator_creation_form.kv:13
 msgid "Create Authenticator"
@@ -911,6 +905,16 @@ msgstr "Lancer Enregistrement"
 #: src/wacomponents/screens/recorder_homepage.kv:20
 msgid "Stop Recording"
 msgstr "Arrêter Enregistrement"
+
+#: src/wacomponents/sensors/camera/rtsp_stream.py:34
+msgid "Ffmpeg module not found, please ensure it is in your PATH"
+msgstr "Module ffmpeg non trouvé, veuillez vérifier qu'il est dans votre PATH"
+
+#: src/wacomponents/sensors/camera/rtsp_stream.py:42
+msgid ""
+"Ffmpeg module is installed, but beware its version couldn't be determined"
+msgstr ""
+"Module ffmpeg installé, mais attention sa version n'a pas pu être déterminée"
 
 #: src/wacomponents/widgets/popups.py:37
 #, python-format

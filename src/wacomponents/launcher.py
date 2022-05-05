@@ -33,7 +33,6 @@ def _is_service_alive():
 
     return False
 
-
 def launch_main_module_with_crash_handler(main_module: str, client_type: str):
     """
     Launcher used both for main app or service, depending on parameters, and
@@ -73,7 +72,7 @@ def launch_app_or_resurrect_service_with_crash_handler(app_module, service_modul
         launch_main_module_with_crash_handler(main_module=service_module, client_type="SERVICE")
 
     else:
-        
+
         if APP_IS_FROZEN:
             WA_SERVICE_SCRIPT = SERVICE_MARKER_CLI_PARAM  # sys.executable is sufficient for script itself
         else:

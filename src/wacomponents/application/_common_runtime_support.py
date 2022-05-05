@@ -1,6 +1,4 @@
 import inspect
-import re
-import subprocess
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -8,6 +6,8 @@ from wacomponents.default_settings import INTERNAL_APP_ROOT, INTERNAL_CRYPTAINER
     INTERNAL_LOGS_DIR
 from wacomponents.i18n import tr
 from kivy.logger import Logger as logger
+
+from wacomponents.sensors.camera.rtsp_stream import get_ffmpeg_version
 
 
 class WaRuntimeSupportMixin:
@@ -125,25 +125,13 @@ class WaRuntimeSupportMixin:
 
     @staticmethod
     def check_ffmpeg(min_ffmpeg_version: float):
+        ffmpeg_version, error_msg = get_ffmpeg_version()
+        if ffmpeg_version is None:
+            return False, error_msg
 
-        try:
-            output = subprocess.check_output(["ffmpeg", "-version"], stderr=subprocess.STDOUT)
-        except OSError:
-            logger.warning("Error while calling ffmpeg", exc_info=True)
-            return False, tr.f(tr._("Ffmpeg module not found, please ensure it is in your PATH"))
-
-        output = output.decode("ascii", "ignore")
-
-        regex = r'ffmpeg version (\d\.\d)'
-        match = re.search(regex, output)
-
-        if match is None:
-            return True, tr.f(tr._("Ffmpeg module is installed, but beware its version couldn't be determined"))
-
-        ffmpeg_version = match.group(1)
-        if float(ffmpeg_version) >= min_ffmpeg_version:
-            return True, tr.f(tr._("Ffmpeg module is installed with a compatible version"))
+        if ffmpeg_version >= min_ffmpeg_version:
+            return True, tr.f(tr._("Ffmpeg module is installed with a compatible {ffmpeg_version:.1f} version"))
         else:
-            return False, tr.f(tr._("Ffmpeg module is installed but its version is below {min_ffmpeg_version} "))
+            return False, tr.f(tr._("Ffmpeg module is installed but this {ffmpeg_version:.1f} version is below required {min_ffmpeg_version} "))
 
 
