@@ -1,6 +1,16 @@
 #:import tr wacomponents.i18n.tr
 #:import strip_external_app_root_prefix wacomponents.default_settings.strip_external_app_root_prefix
 
+<ContainerItem@AccordionItem>
+    decryption_requests_list : decryption_requests_list
+
+    MDGridLayout:
+        cols: 1
+
+        MDList:
+            #padding: [10, 10]
+            id: decryption_requests_list
+
 <DecryptionRequestListScreen>:
     on_pre_enter:
         root.display_decryption_request_list()

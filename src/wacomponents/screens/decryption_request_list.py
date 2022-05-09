@@ -6,6 +6,7 @@ from kivy.factory import Factory
 from kivy.lang import Builder
 from kivy.uix.accordion import Accordion, AccordionItem
 from kivymd.app import MDApp
+from kivymd.uix.gridlayout import MDGridLayout
 from kivymd.uix.list import MDList
 from kivymd.uix.screen import Screen
 from wacryptolib.jsonrpc_client import JsonRpcProxy, status_slugs_response_error_handler
@@ -13,11 +14,59 @@ from wacryptolib.exceptions import ExistenceError
 
 from wacomponents.i18n import tr
 from wacomponents.utilities import shorten_uid
-from wacomponents.widgets.popups import  dialog_with_close_button
+from wacomponents.widgets.popups import dialog_with_close_button
 
 Builder.load_file(str(Path(__file__).parent / 'decryption_request_list.kv'))
 
 DESCRIPTION_MIN_LENGTH = 10
+
+
+class GrowingAccordion(Accordion):
+
+    def _do_layout(self, dt):
+        children = self.children
+        if children:
+            all_collapsed = all(x.collapse for x in children)
+        else:
+            all_collapsed = False
+
+        if all_collapsed:
+            children[0].collapse = False
+
+        orientation = self.orientation
+        min_space = self.min_space
+        min_space_total = len(children) * self.min_space
+        w, h = self.size
+        x, y = self.pos
+
+        if orientation == 'horizontal':
+            children = reversed(children)
+
+        for child in children:
+            if orientation == 'horizontal':
+                display_space = child.container.children[0].minimum_width
+            else:
+                display_space = child.container.children[0].minimum_height
+
+            self.width = min_space_total- min_space + display_space
+            self.height = min_space_total - min_space + display_space
+
+            child_space = min_space
+            child_space += display_space * (1 - child.collapse_alpha)
+            child._min_space = min_space
+            child.x = x
+            child.y = y
+            child.orientation = self.orientation
+            if orientation == 'horizontal':
+                child.content_size = display_space, h
+                child.width = child_space
+                child.height = h
+                x += child_space
+            else:
+                child.content_size = w, display_space
+                child.width = w
+                child.height = child_space
+                y += child_space
 
 
 class DecryptionRequestListScreen(Screen):
@@ -79,10 +128,11 @@ class DecryptionRequestListScreen(Screen):
 
         decryption_requests_per_cryptainer = self._list_decryption_request_reformatted(list_decryption_requests)
 
-        display_layout = Accordion(orientation='vertical', size_hint=(1, None), height=20*30)
+        display_layout = GrowingAccordion(orientation='vertical', size_hint=(1, None), height=self.height)
         for decryption_request_per_cryptainer in decryption_requests_per_cryptainer.items():
-            item = AccordionItem(title='Cryptainer: %s ' % decryption_request_per_cryptainer[0])
-            decryption_requests_list = MDList()
+
+            container_item = Factory.ContainerItem(title='Cryptainer: %s ' % decryption_request_per_cryptainer[0])
+
             for decryption_request in decryption_request_per_cryptainer[1]:
                 _displayed_values = dict(
                     decryption_request_uid=decryption_request["decryption_request_uid"],
@@ -100,13 +150,13 @@ class DecryptionRequestListScreen(Screen):
                                                            Decryption request uid: {decryption_request_uid}
                                                            Description: {description}
                                                            Authenticator: {authenticator}, {keychain_uid}({key_algo})
-                                                           Resquest_status: {request_status}
+                                                           Resquest status: {request_status}
                                                            Response key: {response_keychain_uid}({response_key_algo})
                                                            Decryption status: {decryption_status}
                                                        """)).format(**_displayed_values)
 
                 decryption_request_entry = Factory.WAIconListItemEntry(text="Decryption request uid: %s, Status: %s" % (
-                shorten_uid(decryption_request["decryption_request_uid"]), decryption_request["request_status"]))
+                    shorten_uid(decryption_request["decryption_request_uid"]), decryption_request["request_status"]))
 
                 def information_callback(widget, decryption_request_info=decryption_request_summary_text):
                     self.show_decryption_request_info(decryption_request_info=decryption_request_info)
@@ -114,10 +164,9 @@ class DecryptionRequestListScreen(Screen):
                 information_icon = decryption_request_entry.ids.information_icon
                 information_icon.bind(on_press=information_callback)
 
-                decryption_requests_list.add_widget(decryption_request_entry)
+                container_item.decryption_requests_list.add_widget(decryption_request_entry)
 
-            item.add_widget(decryption_requests_list)
-            display_layout.add_widget(item)
+            display_layout.add_widget(container_item)
         self.ids.list_decryption_request_scrollview.add_widget(display_layout)
 
     def show_decryption_request_info(self, decryption_request_info):
