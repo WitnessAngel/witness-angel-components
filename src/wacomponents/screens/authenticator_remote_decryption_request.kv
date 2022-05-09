@@ -1,6 +1,23 @@
 #:import tr wacomponents.i18n.tr
 #:import strip_external_app_root_prefix wacomponents.default_settings.strip_external_app_root_prefix
 
+
+<CheckPassphraseContent@MDBoxLayout>: # TODO Move to layout component
+    orientation: "vertical"
+    spacing: "12dp"
+    size_hint_y: None
+    height: "90dp"
+
+    MDLabel:
+        text: tr._("Enter the passphrase to decrypt the selected containers:")
+
+    MDTextField:
+        id: passphrase
+        hint_text: tr._("Passphrase")
+
+
+
+
 <DecryptionRequestEntry@AccordionItem>
     decryption_request_summary : decryption_request_summary
     symkeys_decryption : symkeys_decryption
@@ -9,25 +26,17 @@
 
     MDGridLayout:
         cols: 1
-        #adaptive_height: True
 
-        WAVerticalScrollView:
-            size_hint_y: 0.5
-            id: decryption_request_summary_scrollview
+        WATextInput:
+            id: decryption_request_summary
+            padding: 10
+            halign: "left"
+            size_hint: 1, None
+            height: self.minimum_height
 
-            WASelectableLabel:
-                id: decryption_request_summary
-                padding_x: [10,0]
-                halign: "left"
-                size_hint: 1, None
-                height: max((len(self._lines)+1) * self.line_height, decryption_request_summary_scrollview.height)
-
-        WAVerticalScrollView:
-            size_hint_y: 1
-
-            MDList:
-                #padding: [10, 10]
-                id: symkeys_decryption
+        MDList:
+            #padding: [10, 10]
+            id: symkeys_decryption
 
 
         MDGridLayout:
@@ -36,17 +45,17 @@
             padding: [10, 0]
 
             WAOperationButton:
-                id: rejected_button
-                icon: "close"
-                text: tr._("Reject")
-                #on_press: root.reject_decryption_request()
-                size_hint_x: 1  # HACK
-
-            WAOperationButton:
                 id: accepted_button
                 icon: "check"
                 text: tr._("Accept")
-                #on_press: root.accept_decryption_request()
+                #on_press: root.open_dialog_reject_request()
+                size_hint_x: 1  # HACK
+
+            WAOperationButton:
+                id: rejected_button
+                icon: "close"
+                text: tr._("Reject")
+                #on_press: root.open_dialog_accept_request()
                 size_hint_x: 1  # HACK
 
 
@@ -73,14 +82,14 @@
                 title: tr._("Pending")
                 id: pending_decryption_request
 
-
             Tab:
                 title: tr._("Accepted")
                 id: accepted_decryption_request
 
-
             Tab:
                 title: tr._("Rejected")
                 id: rejected_decryption_request
+
+
 
 
