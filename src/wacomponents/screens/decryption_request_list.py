@@ -42,31 +42,37 @@ class GrowingAccordion(Accordion):
         if orientation == 'horizontal':
             children = reversed(children)
 
+        display_space_total = 0
         for child in children:
             if orientation == 'horizontal':
-                display_space = child.container.children[0].minimum_width
+                child_display_space = child.container.children[0].minimum_width
             else:
-                display_space = child.container.children[0].minimum_height
-
-            self.width = min_space_total- min_space + display_space
-            self.height = min_space_total - min_space + display_space
+                child_display_space = child.container.children[0].minimum_height
 
             child_space = min_space
-            child_space += display_space * (1 - child.collapse_alpha)
+            child_space += child_display_space * (1 - child.collapse_alpha)
+
+            display_space_total += child_space
+
             child._min_space = min_space
             child.x = x
             child.y = y
             child.orientation = self.orientation
             if orientation == 'horizontal':
-                child.content_size = display_space, h
+                child.content_size = child_display_space, h
                 child.width = child_space
                 child.height = h
                 x += child_space
             else:
-                child.content_size = w, display_space
+                child.content_size = w, child_display_space
                 child.width = w
                 child.height = child_space
                 y += child_space
+
+        if orientation == 'horizontal':
+            self.width = display_space_total
+        else:
+            self.height = display_space_total
 
 
 class DecryptionRequestListScreen(Screen):
@@ -76,7 +82,7 @@ class DecryptionRequestListScreen(Screen):
         super().__init__(*args, **kwargs)
 
     def go_to_previous_screen(self):
-        self.manager.current = "CryptainerDecryption"
+        self.manager.current = "CryptainerManagement"
 
     def _get_gateway_proxy(self):  # TODO already exist
         jsonrpc_url = self._app.get_wagateway_url()
@@ -128,7 +134,7 @@ class DecryptionRequestListScreen(Screen):
 
         decryption_requests_per_cryptainer = self._list_decryption_request_reformatted(list_decryption_requests)
 
-        display_layout = GrowingAccordion(orientation='vertical', size_hint=(1, None), height=self.height)
+        display_layout = GrowingAccordion(orientation='vertical', size_hint=(1, None))
         for decryption_request_per_cryptainer in decryption_requests_per_cryptainer.items():
 
             container_item = Factory.ContainerItem(title='Cryptainer: %s ' % decryption_request_per_cryptainer[0])

@@ -18,6 +18,7 @@
         # Lazy-init hack to workaround Clock iteration troubles
         cryptainer_delete_btn.size_hint_x = 0.5
         cryptainer_decrypt_btn.size_hint_x = 0.5
+        remote_decryption_request_list_btn.size_hint_x=0.5
         root.get_detected_cryptainer()  # FIXME rename this!!!
 
     on_pre_leave:
@@ -57,4 +58,10 @@
                     text: tr._("Decryption process")
                     # on_press: root.open_cryptainer_decryption_dialog()
                     on_press: root.launch_cryptainer_decryption()
+
+                WAOperationButton:
+                    id: remote_decryption_request_list_btn
+                    icon: "format-list-text"
+                    text: tr._("List of remote decryption requests")
+                    on_press:  root.manager.current = "DecryptionRequestList"
 
