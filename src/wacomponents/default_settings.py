@@ -41,7 +41,12 @@ if IS_ANDROID:
 
 else:
     CONTEXT = None  # Unused on Desktop
-    INTERNAL_APP_ROOT = Path(storagepath.get_home_dir()) / ".witnessangel"
+    _home_dir = storagepath.get_home_dir()
+    # MacOSX returns file:// URLs, do not use removeprefix() else retrocompatibility issues
+    if _home_dir.startswith("file://"):
+        _home_dir = _home_dir[len("file://"):]
+        assert _home_dir.startswith("/")
+    INTERNAL_APP_ROOT = Path(_home_dir) / ".witnessangel"
     INTERNAL_CACHE_DIR = INTERNAL_APP_ROOT / "cache"
     EXTERNAL_APP_ROOT_PREFIX = None
     EXTERNAL_APP_ROOT = INTERNAL_APP_ROOT / "external"
