@@ -10,8 +10,8 @@ from kivymd.app import MDApp
 from kivy.factory import Factory
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.floatlayout import MDFloatLayout
+from kivymd.uix.gridlayout import MDGridLayout
 from kivymd.uix.screen import Screen
-from kivymd.uix.snackbar import Snackbar
 from kivymd.uix.tab import MDTabsBase
 from wacryptolib.cipher import encrypt_bytestring
 from wacryptolib.exceptions import ExistenceError, KeyLoadingError, KeyDoesNotExist, DecryptionError
@@ -22,14 +22,24 @@ from wacryptolib.trustee import TrusteeApi
 from wacryptolib.utilities import load_from_json_bytes
 
 from wacomponents.i18n import tr
+from wacomponents.screens.decryption_request_list import GrowingAccordion
 from wacomponents.utilities import shorten_uid
-from wacomponents.widgets.popups import dialog_with_close_button, close_current_dialog
+from wacomponents.widgets.popups import dialog_with_close_button, close_current_dialog, display_info_snackbar, \
+    help_text_popup
 
 Builder.load_file(str(Path(__file__).parent / 'authenticator_remote_decryption_request.kv'))
 
 
 class Tab(MDFloatLayout, MDTabsBase):
     """Class implementing content for a tab."""
+
+
+class DecryptionStatus():
+    DECRYPTED = 'DECRYPTED'
+    PRIVATE_KEY_MISSING = 'PRIVATE KEY MISSING'
+    CORRUPTED = 'CORRUPTED'
+    MISMATCH = 'METADATA MISMATCH'
+    PENDING = 'PENDING'
 
 
 class RemoteDecryptionRequestScreen(Screen):
@@ -50,7 +60,7 @@ class RemoteDecryptionRequestScreen(Screen):
         )
         return gateway_proxy
 
-    def _display_single_remote_decryption_request(self, decryption_request):
+    def _display_single_remote_decryption_request(self, status, decryption_request):
 
         decryptionRequestEntry = Factory.DecryptionRequestEntry()
 
@@ -78,25 +88,29 @@ class RemoteDecryptionRequestScreen(Screen):
             symkey_decryption_label = tr._("Container N° {key_index}: {Container_uid} "). \
                 format(key_index=index, Container_uid=symkey_decryption["cryptainer_uid"])
 
-            symkey_decryption_entry = Factory.WAIconListItemEntry(text=symkey_decryption_label)  # FIXME RENAME THIS
+            symkey_decryption_item = Factory.WAIconListItemEntry(text=symkey_decryption_label)  # FIXME RENAME THIS
 
-            def information_callback(widget,
-                                     symkey_decryption=symkey_decryption):  # Force keystore_uid save here, else scope bug
+            def information_callback(widget, symkey_decryption=symkey_decryption):
                 self.show_symkey_decryption_details(symkey_decryption=symkey_decryption)
 
-            information_icon = symkey_decryption_entry.ids.information_icon
+            information_icon = symkey_decryption_item.ids.information_icon
             information_icon.bind(on_press=information_callback)
 
-            decryptionRequestEntry.symkeys_decryption.add_widget(symkey_decryption_entry)
+            decryptionRequestEntry.symkeys_decryption.add_widget(symkey_decryption_item)
 
-        def reject_request_callback(widget, decryption_request=decryption_request):
-            self.open_dialog_reject_request(decryption_request=decryption_request)
+        if status == DecryptionStatus.PENDING:
+            gridButtons = Factory.GridButtons()
 
-        def accept_request_callback(widget, decryption_request=decryption_request):
-            self.open_dialog_accept_request(decryption_request=decryption_request)
+            def reject_request_callback(widget, decryption_request=decryption_request):
+                self.open_dialog_reject_request(decryption_request=decryption_request)
 
-        decryptionRequestEntry.rejected_button.bind(on_press=reject_request_callback)
-        decryptionRequestEntry.accepted_button.bind(on_press=accept_request_callback)
+            def accept_request_callback(widget, decryption_request=decryption_request):
+                self.open_dialog_accept_request(decryption_request=decryption_request)
+
+            gridButtons.rejected_button.bind(on_press=reject_request_callback)
+            gridButtons.accepted_button.bind(on_press=accept_request_callback)
+
+            decryptionRequestEntry.entry_grid.add_widget(gridButtons)
 
         return decryptionRequestEntry
 
@@ -151,9 +165,6 @@ class RemoteDecryptionRequestScreen(Screen):
                               REJECTED=self.ids.rejected_decryption_request,
                               ACCEPTED=self.ids.accepted_decryption_request)
 
-        for tab in tab_per_status.values():
-            tab.clear_widgets()
-
         for status, decryption_requests in list_decryption_requests_per_status.items():
 
             if not decryption_requests:
@@ -163,11 +174,11 @@ class RemoteDecryptionRequestScreen(Screen):
                 continue
 
             scroll = Factory.WAVerticalScrollView()
-            root = Accordion(orientation='vertical', size_hint=(1, None), height=30 * 20)
+            root = GrowingAccordion(orientation='vertical', size_hint=(1, None), height=self.height)
             for decryption_request in decryption_requests:
-                decryption_request_item = self._display_single_remote_decryption_request(
-                    decryption_request=decryption_request)
-                root.add_widget(decryption_request_item)
+                decryption_request_entry = self._display_single_remote_decryption_request(
+                    status=status, decryption_request=decryption_request)
+                root.add_widget(decryption_request_entry)
             scroll.add_widget(root)
             tab_per_status[status].add_widget(scroll)
 
@@ -184,6 +195,11 @@ class RemoteDecryptionRequestScreen(Screen):
         return decryption_requests_per_status
 
     def fetch_and_display_decryption_requests(self):
+
+        self.ids.pending_decryption_request.clear_widgets()
+        self.ids.rejected_decryption_request.clear_widgets()
+        self.ids.accepted_decryption_request.clear_widgets()
+
         gateway_proxy = self._get_gateway_proxy()
 
         authenticator_path = self.selected_authenticator_dir
@@ -195,19 +211,11 @@ class RemoteDecryptionRequestScreen(Screen):
             list_authenticator_decryption_requests = gateway_proxy.list_authenticator_decryption_requests(keystore_uid)
 
         except(JSONRPCError, OSError):
-            Snackbar(
-                text=tr._("Error calling method, check the server url"),
-                font_size="12sp",
-                duration=7,
-            ).open()
+            display_info_snackbar(tr._("Error calling method, check the server url"))
             return
 
         except ExistenceError:
-            Snackbar(
-                text=tr._("No decryption request"),
-                font_size="12sp",
-                duration=7,
-            ).open()
+            display_info_snackbar(tr._("No decryption request"))
             return
 
         list_decryption_requests_per_status = self.sort_list_decryption_request_per_status(
@@ -219,59 +227,55 @@ class RemoteDecryptionRequestScreen(Screen):
 
         filesystem_keystore = FilesystemKeystore(self.selected_authenticator_dir)
         trustee_api = TrusteeApi(keystore=filesystem_keystore)
-        symkey_decryptions_result = []
+        symkey_decryption_results = []
 
         for symkey_decryption in decryption_request["symkeys_decryption"]:
+            decryption_status = DecryptionStatus.DECRYPTED
             keychain_uid = symkey_decryption["authenticator_public_key"]["keychain_uid"]
             cipher_algo = symkey_decryption["authenticator_public_key"]["key_algo"]
             passphrases = [passphrase]
-            ciphertext = load_from_json_bytes(symkey_decryption["request_data"])
-            cipherdict = ciphertext
+            cipherdict = load_from_json_bytes(symkey_decryption["request_data"])
+            response_data = b""
             try:
 
                 key_struct_bytes = trustee_api.decrypt_with_private_key(keychain_uid=keychain_uid,
                                                                         cipher_algo=cipher_algo,
                                                                         cipherdict=cipherdict, passphrases=passphrases)
+                response_key_algo = decryption_request["response_key_algo"]
+                response_public_key = decryption_request["response_public_key"]
 
-            except (KeyLoadingError, KeyDoesNotExist, DecryptionError) as exc:  # TODO do except for each exception
-                Snackbar(
-                    text=str(exc),
-                    font_size="12sp",
-                    duration=7,
-                ).open()
+                public_key = load_asymmetric_key_from_pem_bytestring(key_pem=response_public_key, key_algo=cipher_algo)
+
+                response_data = encrypt_bytestring(
+                    plaintext=key_struct_bytes, cipher_algo=response_key_algo, key_dict=dict(key=public_key)
+                )
+            except KeyDoesNotExist:
+                decryption_status = DecryptionStatus.PRIVATE_KEY_MISSING
+
+            except KeyLoadingError:
+                display_info_snackbar(tr._("Passphrase doesn't match any relevant private key"))
                 return
 
-            response_key_algo = decryption_request["response_key_algo"]
-            response_public_key = decryption_request["response_public_key"]
-
-            public_key = load_asymmetric_key_from_pem_bytestring(key_pem=response_public_key, key_algo=cipher_algo)
-
-            response_data = encrypt_bytestring(
-                plaintext=key_struct_bytes, cipher_algo=response_key_algo, key_dict=dict(key=public_key)
-            )
             symkey_decryption_result = {
-                "cryptainer_uid": symkey_decryption["cryptainer_uid"],
-                "keychain_uid": keychain_uid,
-                "key_algo": cipher_algo,
-                "response_data": response_data
+                "request_data": symkey_decryption["request_data"],
+                "response_data": response_data,
+                "decryption_status": decryption_status
             }
-            symkey_decryptions_result.append(symkey_decryption_result)
+
+            symkey_decryption_results.append(symkey_decryption_result)
 
         gateway_proxy = self._get_gateway_proxy()
         decryption_request_uid = decryption_request["decryption_request_uid"]
         message = tr._("The decryption request was accepted")
+
         try:
             gateway_proxy.accept_decryption_request(decryption_request_uid=decryption_request_uid,
-                                                    symkey_decryptions_result=symkey_decryptions_result)
+                                                    symkey_decryption_results=symkey_decryption_results)
         except (JSONRPCError, OSError):
-            message=tr._("Error calling method, check the server url")
+            message = tr._("Error calling method, check the server url")
 
         close_current_dialog()
-        Snackbar(
-            text=message,
-            font_size="12sp",
-            duration=7,
-        ).open()
+        display_info_snackbar(message)
         self.fetch_and_display_decryption_requests()
 
     def reject_decryption_request(self, decryption_request):
@@ -283,10 +287,13 @@ class RemoteDecryptionRequestScreen(Screen):
         except (JSONRPCError, OSError):
             message = tr._("Error calling method, check the server url")
         close_current_dialog()
-        Snackbar(
-            text=message,
-            font_size="12sp",
-            duration=7,
-        ).open()
+        display_info_snackbar(message)
         self.fetch_and_display_decryption_requests()
 
+    def display_help_popup(self):
+        help_text = dedent(tr._("""\
+         Add this!!!
+         """))
+        help_text_popup(
+            title=tr._("Remote request decryption page"),
+            text=help_text, )
