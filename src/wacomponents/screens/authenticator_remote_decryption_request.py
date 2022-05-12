@@ -19,7 +19,7 @@ from wacryptolib.jsonrpc_client import JsonRpcProxy, status_slugs_response_error
 from wacryptolib.keygen import load_asymmetric_key_from_pem_bytestring
 from wacryptolib.keystore import load_keystore_metadata, FilesystemKeystore
 from wacryptolib.trustee import TrusteeApi
-from wacryptolib.utilities import load_from_json_bytes
+from wacryptolib.utilities import load_from_json_bytes, dump_to_json_bytes
 
 from wacomponents.i18n import tr
 from wacomponents.screens.decryption_request_list import GrowingAccordion
@@ -246,9 +246,11 @@ class RemoteDecryptionRequestScreen(Screen):
 
                 public_key = load_asymmetric_key_from_pem_bytestring(key_pem=response_public_key, key_algo=cipher_algo)
 
-                response_data = encrypt_bytestring(
+                response_data_dict = encrypt_bytestring(
                     plaintext=key_struct_bytes, cipher_algo=response_key_algo, key_dict=dict(key=public_key)
                 )
+                response_data = dump_to_json_bytes(response_data_dict)
+
             except KeyDoesNotExist:
                 decryption_status = DecryptionStatus.PRIVATE_KEY_MISSING
 
