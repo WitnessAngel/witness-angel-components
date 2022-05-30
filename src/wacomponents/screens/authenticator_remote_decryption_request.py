@@ -208,7 +208,9 @@ class RemoteDecryptionRequestScreen(Screen):
         keystore_uid = authenticator_metadata["keystore_uid"]
 
         try:
-            list_authenticator_decryption_requests = gateway_proxy.list_authenticator_decryption_requests(keystore_uid)
+            list_authenticator_decryption_requests = gateway_proxy.list_authenticator_decryption_requests(
+                keystore_secret=authenticator_metadata["keystore_secret"],
+                keystore_uid=keystore_uid)
 
         except(JSONRPCError, OSError):
             display_info_snackbar(tr._("Error calling method, check the server url"))
@@ -224,7 +226,7 @@ class RemoteDecryptionRequestScreen(Screen):
         self.display_remote_decryption_request(list_decryption_requests_per_status=list_decryption_requests_per_status)
 
     def accept_decryption_request(self, passphrase, decryption_request):
-
+        authenticator_metadata = load_keystore_metadata(keystore_dir=self.selected_authenticator_dir)
         filesystem_keystore = FilesystemKeystore(self.selected_authenticator_dir)
         trustee_api = TrusteeApi(keystore=filesystem_keystore)
         symkey_decryption_results = []
@@ -271,7 +273,8 @@ class RemoteDecryptionRequestScreen(Screen):
         message = tr._("The decryption request was accepted")
 
         try:
-            gateway_proxy.accept_decryption_request(decryption_request_uid=decryption_request_uid,
+            gateway_proxy.accept_decryption_request(keystore_secret=authenticator_metadata["keystore_secret"],
+                                                    decryption_request_uid=decryption_request_uid,
                                                     symkey_decryption_results=symkey_decryption_results)
         except (JSONRPCError, OSError):
             message = tr._("Error calling method, check the server url")
@@ -281,11 +284,12 @@ class RemoteDecryptionRequestScreen(Screen):
         self.fetch_and_display_decryption_requests()
 
     def reject_decryption_request(self, decryption_request):
+        authenticator_metadata = load_keystore_metadata(keystore_dir=self.selected_authenticator_dir)
         gateway_proxy = self._get_gateway_proxy()
         decryption_request_uid = decryption_request["decryption_request_uid"]
         message = tr._("The decryption request was rejected")
         try:
-            gateway_proxy.reject_decryption_request(decryption_request_uid=decryption_request_uid)
+            gateway_proxy.reject_decryption_request(keystore_secret=authenticator_metadata["keystore_secret"],decryption_request_uid=decryption_request_uid)
         except (JSONRPCError, OSError):
             message = tr._("Error calling method, check the server url")
         close_current_dialog()
