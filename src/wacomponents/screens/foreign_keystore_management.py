@@ -172,7 +172,7 @@ class AuthdeviceStoreScreen(Screen):
         Keys_page_ids.imported_authenticator_list.clear_widgets()  # FIXME naming
         Keys_page_ids.imported_authenticator_list.do_layout()  # Prevents bug with "not found" message position
 
-        keystore_metadata = self.filesystem_keystore_pool.get_foreign_keystore_metadata()
+        keystore_metadata = self.filesystem_keystore_pool.get_all_foreign_keystore_metadata()
 
         if not keystore_metadata:
             self.display_message_no_device_found()

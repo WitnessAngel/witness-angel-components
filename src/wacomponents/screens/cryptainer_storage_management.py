@@ -246,7 +246,7 @@ class CryptainerStoreScreen(Screen):
 
         assert self.filesystem_cryptainer_storage, self.filesystem_cryptainer_storage  # By construction...
         filesystem_keystore_pool = self.filesystem_cryptainer_storage._keystore_pool  # FIXME add public getter
-        keystore_metadata = filesystem_keystore_pool.get_foreign_keystore_metadata()
+        keystore_metadata = filesystem_keystore_pool.get_all_foreign_keystore_metadata()
 
         cryptainers = [self.filesystem_cryptainer_storage.load_cryptainer_from_storage(x) for x in cryptainer_names]
         dependencies = gather_trustee_dependencies(cryptainers)

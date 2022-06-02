@@ -12,7 +12,7 @@ from wacomponents.i18n import tr
 from wacomponents.utilities import shorten_uid
 from wacomponents.widgets.popups import dialog_with_close_button, close_current_dialog, \
     safe_catch_unhandled_exception_and_display_popup, display_info_toast
-from wacryptolib.cryptainer import gather_trustee_dependencies, _get_trustee_id, \
+from wacryptolib.cryptainer import gather_trustee_dependencies, get_trustee_id, \
     CRYPTAINER_TRUSTEE_TYPES
 from wacryptolib.exceptions import KeystoreDoesNotExist, KeyDoesNotExist, KeyLoadingError
 from wacryptolib.keygen import load_asymmetric_key_from_pem_bytestring
@@ -119,7 +119,7 @@ class CryptainerDecryptionScreen(Screen):
             trustee_data = [trustee for trustee in trustee_dependencies["encryption"].values()]
 
             for trustee_info, trustee_keypair_identifiers in trustee_data:
-                trustee_id = _get_trustee_id(trustee_info)
+                trustee_id = get_trustee_id(trustee_info)
                 trustee_type = trustee_info["trustee_type"]
                 keystore_uid = trustee_info["keystore_uid"]
 
@@ -212,7 +212,7 @@ class CryptainerDecryptionScreen(Screen):
                 except (KeyLoadingError, KeyDoesNotExist):
                     pass  # This was not the right keystore
                 else:
-                    trustee_id = _get_trustee_id(trustee_conf)
+                    trustee_id = get_trustee_id(trustee_conf)
                     self.passphrase_mapper[trustee_id] = [passphrase]  # For now we assume only ONE PASSPHRASE per trustee, here
                     result = tr._("Success")
                     details = tr._("Passphrase recognized")
