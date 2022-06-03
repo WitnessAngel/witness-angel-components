@@ -23,6 +23,7 @@ Builder.load_file(str(Path(__file__).parent / 'decryption_request_form.kv'))
 
 DESCRIPTION_MIN_LENGTH = 10
 
+# FIXME RENAME THIS FILE AND KV FILE to decryption_request_creation_form.py (and later revelation_request_creation_form.py)
 
 class DecryptionRequestFormScreen(Screen):
     selected_cryptainer_names = ObjectProperty(None, allownone=True)
@@ -36,7 +37,7 @@ class DecryptionRequestFormScreen(Screen):
     def go_to_previous_screen(self):
         self.manager.current = "CryptainerDecryption"
 
-    def _get_gateway_proxy(self):
+    def _get_gateway_proxy(self):  # FIXME create standalone utility to factorize this, using MDApp.get_running_app()
         jsonrpc_url = self._app.get_wagateway_url()
         gateway_proxy = JsonRpcProxy(
             url=jsonrpc_url, response_error_handler=status_slugs_response_error_handler
@@ -54,8 +55,9 @@ class DecryptionRequestFormScreen(Screen):
         self.ids.authenticator_checklist.clear_widgets()
 
         # Display summary
-        cryptainers_name = ""
+        cryptainers_name = ""  # FIXME wrong naming
 
+        #FIXME use "\n\t".join(seq)
         for cryptainer_name in self.selected_cryptainer_names:
             cryptainers_name = cryptainers_name + "\n\t" + str(cryptainer_name)
 
@@ -89,7 +91,7 @@ class DecryptionRequestFormScreen(Screen):
                                                  key_algo_encryption, cryptainer_uid, cryptainer_metadata):
 
             trustee_id = _get_trustee_id(trustee_conf=key_cipher_trustee)
-            symkeys_data_to_decrypt = {
+            symkeys_data_to_decrypt = {  # FIXME wrong plural place
                 "cryptainer_uid": cryptainer_uid,
                 "cryptainer_metadata": cryptainer_metadata,
                 "symkey_ciphertext": shard_ciphertext,
@@ -103,7 +105,7 @@ class DecryptionRequestFormScreen(Screen):
         def _gather_decryptable_symkeys(key_cipher_layers: list, shard_ciphertexts, cryptainer_uid,
                                         cryptainer_metadata):
 
-            last_key_cipher_layer = key_cipher_layers[-1]
+            last_key_cipher_layer = key_cipher_layers[-1]  # FIXME BIG PROBLEM - why only the last layer ????
 
             if last_key_cipher_layer["key_cipher_algo"] == SHARED_SECRET_ALGO_MARKER:
                 key_shared_secret_shards = last_key_cipher_layer["key_shared_secret_shards"]
@@ -157,7 +159,7 @@ class DecryptionRequestFormScreen(Screen):
 
     def submit_decryption_request(self):
         wa_device_uid = self._app.get_wa_device_uid()
-        requester_uid = wa_device_uid["wa_device_uid"]
+        requester_uid = wa_device_uid["wa_device_uid"]  # FIXME this extra operation is abnormal
 
         gateway_proxy = self._get_gateway_proxy()
 
@@ -168,21 +170,21 @@ class DecryptionRequestFormScreen(Screen):
             display_info_toast(msg)
             return
 
-        # Description no empty(description.strip doit avoir au moins 10 caractères)
+        # Description not empty(description.strip doit avoir au moins 10 caractères)  # FIXME ENGLISH
         description = self.ids.description.text.strip()
         if len(description) < DESCRIPTION_MIN_LENGTH:
             msg = tr._("Description must be at least %s characters long.") % DESCRIPTION_MIN_LENGTH
             display_info_toast(msg)
             return
 
-        # Symkeys decyptable per trustee for containers selected
+        # Symkeys decryptable per trustee for containers selected
         cryptainers = self._get_cryptainers_with_cryptainer_names(self.selected_cryptainer_names)
         decryptable_symkeys_per_trustee = self.gather_decryptable_symkeys(cryptainers)
 
-        # Response keypair utilisé pour chiffrer la reponse
+        # Response keypair utilisé pour chiffrer la reponse  # FIXME ENGLISH
         response_keychain_uid, response_key_algo, response_public_key = self._create_and_return_response_keypair_from_local_factory()
 
-        successful_request = 0
+        successful_request = 0  # FIXME WRONG NAME -> successful_request_count
         error = []
         # message = ""
         for trustee_id, decryptable_data in decryptable_symkeys_per_trustee.items():
@@ -200,7 +202,7 @@ class DecryptionRequestFormScreen(Screen):
                     # stocker les infos utiles dans operation_report
                     successful_request += 1
 
-                except (JSONRPCError, OSError):
+                except (JSONRPCError, OSError):  # FIXME no need to handle this error actually?
                     message = tr._("Error calling method, check the server url")
                     error.append(message)
                     break

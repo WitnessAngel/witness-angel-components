@@ -365,7 +365,7 @@ class AuthdeviceStoreScreen(Screen):
         return keystore_tree
 
 
-    def _get_gateway_proxy(self):
+    def _get_gateway_proxy(self):  # FIXME create standalone utility to factorize this, using MDApp.get_running_app()
 
         jsonrpc_url = self._app.get_wagateway_url()
         gateway_proxy = JsonRpcProxy(
@@ -397,7 +397,7 @@ class AuthdeviceStoreScreen(Screen):
 
         except (JSONRPCError, OSError):
             result = tr._("Failure")
-            details = tr._("Error calling method, check the server url")
+            details = tr._("Error calling method, check the server url")  # FIXME bad message
 
         else:
             try:

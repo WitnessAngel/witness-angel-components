@@ -34,7 +34,7 @@ class AuthenticatorSynchronizationScreen(Screen):
     def go_to_home_screen(self):  # Fixme deduplicate and push to App!
         self.manager.current = "authenticator_selector_screen"
 
-    def _get_gateway_proxy(self):
+    def _get_gateway_proxy(self):  # FIXME create standalone utility to factorize this, using MDApp.get_running_app()
 
         jsonrpc_url = self._app.get_wagateway_url()
 

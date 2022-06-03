@@ -29,12 +29,20 @@ from wacomponents.widgets.popups import dialog_with_close_button, close_current_
 
 Builder.load_file(str(Path(__file__).parent / 'authenticator_remote_decryption_request.kv'))
 
+# FIXME RENAME THIS FILE AND KV FILE to authenticator_decryption_request_management.py
+
+# FIXME IN ALL FILES @Francinette:
+# - do not use "Error calling method" as message, it means nothing
+# - protect public callbacks with @safe_catch_unhandled_exception_and_display_popup
+# - use an auto-close in popup callback declaration, not in the handler itself
+# - do not intercept exceptions that can't be treated, just let @safe_catch_unhandled_exception_and_display_popup display their snackbar
+
 
 class Tab(MDFloatLayout, MDTabsBase):
     """Class implementing content for a tab."""
 
 
-class DecryptionStatus():
+class DecryptionStatus:  # FIXME name this enum more precisely, unless we then use it elsewhere?
     DECRYPTED = 'DECRYPTED'
     PRIVATE_KEY_MISSING = 'PRIVATE KEY MISSING'
     CORRUPTED = 'CORRUPTED'
@@ -53,7 +61,7 @@ class RemoteDecryptionRequestScreen(Screen):
     def go_to_home_screen(self):  # Fixme deduplicate and push to App!
         self.manager.current = "authenticator_selector_screen"
 
-    def _get_gateway_proxy(self):
+    def _get_gateway_proxy(self):  # FIXME create standalone utility to factorize this, using MDApp.get_running_app()
         jsonrpc_url = self._app.get_wagateway_url()
         gateway_proxy = JsonRpcProxy(
             url=jsonrpc_url, response_error_handler=status_slugs_response_error_handler
@@ -169,7 +177,7 @@ class RemoteDecryptionRequestScreen(Screen):
 
             if not decryption_requests:
                 display_layout = Factory.WABigInformationBox()
-                display_layout.ids.inner_label.text = tr._("Aucune demande de déchiffrement")
+                display_layout.ids.inner_label.text = tr._("Aucune demande de déchiffrement")  # FIXME - ENGLISH here
                 tab_per_status[status].add_widget(display_layout)
                 continue
 
@@ -185,7 +193,7 @@ class RemoteDecryptionRequestScreen(Screen):
     @staticmethod
     def sort_list_decryption_request_per_status(list_authenticator_decryption_requests):
         DECRYPTION_REQUEST_STATUSES = ["PENDING", "ACCEPTED", "REJECTED"]  # KEEP IN SYNC with WASERVER
-        decryption_requests_per_status = {
+        decryption_requests_per_status = {  # FIXME a dict comprehension does it waaaay better - {x: [] for x in DECRYPTION_REQUEST_STATUSES}
             DECRYPTION_REQUEST_STATUSES[0]: [],
             DECRYPTION_REQUEST_STATUSES[1]: [],
             DECRYPTION_REQUEST_STATUSES[2]: []
@@ -213,10 +221,10 @@ class RemoteDecryptionRequestScreen(Screen):
                 keystore_uid=keystore_uid)
 
         except(JSONRPCError, OSError):
-            display_info_snackbar(tr._("Error calling method, check the server url"))
+            display_info_snackbar(tr._("Error calling getweay, please check its url"))
             return
 
-        except ExistenceError:
+        except ExistenceError:  # FIXME why would this pop out ? Why not just an empty list ???
             display_info_snackbar(tr._("No decryption request"))
             return
 
@@ -226,6 +234,8 @@ class RemoteDecryptionRequestScreen(Screen):
         self.display_remote_decryption_request(list_decryption_requests_per_status=list_decryption_requests_per_status)
 
     def accept_decryption_request(self, passphrase, decryption_request):
+        # USE THIS FORM BEFORE :                text=tr._("Confirm removal"), on_release=lambda *args: (
+        #                         close_current_dialog(), self.delete_keystores(keystore_uids=keystore_uids))
         authenticator_metadata = load_keystore_metadata(keystore_dir=self.selected_authenticator_dir)
         filesystem_keystore = FilesystemKeystore(self.selected_authenticator_dir)
         trustee_api = TrusteeApi(keystore=filesystem_keystore)
@@ -257,7 +267,7 @@ class RemoteDecryptionRequestScreen(Screen):
                 decryption_status = DecryptionStatus.PRIVATE_KEY_MISSING
 
             except KeyLoadingError:
-                display_info_snackbar(tr._("Passphrase doesn't match any relevant private key"))
+                display_info_snackbar(tr._("Loading of private key failed (wrong passphrase?)"))
                 return
 
             symkey_decryption_result = {
@@ -270,13 +280,13 @@ class RemoteDecryptionRequestScreen(Screen):
 
         gateway_proxy = self._get_gateway_proxy()
         decryption_request_uid = decryption_request["decryption_request_uid"]
-        message = tr._("The decryption request was accepted")
 
         try:
             gateway_proxy.accept_decryption_request(keystore_secret=authenticator_metadata["keystore_secret"],
                                                     decryption_request_uid=decryption_request_uid,
                                                     symkey_decryption_results=symkey_decryption_results)
-        except (JSONRPCError, OSError):
+            message = tr._("The decryption request was accepted")
+        except (JSONRPCError, OSError):  # FIXME no need to handle this error actually?
             message = tr._("Error calling method, check the server url")
 
         close_current_dialog()
@@ -284,13 +294,16 @@ class RemoteDecryptionRequestScreen(Screen):
         self.fetch_and_display_decryption_requests()
 
     def reject_decryption_request(self, decryption_request):
+        # USE THIS FORM BEFORE :                text=tr._("Confirm removal"), on_release=lambda *args: (
+        #                         close_current_dialog(), self.delete_keystores(keystore_uids=keystore_uids))
         authenticator_metadata = load_keystore_metadata(keystore_dir=self.selected_authenticator_dir)
         gateway_proxy = self._get_gateway_proxy()
         decryption_request_uid = decryption_request["decryption_request_uid"]
-        message = tr._("The decryption request was rejected")
+
         try:
             gateway_proxy.reject_decryption_request(keystore_secret=authenticator_metadata["keystore_secret"],decryption_request_uid=decryption_request_uid)
-        except (JSONRPCError, OSError):
+            message = tr._("The decryption request was rejected")
+        except (JSONRPCError, OSError):  # FIXME no need to handle this error actually?
             message = tr._("Error calling method, check the server url")
         close_current_dialog()
         display_info_snackbar(message)

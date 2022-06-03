@@ -18,10 +18,13 @@ from wacomponents.widgets.popups import dialog_with_close_button
 
 Builder.load_file(str(Path(__file__).parent / 'decryption_request_list.kv'))
 
-DESCRIPTION_MIN_LENGTH = 10
+DESCRIPTION_MIN_LENGTH = 10  # FIXME useless ?
 
 
-class GrowingAccordion(Accordion):
+# FIXME RENAME THIS FILE AND KV FILE to decryption_request_visualization.py (and later revelation_request_visualization.py)
+
+
+class GrowingAccordion(Accordion):  # FIXME move to widgets subpackage!!
 
     def _do_layout(self, dt):
         children = self.children
@@ -84,7 +87,7 @@ class DecryptionRequestListScreen(Screen):
     def go_to_previous_screen(self):
         self.manager.current = "CryptainerManagement"
 
-    def _get_gateway_proxy(self):  # TODO already exist
+    def _get_gateway_proxy(self):  # FIXME create standalone utility to factorize this, using MDApp.get_running_app()
         jsonrpc_url = self._app.get_wagateway_url()
         gateway_proxy = JsonRpcProxy(
             url=jsonrpc_url, response_error_handler=status_slugs_response_error_handler
@@ -92,7 +95,7 @@ class DecryptionRequestListScreen(Screen):
         return gateway_proxy
 
     @staticmethod
-    def _list_decryption_request_reformatted(list_decryption_request):
+    def _list_decryption_request_reformatted(list_decryption_request):  # FIXME both have wrong named, and restructured better than reformatted (which means strings)
         decryption_request_per_cryptainer = {}
 
         for decryption_request in list_decryption_request:
@@ -135,6 +138,7 @@ class DecryptionRequestListScreen(Screen):
         decryption_requests_per_cryptainer = self._list_decryption_request_reformatted(list_decryption_requests)
 
         display_layout = GrowingAccordion(orientation='vertical', size_hint=(1, None))
+
         for decryption_request_per_cryptainer in decryption_requests_per_cryptainer.items():
 
             container_item = Factory.ContainerItem(title='Cryptainer: %s ' % decryption_request_per_cryptainer[0])
@@ -152,11 +156,12 @@ class DecryptionRequestListScreen(Screen):
                     keychain_uid=decryption_request["symkey_decryption"]["authenticator_public_key"]["keychain_uid"],
                 )
 
+                # FIXME retranslate all these text blocks, using update_i18n.sh
                 decryption_request_summary_text = dedent(tr._("""\
                                                            Decryption request uid: {decryption_request_uid}
                                                            Description: {description}
                                                            Authenticator: {authenticator}, {keychain_uid}({key_algo})
-                                                           Resquest status: {request_status}
+                                                           Request status: {request_status}
                                                            Response key: {response_keychain_uid}({response_key_algo})
                                                            Decryption status: {decryption_status}
                                                        """)).format(**_displayed_values)
