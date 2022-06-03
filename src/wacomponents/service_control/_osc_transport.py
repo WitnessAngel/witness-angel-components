@@ -59,7 +59,9 @@ def get_osc_server(is_master=True):
         if socket_options["family"] == "unix":
             socket_file = Path(socket_options["address"])
             if socket_file.exists():
-                socket_file.unlink()  # Else "Address already in use" error occurs when listening!
+                # We must delete dead socket file, else "Address already in use" error occurs when listening!
+                # But BEWARE, if this socket was not really dead, this will create conflicts with existing listening processes!
+                socket_file.unlink()
         server.listen(default=True, **socket_options)
 
     return server, starter_callback
