@@ -25,7 +25,7 @@ from kivy.logger import Logger as logger
 
 class CryptainerDecryptionScreen(Screen):
     selected_cryptainer_names = ObjectProperty(None, allownone=True)
-    trustee_data = ObjectProperty(None, allownone=True)
+    trustee_data = ObjectProperty(None, allownone=True)  # FIXME name not clea, i.e. "trustee_dependencies_for_encryption" ?
     filesystem_cryptainer_storage = ObjectProperty(None, allownone=True)
     filesystem_keystore_pool = ObjectProperty(None)
     ##found_trustees_lacking_passphrase = BooleanProperty(0)
@@ -115,7 +115,7 @@ class CryptainerDecryptionScreen(Screen):
 
             trustee_dependencies = gather_trustee_dependencies(cryptainers)
 
-            self.trustee_data = [trustee for trustee in trustee_dependencies["encryption"].values()]
+            self.trustee_data = [trustee for trustee in trustee_dependencies["encryption"].values()]  # FIXME just use list(X)
 
             for trustee_info, trustee_keypair_identifiers in self.trustee_data:
                 trustee_id = get_trustee_id(trustee_info)
@@ -192,7 +192,7 @@ class CryptainerDecryptionScreen(Screen):
                 try:
                     filesystem_keystore = self.filesystem_keystore_pool.get_foreign_keystore(keystore_uid=keystore_uid)
                 except KeystoreDoesNotExist:
-                    continue
+                    continue  # Nothing to do if a trustee dependency is not found here
 
                 keypair_identifiers = filesystem_keystore.list_keypair_identifiers()
 
@@ -252,7 +252,7 @@ class CryptainerDecryptionScreen(Screen):
                 # print(">>>>> close_dialog_decipher_cryptainer() exception thrown:", exc)  # TEMPORARY
                 logger.warning("Error decrypting container %s: %r" % (cryptainer_name, exc))
                 errors.append(exc)
-                print(errors)
+                print("Decryption errors encountered:", errors)
 
 
         if errors:
@@ -271,5 +271,5 @@ class CryptainerDecryptionScreen(Screen):
         remote_decryption_request_screen_name = "DecryptionRequestForm"
         remote_decryption_request_screen = self.manager.get_screen(remote_decryption_request_screen_name)
         remote_decryption_request_screen.selected_cryptainer_names = self.selected_cryptainer_names
-        remote_decryption_request_screen.trustee_data = self.trustee_data
+        remote_decryption_request_screen.trustee_data = self.trustee_data  # FIXME rename here too
         self.manager.current = remote_decryption_request_screen_name

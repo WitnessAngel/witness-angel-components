@@ -140,6 +140,7 @@ class CryptainerStoreScreen(Screen):
             cryptainer = self.filesystem_cryptainer_storage.load_cryptainer_from_storage(cryptainer_name)
             all_dependencies = gather_trustee_dependencies([cryptainer])
             interesting_dependencies = [d[0] for d in list(all_dependencies["encryption"].values())]
+            cryptainer_repr = [trustee for trustee in interesting_dependencies]  # FIXME wrong name here
             # container_repr = pprint.pformat(interesting_dependencies, indent=2)[:800]  # LIMIT else pygame.error: Width or height is too large
 
 

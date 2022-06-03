@@ -48,6 +48,7 @@
     # Actually we can, but beware, this can create buggy "Clock iterations" if not on current Screen
     # size_hint_x: 1  # Set it at last moment later, when needed
 
+
 # Custom Settings panel, without duplicated top title
 
 <-SettingsPanel>:
@@ -82,7 +83,7 @@
         id: information_icon
 
 
-<WAIconListItemEntry@OneLineAvatarIconListItem>:
+<WAIconListItemEntry@OneLineAvatarIconListItem>:  # FIXME wrong naming, its' always a KEY here!
     text: ""
 
     IconLeftWidget:
@@ -99,7 +100,7 @@
     text: ""
     unique_identifier: None  # Useful for UIDs and such
 
-<WAThreeListItemEntry@ThreeLineAvatarIconListItem>:
+<WAThreeListItemEntry@ThreeLineAvatarIconListItem>:  # FIXME wrong naming
     text: ""
     secondary_text: ""
     tertiary_text: ""
@@ -149,7 +150,6 @@
             size: root.cursor_width, -self._cursor_visual_height
         Color:
             rgba: self.disabled_foreground_color if self.disabled else (self.hint_text_color if not self.text else self.foreground_color)
-
 
 
 <-WASelectableLabel@TextInput>:

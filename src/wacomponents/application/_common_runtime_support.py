@@ -126,7 +126,7 @@ class WaRuntimeSupportMixin:
         return False, message
 
     @staticmethod
-    def check_ffmpeg(min_ffmpeg_version: float):
+    def check_ffmpeg(min_ffmpeg_version: float):  # FIXME REMOVE THIS
         print('Check_ffmpeg')
 
         def check_install(*args):
