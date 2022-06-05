@@ -104,7 +104,7 @@ class DecryptionRequestFormScreen(Screen):
 
         def _gather_decryptable_symkeys(key_cipher_layers: list, shard_ciphertexts, cryptainer_uid,
                                         cryptainer_metadata):
-
+            #TODO test with cryptoconf where symkey is protected by 2 authenticators one of the other
             last_key_cipher_layer = key_cipher_layers[-1]  # FIXME BIG PROBLEM - why only the last layer ????
 
             if last_key_cipher_layer["key_cipher_algo"] == SHARED_SECRET_ALGO_MARKER:

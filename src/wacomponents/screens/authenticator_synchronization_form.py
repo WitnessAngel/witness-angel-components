@@ -99,7 +99,7 @@ class AuthenticatorSynchronizationScreen(Screen):
 
         return report
 
-    @safe_catch_unhandled_exception
+    @safe_catch_unhandled_exception  # FIXME display popup here and in the rest of Screen ?
     def refresh_synchronization_status(self):
 
         self.enable_publish_button = enable_publish_button = False  # Defensive setup

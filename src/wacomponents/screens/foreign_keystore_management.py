@@ -59,7 +59,7 @@ class AuthdeviceStoreScreen(Screen):
 
         return authdevices_initialized
 
-    @safe_catch_unhandled_exception
+    @safe_catch_unhandled_exception # FIXME display popup here and in the rest of Screen ?
     def import_keystores_from_usb(self, include_private_keys, authdevices_initialized):
         """
         loop through the “authdevices” present,

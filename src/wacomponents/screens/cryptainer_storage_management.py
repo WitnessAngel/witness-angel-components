@@ -53,7 +53,7 @@ class CryptainerStoreScreen(Screen):
         # print(">>>>> extract_selected_cryptainer_names", container_names)
         return cryptainer_names
 
-    @safe_catch_unhandled_exception
+    @safe_catch_unhandled_exception # FIXME display popup here and in the rest of Screen ?
     def get_detected_cryptainer(self):  # FIXME rename and mereg with private method?
         self._get_detected_cryptainer()
 
