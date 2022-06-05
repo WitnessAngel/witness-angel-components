@@ -79,7 +79,7 @@ class CryptainerStoreScreen(Screen):
             return
 
         sorted_cryptainers = list(enumerate(self.filesystem_cryptainer_storage.list_cryptainer_names(as_sorted_list=True), start=1))
-        self.cryptainer_names_to_be_loaded = list(reversed(sorted_cryptainers))
+        self.cryptainer_names_to_be_loaded = sorted_cryptainers  # They'll be loaded from the end, that's what we want
 
         if not self.cryptainer_names_to_be_loaded:
             display_layout = Factory.WABigInformationBox()
