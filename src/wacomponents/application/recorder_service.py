@@ -6,7 +6,7 @@ import os
 from oscpy.server import ServerClass
 
 from wacomponents.application._common_runtime_support import WaRuntimeSupportMixin
-from wacomponents.default_settings import IS_ANDROID, WIP_RECORDING_MARKER, CONTEXT
+from wacomponents.default_settings import IS_ANDROID, WIP_RECORDING_MARKER
 from wacomponents.logging.handlers import CallbackHandler, safe_catch_unhandled_exception
 from wacomponents.recording_toolchain import start_recording_toolchain, stop_recording_toolchain
 from wacomponents.service_control import get_osc_server, get_osc_client
@@ -159,13 +159,14 @@ class WaRecorderService(WaRuntimeSupportMixin):
             logger.info("Offloaded recording started")
 
             if IS_ANDROID:
+                from wacomponents.default_settings import ANDROID_CONTEXT
                 from wacomponents.application.android_helpers import build_notification_channel, build_notification
-                build_notification_channel(CONTEXT, "Witness Angel Service")
-                notification = build_notification(CONTEXT, title="Sensors are active",
+                build_notification_channel(ANDROID_CONTEXT, "Witness Angel Service")
+                notification = build_notification(ANDROID_CONTEXT, title="Sensors are active",
                                                   message="Click to manage Witness Angel state",
                                                   ticker="Witness Angel sensors are active")
                 notification_uid = 1
-                CONTEXT.startForeground(notification_uid, notification)
+                ANDROID_CONTEXT.startForeground(notification_uid, notification)
 
         except Exception as exc:
             logger.error("Could not build recording toolchain: %r" % exc)
@@ -217,7 +218,8 @@ class WaRecorderService(WaRuntimeSupportMixin):
             logger.info("Recording stopped")
 
             if IS_ANDROID:
-                CONTEXT.stopForeground(True)  # Does remove notification
+                from wacomponents.default_settings import ANDROID_CONTEXT
+                ANDROID_CONTEXT.stopForeground(True)  # Does remove notification
 
         finally:  # Trigger all this even if container flushing failed
             self._recording_toolchain = (

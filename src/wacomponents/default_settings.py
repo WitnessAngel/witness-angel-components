@@ -11,9 +11,19 @@ ACTIVITY_CLASS = "org.kivy.android.PythonActivity"
 SERVICE_START_ARGUMENT = ""
 
 IS_ANDROID = (platform == "android")
+IS_IOS = (platform == "ios")
+IS_MOBILE = IS_ANDROID or IS_IOS
 
 # FIXME REMOVE/CHANGE THIS WHOLE WACLIENT_TYPE thing?? setup_app_environment() should take care of that
 WACLIENT_TYPE = os.environ.get("WACLIENT_TYPE", "<UNKNOWN>")   # Typically "SERVICE" or "APPLICATION"
+
+
+def _strip_filepath_scheme(filepath):
+    # MacOSX returns file:// URLs (do not use str.removeprefix() else python retrocompatibility issues)
+    if filepath.startswith("file://"):
+        INTERNAL_APP_ROOT = filepath[len("file://"):]
+        assert filepath.startswith("/")
+    return filepath
 
 
 # Internal directories, specifically protected on mobile devices
@@ -24,35 +34,38 @@ if IS_ANDROID:
 
     if mActivity:
         # WE ARE IN MAIN APP (safer than WACLIENT_TYPE)
-        CONTEXT = mActivity
+        ANDROID_CONTEXT = mActivity
     else:
         # WE ARE IN SERVICE!!!
-        CONTEXT = autoclass("org.kivy.android.PythonService").mService
+        ANDROID_CONTEXT = autoclass("org.kivy.android.PythonService").mService
 
-    INTERNAL_APP_ROOT = Path(CONTEXT.getFilesDir().toString())
-    INTERNAL_CACHE_DIR = Path(CONTEXT.getCacheDir().toString())
+    INTERNAL_APP_ROOT = Path(ANDROID_CONTEXT.getFilesDir().toString())
+    INTERNAL_CACHE_DIR = Path(ANDROID_CONTEXT.getCacheDir().toString())
     Environment = autoclass("android.os.Environment")
     EXTERNAL_APP_ROOT_PREFIX = Environment.getExternalStorageDirectory().toString()  # Can be stripped as <sdcard>
     EXTERNAL_APP_ROOT = (
         Path(EXTERNAL_APP_ROOT_PREFIX) / "WitnessAngel"
     )
 
-    PackageManager = autoclass('android.content.pm.PackageManager')  # Precached for permission checking
+    AndroidPackageManager = autoclass('android.content.pm.PackageManager')  # Precached for permission checking
+
+elif IS_IOS:
+    from plyer import storagepath
+    INTERNAL_APP_ROOT = _strip_filepath_scheme(storagepath.get_documents_dir())
+
+    INTERNAL_APP_ROOT = Path(INTERNAL_APP_ROOT)
+    INTERNAL_CACHE_DIR = INTERNAL_APP_ROOT / "cache"
+    EXTERNAL_APP_ROOT_PREFIX = None
+    EXTERNAL_APP_ROOT = INTERNAL_APP_ROOT / "external"
 
 else:
-    CONTEXT = None  # Unused on Desktop
-    _home_dir = storagepath.get_home_dir()
-    # MacOSX returns file:// URLs, do not use removeprefix() else retrocompatibility issues
-    if _home_dir.startswith("file://"):
-        _home_dir = _home_dir[len("file://"):]
-        assert _home_dir.startswith("/")
+    _home_dir = _strip_filepath_scheme(storagepath.get_home_dir())
     INTERNAL_APP_ROOT = Path(_home_dir) / ".witnessangel"
     INTERNAL_CACHE_DIR = INTERNAL_APP_ROOT / "cache"
     EXTERNAL_APP_ROOT_PREFIX = None
     EXTERNAL_APP_ROOT = INTERNAL_APP_ROOT / "external"
 
-    PackageManager = None
-
+print(">> DETECTED INTERNAL_APP_ROOT is ", INTERNAL_APP_ROOT)
 INTERNAL_APP_ROOT.mkdir(exist_ok=True, parents=True)  # Creates base directory too!
 INTERNAL_CACHE_DIR.mkdir(exist_ok=True)
 

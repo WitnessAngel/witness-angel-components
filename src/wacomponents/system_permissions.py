@@ -2,7 +2,7 @@ from typing import List
 
 import time
 
-from wacomponents.default_settings import IS_ANDROID, CONTEXT, PackageManager, EXTERNAL_EXPORTS_DIR
+from wacomponents.default_settings import IS_ANDROID, EXTERNAL_EXPORTS_DIR
 
 
 def request_multiple_permissions(permissions: List[str]) -> List[bool]:
@@ -28,10 +28,11 @@ def has_single_permission(permission: str) -> bool:
     if IS_ANDROID:
         # THIS ONLY WORKS FOR ACTIVITIES: "from android.permissions import check_permission, Permission"
         from android.permissions import Permission
+        from wacomponents.default_settings import ANDROID_CONTEXT, AndroidPackageManager
         permission_qualified_name = getattr(Permission, permission)  # e.g. android.permission.ACCESS_FINE_LOCATION
-        res = CONTEXT.checkSelfPermission(permission_qualified_name)
+        res = ANDROID_CONTEXT.checkSelfPermission(permission_qualified_name)
         #logger.info("checkSelfPermission returned %r (vs %s) for %s" % (res, PackageManager.PERMISSION_GRANTED, permission))
-        return (res == PackageManager.PERMISSION_GRANTED)
+        return (res == AndroidPackageManager.PERMISSION_GRANTED)
     return True  # For desktop OS
 
 

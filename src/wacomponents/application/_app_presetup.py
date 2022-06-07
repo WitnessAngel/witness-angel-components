@@ -18,7 +18,7 @@ def _presetup_app_environment(setup_kivy):
 
     try:
 
-        from wacomponents.default_settings import IS_ANDROID
+        from wacomponents.default_settings import IS_ANDROID, IS_MOBILE
         from wacomponents.application.android_helpers import patch_ctypes_module_for_android
         if IS_ANDROID:
             patch_ctypes_module_for_android()  # Necessary for wacryptolib
@@ -68,7 +68,7 @@ def _presetup_app_environment(setup_kivy):
 
         # SETUP THE APP WINDOW AND ITS HELPERS
 
-        from wacomponents.default_settings import WACLIENT_TYPE, IS_ANDROID
+        from wacomponents.default_settings import WACLIENT_TYPE, IS_MOBILE
 
         if WACLIENT_TYPE == "APPLICATION":
             from kivy.config import Config
@@ -84,7 +84,7 @@ def _presetup_app_environment(setup_kivy):
             from kivy.core.window import Window
             ##Window.minimum_width, Window.minimum_height = Window.size = (600, 600)
 
-            if not IS_ANDROID:
+            if not IS_MOBILE:
                 # Disable multitouch emulation red dots on Desktop, on right/middle clicks
                 Config.set('input', 'mouse', 'mouse,disable_multitouch')
 
