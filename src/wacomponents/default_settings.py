@@ -21,7 +21,7 @@ WACLIENT_TYPE = os.environ.get("WACLIENT_TYPE", "<UNKNOWN>")   # Typically "SERV
 def _strip_filepath_scheme(filepath):
     # MacOSX returns file:// URLs (do not use str.removeprefix() else python retrocompatibility issues)
     if filepath.startswith("file://"):
-        INTERNAL_APP_ROOT = filepath[len("file://"):]
+        filepath = filepath[len("file://"):]
         assert filepath.startswith("/")
     return filepath
 
