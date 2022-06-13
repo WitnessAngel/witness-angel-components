@@ -50,13 +50,14 @@ if IS_ANDROID:
     AndroidPackageManager = autoclass('android.content.pm.PackageManager')  # Precached for permission checking
 
 elif IS_IOS:
+    # iOS apps are SANDBOXED, no common "external folder" to write to
     from plyer import storagepath
-    INTERNAL_APP_ROOT = _strip_filepath_scheme(storagepath.get_documents_dir())
+    _home_dir = _strip_filepath_scheme(storagepath.get_home_dir())
 
-    INTERNAL_APP_ROOT = Path(INTERNAL_APP_ROOT)
-    INTERNAL_CACHE_DIR = INTERNAL_APP_ROOT / "cache"
+    INTERNAL_APP_ROOT = _home_dir / "Library" / "Application Support"  # Might NOT EXIST yet
+    INTERNAL_CACHE_DIR = _home_dir / "tmp"
     EXTERNAL_APP_ROOT_PREFIX = None
-    EXTERNAL_APP_ROOT = INTERNAL_APP_ROOT / "external"
+    EXTERNAL_APP_ROOT = _home_dir / "Documents"  # Will be accessible to Files thanks to special xcode flags
 
 else:
     _home_dir = _strip_filepath_scheme(storagepath.get_home_dir())
