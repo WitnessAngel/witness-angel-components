@@ -7,7 +7,7 @@ import locale
 import os
 from kivy.lang import Observable
 
-from wacomponents.default_settings import IS_ANDROID
+from wacomponents.default_settings import IS_ANDROID, IS_IOS
 
 
 def detect_default_language():
@@ -34,11 +34,20 @@ def detect_default_language():
             #print("######### JAVA LOCALE DETECTED: %s %s #########" % (java_locale.language, java_locale.country ))
         except Exception as exc:
             print("######### JavaUtilLocale exception %r" % exc)  # FIXME use logging
+    elif IS_IOS:
+        try:
+            import pyobjus
+            NSLocale = pyobjus.autoclass("NSLocale")
+            languages = NSLocale.preferredLanguages()
+            lang_code = languages.objectAtIndex_(0).UTF8String().decode("utf-8")  # Might include region code too
+            #print("######### APPLE LOCALE DETECTED: %s #########" % lang_code)
+        except Exception as exc:
+            print("######### NSLocale exception %r" % exc)  # FIXME use logging
     else:
         # VERY rough detection of user language, will often not work under Windows but it's OK
         # See https://stackoverflow.com/a/25691701 and win32.GetUserDefaultUILanguage()
         lang_code, _charset = locale.getlocale()
-        #print("######### DEFAULT LOCALE DETECTED: %s %s #########" % (_lang_code, _charset))
+        #print("######### DEFAULT LOCALE DETECTED: %s %s #########" % (lang_code, _charset))
 
     lang_code = lang_code or ""  # lang_code might be None if undetected
     return "fr" if _normalize(lang_code).startswith("fr") else "en"
