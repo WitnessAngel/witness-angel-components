@@ -5,6 +5,7 @@ from kivy.lang import Builder
 from kivy.properties import ObjectProperty
 from kivy.uix.settings import SettingItem, SettingString
 from kivymd.uix.menu import MDDropdownMenu
+from kivy.uix.accordion import Accordion
 
 from wacomponents.i18n import tr
 
@@ -75,3 +76,58 @@ class LanguageSwitcherScreenMixin:
     def language_menu_select(self, lang_code):
         self._language_selector_menu.dismiss()
         tr.switch_lang(lang_code)
+
+
+class GrowingAccordion(Accordion):
+
+    def _do_layout(self, dt):
+        children = self.children
+        if children:
+            all_collapsed = all(x.collapse for x in children)
+        else:
+            all_collapsed = False
+
+        if all_collapsed:
+            children[0].collapse = False
+
+        orientation = self.orientation
+        min_space = self.min_space
+        min_space_total = len(children) * self.min_space
+        w, h = self.size
+        x, y = self.pos
+
+        if orientation == 'horizontal':
+            children = reversed(children)
+
+        display_space_total = 0
+        for child in children:
+            if orientation == 'horizontal':
+                child_display_space = child.container.children[0].minimum_width
+            else:
+                child_display_space = child.container.children[0].minimum_height
+
+            child_space = min_space
+            child_space += child_display_space * (1 - child.collapse_alpha)
+
+            display_space_total += child_space
+
+            child._min_space = min_space
+            child.x = x
+            child.y = y
+            child.orientation = self.orientation
+            if orientation == 'horizontal':
+                child.content_size = child_display_space, h
+                child.width = child_space
+                child.height = h
+                x += child_space
+            else:
+                child.content_size = w, child_display_space
+                child.width = w
+                child.height = child_space
+                y += child_space
+
+        if orientation == 'horizontal':
+            self.width = display_space_total
+        else:
+            self.height = display_space_total
+
