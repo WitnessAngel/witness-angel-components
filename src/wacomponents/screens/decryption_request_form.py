@@ -8,16 +8,16 @@ from kivy.lang import Builder
 from kivy.properties import ObjectProperty, BooleanProperty
 from kivymd.app import MDApp
 from kivymd.uix.screen import Screen
-from wacryptolib.cryptainer import SHARED_SECRET_ALGO_MARKER, _get_trustee_id
+from wacryptolib.cryptainer import SHARED_SECRET_ALGO_MARKER, get_trustee_id
 from wacryptolib.jsonrpc_client import JsonRpcProxy, status_slugs_response_error_handler
 from wacryptolib.keystore import generate_keypair_for_storage, FilesystemKeystore
 from wacryptolib.utilities import load_from_json_bytes, generate_uuid0, dump_to_json_file, load_from_json_file
-from wacryptolib.exceptions import KeystoreDoesNotExist, KeyDoesNotExist
+from wacryptolib.exceptions import KeystoreDoesNotExist, KeyDoesNotExist, AuthenticatorDoesNotExist
 
 from wacomponents.default_settings import INTERNAL_APP_ROOT
 from wacomponents.i18n import tr
 from wacomponents.utilities import shorten_uid
-from wacomponents.widgets.popups import display_info_toast, dialog_with_close_button
+from wacomponents.widgets.popups import display_info_toast, dialog_with_close_button, safe_catch_unhandled_exception_and_display_popup
 
 Builder.load_file(str(Path(__file__).parent / 'decryption_request_form.kv'))
 
@@ -37,12 +37,8 @@ class DecryptionRequestFormScreen(Screen):
     def go_to_previous_screen(self):
         self.manager.current = "CryptainerDecryption"
 
-    def _get_gateway_proxy(self):  # FIXME create standalone utility to factorize this, using MDApp.get_running_app()
-        jsonrpc_url = self._app.get_wagateway_url()
-        gateway_proxy = JsonRpcProxy(
-            url=jsonrpc_url, response_error_handler=status_slugs_response_error_handler
-        )
-        return gateway_proxy
+    def go_to_management_screen(self):
+        self.manager.current = "CryptainerManagement"
 
     def _get_cryptainers_with_cryptainer_names(self, cryptainer_names):
         cryptainers = []
@@ -55,19 +51,18 @@ class DecryptionRequestFormScreen(Screen):
         self.ids.authenticator_checklist.clear_widgets()
 
         # Display summary
-        cryptainers_name = ""  # FIXME wrong naming
+        cryptainer_names = [str(cryptainer_name) for cryptainer_name in self.selected_cryptainer_names]
 
-        #FIXME use "\n\t".join(seq)
-        for cryptainer_name in self.selected_cryptainer_names:
-            cryptainers_name = cryptainers_name + "\n\t" + str(cryptainer_name)
+        cryptainer_string_names = "\n\t".join(cryptainer_names)
 
         _displayed_values = dict(
-            containers_selected=cryptainers_name,
+            containers_selected=cryptainer_string_names,
             gateway_url=self._app.get_wagateway_url()
         )
 
         decryption_request_summary_text = dedent(tr._("""\
-                                            Container(s) selected: {containers_selected}
+                                            Container(s) selected: 
+                                                {containers_selected}
                                             
                                             Gateway url: {gateway_url}                                           
                                         """)).format(**_displayed_values)
@@ -90,8 +85,8 @@ class DecryptionRequestFormScreen(Screen):
         def _add_decryptable_symkeys_for_trustee(key_cipher_trustee, shard_ciphertext, keychain_uid_encryption,
                                                  key_algo_encryption, cryptainer_uid, cryptainer_metadata):
 
-            trustee_id = _get_trustee_id(trustee_conf=key_cipher_trustee)
-            symkeys_data_to_decrypt = {  # FIXME wrong plural place
+            trustee_id = get_trustee_id(trustee_conf=key_cipher_trustee)
+            symkey_decryption_request = {
                 "cryptainer_uid": cryptainer_uid,
                 "cryptainer_metadata": cryptainer_metadata,
                 "symkey_ciphertext": shard_ciphertext,
@@ -100,7 +95,7 @@ class DecryptionRequestFormScreen(Screen):
             }
             _trustee_data, _decryptable_symkeys = decryptable_symkeys_per_trustee.setdefault(trustee_id,
                                                                                              (key_cipher_trustee, []))
-            _decryptable_symkeys.append(symkeys_data_to_decrypt)
+            _decryptable_symkeys.append(symkey_decryption_request)
 
         def _gather_decryptable_symkeys(key_cipher_layers: list, shard_ciphertexts, cryptainer_uid,
                                         cryptainer_metadata):
@@ -157,11 +152,12 @@ class DecryptionRequestFormScreen(Screen):
                 selected_authenticator.append(authenticator_entry.unique_identifier)
         return selected_authenticator
 
+    @safe_catch_unhandled_exception_and_display_popup
     def submit_decryption_request(self):
-        wa_device_uid = self._app.get_wa_device_uid()
-        requester_uid = wa_device_uid["wa_device_uid"]  # FIXME this extra operation is abnormal
 
-        gateway_proxy = self._get_gateway_proxy()
+        requester_uid = self._app.get_wa_device_uid()
+
+        gateway_proxy = self._app.get_gateway_proxy()
 
         # Authenticator selected
         authenticator_selected = self._get_selected_authenticator()
@@ -170,7 +166,7 @@ class DecryptionRequestFormScreen(Screen):
             display_info_toast(msg)
             return
 
-        # Description not empty(description.strip doit avoir au moins 10 caractères)  # FIXME ENGLISH
+        # Description not empty (description.strip must have at least 10 characters)
         description = self.ids.description.text.strip()
         if len(description) < DESCRIPTION_MIN_LENGTH:
             msg = tr._("Description must be at least %s characters long.") % DESCRIPTION_MIN_LENGTH
@@ -181,33 +177,28 @@ class DecryptionRequestFormScreen(Screen):
         cryptainers = self._get_cryptainers_with_cryptainer_names(self.selected_cryptainer_names)
         decryptable_symkeys_per_trustee = self.gather_decryptable_symkeys(cryptainers)
 
-        # Response keypair utilisé pour chiffrer la reponse  # FIXME ENGLISH
+        # Response keypair used to encrypt the decrypted symkey/shard
         response_keychain_uid, response_key_algo, response_public_key = self._create_and_return_response_keypair_from_local_factory()
 
-        successful_request = 0  # FIXME WRONG NAME -> successful_request_count
+        successful_request_count = 0
         error = []
         # message = ""
         for trustee_id, decryptable_data in decryptable_symkeys_per_trustee.items():
-            trustee_data, symkeys_data_to_decrypt = decryptable_data
+            trustee_data, symkey_decryption_requests = decryptable_data
             if trustee_data["keystore_uid"] in authenticator_selected:
                 try:
-                    gateway_proxy.submit_decryption_request(keystore_uid=trustee_data["keystore_uid"],
+                    gateway_proxy.submit_revelation_request(authenticator_keystore_uid=trustee_data["keystore_uid"],
                                                             requester_uid=requester_uid,
-                                                            description=description,
-                                                            response_public_key=response_public_key,
-                                                            response_keychain_uid=response_keychain_uid,
-                                                            response_key_algo=response_key_algo,
-                                                            symkeys_data_to_decrypt=symkeys_data_to_decrypt)
+                                                            revelation_request_description=description,
+                                                            revelation_response_public_key=response_public_key,
+                                                            revelation_response_keychain_uid=response_keychain_uid,
+                                                            revelation_response_key_algo=response_key_algo,
+                                                            symkey_decryption_requests=symkey_decryption_requests)
 
                     # stocker les infos utiles dans operation_report
-                    successful_request += 1
+                    successful_request_count += 1
 
-                except (JSONRPCError, OSError):  # FIXME no need to handle this error actually?
-                    message = tr._("Error calling method, check the server url")
-                    error.append(message)
-                    break
-
-                except KeystoreDoesNotExist:
+                except AuthenticatorDoesNotExist:
                     message = tr._(
                         "Authenticator %s does not exists in sql storage" % shorten_uid(trustee_data["keystore_uid"]))
                     error.append(message)
@@ -220,13 +211,13 @@ class DecryptionRequestFormScreen(Screen):
         error_report = ",\n    - ".join(error)
 
         _displayed_values = dict(
-            successful_request=successful_request,
+            successful_request_count=successful_request_count,
             len_authenticator_selected=len(authenticator_selected),
             error_report=error_report
         )
 
         operation_report_text = dedent(tr._("""\
-                        Successful requests: {successful_request} sur {len_authenticator_selected}
+                        Successful requests: {successful_request_count} sur {len_authenticator_selected}
                                                 """)).format(**_displayed_values)
 
         error_report_text = dedent(tr._("""\
@@ -235,12 +226,12 @@ class DecryptionRequestFormScreen(Screen):
                                                     - {error_report}                                           
                                                         """)).format(**_displayed_values)
 
-        if successful_request != len(authenticator_selected):
+        if successful_request_count != len(authenticator_selected):
             operation_report_text += error_report_text
 
         dialog_with_close_button(
             close_btn_label=tr._("Close"),
             title=tr._("Operation Report"),
             text=operation_report_text,
-            close_btn_callback=self.go_to_previous_screen()
+            close_btn_callback=self.go_to_management_screen()
         )

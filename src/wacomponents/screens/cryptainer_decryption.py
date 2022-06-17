@@ -115,14 +115,14 @@ class CryptainerDecryptionScreen(Screen):
 
             trustee_dependencies = gather_trustee_dependencies(cryptainers)
 
-            self.trustee_data = [trustee for trustee in trustee_dependencies["encryption"].values()]  # FIXME just use list(X)
+            self.trustee_data = list(trustee_dependencies["encryption"].values())
 
             for trustee_info, trustee_keypair_identifiers in self.trustee_data:
                 trustee_id = get_trustee_id(trustee_info)
                 trustee_type = trustee_info["trustee_type"]
                 keystore_uid = trustee_info["keystore_uid"]
 
-                if trustee_type == CRYPTAINER_TRUSTEE_TYPES.AUTHENTICATOR_TRUSTEE:  # FIXME utiliser Enums python TrusteeTypes.xxx
+                if trustee_type == CRYPTAINER_TRUSTEE_TYPES.AUTHENTICATOR_TRUSTEE:
                     status = self._get_cryptainer_trustee_dependency_status(keystore_uid, trustee_type=trustee_type, trustee_id=trustee_id, trustee_keypair_identifiers=trustee_keypair_identifiers)
                     self._display_cryptainer_trustee_dependency_status(status)
                 else:

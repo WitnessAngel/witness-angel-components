@@ -249,7 +249,6 @@ class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
         self.authenticator_status = authenticator_status
         self.authenticator_status_message = self._get_authenticator_status_message(authenticator_status)
 
-
     def archive_chooser_open(self, *args):
         if not request_external_storage_dirs_access():
             return
