@@ -15,7 +15,7 @@ from kivymd.uix.screen import Screen
 from wacomponents.i18n import tr
 from wacomponents.logging.handlers import safe_catch_unhandled_exception
 from wacomponents.utilities import shorten_uid
-from wacomponents.widgets.popups import display_info_toast, close_current_dialog, dialog_with_close_button
+from wacomponents.widgets.popups import display_info_toast, close_current_dialog, dialog_with_close_button, safe_catch_unhandled_exception_and_display_popup
 from wacryptolib.authdevice import list_available_authdevices
 from wacryptolib.authenticator import is_authenticator_initialized
 from wacryptolib.exceptions import SchemaValidationError, ExistenceError, KeyAlreadyExists, ValidationError
@@ -59,7 +59,7 @@ class AuthdeviceStoreScreen(Screen):
 
         return authdevices_initialized
 
-    @safe_catch_unhandled_exception # FIXME display popup here and in the rest of Screen ?
+    @safe_catch_unhandled_exception_and_display_popup
     def import_keystores_from_usb(self, include_private_keys, authdevices_initialized):
         """
         loop through the “authdevices” present,
@@ -138,7 +138,7 @@ class AuthdeviceStoreScreen(Screen):
                 ), ]
         )
 
-    @safe_catch_unhandled_exception
+    @safe_catch_unhandled_exception_and_display_popup
     def delete_keystores(self, keystore_uids):
         assert keystore_uids  # By construction
 
@@ -158,7 +158,7 @@ class AuthdeviceStoreScreen(Screen):
 
         self.list_foreign_keystores(display_toast=False)
 
-    @safe_catch_unhandled_exception
+    @safe_catch_unhandled_exception_and_display_popup
     def list_foreign_keystores(self, display_toast=True):
         """
         loop through the KEYS_ROOT / files, and read their metadata.json,
@@ -364,22 +364,14 @@ class AuthdeviceStoreScreen(Screen):
         validate_keystore_tree(keystore_tree)  # SAFETY
         return keystore_tree
 
-
-    def _get_gateway_proxy(self):  # FIXME create standalone utility to factorize this, using MDApp.get_running_app()
-
-        jsonrpc_url = self._app.get_wagateway_url()
-        gateway_proxy = JsonRpcProxy(
-            url=jsonrpc_url, response_error_handler=status_slugs_response_error_handler
-        )
-        return gateway_proxy
-
+    @safe_catch_unhandled_exception_and_display_popup
     def import_key_storage_from_web_gateway(self, keystore_uid_str):  # FIXME bad name
 
         keystore_uid_str = keystore_uid_str.strip().lower()
 
         close_current_dialog()
 
-        gateway_proxy = self._get_gateway_proxy()
+        gateway_proxy = self._app.get_gateway_proxy()
         try:
             keystore_uid = uuid.UUID(keystore_uid_str)
 
@@ -394,10 +386,6 @@ class AuthdeviceStoreScreen(Screen):
         except ExistenceError:
             result = tr._("Failure")
             details = tr._("Authenticator does not exist")
-
-        except (JSONRPCError, OSError):
-            result = tr._("Failure")
-            details = tr._("Error calling method, check the server url")  # FIXME bad message
 
         else:
             try:

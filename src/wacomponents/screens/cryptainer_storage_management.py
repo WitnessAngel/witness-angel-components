@@ -15,7 +15,8 @@ from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
 from wacomponents.logging.handlers import safe_catch_unhandled_exception
 from wacomponents.utilities import shorten_uid
-from wacomponents.widgets.popups import close_current_dialog, dialog_with_close_button, display_info_toast
+from wacomponents.widgets.popups import close_current_dialog, dialog_with_close_button, display_info_toast, \
+    safe_catch_unhandled_exception_and_display_popup
 from wacryptolib.cryptainer import gather_trustee_dependencies
 
 Builder.load_file(str(Path(__file__).parent / 'cryptainer_storage_management.kv'))
@@ -53,7 +54,7 @@ class CryptainerStoreScreen(Screen):
         # print(">>>>> extract_selected_cryptainer_names", container_names)
         return cryptainer_names
 
-    @safe_catch_unhandled_exception # FIXME display popup here and in the rest of Screen ?
+    @safe_catch_unhandled_exception_and_display_popup
     def get_detected_cryptainer(self):  # FIXME rename and mereg with private method?
         self._get_detected_cryptainer()
 
@@ -220,7 +221,7 @@ class CryptainerStoreScreen(Screen):
 
         self.get_detected_cryptainer()  # FIXME rename
 
-    @safe_catch_unhandled_exception
+    @safe_catch_unhandled_exception_and_display_popup
     def open_cryptainer_decryption_dialog(self):
 
         cryptainer_names = self._get_selected_cryptainer_names()
@@ -294,7 +295,7 @@ class CryptainerStoreScreen(Screen):
                 ), ]
         )
 
-    @safe_catch_unhandled_exception
+    @safe_catch_unhandled_exception_and_display_popup
     def decipher_cryptainers(self, cryptainer_names, input_content_cls):
         assert self.filesystem_cryptainer_storage, self.filesystem_cryptainer_storage  # By construction...
 
