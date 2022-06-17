@@ -1,13 +1,14 @@
 import inspect
-import re
-import subprocess
 from pathlib import Path
 from urllib.parse import urlparse
+
+from kivymd.app import MDApp
+from wacryptolib.jsonrpc_client import JsonRpcProxy, status_slugs_response_error_handler
+from wacryptolib.utilities import load_from_json_file, generate_uuid0, dump_to_json_file
 
 from wacomponents.default_settings import INTERNAL_APP_ROOT, INTERNAL_CRYPTAINER_DIR, INTERNAL_KEYSTORE_POOL_DIR, \
     INTERNAL_LOGS_DIR
 from wacomponents.i18n import tr
-from kivy.logger import Logger as logger
 
 from wacomponents.sensors.camera.rtsp_stream import get_ffmpeg_version
 
@@ -84,7 +85,8 @@ class WaRuntimeSupportMixin:
 
     @staticmethod
     def check_keyguardian_counts(keyguardian_threshold, keyguardian_count):
-        message = tr.f(tr._("{keyguardian_count} key guardian(s) configured, {keyguardian_threshold} of which necessary for decryption"))
+        message = tr.f(tr._(
+            "{keyguardian_count} key guardian(s) configured, {keyguardian_threshold} of which necessary for decryption"))
         if 0 < keyguardian_threshold <= keyguardian_count:
             return True, message
         return False, message
@@ -126,26 +128,39 @@ class WaRuntimeSupportMixin:
         return False, message
 
     @staticmethod
-    def check_ffmpeg(min_ffmpeg_version: float):  # FIXME REMOVE THIS
-        print('Check_ffmpeg')
+    def check_ffmpeg(min_ffmpeg_version: float):
+        ffmpeg_version, error_msg = get_ffmpeg_version()
+        if ffmpeg_version is None:
+            return False, error_msg
 
-        def check_install(*args):
-            try:
-                output = subprocess.check_output(args, stderr=subprocess.STDOUT)
-                regex = 'ffmpeg version (\d\.\d)'
-                match = re.search(regex, str(output))
-                message = tr.f(tr._("The ffmpeg module is installed but beware the version was not found"))
-                status = True
-                if match is not None:
-                    ffmpeg_version = match.group(1)
-                    if float(ffmpeg_version) >= min_ffmpeg_version:
-                        message = tr.f(tr._("The ffmpeg module is installed and the version is compatible"))
-                    else:
-                        status= False
-                        message = tr.f(tr._("The ffmpeg module is installed but the version is below {min_ffmpeg_version} "))
-                return status, message
-            except OSError as e:
-                print(e)
-                return False, tr.f(tr._("Unable to find the ffmpeg module, please install it"))
+        if ffmpeg_version >= min_ffmpeg_version:
+            return True, tr.f(tr._("Ffmpeg module is installed with a compatible {ffmpeg_version:.1f} version"))
+        else:
+            return False, tr.f(tr._("Ffmpeg module is installed but this {ffmpeg_version:.1f} version is below "
+                                    "required {min_ffmpeg_version} "))
 
-        return check_install("ffmpeg", "-version")
+    @staticmethod
+    def get_wa_device_uid():
+        root_dir = INTERNAL_APP_ROOT
+        device_info_file = root_dir.joinpath(".wa_device_uid.json")
+        try:
+            device_info = load_from_json_file(device_info_file)
+        except FileNotFoundError:
+            device_info_file.parent.mkdir(parent=False, exist_ok=True)
+
+            device_info = {
+                "wa_device_uid": generate_uuid0()
+            }
+            dump_to_json_file(device_info_file, device_info)
+
+        device_uid = device_info["wa_device_uid"]
+        return device_uid
+
+    @staticmethod
+    def get_gateway_proxy():
+        app = MDApp.get_running_app()
+        jsonrpc_url = app.get_wagateway_url()
+        gateway_proxy = JsonRpcProxy(
+            url=jsonrpc_url, response_error_handler=status_slugs_response_error_handler
+        )
+        return gateway_proxy
