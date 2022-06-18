@@ -152,7 +152,7 @@
             rgba: self.disabled_foreground_color if self.disabled else (self.hint_text_color if not self.text else self.foreground_color)
 
 
-<-WASelectableLabel@TextInput>:
+<-WASelectableLabel>:
     size_hint: 1, None
     height: max((len(self._lines)+1) * self.line_height, self.parent.height)
     padding: [10,10]

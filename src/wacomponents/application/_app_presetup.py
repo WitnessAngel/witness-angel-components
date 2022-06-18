@@ -86,7 +86,10 @@ def _presetup_app_environment(setup_kivy):
 
             if not IS_MOBILE:
                 # Disable multitouch emulation red dots on Desktop, on right/middle clicks
-                Config.set('input', 'mouse', 'mouse,disable_multitouch')
+                Config.set('input', 'mouse', 'mouse,disable_on_activity,disable_on_activity')
+
+            # TO EMULATE TOUCHSCREEN:
+            #Config.set('kivy', 'desktop', 0)
 
             # Ensure that we don't need to click TWICE to gain focus on Kivy Window and then on widget!
             def force_window_focus(*args, **kwargs):

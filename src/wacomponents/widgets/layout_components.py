@@ -2,8 +2,9 @@ import textwrap
 from pathlib import Path
 
 from kivy.lang import Builder
-from kivy.properties import ObjectProperty
+from kivy.properties import ObjectProperty, Clock
 from kivy.uix.settings import SettingItem, SettingString
+from kivy.uix.textinput import TextInput
 from kivymd.uix.menu import MDDropdownMenu
 from kivy.uix.accordion import Accordion
 
@@ -76,6 +77,16 @@ class LanguageSwitcherScreenMixin:
     def language_menu_select(self, lang_code):
         self._language_selector_menu.dismiss()
         tr.switch_lang(lang_code)
+
+
+class WASelectableLabel(TextInput):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # EVEN IF READONLY, we need this to prevent selection bugs on mobile platform
+        def fix_focusability(x):
+            self.is_focusable = True
+        Clock.schedule_once(fix_focusability)
 
 
 class GrowingAccordion(Accordion):
