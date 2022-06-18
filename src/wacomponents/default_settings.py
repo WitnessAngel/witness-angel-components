@@ -52,7 +52,7 @@ if IS_ANDROID:
 elif IS_IOS:
     # iOS apps are SANDBOXED, no common "external folder" to write to
     from plyer import storagepath
-    _home_dir = _strip_filepath_scheme(storagepath.get_home_dir())
+    _home_dir = Path(_strip_filepath_scheme(storagepath.get_home_dir()))
 
     INTERNAL_APP_ROOT = _home_dir / "Library" / "Application Support"  # Might NOT EXIST yet
     INTERNAL_CACHE_DIR = _home_dir / "tmp"
