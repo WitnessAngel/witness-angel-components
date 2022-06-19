@@ -34,6 +34,6 @@ include = ["README.rst"]
 exclude = []
 
 [tool.poetry.dependencies]
-python = ">=3.7, <=3.10"
+python = ">=3.7, <3.11"
 # For now, let final projects install what they need, by themselves
 # We'll need lots of "extras" definitions to handle all use cases of this set of components
