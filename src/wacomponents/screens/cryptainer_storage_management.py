@@ -94,9 +94,9 @@ class CryptainerStoreScreen(Screen):
         self.cryptainer_checkboxes = []
 
         assert not self.cryptainer_loading_schedule
-        self.cryptainer_loading_schedule = Clock.schedule_interval(partial(self.load_next_scheduled_cryptainer), self.CRYPTAINER_LOADING_INTERVAL)
+        self.cryptainer_loading_schedule = Clock.schedule_interval(partial(self._load_next_scheduled_cryptainer), self.CRYPTAINER_LOADING_INTERVAL)
 
-    def load_next_scheduled_cryptainer(self, *args):  # FIXME make private
+    def _load_next_scheduled_cryptainer(self, *args):
         if self.cryptainer_names_to_be_loaded:
             cryptainer_idx, cryptainer_name = self.cryptainer_names_to_be_loaded.pop()
             self._load_cryptainer(index=cryptainer_idx, cryptainer_name=cryptainer_name)

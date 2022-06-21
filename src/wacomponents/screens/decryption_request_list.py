@@ -54,10 +54,10 @@ class DecryptionRequestListScreen(Screen):
     def display_decryption_request_list(self):
         self.ids.list_decryption_request_scrollview.clear_widgets()
 
-        requester_uid = self._app.get_wa_device_uid()
+        revelation_requestor_uid = self._app.get_wa_device_uid()
 
         try:
-            list_decryption_requests = self.gateway_proxy.list_wadevice_revelation_requests(requester_uid)
+            list_decryption_requests = self.gateway_proxy.list_wadevice_revelation_requests(revelation_requestor_uid)
 
         except(JSONRPCError, OSError):
             display_layout = Factory.WABigInformationBox()
@@ -88,8 +88,8 @@ class DecryptionRequestListScreen(Screen):
                     revelation_response_keychain_uid=decryption_request["revelation_response_keychain_uid"],
                     revelation_response_key_algo=decryption_request["revelation_response_key_algo"],
                     symkey_decryption_status=decryption_request["symkey_decryption_request"]["symkey_decryption_status"],
-                    key_algo=decryption_request["symkey_decryption_request"]["public_authenticator_key"]["key_algo"],
-                    keychain_uid=decryption_request["symkey_decryption_request"]["public_authenticator_key"]["keychain_uid"],
+                    key_algo=decryption_request["symkey_decryption_request"]["target_public_authenticator_key"]["key_algo"],
+                    keychain_uid=decryption_request["symkey_decryption_request"]["target_public_authenticator_key"]["keychain_uid"],
                 )
 
                 # FIXME retranslate all these text blocks, using update_i18n.sh

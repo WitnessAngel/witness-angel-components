@@ -155,7 +155,7 @@ class DecryptionRequestFormScreen(Screen):
     @safe_catch_unhandled_exception_and_display_popup
     def submit_decryption_request(self):
 
-        requester_uid = self._app.get_wa_device_uid()
+        revelation_requestor_uid = self._app.get_wa_device_uid()
 
         gateway_proxy = self._app.get_gateway_proxy()
 
@@ -188,7 +188,7 @@ class DecryptionRequestFormScreen(Screen):
             if trustee_data["keystore_uid"] in authenticator_selected:
                 try:
                     gateway_proxy.submit_revelation_request(authenticator_keystore_uid=trustee_data["keystore_uid"],
-                                                            requester_uid=requester_uid,
+                                                            revelation_requestor_uid=revelation_requestor_uid,
                                                             revelation_request_description=description,
                                                             revelation_response_public_key=response_public_key,
                                                             revelation_response_keychain_uid=response_keychain_uid,

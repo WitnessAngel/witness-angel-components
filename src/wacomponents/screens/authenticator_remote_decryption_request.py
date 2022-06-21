@@ -69,16 +69,16 @@ class RemoteDecryptionRequestScreen(Screen):
             revelation_request_uid=decryption_request["revelation_request_uid"])
 
         _displayed_values = dict(
-            public_authenticator=decryption_request["target_public_authenticator"]["keystore_owner"],
-            requester_uid=decryption_request["requester_uid"],
+            target_public_authenticator=decryption_request["target_public_authenticator"]["keystore_owner"],
+            revelation_requestor_uid=decryption_request["revelation_requestor_uid"],
             description=decryption_request["revelation_request_description"],
             response_keychain_uid=shorten_uid(decryption_request["revelation_response_keychain_uid"]),
             response_key_algo=decryption_request["revelation_response_key_algo"]
         )
 
         decryption_request_summary_text = dedent(tr._("""\
-                                    Authenticator: {public_authenticator}
-                                    Requester ID: {requester_uid}
+                                    Target Public Authenticator: {target_public_authenticator}
+                                    Revelation Requestor ID: {revelation_requestor_uid}
                                     Description: {description}
                                     Response public key: {response_keychain_uid}({response_key_algo})
                                 """)).format(**_displayed_values)
@@ -118,8 +118,8 @@ class RemoteDecryptionRequestScreen(Screen):
     def show_symkey_decryption_details(self, symkey_decryption):
 
         _displayed_values = dict(
-            key_algo=symkey_decryption["public_authenticator_key"]["key_algo"],
-            keychain_uid=symkey_decryption["public_authenticator_key"]["keychain_uid"],
+            key_algo=symkey_decryption["target_public_authenticator_key"]["key_algo"],
+            keychain_uid=symkey_decryption["target_public_authenticator_key"]["keychain_uid"],
             cryptainer_uid=symkey_decryption["cryptainer_uid"],
             cryptainer_metadata=symkey_decryption["cryptainer_metadata"],
             symkey_decryption_request_data=symkey_decryption["symkey_decryption_request_data"],
@@ -161,7 +161,7 @@ class RemoteDecryptionRequestScreen(Screen):
 
     def display_remote_decryption_request(self, list_revelation_requests_per_status):  # TODO change name function
         # TODO add list_decryption_request to parameter of this function
-        # TODO why????
+        # why????
 
         tab_per_status = dict(PENDING=self.ids.pending_decryption_request,
                               REJECTED=self.ids.rejected_decryption_request,
@@ -241,8 +241,8 @@ class RemoteDecryptionRequestScreen(Screen):
 
         for symkey_decryption in decryption_request["symkey_decryption_requests"]:
             decryption_status = SymkeyDecryptionStatus.DECRYPTED
-            keychain_uid = symkey_decryption["public_authenticator_key"]["keychain_uid"]
-            cipher_algo = symkey_decryption["public_authenticator_key"]["key_algo"]
+            keychain_uid = symkey_decryption["target_public_authenticator_key"]["keychain_uid"]
+            cipher_algo = symkey_decryption["target_public_authenticator_key"]["key_algo"]
             passphrases = [passphrase]
             cipherdict = load_from_json_bytes(symkey_decryption["symkey_decryption_request_data"])
             response_data = b""
