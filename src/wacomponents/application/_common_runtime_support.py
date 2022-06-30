@@ -148,7 +148,7 @@ class WaRuntimeSupportMixin:
         try:
             device_info = load_from_json_file(device_info_file)
         except FileNotFoundError:
-            device_info_file.parent.mkdir(parent=False, exist_ok=True)
+            device_info_file.parent.mkdir(parents=False, exist_ok=True)
 
             device_info = {
                 "wa_device_uid": generate_uuid0()
@@ -158,7 +158,7 @@ class WaRuntimeSupportMixin:
         device_uid = device_info["wa_device_uid"]
         return device_uid
 
-    @staticmethod
+    @staticmethod  # FIXME you still have to remove other duplicates of this method in Screens
     def get_gateway_proxy():
         app = MDApp.get_running_app()
         jsonrpc_url = app.get_wagateway_url()

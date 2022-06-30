@@ -393,7 +393,7 @@ class AuthdeviceStoreScreen(Screen):
 
             except KeyAlreadyExists:
                 result = tr._("Failure")
-                details = tr._("Error calling method, keystore already existing")  # FIXME
+                details = tr._("Error calling method, keystore already existing")  # FIXME wrong message
 
             else:
                 msg = "An authentication device(s) updated"
