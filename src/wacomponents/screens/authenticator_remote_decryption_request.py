@@ -14,7 +14,7 @@ from kivymd.uix.tab import MDTabsBase
 from wacomponents.widgets.layout_components import GrowingAccordion
 from wacryptolib.cipher import encrypt_bytestring
 from wacryptolib.exceptions import KeyLoadingError, KeyDoesNotExist, AuthenticatorDoesNotExist, \
-    PermissionAuthenticatorError, ExistenceError
+    AuthenticationError, ExistenceError
 from wacryptolib.keygen import load_asymmetric_key_from_pem_bytestring
 from wacryptolib.keystore import load_keystore_metadata, FilesystemKeystore
 from wacryptolib.trustee import TrusteeApi
@@ -215,7 +215,7 @@ class RemoteDecryptionRequestScreen(Screen):
             display_info_snackbar(tr._("Authenticator %s does not exist on remote server") % keystore_uid)
             return
 
-        except PermissionAuthenticatorError:
+        except AuthenticationError:
             display_info_snackbar(tr._("The keystore secret of authenticator is not valid"))
             return
 
