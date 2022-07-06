@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-06-30 14:50+0200\n"
+"POT-Creation-Date: 2022-06-30 15:03+0200\n"
 "PO-Revision-Date: 2022-06-30 14:56+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
@@ -99,7 +99,7 @@ msgstr "Créer un Authentifieur"
 #: src/wacomponents/screens/authenticator_creation_form.kv:15
 #: src/wacomponents/screens/authenticator_remote_decryption_request.kv:74
 #: src/wacomponents/screens/authenticator_synchronization_form.kv:14
-#: src/wacomponents/screens/cryptainer_decryption.kv:36
+#: src/wacomponents/screens/cryptainer_decryption.kv:35
 #: src/wacomponents/screens/decryption_request_form.kv:29
 #: src/wacomponents/screens/decryption_request_list.kv:24
 msgid "Back"
@@ -242,7 +242,7 @@ msgstr "Gérer les Authentifieurs"
 #: src/wacomponents/screens/authenticator_management.kv:53
 #: src/wacomponents/screens/authenticator_remote_decryption_request.kv:75
 #: src/wacomponents/screens/authenticator_synchronization_form.kv:15
-#: src/wacomponents/screens/cryptainer_decryption.kv:37
+#: src/wacomponents/screens/cryptainer_decryption.kv:36
 #: src/wacomponents/screens/cryptainer_storage_management.kv:35
 #: src/wacomponents/screens/decryption_request_form.kv:30
 #: src/wacomponents/screens/decryption_request_list.kv:25
@@ -585,8 +585,8 @@ msgstr ""
 "                                   Uid du cryptainer : {cryptainer_uid}\n"
 "                                   Metadat du cryptainer : "
 "{cryptainer_metadata}\n"
-"                                   Clé nécessaire : "
-"{keychain_uid}({key_algo})\n"
+"                                   Clé nécessaire : {keychain_uid}"
+"({key_algo})\n"
 "                                   Statut de déchiffrement : "
 "{symkey_decryption_status}\n"
 "                    "
@@ -755,7 +755,7 @@ msgstr ""
 msgid "Authenticator publishing"
 msgstr "Publication de l'authentifieur"
 
-#: src/wacomponents/screens/cryptainer_decryption.kv:37
+#: src/wacomponents/screens/cryptainer_decryption.kv:36
 #: src/wacomponents/screens/cryptainer_storage_management.kv:35
 #: src/wacomponents/screens/decryption_request_form.kv:30
 #: src/wacomponents/screens/decryption_request_list.kv:25
@@ -763,26 +763,25 @@ msgstr "Publication de l'authentifieur"
 msgid "Back to home"
 msgstr "Retour"
 
-#: src/wacomponents/screens/cryptainer_decryption.kv:42
+#: src/wacomponents/screens/cryptainer_decryption.kv:41
 msgid "Container decryption page"
 msgstr "Page de déchiffrement de conteneurs"
 
-#: src/wacomponents/screens/cryptainer_decryption.kv:60
+#: src/wacomponents/screens/cryptainer_decryption.kv:59
 msgid "Summary of concerned key guardians"
 msgstr "Résumé des gardiens de clé concernés"
 
-#: src/wacomponents/screens/cryptainer_decryption.kv:74
+#: src/wacomponents/screens/cryptainer_decryption.kv:73
 msgid "Add a passphrase"
 msgstr "Ajouter une phrase secrète"
 
-#: src/wacomponents/screens/cryptainer_decryption.kv:81
+#: src/wacomponents/screens/cryptainer_decryption.kv:80
 msgid "Decrypt"
 msgstr "Déchiffrer"
 
-#: src/wacomponents/screens/cryptainer_decryption.kv:87
-#, fuzzy
+#: src/wacomponents/screens/cryptainer_decryption.kv:86
 msgid "Remote decryption request"
-msgstr "Page de déchiffrement de conteneurs"
+msgstr "Requête de déchiffrement distante"
 
 #: src/wacomponents/screens/cryptainer_decryption.py:42
 msgid "No containers selected"
@@ -790,7 +789,6 @@ msgstr "Aucun conteneur sélectionné"
 
 #: src/wacomponents/screens/cryptainer_decryption.py:47
 #: src/wacomponents/screens/cryptainer_storage_management.py:107
-#, python-brace-format
 #, python-brace-format
 msgid "N° {index}: {cryptainer_name}"
 msgstr "N° {index}: {cryptainer_name}"
@@ -885,7 +883,7 @@ msgstr "Processus de déchiffrement"
 
 #: src/wacomponents/screens/cryptainer_storage_management.kv:65
 msgid "List of remote decryption requests"
-msgstr ""
+msgstr "Liste des demandes de déchiffrement distantes"
 
 #: src/wacomponents/screens/cryptainer_storage_management.py:78
 msgid "Container storage is invalid"
@@ -921,7 +919,6 @@ msgid "Please select containers to decrypt"
 msgstr "Veuillez sélectionner les conteneurs à déchiffrer"
 
 #: src/wacomponents/screens/decryption_request_form.kv:34
-#, fuzzy
 msgid "Remote Decryption Request Form page"
 msgstr "Page de Requête de Déchiffrement Distant"
 
@@ -931,15 +928,15 @@ msgstr "Résumé :"
 
 #: src/wacomponents/screens/decryption_request_form.kv:56
 msgid "Please select at least one authenticator: "
-msgstr "Veuillez sélectionner au moins un authentifieur"
+msgstr "Veuillez sélectionner au moins un authentifieur :"
 
 #: src/wacomponents/screens/decryption_request_form.kv:62
 msgid "Please enter the reason for the decryption request: "
-msgstr "Veuillez entrer le motif de la requête de déchiffrement"
+msgstr "Veuillez entrer le motif de la requête de déchiffrement :"
 
 #: src/wacomponents/screens/decryption_request_form.kv:70
 msgid "Enter a description (minimum 10 characters):"
-msgstr "Entrez une description (minimum 10 caractères):"
+msgstr "Entrez une description (minimum 10 caractères) :"
 
 #: src/wacomponents/screens/decryption_request_form.kv:83
 msgid "Send my decryption request"
@@ -968,7 +965,6 @@ msgid "Authenticator: {keystore_uid}"
 msgstr "Authentifieur non existant"
 
 #: src/wacomponents/screens/decryption_request_form.py:165
-#, fuzzy
 msgid "Please select authenticators"
 msgstr "Veuillez sélectionner un dossier d'authentifieur"
 
@@ -1017,7 +1013,7 @@ msgstr ""
 
 #: src/wacomponents/screens/decryption_request_list.kv:29
 msgid "List of Remote Decryption Request"
-msgstr ""
+msgstr "Liste des demandes de déchiffrement distantes"
 
 #: src/wacomponents/screens/decryption_request_list.py:64
 msgid "Error calling method, check the server url"
@@ -1166,7 +1162,6 @@ msgid "Authenticator does not exist"
 msgstr "Authentifieur non existant"
 
 #: src/wacomponents/screens/foreign_keystore_management.py:396
-#, fuzzy
 msgid "Error calling method, keystore already existing"
 msgstr "Erreur à l'appel de la méthode, déjà existant"
 
@@ -1205,14 +1200,12 @@ msgstr ""
 msgid "Abnormal error caught: %s"
 msgstr "Erreur anormale détectée : %s"
 
-#, fuzzy
 #~ msgid "Please select authentication devices to delete"
 #~ msgstr "Veuillez sélectionner les"
 
 #~ msgid "Keystore uid"
 #~ msgstr "Uid du keystore"
 
-#, fuzzy
 #~ msgid "Key n° %s, %s %s, private keys: %s\n"
 #~ msgstr "Clé n° %s, %s: %s, private_key : %s\n"
 
@@ -1269,11 +1262,9 @@ msgstr "Erreur anormale détectée : %s"
 #~ msgid "N° %s: %s"
 #~ msgstr "N° %s: %s"
 
-#, fuzzy
 #~ msgid "Please select authenticators to use for encryption"
 #~ msgstr "Veuillez sélectionner un emplacement d'authentifieur"
 
-#, fuzzy
 #~ msgid "Container management page"
 #~ msgstr "Page de gestion des authentifieurs"
 
