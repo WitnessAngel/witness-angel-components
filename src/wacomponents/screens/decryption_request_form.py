@@ -89,7 +89,7 @@ class DecryptionRequestFormScreen(Screen):
             symkey_decryption_request = {
                 "cryptainer_uid": cryptainer_uid,
                 "cryptainer_metadata": cryptainer_metadata,
-                "symkey_ciphertext": shard_ciphertext,
+                "symkey_decryption_request_data": shard_ciphertext,
                 "keychain_uid": keychain_uid_encryption,
                 "key_algo": key_algo_encryption
             }

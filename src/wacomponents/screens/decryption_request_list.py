@@ -57,7 +57,7 @@ class DecryptionRequestListScreen(Screen):
         revelation_requestor_uid = self._app.get_wa_device_uid()
 
         try:
-            list_decryption_requests = self.gateway_proxy.list_wadevice_revelation_requests(revelation_requestor_uid)
+            list_decryption_requests = self.gateway_proxy.list_requestor_revelation_requests(revelation_requestor_uid)
 
         except(JSONRPCError, OSError):
             display_layout = Factory.WABigInformationBox()
