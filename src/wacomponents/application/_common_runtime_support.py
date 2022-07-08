@@ -1,10 +1,7 @@
 import inspect
-import re
-import subprocess
 from pathlib import Path
 from urllib.parse import urlparse
 
-from kivymd.app import MDApp
 from wacryptolib.jsonrpc_client import JsonRpcProxy, status_slugs_response_error_handler
 from wacryptolib.utilities import load_from_json_file, generate_uuid0, dump_to_json_file
 
@@ -160,6 +157,8 @@ class WaRuntimeSupportMixin:
 
     @staticmethod  # FIXME you still have to remove other duplicates of this method in Screens
     def get_gateway_proxy():
+        """ONLY available for GUI applications, not services!"""
+        from kivymd.app import MDApp  # LAZY IMPORT
         app = MDApp.get_running_app()
         jsonrpc_url = app.get_wagateway_url()
         gateway_proxy = JsonRpcProxy(
