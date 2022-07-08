@@ -1,14 +1,12 @@
 
 
-def generate_and_send_crashdump(exc_info, target_url):
+def generate_and_send_crashdump(exc_info, target_url, client_type):
 
     import os
     import traceback
     import requests
 
-    WACLIENT_TYPE = os.environ.get("WACLIENT_TYPE", "<UNKNOWN>")
-
-    system_info = {"SOFTWARE": "WACLIENT", "WACLIENT_TYPE": WACLIENT_TYPE}
+    system_info = {"SOFTWARE": "WACLIENT", "WACLIENT_TYPE": client_type}
 
     try:
         from jnius import autoclass

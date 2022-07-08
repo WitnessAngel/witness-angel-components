@@ -40,7 +40,6 @@ def launch_main_module_with_crash_handler(main_module: str, client_type: str):
     """
 
     assert client_type in ("SERVICE", "APPLICATION"), client_type
-    os.environ["WACLIENT_TYPE"] = client_type
 
     from wacomponents.application import setup_app_environment
     setup_app_environment(setup_kivy=(client_type=="APPLICATION"))
@@ -61,7 +60,7 @@ def launch_main_module_with_crash_handler(main_module: str, client_type: str):
         exc_info = sys.exc_info()
         target_url = "https://api.witnessangel.com/support/crashdumps/"  # HARDCODED - Can't access common config safely here
         from wacomponents.logging.crashdumps import generate_and_send_crashdump  # Should be mostly safe to import
-        report = generate_and_send_crashdump(exc_info=exc_info, target_url=target_url)
+        report = generate_and_send_crashdump(exc_info=exc_info, target_url=target_url, client_type=client_type)
         print(report)  # Not to stderr for now, since it is hooked by Kivy logging
         raise
 

@@ -14,9 +14,6 @@ IS_ANDROID = (platform == "android")
 IS_IOS = (platform == "ios")
 IS_MOBILE = IS_ANDROID or IS_IOS
 
-# FIXME REMOVE/CHANGE THIS WHOLE WACLIENT_TYPE thing?? setup_app_environment() should take care of that
-WACLIENT_TYPE = os.environ.get("WACLIENT_TYPE", "<UNKNOWN>")   # Typically "SERVICE" or "APPLICATION"
-
 
 def _strip_filepath_scheme(filepath):
     # MacOSX returns file:// URLs (do not use str.removeprefix() else python retrocompatibility issues)
@@ -33,7 +30,7 @@ if IS_ANDROID:
     from android import mActivity
 
     if mActivity:
-        # WE ARE IN MAIN APP (safer than WACLIENT_TYPE)
+        # WE ARE IN MAIN APP
         ANDROID_CONTEXT = mActivity
     else:
         # WE ARE IN SERVICE!!!
