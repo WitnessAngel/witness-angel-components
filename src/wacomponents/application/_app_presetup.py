@@ -85,12 +85,13 @@ def _presetup_app_environment(setup_kivy):
 
         if not IS_MOBILE:
             # Disable multitouch emulation red dots on Desktop, on right/middle clicks
-            Config.set('input', 'mouse', 'mouse,disable_on_activity,disable_on_activity')
+            Config.set('input', 'mouse', 'mouse,disable_multitouch,disable_on_activity')
 
-        # TO EMULATE TOUCHSCREEN:
+        # HACK TO TEMPORARILY EMULATE TOUCHSCREEN ON DESKTOP:
         #Config.set('kivy', 'desktop', 0)
 
-        # Ensure that we don't need to click TWICE to gain focus on Kivy Window and then on widget!
+        # HACK to ensure that we don't need to click TWICE to gain focus on Kivy Window and then on widget!
+        # https://stackoverflow.com/questions/53337630/kivy-on-windows10-how-to-click-a-button-when-kivy-application-does-not-in-focu
         def force_window_focus(*args, **kwargs):
             Window.raise_window()
         Window.bind(on_cursor_enter=force_window_focus)
