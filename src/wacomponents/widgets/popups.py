@@ -18,10 +18,10 @@ def display_info_toast(msg):
     toast(msg)  # Exact signature is different on Android and Desktop!!
 
 
-def display_info_snackbar(msg, duration=3.5):
+def display_info_snackbar(message, duration=3.5):
     """Full-width temporary bottom message bar"""
     Snackbar(
-        text=msg,
+        text=message,
         font_size="12sp",
         duration=duration,
         #button_text="BUTTON",
@@ -35,7 +35,7 @@ def display_snackbar_on_error(f, *args, **kwargs):
         return f(*args, **kwargs)
     except Exception as exc:
         message = tr._("Abnormal error caught: %s") % exc.__class__.__name__
-        displayer = lambda dt: Snackbar(text=message).open()
+        displayer = lambda dt: display_info_snackbar(message=message)
         Clock.schedule_once(displayer, 0)  # Scheduled so that other threads can display popups too
         raise  # Let it flow, other decorator shall intercept it
 

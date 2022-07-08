@@ -12,10 +12,10 @@ from kivymd.uix.screen import Screen
 from wacryptolib.jsonrpc_client import JsonRpcProxy, status_slugs_response_error_handler
 from wacryptolib.exceptions import ExistenceError
 
-from wacomponents.widgets.layout_components import GrowingAccordion
+from wacomponents.widgets.layout_components import GrowingAccordion, build_fallback_information_box
 from wacomponents.i18n import tr
 from wacomponents.utilities import shorten_uid
-from wacomponents.widgets.popups import dialog_with_close_button
+from wacomponents.widgets.popups import dialog_with_close_button, display_info_snackbar
 
 Builder.load_file(str(Path(__file__).parent / 'decryption_request_list.kv'))
 
@@ -57,18 +57,16 @@ class DecryptionRequestListScreen(Screen):
         revelation_requestor_uid = self._app.get_wa_device_uid()
 
         try:
-            list_decryption_requests = self.gateway_proxy.list_requestor_revelation_requests(revelation_requestor_uid)
+            list_decryption_requests = self.gateway_proxy.list_requestor_revelation_requests(
+                revelation_requestor_uid=revelation_requestor_uid)  # FIXME RENAME list_decryption_requests
 
         except(JSONRPCError, OSError):
-            display_layout = Factory.WABigInformationBox()
-            display_layout.ids.inner_label.text = tr._("Error calling method, check the server url")  # FIXME simplify this
-            self.ids.list_decryption_request_scrollview.add_widget(display_layout)
-            return
+            display_info_snackbar(tr._("Network error, please check the gateway url"))
+            list_decryption_requests = []
 
-        except ExistenceError:
-            display_layout = Factory.WABigInformationBox()
-            display_layout.ids.inner_label.text = tr._("No decryption request")  # FIXME simplify this
-            self.ids.list_decryption_request_scrollview.add_widget(display_layout)
+        if not list_decryption_requests:  # FIXME RENAME ALL decryption requests!!!!
+            fallback_info_box = build_fallback_information_box(tr._("No revelation requests found"))
+            self.ids.list_decryption_request_scrollview.add_widget(fallback_info_box)
             return
 
         decryption_requests_per_cryptainer = self._list_decryption_request_reformatted(list_decryption_requests)

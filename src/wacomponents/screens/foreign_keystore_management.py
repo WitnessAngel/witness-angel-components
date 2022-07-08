@@ -15,6 +15,7 @@ from kivymd.uix.screen import Screen
 from wacomponents.i18n import tr
 from wacomponents.logging.handlers import safe_catch_unhandled_exception
 from wacomponents.utilities import shorten_uid
+from wacomponents.widgets.layout_components import build_fallback_information_box
 from wacomponents.widgets.popups import display_info_toast, close_current_dialog, dialog_with_close_button, safe_catch_unhandled_exception_and_display_popup
 from wacryptolib.authdevice import list_available_authdevices
 from wacryptolib.authenticator import is_authenticator_initialized
@@ -262,10 +263,8 @@ class AuthdeviceStoreScreen(Screen):
         # Display_layout = MDBoxLayout(orientation="horizontal", padding=[140, 0])
         # Display_layout.add_widget(devices_display)
 
-        Display_layout = Factory.WABigInformationBox()
-        Display_layout.ids.inner_label.text = tr._("No imported authentication device found")
-        keys_page_ids = self.ids
-        keys_page_ids.imported_authenticator_list.add_widget(Display_layout)
+        fallback_info_box = build_fallback_information_box(tr._("No imported authentication device found"))
+        self.ids.imported_authenticator_list.add_widget(fallback_info_box)
 
     def on_keystore_checkbox_click(self, keystore_uid: uuid.UUID, is_selected: bool):
         self._change_authenticator_selection_status(keystore_uids=[keystore_uid], is_selected=is_selected, )
@@ -369,9 +368,10 @@ class AuthdeviceStoreScreen(Screen):
 
         keystore_uid_str = keystore_uid_str.strip().lower()
 
-        close_current_dialog()
+        close_current_dialog()  # FIXME put this in callback handler, and other occurrences too!
 
         gateway_proxy = self._app.get_gateway_proxy()
+
         try:
             keystore_uid = uuid.UUID(keystore_uid_str)
 
@@ -388,28 +388,22 @@ class AuthdeviceStoreScreen(Screen):
             details = tr._("Authenticator does not exist")
 
         else:
-            try:
-                self.filesystem_keystore_pool.import_foreign_keystore_from_keystore_tree(keystore_tree)
+            self.filesystem_keystore_pool.import_foreign_keystore_from_keystore_tree(keystore_tree)
 
-            except KeyAlreadyExists:
-                result = tr._("Failure")
-                details = tr._("Error calling method, keystore already existing")  # FIXME wrong message
+            msg = "An authentication device(s) updated"
 
-            else:
-                msg = "An authentication device(s) updated"
+            # Autoselect freshly imported keys
 
-                # Autoselect freshly imported keys
+            new_keystore_uids = [keystore_tree["keystore_uid"]]
+            self._change_authenticator_selection_status(keystore_uids=new_keystore_uids, is_selected=True)
 
-                new_keystore_uids = [keystore_tree["keystore_uid"]]
-                self._change_authenticator_selection_status(keystore_uids=new_keystore_uids, is_selected=True)
+            display_info_toast(msg)
 
-                display_info_toast(msg)
+            # update the display of authentication_device saved in the local folder .keys_storage_ward
+            self.list_foreign_keystores(display_toast=False)
 
-                # update the display of authentication_device saved in the local folder .keys_storage_ward
-                self.list_foreign_keystores(display_toast=False)
-
-                result = tr._("Success")
-                details = tr._("Authenticator has been imported successfully")
+            result = tr._("Success")
+            details = tr._("Authenticator has been imported successfully")
 
         dialog_with_close_button(
             title=tr._("Checkup result: %s") % result,

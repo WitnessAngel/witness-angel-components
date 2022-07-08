@@ -7,7 +7,7 @@ from kivy.uix.settings import SettingItem, SettingString
 from kivy.uix.textinput import TextInput
 from kivymd.uix.menu import MDDropdownMenu
 from kivy.uix.accordion import Accordion
-
+from kivy.factory import Factory
 from wacomponents.i18n import tr
 
 
@@ -33,6 +33,12 @@ def load_layout_helper_widgets():
 #    readonly: True
 #    padding: 6, 6
 #    size_hint: (1, None)
+
+
+def build_fallback_information_box(message):
+    display_layout = Factory.WABigInformationBox()
+    display_layout.message = message
+    return display_layout
 
 
 class SettingStringTruncated(SettingItem):

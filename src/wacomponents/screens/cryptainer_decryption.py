@@ -10,6 +10,7 @@ from kivymd.uix.snackbar import Snackbar
 from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
 from wacomponents.utilities import shorten_uid
+from wacomponents.widgets.layout_components import build_fallback_information_box
 from wacomponents.widgets.popups import dialog_with_close_button, close_current_dialog, \
     safe_catch_unhandled_exception_and_display_popup, display_info_toast
 from wacryptolib.cryptainer import gather_trustee_dependencies, get_trustee_id, \
@@ -38,9 +39,8 @@ class CryptainerDecryptionScreen(Screen):
         self.ids.selected_cryptainer_table.clear_widgets()
 
         if not self.selected_cryptainer_names:
-            display_layout = Factory.WABigInformationBox()
-            display_layout.ids.inner_label.text = tr._("No containers selected")
-            self.ids.selected_cryptainer_table.add_widget(display_layout)
+            fallback_info_box = build_fallback_information_box(tr._("No containers selected"))
+            self.ids.selected_cryptainer_table.add_widget(fallback_info_box)
             return
 
         for index, cryptainer_name in enumerate(reversed(self.selected_cryptainer_names), start=1):

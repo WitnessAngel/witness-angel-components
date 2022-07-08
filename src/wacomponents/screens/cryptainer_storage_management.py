@@ -15,6 +15,7 @@ from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
 from wacomponents.logging.handlers import safe_catch_unhandled_exception
 from wacomponents.utilities import shorten_uid
+from wacomponents.widgets.layout_components import build_fallback_information_box
 from wacomponents.widgets.popups import close_current_dialog, dialog_with_close_button, display_info_toast, \
     safe_catch_unhandled_exception_and_display_popup
 from wacryptolib.cryptainer import gather_trustee_dependencies
@@ -48,7 +49,7 @@ class CryptainerStoreScreen(Screen):
     def _get_selected_cryptainer_names(self):
         cryptainer_names = []
         for cryptainer_entry in self.ids.cryptainer_table.children:
-            if getattr(cryptainer_entry, "selected", None):  # Beware of WABigInformationBox
+            if getattr(cryptainer_entry, "selected", None):  # Beware of possible WABigInformationBox
                 assert cryptainer_entry.unique_identifier, cryptainer_entry.unique_identifier
                 cryptainer_names.append(cryptainer_entry.unique_identifier)
         # print(">>>>> extract_selected_cryptainer_names", container_names)
@@ -74,18 +75,16 @@ class CryptainerStoreScreen(Screen):
 
         # print(">>>>>>>>>>>>>self.filesystem_cryptainer_storage, ", self.filesystem_cryptainer_storage)
         if self.filesystem_cryptainer_storage is None:
-            display_layout = Factory.WABigInformationBox()
-            display_layout.ids.inner_label.text = tr._("Container storage is invalid")  # FIXME simplify this
-            cryptainers_page_ids.cryptainer_table.add_widget(display_layout)
+            fallback_info_box = build_fallback_information_box(tr._("Container storage is invalid"))
+            cryptainers_page_ids.cryptainer_table.add_widget(fallback_info_box)
             return
 
         sorted_cryptainers = list(enumerate(self.filesystem_cryptainer_storage.list_cryptainer_names(as_sorted_list=True), start=1))
         self.cryptainer_names_to_be_loaded = sorted_cryptainers  # They'll be loaded from the end, that's what we want
 
         if not self.cryptainer_names_to_be_loaded:
-            display_layout = Factory.WABigInformationBox()
-            display_layout.ids.inner_label.text = tr._("No containers found")
-            cryptainers_page_ids.cryptainer_table.add_widget(display_layout)
+            fallback_info_box = build_fallback_information_box(tr._("No containers found"))
+            cryptainers_page_ids.cryptainer_table.add_widget(fallback_info_box)
             return
 
         self.check_box_cryptainer_uuid_dict = {}

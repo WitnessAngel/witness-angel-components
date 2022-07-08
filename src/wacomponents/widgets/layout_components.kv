@@ -119,11 +119,13 @@
     font_size: "18sp"
 
 <WABigInformationBox@MDBoxLayout>:
+    message: ""
     padding: [140, 0]
     MDLabel:
         id: inner_label
         halign: "center"
         font_size: "20sp"
+        text: root.message
 
 <WATextInput@TextInput>:
     size_hint: 1, 1

@@ -11,7 +11,7 @@ from kivymd.uix.button import MDFlatButton
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.screen import Screen
 from kivymd.uix.tab import MDTabsBase
-from wacomponents.widgets.layout_components import GrowingAccordion
+from wacomponents.widgets.layout_components import GrowingAccordion, build_fallback_information_box
 from wacryptolib.cipher import encrypt_bytestring
 from wacryptolib.exceptions import KeyLoadingError, KeyDoesNotExist, AuthenticatorDoesNotExist, \
     AuthenticationError, ExistenceError
@@ -170,9 +170,8 @@ class RemoteDecryptionRequestScreen(Screen):
         for status, decryption_requests in list_revelation_requests_per_status.items():
 
             if not decryption_requests:
-                display_layout = Factory.WABigInformationBox()
-                display_layout.ids.inner_label.text = tr._("No decryption request")
-                tab_per_status[status].add_widget(display_layout)
+                fallback_info_box = build_fallback_information_box(tr._("No decryption request"))
+                tab_per_status[status].add_widget(fallback_info_box)
                 continue
 
             scroll = Factory.WAVerticalScrollView()
@@ -219,10 +218,7 @@ class RemoteDecryptionRequestScreen(Screen):
             display_info_snackbar(tr._("The keystore secret of authenticator is not valid"))
             return
 
-        except ExistenceError:
-            display_info_snackbar(tr._("No revelation request for authenticatior %s") % keystore_uid)
-            return
-
+        # FIXME ADD PLACEHOLDER WHEN list_authenticator_revelation_requests is empty
 
 
         list_revelation_requests_per_status = self.sort_list_revelation_request_per_status(
