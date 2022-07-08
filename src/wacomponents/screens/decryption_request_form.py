@@ -200,11 +200,11 @@ class DecryptionRequestFormScreen(Screen):
 
                 except AuthenticatorDoesNotExist:
                     message = tr._(
-                        "Authenticator %s does not exists in sql storage" % shorten_uid(trustee_data["keystore_uid"]))
+                        "Authenticator %s does not exist in sql storage" % shorten_uid(trustee_data["keystore_uid"]))
                     error.append(message)
 
                 except KeyDoesNotExist as exc:
-                    message = tr._("Public key needed does not exists in key storage in %s authenticator" % shorten_uid(
+                    message = tr._("Public key needed does not exist in key storage in %s authenticator" % shorten_uid(
                         trustee_data["keystore_uid"]))
                     error.append(message)
 
