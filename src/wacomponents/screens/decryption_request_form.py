@@ -167,10 +167,9 @@ class DecryptionRequestFormScreen(Screen):
             return
 
         # Description not empty (description.strip must have at least 10 characters)
-        description = self.ids.description.text.strip()
-        if len(description) < DESCRIPTION_MIN_LENGTH:
-            msg = tr._("Description must be at least %s characters long.") % DESCRIPTION_MIN_LENGTH
-            display_info_toast(msg)
+        request_description = self.ids.request_description.text.strip()
+        if len(request_description) < DESCRIPTION_MIN_LENGTH:
+            display_info_toast(tr._("Description must be at least %s characters long.") % DESCRIPTION_MIN_LENGTH)
             return
 
         # Symkeys decryptable per trustee for containers selected
@@ -189,7 +188,7 @@ class DecryptionRequestFormScreen(Screen):
                 try:
                     gateway_proxy.submit_revelation_request(authenticator_keystore_uid=trustee_data["keystore_uid"],
                                                             revelation_requestor_uid=revelation_requestor_uid,
-                                                            revelation_request_description=description,
+                                                            revelation_request_description=request_description,
                                                             revelation_response_public_key=response_public_key,
                                                             revelation_response_keychain_uid=response_keychain_uid,
                                                             revelation_response_key_algo=response_key_algo,

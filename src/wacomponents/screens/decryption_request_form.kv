@@ -31,7 +31,7 @@
 
             WAElevatedBoxLayout:
                 MDLabel:
-                    text: tr._("Remote Decryption Request Form page")
+                    text: tr._("Request remote authorization")
                     padding_x: "10dp"
 
             WAVerticalScrollView:
@@ -53,13 +53,13 @@
                         text: tr._("No information available")
 
                     WALabel:
-                        text: tr._("Please select at least one authenticator: ")
+                        text: tr._("Please select authenticator(s) to query")
 
                     MDList:
                         id: authenticator_checklist
 
                     WALabel:
-                        text: tr._("Please enter the reason for the decryption request: ")
+                        text: tr._("Please justify the authorization request: ")
 
                     BoxLayout:
                         size_hint_y: None
@@ -70,7 +70,7 @@
                             hint_text: tr._("Enter a description (minimum 10 characters):")
                             mode: "rectangle"
                             multiline: True
-                            id: description
+                            id: request_description
 
                     RelativeLayout:
                         size_hint: 1, None

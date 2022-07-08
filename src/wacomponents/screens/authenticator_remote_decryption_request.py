@@ -70,16 +70,16 @@ class RemoteDecryptionRequestScreen(Screen):
 
         _displayed_values = dict(
             target_public_authenticator=decryption_request["target_public_authenticator"]["keystore_owner"],
-            revelation_requestor_uid=decryption_request["revelation_requestor_uid"],
-            description=decryption_request["revelation_request_description"],
+            requestor_uid=decryption_request["revelation_requestor_uid"],
+            request_description=decryption_request["revelation_request_description"],
             response_keychain_uid=shorten_uid(decryption_request["revelation_response_keychain_uid"]),
             response_key_algo=decryption_request["revelation_response_key_algo"]
         )
 
         decryption_request_summary_text = dedent(tr._("""\
                                     Target Public Authenticator: {target_public_authenticator}
-                                    Revelation Requestor ID: {revelation_requestor_uid}
-                                    Description: {description}
+                                    Revelation Requestor ID: {requestor_uid}
+                                    Description: {request_description}
                                     Response public key: {response_keychain_uid}({response_key_algo})
                                 """)).format(**_displayed_values)
 

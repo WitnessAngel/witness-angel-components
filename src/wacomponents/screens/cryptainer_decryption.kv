@@ -38,7 +38,7 @@
             WAElevatedBoxLayout:
 
                 MDLabel:
-                    text: tr._("Container decryption page")
+                    text: tr._("Prepare container decryption")
                     padding_x: "10dp"
 
             WAVerticalScrollView:
@@ -56,7 +56,7 @@
                     size_hint_x: None
 
                 MDLabel:
-                    text: tr._("Summary of concerned key guardians")
+                    text: tr._("Summary of related key guardians")
 
             WAVerticalScrollView:
 
@@ -69,21 +69,20 @@
 
                 WAOperationButton:
                     id: add_passphrase_btn
-                    icon: "delete-alert-outline"
+                    icon: "key-arrow-right"
                     text: tr._("Add a passphrase")
-                    ##disabled: root.found_trustees_lacking_passphrase == 0  FIXME NEED REAL ALGO
                     on_press: root.open_dialog_check_passphrase()
 
                 WAOperationButton:
                     id: container_decrypt_btn
                     icon: "eye-circle-outline"
-                    text: tr._("Decrypt")
+                    text: tr._("Attempt decryption")
                     on_press: root.decipher_cryptainers()
 
                 WAOperationButton:
                     id: remote_decryption_request_btn
-                    icon: "arrow-all"  # TODO Change this icon
-                    text: tr._("Remote decryption request")  # FIXME plural?
-                    on_press: root.launch_remote_decryption_request()  # FIXME name not clear
+                    icon: "remote"
+                    text: tr._("Request remote authorization")
+                    on_press: root.launch_remote_decryption_request()
 
 

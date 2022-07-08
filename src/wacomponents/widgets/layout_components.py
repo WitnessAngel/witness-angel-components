@@ -10,6 +10,7 @@ from kivy.uix.accordion import Accordion
 from kivy.factory import Factory
 from wacomponents.i18n import tr
 
+# FIXME RENAME THIS MODULE AS MISC_WIDGETS??
 
 def activate_widget_debug_outline():
     """Create a dotted outline around widgets, to help layout setup."""
