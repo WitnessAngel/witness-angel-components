@@ -13,7 +13,7 @@ from kivymd.uix.screen import Screen
 from kivymd.uix.tab import MDTabsBase
 from wacomponents.widgets.layout_components import GrowingAccordion, build_fallback_information_box
 from wacryptolib.cipher import encrypt_bytestring
-from wacryptolib.exceptions import KeyLoadingError, KeyDoesNotExist, AuthenticatorDoesNotExist, \
+from wacryptolib.exceptions import KeyLoadingError, KeyDoesNotExist, KeystoreDoesNotExist, \
     AuthenticationError, ExistenceError
 from wacryptolib.keygen import load_asymmetric_key_from_pem_bytestring
 from wacryptolib.keystore import load_keystore_metadata, FilesystemKeystore
@@ -80,7 +80,7 @@ class RemoteDecryptionRequestScreen(Screen):
                                     Target Public Authenticator: {target_public_authenticator}
                                     Revelation Requestor ID: {requestor_uid}
                                     Description: {request_description}
-                                    Response public key: {response_keychain_uid}({response_key_algo})
+                                    Response public key: {response_keychain_uid}({response_key_algo})\
                                 """)).format(**_displayed_values)
 
         decryptionRequestEntry.decryption_request_summary.text = decryption_request_summary_text
@@ -209,7 +209,7 @@ class RemoteDecryptionRequestScreen(Screen):
                 authenticator_keystore_secret=authenticator_metadata["keystore_secret"],
                 authenticator_keystore_uid=keystore_uid)
 
-        except AuthenticatorDoesNotExist:  # FIXME why would this pop out ? Why not just an empty list ???
+        except KeystoreDoesNotExist:  # FIXME why would this pop out ? Why not just an empty list ???
             # Fixme Because without this popup, we do not understand why the empty screen is empty
             display_info_snackbar(tr._("Authenticator %s does not exist on remote server") % keystore_uid)
             return
@@ -234,6 +234,8 @@ class RemoteDecryptionRequestScreen(Screen):
         filesystem_keystore = FilesystemKeystore(self.selected_authenticator_dir)
         trustee_api = TrusteeApi(keystore=filesystem_keystore)
         symkey_decryption_results = []
+
+        # FIXME check passphrase first and report error, instead of leaving "abnormal error" flowing to safe_catch_unhandled_exception_and_display_popup
 
         for symkey_decryption in decryption_request["symkey_decryption_requests"]:
             decryption_status = SymkeyDecryptionStatus.DECRYPTED

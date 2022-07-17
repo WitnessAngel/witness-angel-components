@@ -12,7 +12,7 @@ from wacryptolib.cryptainer import SHARED_SECRET_ALGO_MARKER, get_trustee_id
 from wacryptolib.jsonrpc_client import JsonRpcProxy, status_slugs_response_error_handler
 from wacryptolib.keystore import generate_keypair_for_storage, FilesystemKeystore
 from wacryptolib.utilities import load_from_json_bytes, generate_uuid0, dump_to_json_file, load_from_json_file
-from wacryptolib.exceptions import KeystoreDoesNotExist, KeyDoesNotExist, AuthenticatorDoesNotExist
+from wacryptolib.exceptions import KeystoreDoesNotExist, KeyDoesNotExist, KeystoreDoesNotExist
 
 from wacomponents.default_settings import INTERNAL_APP_ROOT
 from wacomponents.i18n import tr
@@ -197,7 +197,7 @@ class DecryptionRequestFormScreen(Screen):
                     # stocker les infos utiles dans operation_report
                     successful_request_count += 1
 
-                except AuthenticatorDoesNotExist:
+                except KeystoreDoesNotExist:
                     message = tr._(
                         "Authenticator %s does not exist in sql storage" % shorten_uid(trustee_data["keystore_uid"]))
                     error.append(message)
