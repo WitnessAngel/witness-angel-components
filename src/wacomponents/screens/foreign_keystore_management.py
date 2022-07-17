@@ -26,7 +26,7 @@ from wacryptolib.keystore import FilesystemKeystore, KEYSTORE_FORMAT, validate_k
 Builder.load_file(str(Path(__file__).parent / 'foreign_keystore_management.kv'))
 
 
-class AuthdeviceStoreScreen(Screen):
+class ForeignKeystoreManagementScreen(Screen):
     filesystem_keystore_pool = ObjectProperty(None)
 
     def __init__(self, *args, **kwargs):

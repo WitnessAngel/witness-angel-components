@@ -19,13 +19,13 @@ from wacomponents.i18n import tr
 from wacomponents.utilities import shorten_uid
 from wacomponents.widgets.popups import display_info_toast, dialog_with_close_button, safe_catch_unhandled_exception_and_display_popup
 
-Builder.load_file(str(Path(__file__).parent / 'decryption_request_form.kv'))
+Builder.load_file(str(Path(__file__).parent / 'claimant_revelation_request_creation_form.kv'))
 
 DESCRIPTION_MIN_LENGTH = 10
 
 # FIXME RENAME THIS FILE AND KV FILE to decryption_request_creation_form.py (and later revelation_request_creation_form.py)
 
-class DecryptionRequestFormScreen(Screen):
+class ClaimantRevelationRequestCreationForm(Screen):
     selected_cryptainer_names = ObjectProperty(None, allownone=True)
     filesystem_keystore_pool = ObjectProperty(None)
     trustee_data = ObjectProperty(None, allownone=True)
@@ -47,7 +47,7 @@ class DecryptionRequestFormScreen(Screen):
             cryptainers.append(cryptainer)
         return cryptainers
 
-    def display_decryption_request_form(self):
+    def display_claimant_revelation_request_creation_form(self):
         self.ids.authenticator_checklist.clear_widgets()
 
         # Display summary

@@ -54,7 +54,7 @@ class FolderKeyStoreListItem(Factory.ThinTwoLineAvatarIconListItem):
         Clock.schedule_once(force_reset, timeout=1)
     '''
 
-class AuthenticatorSelectorScreen(LanguageSwitcherScreenMixin, Screen):
+class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
 
     AUTHENTICATOR_ARCHIVE_FORMAT = "zip"
 

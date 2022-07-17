@@ -28,7 +28,7 @@ GENERATED_KEYS_COUNT = 7
 PASSPHRASE_MIN_LENGTH = 20
 
 
-class AuthenticatorCreationScreen(Screen):
+class AuthenticatorCreationFormScreen(Screen):
 
     selected_authenticator_dir = ObjectProperty(None, allownone=True)
 

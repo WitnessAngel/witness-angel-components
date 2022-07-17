@@ -27,7 +27,7 @@ class PassphrasesDialogContent(BoxLayout):
     pass
 
 
-class CryptainerStoreScreen(Screen):
+class CryptainerStorageManagementScreen(Screen):
     #: The container storage managed by this Screen, might be None if unset
     filesystem_cryptainer_storage = ObjectProperty(None, allownone=True)
     cryptainer_names_to_be_loaded = ObjectProperty(None, allownone=True)
@@ -37,7 +37,7 @@ class CryptainerStoreScreen(Screen):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # print("CREATED CryptainerStoreScreen")
+        # print("CREATED CryptainerStorageManagementScreen")
 
     def cancel_cryptainer_loading(self, *args):
         if self.cryptainer_loading_schedule:
@@ -337,7 +337,7 @@ class CryptainerStoreScreen(Screen):
         # print(">>>>>> selected_cryptainer_names in _launch_cryptainer_decryption()", selected_cryptainer_names)
         cryptainer_decryption_screen_name = "CryptainerDecryption"
         cryptainer_decryption_screen = self.manager.get_screen(cryptainer_decryption_screen_name)
-        cryptainer_decryption_screen.selected_cryptainer_names = selected_cryptainer_names
+        cryptainer_decryption_screen.selected_cryptainer_names = selected_cryptainer_names  #FIXME change the system of propagation of this ?
         self.manager.current = cryptainer_decryption_screen_name
 
     @safe_catch_unhandled_exception

@@ -10,7 +10,7 @@ Builder.load_file(str(Path(__file__).parent / 'recorder_homepage.kv'))
 
 
 
-class LauncherWithImagePreviewScreen(LanguageSwitcherScreenMixin, Screen):
+class RecorderHomepageScreen(LanguageSwitcherScreenMixin, Screen):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

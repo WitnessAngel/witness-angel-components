@@ -17,12 +17,12 @@ from wacomponents.i18n import tr
 from wacomponents.utilities import shorten_uid
 from wacomponents.widgets.popups import dialog_with_close_button, display_info_snackbar
 
-Builder.load_file(str(Path(__file__).parent / 'decryption_request_list.kv'))
+Builder.load_file(str(Path(__file__).parent / 'claimant_revelation_request_management.kv'))
 
 
 # FIXME RENAME THIS FILE AND KV FILE to decryption_request_visualization.py (and later revelation_request_visualization.py)
 
-class DecryptionRequestListScreen(Screen):
+class ClaimantRevelationRequestManagementScreen(Screen):
 
     def __init__(self, *args, **kwargs):
         self._app = MDApp.get_running_app()

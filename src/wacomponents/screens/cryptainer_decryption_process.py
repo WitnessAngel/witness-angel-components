@@ -19,12 +19,12 @@ from wacryptolib.exceptions import KeystoreDoesNotExist, KeyDoesNotExist, KeyLoa
 from wacryptolib.keygen import load_asymmetric_key_from_pem_bytestring
 from wacryptolib.keystore import load_keystore_metadata
 
-Builder.load_file(str(Path(__file__).parent / 'cryptainer_decryption.kv'))
+Builder.load_file(str(Path(__file__).parent / 'cryptainer_decryption_process.kv'))
 
 from kivy.logger import Logger as logger
 
 
-class CryptainerDecryptionScreen(Screen):
+class CryptainerDecryptionProcessScreen(Screen):
     selected_cryptainer_names = ObjectProperty(None, allownone=True)
     trustee_data = ObjectProperty(None, allownone=True)  # FIXME name not clea, i.e. "trustee_dependencies_for_encryption" ?
     filesystem_cryptainer_storage = ObjectProperty(None, allownone=True)

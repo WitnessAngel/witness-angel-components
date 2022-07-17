@@ -16,10 +16,10 @@ from wacomponents.widgets.popups import help_text_popup, display_info_toast, saf
 from wacryptolib.exceptions import ExistenceError
 from wacryptolib.keystore import load_keystore_metadata, ReadonlyFilesystemKeystore
 
-Builder.load_file(str(Path(__file__).parent / 'authenticator_synchronization_form.kv'))
+Builder.load_file(str(Path(__file__).parent / 'authenticator_publication_form.kv'))
 
 
-class AuthenticatorSynchronizationScreen(Screen):
+class AuthenticatorPublicationFormScreen(Screen):
 
     selected_authenticator_dir = ObjectProperty(None, allownone=True)
 

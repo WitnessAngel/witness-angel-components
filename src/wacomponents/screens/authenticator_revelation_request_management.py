@@ -25,7 +25,7 @@ from wacomponents.utilities import shorten_uid
 from wacomponents.widgets.popups import dialog_with_close_button, close_current_dialog, display_info_snackbar, \
     help_text_popup, safe_catch_unhandled_exception_and_display_popup
 
-Builder.load_file(str(Path(__file__).parent / 'authenticator_remote_decryption_request.kv'))
+Builder.load_file(str(Path(__file__).parent / 'authenticator_revelation_request_management.kv'))
 
 
 # FIXME RENAME THIS FILE AND KV FILE to authenticator_decryption_request_management.py
@@ -49,7 +49,7 @@ class SymkeyDecryptionStatus:  # FIXME name this enum more precisely, unless we 
     PENDING = 'PENDING'
 
 
-class RemoteDecryptionRequestScreen(Screen):
+class AuthenticatorRevelationRequestManagementScreen(Screen):
     index = 0
     selected_authenticator_dir = ObjectProperty(None, allownone=True)
 

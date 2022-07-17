@@ -40,7 +40,7 @@
         hint_text: tr._("Passphrase")
 
 
-<AuthenticatorSelectorScreen>:
+<AuthenticatorManagementScreen>:
 
     on_pre_enter: root.refresh_authenticator_list()
 
@@ -128,4 +128,4 @@
                     icon: "lock-open-outline"
                     text: tr._("Manage authorization requests")
                     size_hint_x: 1
-                    on_press: root.manager.current = "authenticator_remote_decryption_requests_screen"
+                    on_press: root.manager.current = "authenticator_revelation_request_management"
