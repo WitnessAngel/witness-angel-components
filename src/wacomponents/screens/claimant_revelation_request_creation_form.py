@@ -25,7 +25,7 @@ DESCRIPTION_MIN_LENGTH = 10
 
 # FIXME RENAME THIS FILE AND KV FILE to decryption_request_creation_form.py (and later revelation_request_creation_form.py)
 
-class ClaimantRevelationRequestCreationForm(Screen):
+class ClaimantRevelationRequestCreationFormScreen(Screen):
     selected_cryptainer_names = ObjectProperty(None, allownone=True)
     filesystem_keystore_pool = ObjectProperty(None)
     trustee_data = ObjectProperty(None, allownone=True)
@@ -40,11 +40,11 @@ class ClaimantRevelationRequestCreationForm(Screen):
     def go_to_management_screen(self):
         self.manager.current = "CryptainerManagement"
 
-    def _get_cryptainers_with_cryptainer_names(self, cryptainer_names):
+    def _get_cryptainers_with_cryptainer_names(self, cryptainer_names):  # FIXME wrong naming, not "with", returns PAIRS
         cryptainers = []
         for cryptainer_name in cryptainer_names:
             cryptainer = self.filesystem_cryptainer_storage.load_cryptainer_from_storage(cryptainer_name)
-            cryptainers.append(cryptainer)
+            cryptainers.append((cryptainer_name, cryptainer))
         return cryptainers
 
     def display_claimant_revelation_request_creation_form(self):
@@ -78,27 +78,31 @@ class ClaimantRevelationRequestCreationForm(Screen):
             self.ids.authenticator_checklist.add_widget(authenticator_entry)
 
     @staticmethod
-    def gather_decryptable_symkeys(cryptainers: Sequence) -> dict:
+    def gather_decryptable_symkeys(cryptainers_with_names: Sequence) -> dict:  #FIXME update this name
 
         decryptable_symkeys_per_trustee = {}
 
-        def _add_decryptable_symkeys_for_trustee(key_cipher_trustee, shard_ciphertext, keychain_uid_encryption,
-                                                 key_algo_encryption, cryptainer_uid, cryptainer_metadata):
+        def _add_decryptable_symkeys_for_trustee(key_cipher_trustee, shard_ciphertext, keychain_uid_for_encryption,
+                                                 key_algo_for_encryption, cryptainer_name, cryptainer_uid, cryptainer_metadata):
 
             trustee_id = get_trustee_id(trustee_conf=key_cipher_trustee)
             symkey_decryption_request = {
+                "cryptainer_name": str(cryptainer_name),  # No Pathlib object
                 "cryptainer_uid": cryptainer_uid,
                 "cryptainer_metadata": cryptainer_metadata,
                 "symkey_decryption_request_data": shard_ciphertext,
-                "keychain_uid": keychain_uid_encryption,
-                "key_algo": key_algo_encryption
+                "keychain_uid": keychain_uid_for_encryption,
+                "key_algo": key_algo_for_encryption
             }
             _trustee_data, _decryptable_symkeys = decryptable_symkeys_per_trustee.setdefault(trustee_id,
                                                                                              (key_cipher_trustee, []))
             _decryptable_symkeys.append(symkey_decryption_request)
 
-        def _gather_decryptable_symkeys(key_cipher_layers: list, shard_ciphertexts, cryptainer_uid,
+        def _gather_decryptable_symkeys(cryptainer_name, key_cipher_layers: list, shard_ciphertexts, cryptainer_uid,
                                         cryptainer_metadata):
+
+            # FIXME dangerous to have shard_ciphertexts as plural or singular depending on cases
+
             #TODO test with cryptoconf where symkey is protected by 2 authenticators one of the other
             last_key_cipher_layer = key_cipher_layers[-1]  # FIXME BIG PROBLEM - why only the last layer ????
 
@@ -106,20 +110,22 @@ class ClaimantRevelationRequestCreationForm(Screen):
                 key_shared_secret_shards = last_key_cipher_layer["key_shared_secret_shards"]
 
                 for shard_ciphertext, trustee in zip(shard_ciphertexts, key_shared_secret_shards):
-                    _gather_decryptable_symkeys(trustee["key_cipher_layers"], shard_ciphertext, cryptainer_uid,
-                                                cryptainer_metadata)
+                    _gather_decryptable_symkeys(cryptainer_name, key_cipher_layers=trustee["key_cipher_layers"],
+                                                shard_ciphertexts=shard_ciphertext,
+                                                cryptainer_uid=cryptainer_uid,
+                                                cryptainer_metadata=cryptainer_metadata)
             else:
 
-                keychain_uid_encryption = last_key_cipher_layer.get("keychain_uid") or keychain_uid
-                key_algo_encryption = last_key_cipher_layer["key_cipher_algo"]
+                keychain_uid_for_encryption = last_key_cipher_layer.get("keychain_uid") or keychain_uid
+                key_algo_for_encryption = last_key_cipher_layer["key_cipher_algo"]
                 key_cipher_trustee = last_key_cipher_layer["key_cipher_trustee"]
-                shard_ciphertext = shard_ciphertexts
+                # FIXME shard_ciphertexts is single here actually
+                _add_decryptable_symkeys_for_trustee(key_cipher_trustee=key_cipher_trustee, shard_ciphertext=shard_ciphertexts,
+                                                     keychain_uid_for_encryption=keychain_uid_for_encryption,
+                                                     key_algo_for_encryption=key_algo_for_encryption, cryptainer_name=cryptainer_name,
+                                                     cryptainer_uid=cryptainer_uid, cryptainer_metadata=cryptainer_metadata)
 
-                _add_decryptable_symkeys_for_trustee(key_cipher_trustee, shard_ciphertext, keychain_uid_encryption,
-                                                     key_algo_encryption,
-                                                     cryptainer_uid, cryptainer_metadata)
-
-        for cryptainer in cryptainers:
+        for (cryptainer_name, cryptainer) in cryptainers_with_names:
             keychain_uid = cryptainer["keychain_uid"]
             cryptainer_uid = cryptainer["cryptainer_uid"]
             cryptainer_metadata = cryptainer["cryptainer_metadata"]
@@ -128,7 +134,7 @@ class ClaimantRevelationRequestCreationForm(Screen):
                 key_ciphertext_shards = load_from_json_bytes(payload_cipher_layer.get("key_ciphertext"))
                 shard_ciphertexts = key_ciphertext_shards["shard_ciphertexts"]
 
-                _gather_decryptable_symkeys(payload_cipher_layer["key_cipher_layers"], shard_ciphertexts,
+                _gather_decryptable_symkeys(cryptainer_name, payload_cipher_layer["key_cipher_layers"], shard_ciphertexts,
                                             cryptainer_uid,
                                             cryptainer_metadata)
 
@@ -173,8 +179,8 @@ class ClaimantRevelationRequestCreationForm(Screen):
             return
 
         # Symkeys decryptable per trustee for containers selected
-        cryptainers = self._get_cryptainers_with_cryptainer_names(self.selected_cryptainer_names)
-        decryptable_symkeys_per_trustee = self.gather_decryptable_symkeys(cryptainers)
+        cryptainers_with_names = self._get_cryptainers_with_cryptainer_names(self.selected_cryptainer_names)
+        decryptable_symkeys_per_trustee = self.gather_decryptable_symkeys(cryptainers_with_names)
 
         # Response keypair used to encrypt the decrypted symkey/shard
         response_keychain_uid, response_key_algo, response_public_key = self._create_and_return_response_keypair_from_local_factory()
