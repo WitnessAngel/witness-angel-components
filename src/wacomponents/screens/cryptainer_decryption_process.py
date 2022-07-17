@@ -244,7 +244,10 @@ class CryptainerDecryptionProcessScreen(Screen):
             try:
                 EXTERNAL_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
                 # FIXME make this asynchronous, to avoid stalling the app!
-                result = self.filesystem_cryptainer_storage.decrypt_cryptainer_from_storage(cryptainer_name, passphrase_mapper=self.passphrase_mapper)
+                result, errors = self.filesystem_cryptainer_storage.decrypt_cryptainer_from_storage(cryptainer_name, passphrase_mapper=self.passphrase_mapper)
+                # FIXME add here real management of teh error report, and treat the case where result is None
+                assert not errors, errors
+                assert result
                 target_path = EXTERNAL_EXPORTS_DIR / (Path(cryptainer_name).with_suffix(""))
                 target_path.write_bytes(result)
                 # print(">> Successfully exported data file to %s" % target_path)
