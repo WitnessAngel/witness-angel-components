@@ -82,3 +82,42 @@ def get_nice_size(size):
            return "%1.0f %s" % (size, unit)
        size /= 1024.0
    return size
+
+
+#Utilities for formatted text
+
+def format_keypair_label(keychain_uid, key_algo,
+                        private_key_present=None / True / False,
+                        shorten_uid=True)-> str:
+    # RSA-OAEP …0abf25421"
+
+    if shorten_uid:
+        keychain_uid= shorten_uid(keychain_uid)
+
+    keypair_label="{key_algo}{keychain_uid}".format(key_algo=key_algo, keychain_uid=keychain_uid)
+
+    return keypair_label
+
+
+
+def format_authenticator_label(authenticator_owner, keystore_uid,
+                               shorten_uid=True):
+    # Paul Duport (ID … 1abfb5411)"
+    if shorten_uid:
+        keystore_uid= shorten_uid(keystore_uid)
+
+    authenticator_label="{authenticator_owner} (ID {keystore_uid})"
+
+    return authenticator_label
+
+
+def format_revelation_request_label(revelation_request_creation_time,
+                                    revelation_request_uid):
+    # Add revelation_request_creation_time in revelation_request models
+    pass
+
+
+def format_cryptainer_label(cryptainer_name, cryptainer_uid, cryptainer_size_bytes=None):
+    #(format de la MDList des cryptainers)
+    pass
+
