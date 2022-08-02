@@ -1,5 +1,6 @@
 import threading
-from datetime import datetime
+import uuid
+from datetime import datetime, date
 from pathlib import Path
 
 from kivy.uix.filechooser import filesize_units
@@ -9,6 +10,7 @@ ASSETS_PATH = Path(__file__).parents[1].joinpath("assets")
 
 class InterruptableEvent(threading.Event):
     """An Event which handles ctrl-C on Windows too"""
+
     def wait(self, timeout=None):
         wait = super().wait  # get once, use often
         if timeout is None:
@@ -25,6 +27,7 @@ def get_system_information(disk_storage_path: Path):
 
     def _to_bytes_size_str(stat):  # FIXME find better name
         return convert_bytes_to_human_representation(stat)
+
     def _to_percent_str(stat):
         return "%s%%" % int(stat)
 
@@ -59,7 +62,7 @@ def get_system_information(disk_storage_path: Path):
         "wifi_status": "ON" if wifi_status else "OFF",
         "ethernet_status": "ON" if ethernet_status else "OFF",
         "now_datetime": now_datetime,
-        #"containers": "76",
+        # "containers": "76",
     }
 
 
@@ -73,51 +76,70 @@ def convert_bytes_to_human_representation(size):
 
 
 def shorten_uid(uid):
-   return "..." + str(uid).split("-")[-1]
+    return "..." + str(uid).split("-")[-1]
 
 
 def get_nice_size(size):
-   for unit in filesize_units:
-       if size < 1024.0:
-           return "%1.0f %s" % (size, unit)
-       size /= 1024.0
-   return size
+    for unit in filesize_units:
+        if size < 1024.0:
+            return "%1.0f %s" % (size, unit)
+        size /= 1024.0
+    return size
 
 
-#Utilities for formatted text
+# Utilities for formatted text
 
-def format_keypair_label(keychain_uid, key_algo,
-                        private_key_present=None / True / False,
-                        shorten_uid=True)-> str:
+def format_keypair_label(keychain_uid: uuid.UUID, key_algo: str, private_key_present=None, short_uid=True) -> str:
     # RSA-OAEP …0abf25421"
 
-    if shorten_uid:
-        keychain_uid= shorten_uid(keychain_uid)
+    if short_uid:
+        keychain_uid = shorten_uid(keychain_uid)
 
-    keypair_label="{key_algo}{keychain_uid}".format(key_algo=key_algo, keychain_uid=keychain_uid)
+    keypair_label = "{key_algo}{keychain_uid}".format(key_algo=key_algo, keychain_uid=keychain_uid)
+
+    if private_key_present:
+        keypair_label += " (Private key present: Yes)"
+    else:
+        keypair_label += " (Private key present: No)"
 
     return keypair_label
 
 
-
-def format_authenticator_label(authenticator_owner, keystore_uid,
-                               shorten_uid=True):
+def format_authenticator_label(authenticator_owner, keystore_uid, short_uid=True):
     # Paul Duport (ID … 1abfb5411)"
-    if shorten_uid:
-        keystore_uid= shorten_uid(keystore_uid)
-
-    authenticator_label="{authenticator_owner} (ID {keystore_uid})"
-
+    if short_uid:
+        keystore_uid = shorten_uid(keystore_uid)
+    authenticator_label = "{authenticator_owner} (ID {keystore_uid})".format(authenticator_owner=authenticator_owner,
+                                                                             keystore_uid=keystore_uid)
     return authenticator_label
 
 
-def format_revelation_request_label(revelation_request_creation_time,
-                                    revelation_request_uid):
-    # Add revelation_request_creation_time in revelation_request models
-    pass
+def format_revelation_request_label(revelation_request_creation_time: datetime, revelation_request_uid: uuid.UUID,
+                                    short_uid=True):
+    # Revelation request id: ... 1abfb5411 (Created on: 2022/05/22)
+
+    revelation_request_creation_date_string = str(revelation_request_creation_time.date())
+    refformatted_revelation_request_creation_date = date.fromisoformat(revelation_request_creation_date_string)
+
+    if short_uid:
+        revelation_request_uid = shorten_uid(revelation_request_uid)
+
+    revelation_request_label = "{Revelation request id: {revelation_request_uid} (Created on: {refformatted_revelation_request_creation_date})".format(
+        revelation_request_uid=revelation_request_uid,
+        refformatted_revelation_request_creation_date=str(refformatted_revelation_request_creation_date))
+
+    return revelation_request_label
 
 
-def format_cryptainer_label(cryptainer_name, cryptainer_uid, cryptainer_size_bytes=None):
-    #(format de la MDList des cryptainers)
-    pass
+def format_cryptainer_label(cryptainer_name: str, cryptainer_uid: uuid.UUID, cryptainer_size_bytes=None,
+                            short_uid=True):
+    # (format de la MDList des cryptainers)
+    # 20220109_202157_cryptainer.mp4.crypt: ... 1abfb5411 (6528 Ko)
 
+    if short_uid:
+        cryptainer_uid = shorten_uid(cryptainer_uid)
+    cryptainer_label = "{cryptainer_name}:{cryptainer_uid}".format(cryptainer_name=cryptainer_name,
+                                                                   cryptainer_uid=cryptainer_uid)
+    if cryptainer_size_bytes is not None:
+        cryptainer_label += " (cryptainer_size_bytes)".format(cryptainer_size_bytes=cryptainer_size_bytes)
+    return  cryptainer_label
