@@ -26,6 +26,7 @@ THREAD_POOL_EXECUTOR = ThreadPoolExecutor(
 
 GENERATED_KEYS_COUNT = 7
 PASSPHRASE_MIN_LENGTH = 20
+MAX_WA_CHARFIELD_LENGTH=100
 
 
 class AuthenticatorCreationFormScreen(Screen):
@@ -56,9 +57,12 @@ class AuthenticatorCreationFormScreen(Screen):
         form_error = None
         if not all(form_values.values()):
             form_error = tr._("Please enter a username, passphrase and passphrase hint.")
+        elif len(form_values.values()):
+            form_error = tr._("Username, passphrase and passphrase hint must not exceed %s characters") % MAX_WA_CHARFIELD_LENGTH
         elif (len(form_values["keystore_passphrase"]) < PASSPHRASE_MIN_LENGTH and
             not form_values["keystore_passphrase"].startswith("¤")):  # HACK to have short passwords for tests
             form_error = tr._("Passphrase must be at least %s characters long.") % PASSPHRASE_MIN_LENGTH
+
         if form_error:
             raise ValueError(form_error)
 
