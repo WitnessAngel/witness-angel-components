@@ -12,6 +12,7 @@ from kivymd.uix.screen import Screen
 
 from wacomponents.i18n import tr
 from wacomponents.screens.authenticator_management import shorten_uid
+from wacomponents.utilities import format_authenticator_label
 from wacomponents.widgets.popups import help_text_popup, display_info_toast, safe_catch_unhandled_exception_and_display_popup
 from wacryptolib.exceptions import ExistenceError
 from wacryptolib.keystore import load_keystore_metadata, ReadonlyFilesystemKeystore
@@ -89,6 +90,7 @@ class AuthenticatorPublicationFormScreen(Screen):
 
         local_metadata = self._query_local_authenticator_status()
         keystore_uid = local_metadata["keystore_uid"]
+        keystore_owner = local_metadata["keystore_owner"]
 
         try:
             remote_public_authenticator = self._query_remote_authenticator_status(
@@ -136,11 +138,13 @@ class AuthenticatorPublicationFormScreen(Screen):
                            Missing key(s) in remote: {missing_keys_in_remote}
                   """)).format(**publication_details)
 
+        authenticator_label = format_authenticator_label(authenticator_owner=keystore_owner,
+                                                         keystore_uid=keystore_uid, short_uid=False)
         _displayed_values = dict(
             gateway=self._app.get_wagateway_url(),
             status=synchronization_status,
             message=message,
-            keystore_uid=keystore_uid,
+            authenticator_label=authenticator_label,
         )
 
         synchronization_info_text = dedent(tr._("""\
@@ -148,7 +152,7 @@ class AuthenticatorPublicationFormScreen(Screen):
                         Remote status: {status}
                         Message: {message}
                         
-                        Authenticator ID: {keystore_uid}
+                        Authenticator : {authenticator_label}
                     """)).format(**_displayed_values)
 
         if is_published:
