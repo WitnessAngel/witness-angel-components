@@ -1,4 +1,3 @@
-
 from concurrent.futures.thread import ThreadPoolExecutor
 from pathlib import Path
 from textwrap import dedent
@@ -19,14 +18,13 @@ from wacryptolib.utilities import generate_uuid0
 
 Builder.load_file(str(Path(__file__).parent / 'authenticator_creation_form.kv'))
 
-
 THREAD_POOL_EXECUTOR = ThreadPoolExecutor(
     max_workers=1, thread_name_prefix="authenticator_keygen_worker"  # SINGLE worker for now, to avoid concurrency
 )
 
 GENERATED_KEYS_COUNT = 7
 PASSPHRASE_MIN_LENGTH = 20
-MAX_WA_CHARFIELD_LENGTH=100
+MAX_WA_CHARFIELD_LENGTH = 100
 
 
 class AuthenticatorCreationFormScreen(Screen):
@@ -55,12 +53,15 @@ class AuthenticatorCreationFormScreen(Screen):
 
     def validate_form_values(self, form_values):
         form_error = None
+        form_values_max_length = {key: len(value) for key, value in form_values.items() if
+                              len(value) > MAX_WA_CHARFIELD_LENGTH}
         if not all(form_values.values()):
             form_error = tr._("Please enter a username, passphrase and passphrase hint.")
-        elif len(form_values.values()):
-            form_error = tr._("Username, passphrase and passphrase hint must not exceed %s characters") % MAX_WA_CHARFIELD_LENGTH
+        elif form_values_max_length:
+            form_error = tr._(
+                "Username, passphrase and passphrase hint must not exceed %s characters") % MAX_WA_CHARFIELD_LENGTH
         elif (len(form_values["keystore_passphrase"]) < PASSPHRASE_MIN_LENGTH and
-            not form_values["keystore_passphrase"].startswith("¤")):  # HACK to have short passwords for tests
+              not form_values["keystore_passphrase"].startswith("¤")):  # HACK to have short passwords for tests
             form_error = tr._("Passphrase must be at least %s characters long.") % PASSPHRASE_MIN_LENGTH
 
         if form_error:
@@ -90,7 +91,7 @@ class AuthenticatorCreationFormScreen(Screen):
         success = False
 
         try:
-      
+
             Clock.schedule_once(partial(self._do_update_progress_bar, 10))
 
             initialize_authenticator(authenticator_dir,
@@ -99,7 +100,7 @@ class AuthenticatorCreationFormScreen(Screen):
 
             filesystem_keystore = FilesystemKeystore(authenticator_dir)
 
-            for i in range(1, GENERATED_KEYS_COUNT+1):
+            for i in range(1, GENERATED_KEYS_COUNT + 1):
                 # TODO add some logging here
                 key_pair = generate_keypair(
                     key_algo="RSA_OAEP",
@@ -112,7 +113,7 @@ class AuthenticatorCreationFormScreen(Screen):
                     private_key=key_pair["private_key"],
                 )
 
-                Clock.schedule_once(partial(self._do_update_progress_bar, 10 + int (i * 90 / GENERATED_KEYS_COUNT)))
+                Clock.schedule_once(partial(self._do_update_progress_bar, 10 + int(i * 90 / GENERATED_KEYS_COUNT)))
 
             success = True
 
@@ -121,10 +122,9 @@ class AuthenticatorCreationFormScreen(Screen):
 
         Clock.schedule_once(partial(self.finish_initialization, success=success))
 
-
     def set_form_fields_status(self, enabled):
 
-        form_ids=self.ids
+        form_ids = self.ids
         form_fields = [
             form_ids.formfield_username,
             form_ids.formfield_passphrase,
@@ -167,10 +167,10 @@ class AuthenticatorCreationFormScreen(Screen):
     def finish_initialization(self, *args, success, **kwargs):
         if success:
             self.open_generic_dialog(tr._("Initialization successfully completed."),
-                             title=tr._("Success"), on_dismiss=lambda x: self.go_to_home_screen())
+                                     title=tr._("Success"), on_dismiss=lambda x: self.go_to_home_screen())
         else:
             self.open_generic_dialog(tr._("Operation failed, check logs."),
-                             title=tr._("Failure"), on_dismiss=lambda x: self.go_to_home_screen())
+                                     title=tr._("Failure"), on_dismiss=lambda x: self.go_to_home_screen())
 
     def display_help_popup(self):
         help_text = dedent(tr._("""\
@@ -182,6 +182,4 @@ class AuthenticatorCreationFormScreen(Screen):
         """))
         help_text_popup(
             title=tr._("Authenticator creation page"),
-            text=help_text,)
-
-
+            text=help_text, )
