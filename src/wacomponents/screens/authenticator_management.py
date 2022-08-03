@@ -154,10 +154,6 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
         else:
             assert authenticator_type == AuthenticatorType.USB_DEVICE
             authenticator_dir = authenticator_metadata["authenticator_dir"]
-
-            if os.path.exists(Path(authenticator_metadata["partition_mountpoint"]) / ".authenticator"):
-                authenticator_dir = Path(authenticator_metadata["partition_mountpoint"]).joinpath(".authenticator")
-
         return authenticator_dir
 
     def _folder_chooser_select_path(self, path, *args):
