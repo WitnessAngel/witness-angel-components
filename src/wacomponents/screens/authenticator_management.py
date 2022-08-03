@@ -237,7 +237,7 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
 
             else:
                 authenticator_status = True
-<<<<<<< HEAD
+
 
                 filesystem_keystore = FilesystemKeystore(authenticator_dir)
                 keypair_identifiers = filesystem_keystore.list_keypair_identifiers()
@@ -267,29 +267,15 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
                     authenticator_label=authenticator_label,
                     keystore_passphrase_hint=authenticator_metadata["keystore_passphrase_hint"],
                     # FIXME might be missing because OPTIONAL!!!
-                    keypairs_label=keypairs_label
-                    keypairs_label=keypairs_label
-                    keypairs_label=keypairs_label
-=======
-                _displayed_values = dict(
-                    authenticator_dir=authenticator_dir_shortened,
-                    keystore_uid=authenticator_metadata["keystore_uid"],
-                    keystore_owner=authenticator_metadata["keystore_owner"],
-                    keystore_passphrase_hint=authenticator_metadata["keystore_passphrase_hint"],  # FIXME might be missing because OPTIONAL!!!
->>>>>>> parent of 0514d04 (Rename decryption request to revelation request and list_names to mames ou name_list)
-                )
+                    keypairs_label=keypairs_label)
 
                 authenticator_info_text = dedent(tr._("""\
                     Path: {authenticator_dir}
                     Authentifieur: {authenticator_label}
                     Password hint: {keystore_passphrase_hint}
-<<<<<<< HEAD
                     keypairs: 
                     {keypairs_label}
-                    
-=======
->>>>>>> parent of 0514d04 (Rename decryption request to revelation request and list_names to mames ou name_list)
-                """)).format(**_displayed_values)
+                    """)).format(**_displayed_values)
 
         textarea = self.ids.authenticator_information
         textarea.text = authenticator_info_text
