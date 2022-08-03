@@ -59,6 +59,7 @@ class AuthenticatorPublicationFormScreen(Screen):
             'keystore_owner': authenticator_metadata["keystore_owner"],
             'keystore_uid': authenticator_metadata["keystore_uid"],
             'keystore_secret': authenticator_metadata["keystore_secret"],  # Only useful when PUBLISHING
+            'keystore_creation_datetime':authenticator_metadata["keystore_creation_datetime"],
             'public_keys': local_keys_status
         }
         return local_keys_and_authenticator_metadata
@@ -186,9 +187,10 @@ class AuthenticatorPublicationFormScreen(Screen):
             })
 
         self.gateway_proxy.set_public_authenticator(keystore_owner=local_metadata["keystore_owner"],
-                                                            keystore_uid=local_metadata["keystore_uid"],
-                                                            keystore_secret=local_metadata["keystore_secret"],
-                                                            public_keys=public_keys)
+                                                    keystore_uid=local_metadata["keystore_uid"],
+                                                    keystore_secret=local_metadata["keystore_secret"],
+                                                    keystore_creation_datetime=local_metadata["keystore_creation_datetime"],
+                                                    public_keys=public_keys)
 
         self.refresh_synchronization_status()
 
