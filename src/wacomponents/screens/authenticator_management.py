@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 from enum import Enum, unique
 from pathlib import Path
@@ -16,7 +17,7 @@ from kivymd.uix.list import IconLeftWidget
 from kivymd.uix.screen import Screen
 
 from wacomponents.default_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_APP_ROOT, EXTERNAL_EXPORTS_DIR, \
-    strip_external_app_root_prefix
+    strip_external_app_root_prefix, INTERNAL_APP_ROOT
 from wacomponents.i18n import tr
 from wacomponents.system_permissions import request_external_storage_dirs_access
 from wacomponents.utilities import convert_bytes_to_human_representation, shorten_uid, format_authenticator_label, \
@@ -146,11 +147,19 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
         authenticator_type = authenticator_metadata["authenticator_type"]
         if authenticator_type == AuthenticatorType.USER_PROFILE:
             authenticator_dir = INTERNAL_AUTHENTICATOR_DIR
+            if os.path.exists(INTERNAL_APP_ROOT / "authenticator"):
+                authenticator_dir = INTERNAL_APP_ROOT / "authenticator"
+
         elif authenticator_type == AuthenticatorType.CUSTOM_FOLDER:
-            authenticator_dir = self.selected_custom_folder_path
+            authenticator_dir = self.selected_custom_folder_path.joinpath("authenticator.keystore")
+
         else:
             assert authenticator_type == AuthenticatorType.USB_DEVICE
             authenticator_dir = authenticator_metadata["authenticator_dir"]
+
+            if os.path.exists(Path(authenticator_metadata["partition_mountpoint"]) / ".authenticator"):
+                authenticator_dir = Path(authenticator_metadata["partition_mountpoint"]).joinpath(".authenticator")
+
         return authenticator_dir
 
     def _folder_chooser_select_path(self, path, *args):
@@ -238,7 +247,6 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
             else:
                 authenticator_status = True
 
-
                 filesystem_keystore = FilesystemKeystore(authenticator_dir)
                 keypair_identifiers = filesystem_keystore.list_keypair_identifiers()
 
@@ -255,8 +263,8 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
                         private_key_present = False
 
                     keypairs_label += indent + format_keypair_label(keychain_uid=keychain_uid,
-                                                           key_algo=key_algo,
-                                                           private_key_present=private_key_present)+"\n"
+                                                                    key_algo=key_algo,
+                                                                    private_key_present=private_key_present) + "\n"
 
                 authenticator_label = format_authenticator_label(
                     authenticator_owner=authenticator_metadata["keystore_owner"],
