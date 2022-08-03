@@ -147,8 +147,6 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
         authenticator_type = authenticator_metadata["authenticator_type"]
         if authenticator_type == AuthenticatorType.USER_PROFILE:
             authenticator_dir = INTERNAL_AUTHENTICATOR_DIR
-            if os.path.exists(INTERNAL_APP_ROOT / "authenticator"):
-                authenticator_dir = INTERNAL_APP_ROOT / "authenticator"
 
         elif authenticator_type == AuthenticatorType.CUSTOM_FOLDER:
             authenticator_dir = self.selected_custom_folder_path.joinpath("authenticator.keystore")
