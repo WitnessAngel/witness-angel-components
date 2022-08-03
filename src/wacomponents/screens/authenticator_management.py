@@ -21,7 +21,7 @@ from wacomponents.default_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_A
 from wacomponents.i18n import tr
 from wacomponents.system_permissions import request_external_storage_dirs_access
 from wacomponents.utilities import convert_bytes_to_human_representation, shorten_uid, format_authenticator_label, \
-    format_keypair_label
+    format_keypair_label, format_datetime_label
 from wacomponents.widgets.layout_components import LanguageSwitcherScreenMixin
 from wacomponents.widgets.popups import dialog_with_close_button, register_current_dialog, close_current_dialog, \
     help_text_popup, display_info_toast
@@ -270,18 +270,25 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
                     authenticator_owner=authenticator_metadata["keystore_owner"],
                     keystore_uid=authenticator_metadata["keystore_uid"], short_uid=False)
 
+                keystore_creation_datetime_label = "Inconnu"
+                if "keystore_creation_datetime" in authenticator_metadata:
+                    keystore_creation_datetime_label = format_datetime_label(field_datetime=authenticator_metadata["keystore_creation_datetime"],
+                                                                             show_time=True)
+
                 _displayed_values = dict(
                     authenticator_dir=authenticator_dir_shortened,
                     authenticator_label=authenticator_label,
                     keystore_passphrase_hint=authenticator_metadata["keystore_passphrase_hint"],
                     # FIXME might be missing because OPTIONAL!!!
+                    keystore_creation_datetime_label=keystore_creation_datetime_label,
                     keypairs_label=keypairs_label)
 
                 authenticator_info_text = dedent(tr._("""\
                     Path: {authenticator_dir}
                     Authentifieur: {authenticator_label}
                     Password hint: {keystore_passphrase_hint}
-                    keypairs: 
+                    Creation date: {keystore_creation_datetime_label}
+                    Keypairs: 
                     {keypairs_label}
                     """)).format(**_displayed_values)
 

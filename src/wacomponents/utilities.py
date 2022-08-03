@@ -118,17 +118,39 @@ def format_revelation_request_label(revelation_request_creation_time: datetime, 
                                     short_uid=True):
     # Revelation request id: ... 1abfb5411 (Created on: 2022/05/22)
 
-    revelation_request_creation_date_string = str(revelation_request_creation_time.date())
-    refformatted_revelation_request_creation_date = date.fromisoformat(revelation_request_creation_date_string)
-
     if short_uid:
         revelation_request_uid = shorten_uid(revelation_request_uid)
 
+    # Date into isoformat
+    refformatted_revelation_request_creation_date = format_datetime_label(
+        field_datetime=revelation_request_creation_time)
+
     revelation_request_label = "{Revelation request id: {revelation_request_uid} (Created on: {refformatted_revelation_request_creation_date})".format(
         revelation_request_uid=revelation_request_uid,
-        refformatted_revelation_request_creation_date=str(refformatted_revelation_request_creation_date))
+        refformatted_revelation_request_creation_date=refformatted_revelation_request_creation_date)
 
     return revelation_request_label
+
+
+def format_datetime_label(field_datetime: datetime, show_time=False):
+    # Created on: 2022-08-03
+
+    # Remove mcrosecond
+    field_datetime = field_datetime.replace(microsecond=0)
+
+    # Extract et convert to string date
+    field_date_string = str(field_datetime.date())
+
+    # Convert into isofromat(Japanese)
+    refformatted_field_date = date.fromisoformat(field_date_string)
+
+    datetime_label = "{refformatted_field_date}".format(refformatted_field_date=refformatted_field_date)
+
+    if show_time:
+        field_time_str = str(field_datetime.time())
+        datetime_label += " at {field_time_str}".format(field_time_str=field_time_str)
+
+    return datetime_label
 
 
 def format_cryptainer_label(cryptainer_name: str, cryptainer_uid: uuid.UUID, cryptainer_size_bytes=None,
@@ -142,4 +164,4 @@ def format_cryptainer_label(cryptainer_name: str, cryptainer_uid: uuid.UUID, cry
                                                                    cryptainer_uid=cryptainer_uid)
     if cryptainer_size_bytes is not None:
         cryptainer_label += " (cryptainer_size_bytes)".format(cryptainer_size_bytes=cryptainer_size_bytes)
-    return  cryptainer_label
+    return cryptainer_label
