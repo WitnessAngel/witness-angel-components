@@ -364,11 +364,15 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
     def _delete_authenticator_data(self, authenticator_dir):
         # FIXME protect against any OSERROR here!!
         # FIXME Move this operation to WACRYPTOLIB?
-        metadata_file_path = _get_keystore_metadata_file_path(authenticator_dir)
-        key_files = authenticator_dir.glob("*.pem")
-        for filepath in [metadata_file_path] + list(key_files):
+
+        for filename in os.listdir(authenticator_dir):
+            filepath = authenticator_dir.joinpath(filename)
             try:
-                filepath.unlink()  # TODO use missing_ok=True later
+                if os.path.isfile(filepath) or os.path.islink(filepath):
+                    filepath.unlink()  # Delete file
+                elif os.path.isdir(filepath):
+                    shutil.rmtree(filepath)  # Delete subdirectory
+                # TODO use missing_ok=True later
             except FileNotFoundError:
                 pass
         dialog_with_close_button(
