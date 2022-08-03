@@ -14,7 +14,7 @@ from kivymd.uix.screen import Screen
 
 from wacomponents.i18n import tr
 from wacomponents.logging.handlers import safe_catch_unhandled_exception
-from wacomponents.utilities import shorten_uid
+from wacomponents.utilities import shorten_uid, format_authenticator_label, format_keypair_label
 from wacomponents.widgets.layout_components import build_fallback_information_box
 from wacomponents.widgets.popups import display_info_toast, close_current_dialog, dialog_with_close_button, safe_catch_unhandled_exception_and_display_popup
 from wacryptolib.authdevice import list_available_authdevices
@@ -185,9 +185,12 @@ class ForeignKeystoreManagementScreen(Screen):
         for (index, (keystore_uid, metadata)) in enumerate(sorted(keystore_metadata.items()), start=1):
             keystore_uid_shortened = shorten_uid(keystore_uid)
 
-            authenticator_label = tr._("User {keystore_owner}, id {keystore_uid}").format(
-                keystore_owner=metadata["keystore_owner"], keystore_uid=keystore_uid_shortened)
-            authenticator_entry = Factory.WASelectableListItemEntry(text=authenticator_label)  # FIXME RENAME THIS
+            authenticator_label = format_authenticator_label(authenticator_owner=metadata["keystore_owner"],
+                                                             keystore_uid=metadata["keystore_uid"], short_uid=True)
+
+            foreign_authenticator_label = tr._("User {authenticator_label}").format(authenticator_label=authenticator_label)
+
+            authenticator_entry = Factory.WASelectableListItemEntry(text=foreign_authenticator_label)  # FIXME RENAME THIS
 
             selection_checkbox = authenticator_entry.ids.selection_checkbox
             # print(">>>>>>>>selection_checkbox", selection_checkbox)
@@ -290,15 +293,13 @@ class ForeignKeystoreManagementScreen(Screen):
 
         message = ""
         for index, keypair_identifier in enumerate(keypair_identifiers, start=1):
-            private_key_present_str = tr._("Yes") if keypair_identifier["private_key_present"] else tr._("No")
-            keychain_uid = shorten_uid(keypair_identifier["keychain_uid"])
+            private_key_present = True if keypair_identifier["private_key_present"] else False
+            keypair_label = format_keypair_label(keychain_uid=keypair_identifier["keychain_uid"],
+                                 key_algo=keypair_identifier["key_algo"],
+                                 private_key_present=private_key_present)
 
             # FIXME it's private key SINGULAR HERE!!
-            message += tr._("Key n° {index}, {key_algo} {keychain_uid}, private keys: {private_key_present_str}\n").format(
-                        index=index,
-                        key_algo=keypair_identifier["key_algo"],
-                        keychain_uid=keychain_uid,
-                        private_key_present_str=private_key_present_str,
+            message += tr._("Key n° {index}: {keypair_label}\n").format( index=index, keypair_label=keypair_label,
                     )
 
         self.open_keystore_details_dialog(message, keystore_owner=keystore_owner)
