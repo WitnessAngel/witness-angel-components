@@ -90,7 +90,7 @@ def get_nice_size(size):
 
 # Utilities for formatted text
 
-def format_keypair_label(keychain_uid: uuid.UUID, key_algo: str, private_key_present=None, short_uid=True) -> str:
+def format_keypair_label(keychain_uid: uuid.UUID, key_algo: str, private_key_present=None, error_on_missing_key=True, short_uid=True) -> str:
     # RSA-OAEP …0abf25421"
 
     if short_uid:
@@ -99,9 +99,12 @@ def format_keypair_label(keychain_uid: uuid.UUID, key_algo: str, private_key_pre
     keypair_label = "{key_algo}{keychain_uid}".format(key_algo=key_algo, keychain_uid=keychain_uid)
 
     if private_key_present:
-        keypair_label += " (Private key present: Yes)"
-    else:
-        keypair_label += " (Private key present: No)"
+        keypair_label += " (Private key present)"
+    elif private_key_present is False:
+        missing_private_key_label = " (Private key not present)"
+        if error_on_missing_key:
+            missing_private_key_label = " (Missing private key)"
+        keypair_label += missing_private_key_label
 
     return keypair_label
 
@@ -114,7 +117,7 @@ def format_authenticator_label(authenticator_owner: str, keystore_uid: uuid.UUID
     authenticator_label = "{authenticator_owner} (ID {keystore_uid}".format(authenticator_owner=authenticator_owner,
                                                                              keystore_uid=keystore_uid)
     if trustee_type:
-        authenticator_label += " Type: {trustee_type}".format(trustee_type=trustee_type)
+        authenticator_label += ", type {trustee_type}".format(trustee_type=trustee_type)
 
     authenticator_label += ")"
     return authenticator_label

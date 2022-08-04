@@ -9,7 +9,8 @@ from kivymd.uix.snackbar import Snackbar
 
 from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
-from wacomponents.utilities import shorten_uid
+from wacomponents.utilities import shorten_uid, format_keypair_label, format_cryptainer_label, \
+    format_authenticator_label
 from wacomponents.widgets.layout_components import build_fallback_information_box
 from wacomponents.widgets.popups import dialog_with_close_button, close_current_dialog, \
     safe_catch_unhandled_exception_and_display_popup, display_info_toast
@@ -26,7 +27,8 @@ from kivy.logger import Logger as logger
 
 class CryptainerDecryptionProcessScreen(Screen):
     selected_cryptainer_names = ObjectProperty(None, allownone=True)
-    trustee_data = ObjectProperty(None, allownone=True)  # FIXME name not clea, i.e. "trustee_dependencies_for_encryption" ?
+    trustee_data = ObjectProperty(None,
+                                  allownone=True)  # FIXME name not clea, i.e. "trustee_dependencies_for_encryption" ?
     filesystem_cryptainer_storage = ObjectProperty(None, allownone=True)
     filesystem_keystore_pool = ObjectProperty(None)
     ##found_trustees_lacking_passphrase = BooleanProperty(0)
@@ -44,15 +46,18 @@ class CryptainerDecryptionProcessScreen(Screen):
             return
 
         for index, cryptainer_name in enumerate(reversed(self.selected_cryptainer_names), start=1):
-            cryptainer_label = tr._("N° {index}: {cryptainer_name}").format(index=index, cryptainer_name=cryptainer_name)
-            cryptainer_entry = Factory.WAListItemEntry(text=cryptainer_label)  # FIXME RENAME THIS
+            cryptainer_label = format_cryptainer_label(cryptainer_name=cryptainer_name)
+            cryptainer_entry_label = tr._("N° {index}: {cryptainer_label}").format(index=index,
+                                                                                   cryptainer_label=cryptainer_label)
+            cryptainer_entry = Factory.WAListItemEntry(text=cryptainer_entry_label)  # FIXME RENAME THIS
             cryptainer_entry.unique_identifier = cryptainer_name
 
             self.ids.selected_cryptainer_table.add_widget(cryptainer_entry)
 
         display_info_toast(tr._("Refreshed concerned containers"))
 
-    def _get_cryptainer_trustee_dependency_status(self, keystore_uid, trustee_type, trustee_id, trustee_keypair_identifiers):
+    def _get_cryptainer_trustee_dependency_status(self, keystore_uid, trustee_type, trustee_id,
+                                                  trustee_keypair_identifiers):
 
         trustee_is_present = False
         trustee_status = tr._("NOT found")
@@ -86,7 +91,7 @@ class CryptainerDecryptionProcessScreen(Screen):
             pass
 
         status = dict(
-            keystore_uid=shorten_uid(keystore_uid),
+            keystore_uid=keystore_uid,
             trustee_is_present=trustee_is_present,
             trustee_status=trustee_status,
             trustee_owner=trustee_owner,
@@ -98,7 +103,8 @@ class CryptainerDecryptionProcessScreen(Screen):
 
         return status
 
-    def _get_cryptainers_with_cryptainer_names(self, cryptainer_names):  # FIXME duplicated and not neeed as METHOD but FUNCTION
+    def _get_cryptainers_with_cryptainer_names(self,
+                                               cryptainer_names):  # FIXME duplicated and not neeed as METHOD but FUNCTION
         cryptainers = []
         for cryptainer_name in cryptainer_names:
             cryptainer = self.filesystem_cryptainer_storage.load_cryptainer_from_storage(cryptainer_name)
@@ -123,34 +129,47 @@ class CryptainerDecryptionProcessScreen(Screen):
                 keystore_uid = trustee_info["keystore_uid"]
 
                 if trustee_type == CRYPTAINER_TRUSTEE_TYPES.AUTHENTICATOR_TRUSTEE:
-                    status = self._get_cryptainer_trustee_dependency_status(keystore_uid, trustee_type=trustee_type, trustee_id=trustee_id, trustee_keypair_identifiers=trustee_keypair_identifiers)
+                    status = self._get_cryptainer_trustee_dependency_status(keystore_uid, trustee_type=trustee_type,
+                                                                            trustee_id=trustee_id,
+                                                                            trustee_keypair_identifiers=trustee_keypair_identifiers)
                     self._display_cryptainer_trustee_dependency_status(status)
                 else:
                     pass  # FIXME handle other types of trustee?
 
     def _display_cryptainer_trustee_dependency_status(self, status):
 
-        trustee_data = tr._("{trustee_type} {keystore_uid}").format(**status)
-        trustee_present = tr._("Key guardian: {trustee_status}").format(**status)
-        trustee_private_keys_missing_text = ""
-        passphrase = tr._("Passphrase: {passphrase_status}").format(**status)
-        trustee_owner = ""
-        if status["trustee_is_present"]:
-            trustee_owner = " " + tr._("(Owner: {trustee_owner})").format(**status)
-            if status["trustee_private_keys_missing"]:
-                trustee_private_keys_missing_text = tr._("Missing private key(s): {trustee_keys_missing}").format(
-                    trustee_keys_missing=", ".join(shorten_uid(keypair_identifier["keychain_uid"])
-                                                   for keypair_identifier in status["trustee_private_keys_missing"]))
+        trustee_label = format_authenticator_label(authenticator_owner=status["trustee_owner"],
+                                                   trustee_type=status["trustee_type"],
+                                                   keystore_uid=status["keystore_uid"])
 
-        dependencies_status_text = Factory.WAThreeListItemEntry(text=trustee_data + trustee_owner, secondary_text=trustee_present + ', ' + passphrase, tertiary_text=trustee_private_keys_missing_text)  # FIXME RENAME THIS
+        trustee_info = tr._("Trustee: {trustee_label}").format(trustee_label=trustee_label)
+
+        trustee_present = tr._("Key guardian: {trustee_status}").format(**status)
+        trustee_private_keys_missing_text = tr._("Private keys needed for decryption are present")
+        passphrase = tr._("Passphrase: {passphrase_status}").format(**status)
+
+        if status["trustee_is_present"]:
+            if status["trustee_private_keys_missing"]:
+                trustee_keys_missing_label = []
+                for private_key_missing in status["trustee_private_keys_missing"]:
+                    trustee_key_missing_label = format_keypair_label(**private_key_missing)
+                    trustee_keys_missing_label.append(trustee_key_missing_label)
+                trustee_private_keys_missing_text = tr._("Missing private key(s): {trustee_keys_missing_label}").format(
+                    trustee_keys_missing_label=",".join(trustee_keys_missing_label))
+
+        dependencies_status_text = Factory.WAThreeListItemEntry(text=trustee_info,
+                                                                secondary_text=trustee_present + ', ' + passphrase,
+                                                                tertiary_text=trustee_private_keys_missing_text)  # FIXME RENAME THIS
 
         message = ""
         for index, keypair_identifier in enumerate(status["trustee_keypair_identifiers"], start=1):
-            message += tr._("Key n° {index}: type...{key_algo}, Uid...{keychain_uid}\n").format(
-                index=index,
-                key_algo=keypair_identifier["key_algo"],
-                keychain_uid=shorten_uid(keypair_identifier["keychain_uid"])
-            )
+
+            keypair_label = format_keypair_label(keychain_uid=keypair_identifier["keychain_uid"],
+                                                 key_algo=keypair_identifier["key_algo"],
+                                                 private_key_present=False if keypair_identifier in status["trustee_private_keys_missing"] else True,
+                                                 error_on_missing_key=False)
+
+            message += tr._("Key n° {index}: {keypair_label}\n").format(index=index, keypair_label=keypair_label)
 
         def information_callback(widget, message=message):
             self.show_trustee_keypair_identifiers(message=message)
@@ -169,8 +188,6 @@ class CryptainerDecryptionProcessScreen(Screen):
 
     @safe_catch_unhandled_exception_and_display_popup
     def check_passphrase(self, passphrase):
-
-        close_current_dialog()
 
         if [passphrase] in self.passphrase_mapper.values():
             result = tr._("Failure")
@@ -231,7 +248,7 @@ class CryptainerDecryptionProcessScreen(Screen):
             content_cls=Factory.CheckPassphraseContent(),
             buttons=[
                 MDFlatButton(text=tr._("Check"),
-                             on_release=lambda *args: self.check_passphrase(dialog.content_cls.ids.passphrase.text))],
+                             on_release=lambda *args:(close_current_dialog(), self.check_passphrase(dialog.content_cls.ids.passphrase.text)))],
         )
 
     @safe_catch_unhandled_exception_and_display_popup
