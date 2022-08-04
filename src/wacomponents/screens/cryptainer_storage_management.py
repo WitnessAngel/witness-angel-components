@@ -14,7 +14,7 @@ from kivymd.uix.snackbar import Snackbar
 from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
 from wacomponents.logging.handlers import safe_catch_unhandled_exception
-from wacomponents.utilities import shorten_uid
+from wacomponents.utilities import shorten_uid, format_cryptainer_label, format_authenticator_label
 from wacomponents.widgets.layout_components import build_fallback_information_box
 from wacomponents.widgets.popups import close_current_dialog, dialog_with_close_button, display_info_toast, \
     safe_catch_unhandled_exception_and_display_popup
@@ -44,7 +44,6 @@ class CryptainerStorageManagementScreen(Screen):
             self.cryptainer_loading_schedule.cancel()
             self.cryptainer_loading_schedule = None
             self.cryptainer_names_to_be_loaded = []
-
 
     def _get_selected_cryptainer_names(self):
         cryptainer_names = []
@@ -79,7 +78,8 @@ class CryptainerStorageManagementScreen(Screen):
             cryptainers_page_ids.cryptainer_table.add_widget(fallback_info_box)
             return
 
-        sorted_cryptainers = list(enumerate(self.filesystem_cryptainer_storage.list_cryptainer_names(as_sorted_list=True), start=1))
+        sorted_cryptainers = list(
+            enumerate(self.filesystem_cryptainer_storage.list_cryptainer_names(as_sorted_list=True), start=1))
         self.cryptainer_names_to_be_loaded = sorted_cryptainers  # They'll be loaded from the end, that's what we want
 
         if not self.cryptainer_names_to_be_loaded:
@@ -93,21 +93,28 @@ class CryptainerStorageManagementScreen(Screen):
         self.cryptainer_checkboxes = []
 
         assert not self.cryptainer_loading_schedule
-        self.cryptainer_loading_schedule = Clock.schedule_interval(partial(self._load_next_scheduled_cryptainer), self.CRYPTAINER_LOADING_INTERVAL)
+        self.cryptainer_loading_schedule = Clock.schedule_interval(partial(self._load_next_scheduled_cryptainer),
+                                                                   self.CRYPTAINER_LOADING_INTERVAL)
 
     def _load_next_scheduled_cryptainer(self, *args):
         if self.cryptainer_names_to_be_loaded:
             cryptainer_idx, cryptainer_name = self.cryptainer_names_to_be_loaded.pop()
+
             self._load_cryptainer(index=cryptainer_idx, cryptainer_name=cryptainer_name)
         else:
             self.cryptainer_loading_schedule.cancel()
 
     def _load_cryptainer(self, index, cryptainer_name):
-        cryptainer_label = tr._("N° {index}: {cryptainer_name}").format(index=index, cryptainer_name=cryptainer_name)
-        cryptainer_entry = Factory.WASelectableListItemEntry(text=cryptainer_label)  # FIXME RENAME THIS
+        cryptainer_label = format_cryptainer_label(cryptainer_name=cryptainer_name)
+
+        cryptainer_entry_label = tr._("N° {index}: {cryptainer_label}").format(index=index,
+                                                                               cryptainer_label=cryptainer_label)
+
+        cryptainer_entry = Factory.WASelectableListItemEntry(text=cryptainer_entry_label)  # FIXME RENAME THIS
         cryptainer_entry.unique_identifier = cryptainer_name
 
-        def information_callback(widget, cryptainer_name=cryptainer_name):  # Force keystore_uid save here, else scope bug
+        def information_callback(widget,
+                                 cryptainer_name=cryptainer_name):  # Force keystore_uid save here, else scope bug
             self.show_cryptainer_details(cryptainer_name=cryptainer_name)
 
         information_icon = cryptainer_entry.ids.information_icon
@@ -136,33 +143,33 @@ class CryptainerStorageManagementScreen(Screen):
         Display the contents of container
         """
         assert self.filesystem_cryptainer_storage, self.filesystem_cryptainer_storage  # By construction...
+        cryptainer_label=""
         try:
             cryptainer = self.filesystem_cryptainer_storage.load_cryptainer_from_storage(cryptainer_name)
             all_dependencies = gather_trustee_dependencies([cryptainer])
             interesting_dependencies = [d[0] for d in list(all_dependencies["encryption"].values())]
-            cryptainer_repr = [trustee for trustee in interesting_dependencies]  # FIXME wrong name here
-            # container_repr = pprint.pformat(interesting_dependencies, indent=2)[:800]  # LIMIT else pygame.error: Width or height is too large
-
-
-            message = tr._("Key Guardians used: ") + "\n\n"
-            for index, key_guardian_used in enumerate(interesting_dependencies, start=1):
-
-                message += tr._(
-                     "N° {index}: type {trustee_type}, uid ...{keystore_uid}\n").format(
-                    index=index,
-                    trustee_type=key_guardian_used["trustee_type"],
-                    keystore_uid=shorten_uid(key_guardian_used["keystore_uid"]),
-                )
 
         except Exception as exc:
             message = repr(exc)[:800]
 
-        self.open_cryptainer_details_dialog(message, info_cryptainer=cryptainer_name)
+        else:
+            message = tr._("Key Guardians used: ") + "\n\n"
+            for index, key_guardian_used in enumerate(interesting_dependencies, start=1):
+                key_guardian_label = format_authenticator_label(authenticator_owner=key_guardian_used["keystore_owner"],
+                                                                keystore_uid=key_guardian_used["keystore_uid"],
+                                                                trustee_type=key_guardian_used["trustee_type"])
 
-    def open_cryptainer_details_dialog(self, message, info_cryptainer):
+                message += tr._("N° {index}: {key_guardian_label}\n").format(index=index,
+                                                                             key_guardian_label=key_guardian_label)
+            cryptainer_uid = cryptainer["cryptainer_uid"]
+            cryptainer_label = format_cryptainer_label(cryptainer_name=cryptainer_name, cryptainer_uid=cryptainer_uid)
+
+        self.open_cryptainer_details_dialog(message, cryptainer_info=cryptainer_label)
+
+    def open_cryptainer_details_dialog(self, message, cryptainer_info):
         dialog_with_close_button(
             close_btn_label=tr._("Close"),
-            title=str(info_cryptainer),
+            title=tr._("Conteneur: {cryptainer_info}").format(cryptainer_info=cryptainer_info),
             text=message,
         )
         '''
@@ -337,7 +344,7 @@ class CryptainerStorageManagementScreen(Screen):
         # print(">>>>>> selected_cryptainer_names in _launch_cryptainer_decryption()", selected_cryptainer_names)
         cryptainer_decryption_screen_name = "CryptainerDecryption"
         cryptainer_decryption_screen = self.manager.get_screen(cryptainer_decryption_screen_name)
-        cryptainer_decryption_screen.selected_cryptainer_names = selected_cryptainer_names  #FIXME change the system of propagation of this ?
+        cryptainer_decryption_screen.selected_cryptainer_names = selected_cryptainer_names  # FIXME change the system of propagation of this ?
         self.manager.current = cryptainer_decryption_screen_name
 
     @safe_catch_unhandled_exception

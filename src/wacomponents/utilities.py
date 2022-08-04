@@ -2,6 +2,7 @@ import threading
 import uuid
 from datetime import datetime, date
 from pathlib import Path
+from typing import Optional
 
 from kivy.uix.filechooser import filesize_units
 
@@ -105,12 +106,17 @@ def format_keypair_label(keychain_uid: uuid.UUID, key_algo: str, private_key_pre
     return keypair_label
 
 
-def format_authenticator_label(authenticator_owner, keystore_uid, short_uid=True):
+def format_authenticator_label(authenticator_owner: str, keystore_uid: uuid.UUID, trustee_type: Optional[str] = None,
+                               short_uid=True):
     # Paul Duport (ID … 1abfb5411)"
     if short_uid:
         keystore_uid = shorten_uid(keystore_uid)
-    authenticator_label = "{authenticator_owner} (ID {keystore_uid})".format(authenticator_owner=authenticator_owner,
+    authenticator_label = "{authenticator_owner} (ID {keystore_uid}".format(authenticator_owner=authenticator_owner,
                                                                              keystore_uid=keystore_uid)
+    if trustee_type:
+        authenticator_label += " Type: {trustee_type}".format(trustee_type=trustee_type)
+
+    authenticator_label += ")"
     return authenticator_label
 
 
@@ -153,15 +159,19 @@ def format_datetime_label(field_datetime: datetime, show_time=False):
     return datetime_label
 
 
-def format_cryptainer_label(cryptainer_name: str, cryptainer_uid: uuid.UUID, cryptainer_size_bytes=None,
+def format_cryptainer_label(cryptainer_name: str, cryptainer_uid: Optional[uuid.UUID] = None,
+                            cryptainer_size_bytes=None,
                             short_uid=True):
     # (format de la MDList des cryptainers)
-    # 20220109_202157_cryptainer.mp4.crypt: ... 1abfb5411 (6528 Ko)
+    # 20220109_202157_cryptainer.mp4.crypt (ID ... 1abfb5411) [6528 Ko]
 
-    if short_uid:
-        cryptainer_uid = shorten_uid(cryptainer_uid)
-    cryptainer_label = "{cryptainer_name}:{cryptainer_uid}".format(cryptainer_name=cryptainer_name,
-                                                                   cryptainer_uid=cryptainer_uid)
+    cryptainer_label = "{cryptainer_name}".format(cryptainer_name=cryptainer_name)
+
+    if cryptainer_uid:
+        if short_uid:
+            cryptainer_uid = shorten_uid(cryptainer_uid)
+        cryptainer_label += " (ID {cryptainer_uid})".format(cryptainer_uid=cryptainer_uid)
+
     if cryptainer_size_bytes is not None:
-        cryptainer_label += " (cryptainer_size_bytes)".format(cryptainer_size_bytes=cryptainer_size_bytes)
+        cryptainer_label += " [{cryptainer_size_bytes}]".format(cryptainer_size_bytes=cryptainer_size_bytes)
     return cryptainer_label
