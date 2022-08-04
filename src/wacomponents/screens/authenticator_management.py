@@ -391,8 +391,8 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
             type="custom",
             content_cls=Factory.AuthenticatorTesterContent(),
             buttons=[MDFlatButton(text=tr._("Check"),
-                                  on_release=lambda *args: self._check_authenticator_integrity(dialog,
-                                                                                               authenticator_dir))],
+                                  on_release=lambda *args: (close_current_dialog(), self._check_authenticator_integrity(dialog,
+                                                                                               authenticator_dir)))],
         )
 
         def _set_focus_on_passphrase(*args):
@@ -405,7 +405,6 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
     @safe_catch_unhandled_exception_and_display_popup
     def _check_authenticator_integrity(self, dialog, authenticator_dir):
         keystore_passphrase = dialog.content_cls.ids.tester_passphrase.text
-        close_current_dialog()
         result_dict = self._test_authenticator_passphrase(authenticator_dir=authenticator_dir,
                                                           keystore_passphrase=keystore_passphrase)
 

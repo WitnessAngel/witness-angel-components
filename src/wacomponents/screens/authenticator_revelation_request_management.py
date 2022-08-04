@@ -145,8 +145,8 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
             type="custom",
             content_cls=Factory.CheckPassphraseContent(),
             buttons=[
-                MDFlatButton(text=tr._("Accept"), on_release=lambda *args: self.accept_revelation_request(
-                    passphrase=dialog.content_cls.ids.passphrase.text, decryption_request=decryption_request))],
+                MDFlatButton(text=tr._("Accept"), on_release=lambda *args: (close_current_dialog(), self.accept_revelation_request(
+                    passphrase=dialog.content_cls.ids.passphrase.text, decryption_request=decryption_request)))],
         )
 
     def open_dialog_reject_request(self, decryption_request):
@@ -155,8 +155,8 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
             title=tr._("Do you want to reject this request?"),
             type="custom",
             buttons=[
-                MDFlatButton(text=tr._("Reject"), on_release=lambda *args: self.reject_revelation_request(
-                    decryption_request=decryption_request))],
+                MDFlatButton(text=tr._("Reject"), on_release=lambda *args: (close_current_dialog(), self.reject_revelation_request(
+                    decryption_request=decryption_request)))],
         )
 
     def display_remote_decryption_request(self, list_revelation_requests_per_status):  # TODO change name function
@@ -283,7 +283,6 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
 
         message = tr._("The decryption request was accepted")
 
-        close_current_dialog()
         display_info_snackbar(message)
         self.fetch_and_display_revelation_requests()
 
@@ -299,7 +298,6 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
             revelation_request_uid=revelation_request_uid)
         message = tr._("The decryption request was rejected")
 
-        close_current_dialog()
         display_info_snackbar(message)
         self.fetch_and_display_revelation_requests()
 

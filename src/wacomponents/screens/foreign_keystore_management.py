@@ -112,7 +112,6 @@ class ForeignKeystoreManagementScreen(Screen):
         new_keystore_uids = [metadata["keystore_uid"] for metadata in foreign_keystore_metadata]
         self._change_authenticator_selection_status(keystore_uids=new_keystore_uids, is_selected=True)
 
-        close_current_dialog()
         display_info_toast(msg)
 
         # update the display of authdevice saved in the local folder .keys_storage_ward
@@ -295,8 +294,8 @@ class ForeignKeystoreManagementScreen(Screen):
         for index, keypair_identifier in enumerate(keypair_identifiers, start=1):
             private_key_present = True if keypair_identifier["private_key_present"] else False
             keypair_label = format_keypair_label(keychain_uid=keypair_identifier["keychain_uid"],
-                                 key_algo=keypair_identifier["key_algo"],
-                                 private_key_present=private_key_present)
+                                                 key_algo=keypair_identifier["key_algo"],
+                                                 private_key_present=private_key_present, error_on_missing_key=False)
 
             # FIXME it's private key SINGULAR HERE!!
             message += tr._("Key n° {index}: {keypair_label}\n").format( index=index, keypair_label=keypair_label,
@@ -320,7 +319,7 @@ class ForeignKeystoreManagementScreen(Screen):
             content_cls=Factory.AuthenticatorTesterContent(),
             buttons=[
                 MDFlatButton(text=tr._("Import"),
-                             on_release=lambda *args: self.import_key_storage_from_web_gateway(dialog.content_cls.ids.tester_keystore_uid.text))],
+                             on_release=lambda *args: (close_current_dialog(), self.import_key_storage_from_web_gateway(dialog.content_cls.ids.tester_keystore_uid.text)))],
         )
 
     def choice_import_private_key_or_no_dialog(self):  # FIXME rename
@@ -334,9 +333,9 @@ class ForeignKeystoreManagementScreen(Screen):
                 content_cls=Factory.IncludePrivateKeysContent(),
                 buttons=[
                     MDFlatButton(text=tr._("Yes"),
-                                 on_release=lambda *args: self.import_keystores_from_usb(include_private_keys=True, authdevices_initialized=authdevices_initialized)),
+                                 on_release=lambda *args: (close_current_dialog(), self.import_keystores_from_usb(include_private_keys=True, authdevices_initialized=authdevices_initialized))),
                     MDFlatButton(text=tr._("No"),
-                                 on_release=lambda *args: self.import_keystores_from_usb(include_private_keys=False, authdevices_initialized=authdevices_initialized))
+                                 on_release=lambda *args: (close_current_dialog(), self.import_keystores_from_usb(include_private_keys=False, authdevices_initialized=authdevices_initialized)))
                 ],
             )
 
@@ -368,8 +367,6 @@ class ForeignKeystoreManagementScreen(Screen):
     def import_key_storage_from_web_gateway(self, keystore_uid_str):  # FIXME bad name
 
         keystore_uid_str = keystore_uid_str.strip().lower()
-
-        close_current_dialog()  # FIXME put this in callback handler, and other occurrences too!
 
         gateway_proxy = self._app.get_gateway_proxy()
 
