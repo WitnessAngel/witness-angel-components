@@ -79,7 +79,6 @@ class ClaimantRevelationRequestManagementScreen(Screen):
             container_item = Factory.ContainerItem(title='Cryptainer: %s ' % decryption_request_per_cryptainer[0])
 
             for revelation_request in decryption_request_per_cryptainer[1]:
-                print(revelation_request)
                 revelation_request_label = format_revelation_request_label(
                     revelation_request_uid=revelation_request["revelation_request_uid"],
                     revelation_request_creation_datetime=revelation_request["created_at"],
