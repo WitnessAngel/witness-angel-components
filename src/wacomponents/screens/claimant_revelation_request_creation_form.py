@@ -16,7 +16,7 @@ from wacryptolib.exceptions import KeystoreDoesNotExist, KeyDoesNotExist, Keysto
 
 from wacomponents.default_settings import INTERNAL_APP_ROOT
 from wacomponents.i18n import tr
-from wacomponents.utilities import shorten_uid
+from wacomponents.utilities import shorten_uid, format_authenticator_label
 from wacomponents.widgets.popups import display_info_toast, dialog_with_close_button, safe_catch_unhandled_exception_and_display_popup
 
 Builder.load_file(str(Path(__file__).parent / 'claimant_revelation_request_creation_form.kv'))
@@ -60,20 +60,23 @@ class ClaimantRevelationRequestCreationFormScreen(Screen):
             gateway_url=self._app.get_wagateway_url()
         )
 
-        decryption_request_summary_text = dedent(tr._("""\
+        revelation_request_summary_text = dedent(tr._("""\
                                             Container(s) selected: 
                                                 {containers_selected}
                                             
                                             Gateway url: {gateway_url}                                           
                                         """)).format(**_displayed_values)
 
-        self.ids.decryption_request_summary.text = decryption_request_summary_text
+        self.ids.decryption_request_summary.text = revelation_request_summary_text
 
         # Display the list of required authenticators
         for trustee_info, trustee_keypair_identifiers in self.trustee_data:
             keystore_uid = trustee_info["keystore_uid"]
+            authenticator_label = format_authenticator_label(authenticator_owner=trustee_info["keystore_owner"],
+                                                             keystore_uid=keystore_uid)
+
             authenticator_entry = Factory.ListItemWithCheckbox(
-                text=tr._("Authenticator: {keystore_uid}").format(keystore_uid=keystore_uid))
+                text=tr._("Authenticator {authenticator_label}").format(authenticator_label=authenticator_label))
             authenticator_entry.unique_identifier = keystore_uid
             self.ids.authenticator_checklist.add_widget(authenticator_entry)
 
@@ -117,6 +120,7 @@ class ClaimantRevelationRequestCreationFormScreen(Screen):
 
         # Symkeys decryptable per trustee for containers selected
         cryptainers_with_names = self._get_cryptainers_with_cryptainer_names(self.selected_cryptainer_names)
+
         decryptable_symkeys_per_trustee = gather_decryptable_symkeys(cryptainers_with_names)
 
         # Response keypair used to encrypt the decrypted symkey/shard

@@ -76,14 +76,14 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
             response_key_algo=decryption_request["revelation_response_key_algo"]
         )
 
-        decryption_request_summary_text = dedent(tr._("""\
+        revelation_request_summary_text = dedent(tr._("""\
                                     Target Public Authenticator: {target_public_authenticator}
                                     Revelation Requestor ID: {requestor_uid}
                                     Description: {request_description}
                                     Response public key: {response_keychain_uid}({response_key_algo})\
                                 """)).format(**_displayed_values)
 
-        decryptionRequestEntry.decryption_request_summary.text = decryption_request_summary_text
+        decryptionRequestEntry.decryption_request_summary.text = revelation_request_summary_text
 
         for index, symkey_decryption in enumerate(decryption_request['symkey_decryption_requests'], start=1):
             symkey_decryption_label = tr._("Container N° {key_index}: {Container_uid} "). \

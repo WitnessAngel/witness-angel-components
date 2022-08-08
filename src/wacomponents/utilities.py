@@ -90,7 +90,8 @@ def get_nice_size(size):
 
 # Utilities for formatted text
 
-def format_keypair_label(keychain_uid: uuid.UUID, key_algo: str, private_key_present=None, error_on_missing_key=True, short_uid=True) -> str:
+def format_keypair_label(keychain_uid: uuid.UUID, key_algo: str, private_key_present=None, error_on_missing_key=True,
+                         short_uid=True) -> str:
     # RSA-OAEP …0abf25421"
 
     if short_uid:
@@ -115,7 +116,7 @@ def format_authenticator_label(authenticator_owner: str, keystore_uid: uuid.UUID
     if short_uid:
         keystore_uid = shorten_uid(keystore_uid)
     authenticator_label = "{authenticator_owner} (ID {keystore_uid}".format(authenticator_owner=authenticator_owner,
-                                                                             keystore_uid=keystore_uid)
+                                                                            keystore_uid=keystore_uid)
     if trustee_type:
         authenticator_label += ", type {trustee_type}".format(trustee_type=trustee_type)
 
@@ -123,8 +124,8 @@ def format_authenticator_label(authenticator_owner: str, keystore_uid: uuid.UUID
     return authenticator_label
 
 
-def format_revelation_request_label(revelation_request_creation_time: datetime, revelation_request_uid: uuid.UUID,
-                                    short_uid=True):
+def format_revelation_request_label(revelation_request_creation_datetime: datetime, revelation_request_uid: uuid.UUID,
+                                    revelation_request_status: str, short_uid=True):
     # Revelation request id: ... 1abfb5411 (Created on: 2022/05/22)
 
     if short_uid:
@@ -132,11 +133,12 @@ def format_revelation_request_label(revelation_request_creation_time: datetime, 
 
     # Date into isoformat
     refformatted_revelation_request_creation_date = format_datetime_label(
-        field_datetime=revelation_request_creation_time)
+        field_datetime=revelation_request_creation_datetime)
 
-    revelation_request_label = "{Revelation request id: {revelation_request_uid} (Created on: {refformatted_revelation_request_creation_date})".format(
+    revelation_request_label = "Revelation request (ID {revelation_request_uid}, created on: {refformatted_revelation_request_creation_date}), Status: {revelation_request_status}".format(
         revelation_request_uid=revelation_request_uid,
-        refformatted_revelation_request_creation_date=refformatted_revelation_request_creation_date)
+        refformatted_revelation_request_creation_date=refformatted_revelation_request_creation_date,
+        revelation_request_status=revelation_request_status)
 
     return revelation_request_label
 
