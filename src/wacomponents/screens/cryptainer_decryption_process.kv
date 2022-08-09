@@ -23,6 +23,7 @@
         add_passphrase_btn.size_hint_x = 0.5
         container_decrypt_btn.size_hint_x = 0.5
         remote_decryption_request_btn.size_hint_x = 0.5
+        decryption_request_error_btn.size_hint_x = 0.5
         root.get_container_summary()
         root.get_cryptainer_trustee_dependency_status()
 
@@ -84,5 +85,11 @@
                     icon: "remote"
                     text: tr._("Request remote authorization")
                     on_press: root.launch_remote_decryption_request()
+
+                WAOperationButton:
+                    id: decryption_request_error_btn
+                    icon: "remote"
+                    text: tr._("Decryption request error")
+                    on_press: root.manager.current = "DecryptionRequestError"
 
 

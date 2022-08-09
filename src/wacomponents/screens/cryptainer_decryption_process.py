@@ -163,10 +163,10 @@ class CryptainerDecryptionProcessScreen(Screen):
 
         message = ""
         for index, keypair_identifier in enumerate(status["trustee_keypair_identifiers"], start=1):
-
             keypair_label = format_keypair_label(keychain_uid=keypair_identifier["keychain_uid"],
                                                  key_algo=keypair_identifier["key_algo"],
-                                                 private_key_present=False if keypair_identifier in status["trustee_private_keys_missing"] else True,
+                                                 private_key_present=False if keypair_identifier in status[
+                                                     "trustee_private_keys_missing"] else True,
                                                  error_on_missing_key=False)
 
             message += tr._("Key n° {index}: {keypair_label}\n").format(index=index, keypair_label=keypair_label)
@@ -223,7 +223,8 @@ class CryptainerDecryptionProcessScreen(Screen):
 
                 try:
                     private_key_pem = filesystem_keystore.get_private_key(keychain_uid=keychain_uid, key_algo=key_algo)
-                    key_obj = load_asymmetric_key_from_pem_bytestring(key_pem=private_key_pem, key_algo=key_algo, passphrase=passphrase)
+                    key_obj = load_asymmetric_key_from_pem_bytestring(key_pem=private_key_pem, key_algo=key_algo,
+                                                                      passphrase=passphrase)
                     assert key_obj, key_obj
                 except (KeyLoadingError, KeyDoesNotExist):
                     pass  # This was not the right keystore
@@ -271,9 +272,9 @@ class CryptainerDecryptionProcessScreen(Screen):
             except Exception as exc:
                 # print(">>>>> close_dialog_decipher_cryptainer() exception thrown:", exc)  # TEMPORARY
                 logger.warning("Error decrypting container %s: %r" % (cryptainer_name, exc))
-                errors.append(exc)
+                # errors.append(exc)
+                self.launch_remote_decryption_request_error_page(errors)
                 print("Decryption errors encountered:", errors)
-
 
         if errors:
             message = "Errors happened during decryption, see logs"  # TODO TRADUIRE
@@ -285,6 +286,20 @@ class CryptainerDecryptionProcessScreen(Screen):
             font_size="12sp",
             duration=5,
         ).open()
+
+    def launch_remote_decryption_request_error_page(self, errors):
+        error_text = ""
+        for error in errors:
+            error_exception = error.__getitem__("error_type")
+            error_text += "Error: {error_type}\nCriticity: {error_criticity}\nMessage: {error_message}\nException: {" \
+                          "error_exception}\n\n". \
+                format(error_type=error["error_type"], error_criticity=error["error_criticity"],
+                       error_message=error["error_message"], error_exception=error_exception)
+
+        decryption_request_error_screen_name = "DecryptionRequestError"
+        decryption_request_error_screen = self.manager.get_screen(decryption_request_error_screen_name)
+        decryption_request_error_screen.error_report = error_text
+        self.manager.current = decryption_request_error_screen_name
 
     def launch_remote_decryption_request(self):
 
