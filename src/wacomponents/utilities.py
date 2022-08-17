@@ -180,3 +180,17 @@ def format_cryptainer_label(cryptainer_name: str, cryptainer_uid: Optional[uuid.
     if cryptainer_size_bytes is not None:
         cryptainer_label += " [{cryptainer_size_bytes}]".format(cryptainer_size_bytes=cryptainer_size_bytes)
     return cryptainer_label
+
+
+def format_revelation_request_error(error_criticity: str, error_type: str, error_message: str, error_exception):
+    # Criticity: ASYMMETRIC_DECRYPTION_ERROR
+    # Message:
+    # Exception: ASYMMETRIC_DECRYPTION_ERROR
+    if error_exception:
+        error_exception = error_exception.__class__.__name__
+
+    error_label = "{error_criticity}: {error_type}\n" \
+                  "Message: {error_message}\n" \
+                  "Exception: {error_exception}".format(error_criticity=error_criticity, error_type=error_type,
+                                                        error_message=error_message, error_exception=error_exception)
+    return error_label
