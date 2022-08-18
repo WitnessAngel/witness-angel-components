@@ -40,8 +40,8 @@
         size_hint_x: 1  # HACK
 
 
-<DecryptionRequestEntry@AccordionItem>
-    decryption_request_summary : decryption_request_summary
+<revelationRequestEntry@AccordionItem>
+    revelation_request_summary : revelation_request_summary
     symkeys_decryption : symkeys_decryption
     entry_grid : entry_grid
 
@@ -50,7 +50,7 @@
         id:entry_grid
 
         WATextInput:
-            id: decryption_request_summary
+            id: revelation_request_summary
             padding: 10
             halign: "left"
             size_hint: 1, None
@@ -81,15 +81,15 @@
 
             Tab:
                 title: tr._("Pending")
-                id: pending_decryption_request
+                id: pending_revelation_request
 
             Tab:
                 title: tr._("Accepted")
-                id: accepted_decryption_request
+                id: accepted_revelation_request
 
             Tab:
                 title: tr._("Rejected")
-                id: rejected_decryption_request
+                id: rejected_revelation_request
 
 
 

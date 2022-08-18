@@ -125,7 +125,7 @@ def format_authenticator_label(authenticator_owner: str, keystore_uid: uuid.UUID
 
 
 def format_revelation_request_label(revelation_request_creation_datetime: datetime, revelation_request_uid: uuid.UUID,
-                                    revelation_request_status: str, short_uid=True):
+                                    revelation_request_status: Optional[str] = None, short_uid=True):
     # Revelation request id: ... 1abfb5411 (Created on: 2022/05/22)
 
     if short_uid:
@@ -135,10 +135,12 @@ def format_revelation_request_label(revelation_request_creation_datetime: dateti
     refformatted_revelation_request_creation_date = format_datetime_label(
         field_datetime=revelation_request_creation_datetime)
 
-    revelation_request_label = "Revelation request (ID {revelation_request_uid}, created on: {refformatted_revelation_request_creation_date}), Status: {revelation_request_status}".format(
+    revelation_request_label = "Revelation request (ID {revelation_request_uid}, created on: {refformatted_revelation_request_creation_date})".format(
         revelation_request_uid=revelation_request_uid,
-        refformatted_revelation_request_creation_date=refformatted_revelation_request_creation_date,
-        revelation_request_status=revelation_request_status)
+        refformatted_revelation_request_creation_date=refformatted_revelation_request_creation_date)
+
+    if revelation_request_status:
+        revelation_request_label += ", Status: {revelation_request_status}".format(revelation_request_status=revelation_request_status)
 
     return revelation_request_label
 
@@ -165,8 +167,8 @@ def format_datetime_label(field_datetime: datetime, show_time=False):
 
 
 def format_cryptainer_label(cryptainer_name: str, cryptainer_uid: Optional[uuid.UUID] = None,
-                            cryptainer_size_bytes=None,
-                            short_uid=True):
+                            cryptainer_size_bytes=None, short_uid=True):
+
     # (format de la MDList des cryptainers)
     # 20220109_202157_cryptainer.mp4.crypt (ID ... 1abfb5411) [6528 Ko]
 

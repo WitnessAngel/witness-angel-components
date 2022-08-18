@@ -3,7 +3,6 @@ from textwrap import dedent
 
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty, BooleanProperty, StringProperty
-from kivy.uix.accordion import Accordion
 
 from kivymd.app import MDApp
 from kivy.factory import Factory
@@ -14,14 +13,15 @@ from kivymd.uix.tab import MDTabsBase
 from wacomponents.widgets.layout_components import GrowingAccordion, build_fallback_information_box
 from wacryptolib.cipher import encrypt_bytestring
 from wacryptolib.exceptions import KeyLoadingError, KeyDoesNotExist, KeystoreDoesNotExist, \
-    AuthenticationError, ExistenceError
+    AuthenticationError
 from wacryptolib.keygen import load_asymmetric_key_from_pem_bytestring
 from wacryptolib.keystore import load_keystore_metadata, FilesystemKeystore
 from wacryptolib.trustee import TrusteeApi
 from wacryptolib.utilities import load_from_json_bytes, dump_to_json_bytes
 
 from wacomponents.i18n import tr
-from wacomponents.utilities import shorten_uid
+from wacomponents.utilities import format_revelation_request_label, format_keypair_label, \
+    format_authenticator_label
 from wacomponents.widgets.popups import dialog_with_close_button, close_current_dialog, display_info_snackbar, \
     help_text_popup, safe_catch_unhandled_exception_and_display_popup
 
@@ -61,31 +61,39 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
     def go_to_home_screen(self):  # Fixme deduplicate and push to App!
         self.manager.current = "authenticator_selector_screen"
 
-    def _display_single_remote_decryption_request(self, status, decryption_request):
+    def _display_single_remote_revelation_request(self, status, revelation_request):
 
-        decryptionRequestEntry = Factory.DecryptionRequestEntry()
+        revelationRequestEntry = Factory.revelationRequestEntry()
 
-        decryptionRequestEntry.title = tr._("Request : {revelation_request_uid}").format(
-            revelation_request_uid=decryption_request["revelation_request_uid"])
+        revelation_request_label = format_revelation_request_label(
+            revelation_request_uid=revelation_request["revelation_request_uid"],
+            revelation_request_creation_datetime=revelation_request["created_at"])
+
+        revelationRequestEntry.title = revelation_request_label
+
+        target_public_authenticator_label = format_authenticator_label(
+            authenticator_owner=revelation_request["target_public_authenticator"]["keystore_owner"],
+            keystore_uid=revelation_request["target_public_authenticator"]["keystore_uid"])
+
+        response_key_label = format_keypair_label(
+            keychain_uid=revelation_request["revelation_response_keychain_uid"],
+            key_algo=revelation_request["revelation_response_key_algo"])
 
         _displayed_values = dict(
-            target_public_authenticator=decryption_request["target_public_authenticator"]["keystore_owner"],
-            requestor_uid=decryption_request["revelation_requestor_uid"],
-            request_description=decryption_request["revelation_request_description"],
-            response_keychain_uid=shorten_uid(decryption_request["revelation_response_keychain_uid"]),
-            response_key_algo=decryption_request["revelation_response_key_algo"]
+            target_public_authenticator_label=target_public_authenticator_label,
+            request_description=revelation_request["revelation_request_description"],
+            response_key_label=response_key_label,
         )
 
         revelation_request_summary_text = dedent(tr._("""\
-                                    Target Public Authenticator: {target_public_authenticator}
-                                    Revelation Requestor ID: {requestor_uid}
+                                    Public authenticator: {target_public_authenticator_label}
                                     Description: {request_description}
-                                    Response public key: {response_keychain_uid}({response_key_algo})\
+                                    Response public key: {response_key_label}\
                                 """)).format(**_displayed_values)
 
-        decryptionRequestEntry.decryption_request_summary.text = revelation_request_summary_text
+        revelationRequestEntry.revelation_request_summary.text = revelation_request_summary_text
 
-        for index, symkey_decryption in enumerate(decryption_request['symkey_decryption_requests'], start=1):
+        for index, symkey_decryption in enumerate(revelation_request['symkey_decryption_requests'], start=1):
             symkey_decryption_label = tr._("Container N° {key_index}: {Container_uid} "). \
                 format(key_index=index, Container_uid=symkey_decryption["cryptainer_uid"])
 
@@ -97,48 +105,50 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
             information_icon = symkey_decryption_item.ids.information_icon
             information_icon.bind(on_press=information_callback)
 
-            decryptionRequestEntry.symkeys_decryption.add_widget(symkey_decryption_item)
+            revelationRequestEntry.symkeys_decryption.add_widget(symkey_decryption_item)
 
         if status == SymkeyDecryptionStatus.PENDING:
             gridButtons = Factory.GridButtons()
 
-            def reject_request_callback(widget, decryption_request=decryption_request):
-                self.open_dialog_reject_request(decryption_request=decryption_request)
+            def reject_request_callback(widget, revelation_request=revelation_request):
+                self.open_dialog_reject_request(revelation_request=revelation_request)
 
-            def accept_request_callback(widget, decryption_request=decryption_request):
-                self.open_dialog_accept_request(decryption_request=decryption_request)
+            def accept_request_callback(widget, revelation_request=revelation_request):
+                self.open_dialog_accept_request(revelation_request=revelation_request)
 
             gridButtons.rejected_button.bind(on_press=reject_request_callback)
             gridButtons.accepted_button.bind(on_press=accept_request_callback)
 
-            decryptionRequestEntry.entry_grid.add_widget(gridButtons)
+            revelationRequestEntry.entry_grid.add_widget(gridButtons)
 
-        return decryptionRequestEntry
+        return revelationRequestEntry
 
     def show_symkey_decryption_details(self, symkey_decryption):
 
+        authenticator_key_algo = symkey_decryption["target_public_authenticator_key"]["key_algo"]
+        authenticator_keychain_uid = symkey_decryption["target_public_authenticator_key"]["keychain_uid"]
+
+        authenticator_key_label = format_keypair_label(keychain_uid=authenticator_keychain_uid,
+                                                       key_algo=authenticator_key_algo)
+
         _displayed_values = dict(
-            key_algo=symkey_decryption["target_public_authenticator_key"]["key_algo"],
-            keychain_uid=symkey_decryption["target_public_authenticator_key"]["keychain_uid"],
-            cryptainer_uid=symkey_decryption["cryptainer_uid"],
+            authenticator_key=authenticator_key_label,
             cryptainer_metadata=symkey_decryption["cryptainer_metadata"],
-            symkey_decryption_request_data=symkey_decryption["symkey_decryption_request_data"],
             symkey_decryption_status=symkey_decryption["symkey_decryption_status"]
         )
 
         symkey_decryption_info_text = dedent(tr._("""\
-                                   Cryptainer uid: {cryptainer_uid}
                                    Cryptainer metadata: {cryptainer_metadata}
-                                   Key needeed: {keychain_uid}({key_algo})
+                                   Authenticator key: {authenticator_key}
                                    Decryption status: {symkey_decryption_status}
                                """)).format(**_displayed_values)
         dialog_with_close_button(
             close_btn_label=tr._("Close"),
-            title=tr._("Symkey decryption details"),
+            title=tr._("Symkey decryption request details"),
             text=symkey_decryption_info_text,
         )
 
-    def open_dialog_accept_request(self, decryption_request):
+    def open_dialog_accept_request(self, revelation_request):
         dialog = dialog_with_close_button(
             close_btn_label=tr._("Cancel"),
             title=tr._("Enter your passphrase"),
@@ -146,58 +156,58 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
             content_cls=Factory.CheckPassphraseContent(),
             buttons=[
                 MDFlatButton(text=tr._("Accept"), on_release=lambda *args: (close_current_dialog(), self.accept_revelation_request(
-                    passphrase=dialog.content_cls.ids.passphrase.text, decryption_request=decryption_request)))],
+                    passphrase=dialog.content_cls.ids.passphrase.text, revelation_request=revelation_request)))],
         )
 
-    def open_dialog_reject_request(self, decryption_request):
+    def open_dialog_reject_request(self, revelation_request):
         dialog_with_close_button(
             close_btn_label=tr._("Cancel"),
             title=tr._("Do you want to reject this request?"),
             type="custom",
             buttons=[
                 MDFlatButton(text=tr._("Reject"), on_release=lambda *args: (close_current_dialog(), self.reject_revelation_request(
-                    decryption_request=decryption_request)))],
+                    revelation_request=revelation_request)))],
         )
 
-    def display_remote_decryption_request(self, list_revelation_requests_per_status):  # TODO change name function
+    def display_remote_revelation_request(self, list_revelation_requests_per_status):  # TODO change name function
         # TODO add list_decryption_request to parameter of this function
         # why????
 
-        tab_per_status = dict(PENDING=self.ids.pending_decryption_request,
-                              REJECTED=self.ids.rejected_decryption_request,
-                              ACCEPTED=self.ids.accepted_decryption_request)
+        tab_per_status = dict(PENDING=self.ids.pending_revelation_request,
+                              REJECTED=self.ids.rejected_revelation_request,
+                              ACCEPTED=self.ids.accepted_revelation_request)
 
-        for status, decryption_requests in list_revelation_requests_per_status.items():
+        for status, revelation_requests in list_revelation_requests_per_status.items():
 
-            if not decryption_requests:
+            if not revelation_requests:
                 fallback_info_box = build_fallback_information_box(tr._("No decryption request"))
                 tab_per_status[status].add_widget(fallback_info_box)
                 continue
 
             scroll = Factory.WAVerticalScrollView()
             root = GrowingAccordion(orientation='vertical', size_hint=(1, None), height=self.height)
-            for decryption_request in decryption_requests:
-                decryption_request_entry = self._display_single_remote_decryption_request(
-                    status=status, decryption_request=decryption_request)
-                root.add_widget(decryption_request_entry)
+            for revelation_request in revelation_requests:
+                revelation_request_entry = self._display_single_remote_revelation_request(
+                    status=status, revelation_request=revelation_request)
+                root.add_widget(revelation_request_entry)
             scroll.add_widget(root)
             tab_per_status[status].add_widget(scroll)
 
     @staticmethod
-    def sort_list_revelation_request_per_status(list_authenticator_decryption_requests):
+    def sort_list_revelation_request_per_status(list_authenticator_revelation_requests):
         DECRYPTION_REQUEST_STATUSES = ["PENDING", "ACCEPTED", "REJECTED"]  # KEEP IN SYNC with WASERVER
-        decryption_requests_per_status = {status: [] for status in DECRYPTION_REQUEST_STATUSES}
+        revelation_requests_per_status = {status: [] for status in DECRYPTION_REQUEST_STATUSES}
 
-        for decryption_request in list_authenticator_decryption_requests:
-            decryption_requests_per_status[decryption_request["revelation_request_status"]].append(decryption_request)
-        return decryption_requests_per_status
+        for revelation_request in list_authenticator_revelation_requests:
+            revelation_requests_per_status[revelation_request["revelation_request_status"]].append(revelation_request)
+        return revelation_requests_per_status
 
     @safe_catch_unhandled_exception_and_display_popup
     def fetch_and_display_revelation_requests(self):
 
-        self.ids.pending_decryption_request.clear_widgets()
-        self.ids.rejected_decryption_request.clear_widgets()
-        self.ids.accepted_decryption_request.clear_widgets()
+        self.ids.pending_revelation_request.clear_widgets()
+        self.ids.rejected_revelation_request.clear_widgets()
+        self.ids.accepted_revelation_request.clear_widgets()
 
         authenticator_path = self.selected_authenticator_dir
 
@@ -224,10 +234,10 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
         list_revelation_requests_per_status = self.sort_list_revelation_request_per_status(
             list_authenticator_revelation_requests)
 
-        self.display_remote_decryption_request(list_revelation_requests_per_status=list_revelation_requests_per_status)
+        self.display_remote_revelation_request(list_revelation_requests_per_status=list_revelation_requests_per_status)
 
     @safe_catch_unhandled_exception_and_display_popup
-    def accept_revelation_request(self, passphrase, decryption_request):
+    def accept_revelation_request(self, passphrase, revelation_request):
         # USE THIS FORM BEFORE :                text=tr._("Confirm removal"), on_release=lambda *args: (
         #                         close_current_dialog(), self.delete_keystores(keystore_uids=keystore_uids))
         authenticator_metadata = load_keystore_metadata(keystore_dir=self.selected_authenticator_dir)
@@ -237,7 +247,7 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
 
         # FIXME check passphrase first and report error, instead of leaving "abnormal error" flowing to safe_catch_unhandled_exception_and_display_popup
 
-        for symkey_decryption in decryption_request["symkey_decryption_requests"]:
+        for symkey_decryption in revelation_request["symkey_decryption_requests"]:
             decryption_status = SymkeyDecryptionStatus.DECRYPTED
             keychain_uid = symkey_decryption["target_public_authenticator_key"]["keychain_uid"]
             cipher_algo = symkey_decryption["target_public_authenticator_key"]["key_algo"]
@@ -249,8 +259,8 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
                 key_struct_bytes = trustee_api.decrypt_with_private_key(keychain_uid=keychain_uid,
                                                                         cipher_algo=cipher_algo,
                                                                         cipherdict=cipherdict, passphrases=passphrases)
-                response_key_algo = decryption_request["revelation_response_key_algo"]
-                response_public_key = decryption_request["revelation_response_public_key"]
+                response_key_algo = revelation_request["revelation_response_key_algo"]
+                response_public_key = revelation_request["revelation_response_public_key"]
 
                 public_key = load_asymmetric_key_from_pem_bytestring(key_pem=response_public_key, key_algo=cipher_algo)
 
@@ -274,7 +284,7 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
 
             symkey_decryption_results.append(symkey_decryption_result)
 
-        revelation_request_uid = decryption_request["revelation_request_uid"]
+        revelation_request_uid = revelation_request["revelation_request_uid"]
 
         self.gateway_proxy.accept_revelation_request(
             authenticator_keystore_secret=authenticator_metadata["keystore_secret"],
@@ -287,16 +297,16 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
         self.fetch_and_display_revelation_requests()
 
     @safe_catch_unhandled_exception_and_display_popup
-    def reject_revelation_request(self, decryption_request):
+    def reject_revelation_request(self, revelation_request):
         # USE THIS FORM BEFORE :                text=tr._("Confirm removal"), on_release=lambda *args: (
         #                         close_current_dialog(), self.delete_keystores(keystore_uids=keystore_uids))
         authenticator_metadata = load_keystore_metadata(keystore_dir=self.selected_authenticator_dir)
-        revelation_request_uid = decryption_request["revelation_request_uid"]
+        revelation_request_uid = revelation_request["revelation_request_uid"]
 
         self.gateway_proxy.reject_revelation_request(
             authenticator_keystore_secret=authenticator_metadata["keystore_secret"],
             revelation_request_uid=revelation_request_uid)
-        message = tr._("The decryption request was rejected")
+        message = tr._("The revelation request was rejected")
 
         display_info_snackbar(message)
         self.fetch_and_display_revelation_requests()
@@ -306,5 +316,5 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
          Add this!!!
          """))
         help_text_popup(
-            title=tr._("Remote request decryption page"),
+            title=tr._("Remote request revelation page"),
             text=help_text, )
