@@ -12,6 +12,7 @@ from kivymd.uix.screen import Screen
 from wacryptolib.jsonrpc_client import JsonRpcProxy, status_slugs_response_error_handler
 from wacryptolib.exceptions import ExistenceError
 
+from wacomponents.screens.base import WAScreenName
 from wacomponents.widgets.layout_components import GrowingAccordion, build_fallback_information_box
 from wacomponents.i18n import tr
 from wacomponents.utilities import shorten_uid, format_revelation_request_label, format_authenticator_label, \
@@ -31,7 +32,7 @@ class ClaimantRevelationRequestManagementScreen(Screen):
         super().__init__(*args, **kwargs)
 
     def go_to_previous_screen(self):
-        self.manager.current = "CryptainerManagement"
+        self.manager.current = WAScreenName.cryptainer_storage_management
 
     @staticmethod
     def _list_decryption_request_reformatted(
@@ -117,15 +118,15 @@ class ClaimantRevelationRequestManagementScreen(Screen):
                                     Symkey Decryption status: {symkey_decryption_status}
                                                                        """)).format(**_displayed_values)
 
-                decryption_request_entry = Factory.WAIconListItemEntry(text=revelation_request_label)
+                revelation_request_entry = Factory.WAIconListItemEntry(text=revelation_request_label)
 
                 def information_callback(widget, revelation_request_info=revelation_request_summary_text):
                     self.show_revelation_request_info(revelation_request_info=revelation_request_info)
 
-                information_icon = decryption_request_entry.ids.information_icon
+                information_icon = revelation_request_entry.ids.information_icon
                 information_icon.bind(on_press=information_callback)
 
-                container_item.decryption_requests_list.add_widget(decryption_request_entry)
+                container_item.decryption_requests_list.add_widget(revelation_request_entry)
 
             display_layout.add_widget(container_item)
         self.ids.list_decryption_request_scrollview.add_widget(display_layout)

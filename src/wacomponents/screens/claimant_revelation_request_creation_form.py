@@ -16,6 +16,7 @@ from wacryptolib.exceptions import KeystoreDoesNotExist, KeyDoesNotExist, Keysto
 
 from wacomponents.default_settings import INTERNAL_APP_ROOT
 from wacomponents.i18n import tr
+from wacomponents.screens.base import WAScreenName
 from wacomponents.utilities import shorten_uid, format_authenticator_label
 from wacomponents.widgets.popups import display_info_toast, dialog_with_close_button, safe_catch_unhandled_exception_and_display_popup
 
@@ -35,10 +36,10 @@ class ClaimantRevelationRequestCreationFormScreen(Screen):
         super().__init__(*args, **kwargs)
 
     def go_to_previous_screen(self):
-        self.manager.current = "CryptainerDecryption"
+        self.manager.current = WAScreenName.cryptainer_decryption_process
 
     def go_to_management_screen(self):
-        self.manager.current = "CryptainerManagement"
+        self.manager.current = WAScreenName.cryptainer_storage_management
 
     def _get_cryptainers_with_cryptainer_names(self, cryptainer_names):  # FIXME wrong naming, not "with", returns PAIRS
         cryptainers = []
@@ -67,7 +68,7 @@ class ClaimantRevelationRequestCreationFormScreen(Screen):
                                             Gateway url: {gateway_url}                                           
                                         """)).format(**_displayed_values)
 
-        self.ids.decryption_request_summary.text = revelation_request_summary_text
+        self.ids.revelation_request_summary.text = revelation_request_summary_text
 
         # Display the list of required authenticators
         for trustee_info, trustee_keypair_identifiers in self.trustee_data:

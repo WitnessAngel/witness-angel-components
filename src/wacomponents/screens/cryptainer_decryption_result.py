@@ -9,6 +9,7 @@ from kivymd.uix.label import MDLabel
 
 from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
+from wacomponents.screens.base import WAScreenName
 from wacomponents.utilities import format_revelation_request_error, format_cryptainer_label
 from wacomponents.widgets.layout_components import build_fallback_information_box
 
@@ -24,7 +25,7 @@ class CryptainerDecryptionResultScreen(Screen):
     last_decryption_info = ObjectProperty(None, allownone=True)
 
     def go_to_previous_screen(self):
-        self.manager.current = "cryptainer_decryption_process"
+        self.manager.current = WAScreenName.cryptainer_decryption_process
 
     def display_revelation_request_error(self):
         self.ids.decryption_info_list.clear_widgets()

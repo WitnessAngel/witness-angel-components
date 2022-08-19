@@ -14,6 +14,7 @@ from kivymd.uix.snackbar import Snackbar
 from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
 from wacomponents.logging.handlers import safe_catch_unhandled_exception
+from wacomponents.screens.base import WAScreenName
 from wacomponents.utilities import shorten_uid, format_cryptainer_label, format_authenticator_label
 from wacomponents.widgets.layout_components import build_fallback_information_box
 from wacomponents.widgets.popups import close_current_dialog, dialog_with_close_button, display_info_toast, \
@@ -32,6 +33,7 @@ class CryptainerStorageManagementScreen(Screen):
     filesystem_cryptainer_storage = ObjectProperty(None, allownone=True)
     cryptainer_names_to_be_loaded = ObjectProperty(None, allownone=True)
     cryptainer_loading_schedule = ObjectProperty(None, allownone=True)
+    claimant_revelation_request_management_scree_name=WAScreenName.claimant_revelation_request_management
 
     CRYPTAINER_LOADING_INTERVAL = 0.05
 
@@ -143,7 +145,7 @@ class CryptainerStorageManagementScreen(Screen):
         Display the contents of container
         """
         assert self.filesystem_cryptainer_storage, self.filesystem_cryptainer_storage  # By construction...
-        cryptainer_label=""
+        cryptainer_label = ""
         try:
             cryptainer = self.filesystem_cryptainer_storage.load_cryptainer_from_storage(cryptainer_name)
             all_dependencies = gather_trustee_dependencies([cryptainer])
@@ -342,7 +344,7 @@ class CryptainerStorageManagementScreen(Screen):
             display_info_toast(msg)
             return
         # print(">>>>>> selected_cryptainer_names in _launch_cryptainer_decryption()", selected_cryptainer_names)
-        cryptainer_decryption_screen_name = "CryptainerDecryption"
+        cryptainer_decryption_screen_name = WAScreenName.cryptainer_decryption_process
         cryptainer_decryption_screen = self.manager.get_screen(cryptainer_decryption_screen_name)
         cryptainer_decryption_screen.selected_cryptainer_names = selected_cryptainer_names  # FIXME change the system of propagation of this ?
         self.manager.current = cryptainer_decryption_screen_name

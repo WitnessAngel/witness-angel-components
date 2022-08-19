@@ -10,6 +10,7 @@ from kivymd.uix.snackbar import Snackbar
 
 from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
+from wacomponents.screens.base import WAScreenName
 from wacomponents.utilities import format_keypair_label, format_cryptainer_label, \
     format_authenticator_label
 from wacomponents.widgets.layout_components import build_fallback_information_box
@@ -34,9 +35,10 @@ class CryptainerDecryptionProcessScreen(Screen):
     filesystem_keystore_pool = ObjectProperty(None)
     ##found_trustees_lacking_passphrase = BooleanProperty(0)
     passphrase_mapper = {}
+    cryptainer_decryption_result_screen_name=WAScreenName.cryptainer_decryption_result
 
     def go_to_previous_screen(self):
-        self.manager.current = "cryptainer_storage_management"
+        self.manager.current = WAScreenName.cryptainer_storage_management
 
     def get_container_summary(self):
         self.ids.selected_cryptainer_table.clear_widgets()
@@ -302,15 +304,15 @@ class CryptainerDecryptionProcessScreen(Screen):
         ).open()
 
     def launch_remote_decryption_request_error_page(self, decryption_info):
-        decryption_request_error_screen_name = "cryptainer_decryption_result"
+        decryption_request_error_screen_name = WAScreenName.cryptainer_decryption_result
         decryption_request_error_screen = self.manager.get_screen(decryption_request_error_screen_name)
         decryption_request_error_screen.last_decryption_info = decryption_info
         self.manager.current = decryption_request_error_screen_name
 
     def launch_remote_decryption_request(self):
 
-        remote_decryption_request_screen_name = "claimant_revelation_request_creation_form"
-        remote_decryption_request_screen = self.manager.get_screen(remote_decryption_request_screen_name)
+        claimant_revelation_request_creation_form_screen_name = WAScreenName.claimant_revelation_request_creation_form
+        remote_decryption_request_screen = self.manager.get_screen(claimant_revelation_request_creation_form_screen_name)
         remote_decryption_request_screen.selected_cryptainer_names = self.selected_cryptainer_names
         remote_decryption_request_screen.trustee_data = self.trustee_data  # FIXME rename here too
-        self.manager.current = remote_decryption_request_screen_name
+        self.manager.current = claimant_revelation_request_creation_form_screen_name
