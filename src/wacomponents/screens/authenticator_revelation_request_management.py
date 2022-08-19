@@ -10,6 +10,8 @@ from kivymd.uix.button import MDFlatButton
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.screen import Screen
 from kivymd.uix.tab import MDTabsBase
+
+from wacomponents.screens.base import WAScreenName
 from wacomponents.widgets.layout_components import GrowingAccordion, build_fallback_information_box
 from wacryptolib.cipher import encrypt_bytestring
 from wacryptolib.exceptions import KeyLoadingError, KeyDoesNotExist, KeystoreDoesNotExist, \
@@ -59,7 +61,7 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
         self.gateway_proxy = self._app.get_gateway_proxy()
 
     def go_to_home_screen(self):  # Fixme deduplicate and push to App!
-        self.manager.current = "authenticator_selector_screen"
+        self.manager.current = WAScreenName.authenticator_management
 
     def _display_single_remote_revelation_request(self, status, revelation_request):
 

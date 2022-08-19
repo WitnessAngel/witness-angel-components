@@ -12,6 +12,7 @@ from kivymd.uix.screen import Screen
 
 from wacomponents.i18n import tr
 from wacomponents.screens.authenticator_management import shorten_uid
+from wacomponents.screens.base import WAScreenName
 from wacomponents.utilities import format_authenticator_label
 from wacomponents.widgets.popups import help_text_popup, display_info_toast, safe_catch_unhandled_exception_and_display_popup
 from wacryptolib.exceptions import ExistenceError
@@ -31,7 +32,7 @@ class AuthenticatorPublicationFormScreen(Screen):
         self.gateway_proxy = self._app.get_gateway_proxy()
 
     def go_to_home_screen(self):  # Fixme deduplicate and push to App!
-        self.manager.current = "authenticator_selector_screen"
+        self.manager.current = WAScreenName.authenticator_management
 
     def _query_remote_authenticator_status(self, keystore_uid: UUID):  # Fixme rename?
 

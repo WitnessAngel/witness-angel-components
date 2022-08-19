@@ -10,6 +10,7 @@ from kivy.properties import ObjectProperty, StringProperty
 from kivymd.uix.screen import Screen
 
 from wacomponents.i18n import tr
+from wacomponents.screens.base import WAScreenName
 from wacomponents.widgets.popups import dialog_with_close_button, process_method_with_gui_spinner, help_text_popup
 from wacryptolib.authenticator import initialize_authenticator
 from wacryptolib.keygen import generate_keypair
@@ -37,7 +38,7 @@ class AuthenticatorCreationFormScreen(Screen):
         super().__init__(*args, **kwargs)
 
     def go_to_home_screen(self):
-        self.manager.current = "authenticator_selector_screen"
+        self.manager.current = WAScreenName.authenticator_management
 
     def reset_initialization_form(self):
         self.set_form_fields_status(enabled=True)

@@ -19,6 +19,7 @@ from kivymd.uix.screen import Screen
 from wacomponents.default_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_APP_ROOT, EXTERNAL_EXPORTS_DIR, \
     strip_external_app_root_prefix, INTERNAL_APP_ROOT
 from wacomponents.i18n import tr
+from wacomponents.screens.base import WAScreenName
 from wacomponents.system_permissions import request_external_storage_dirs_access
 from wacomponents.utilities import convert_bytes_to_human_representation, shorten_uid, format_authenticator_label, \
     format_keypair_label, format_datetime_label
@@ -59,6 +60,8 @@ class FolderKeyStoreListItem(Factory.ThinTwoLineAvatarIconListItem):
 
 class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
     AUTHENTICATOR_ARCHIVE_FORMAT = "zip"
+    authenticator_creation_form_screenname = WAScreenName.authenticator_creation_form
+    authenticator_revelation_request_management_screenname = WAScreenName.authenticator_revelation_request_management
 
     AUTHENTICATOR_INITIALIZATION_STATUS_ICONS = {
         True: "check-circle-outline",  # or check-bold
@@ -458,8 +461,8 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
                     undecodable_private_keys=undecodable_private_keys)
 
     def show_authenticator_publish_page(self):
-        self.manager.current = "authenticator_synchronization_screen"
-        # publish_authenticator_screen = self.manager.get_screen("authenticator_synchronization_screen")
+        self.manager.current = WAScreenName.authenticator_publication_form
+        # publish_authenticator_screen = self.manager.get_screen("authenticator_publication_form")
         # publish_authenticator_screen.refresh_status()
 
     def display_help_popup(self):
