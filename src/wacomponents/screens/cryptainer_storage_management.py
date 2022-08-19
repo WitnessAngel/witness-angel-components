@@ -15,7 +15,7 @@ from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
 from wacomponents.logging.handlers import safe_catch_unhandled_exception
 from wacomponents.screens.base import WAScreenName
-from wacomponents.utilities import shorten_uid, format_cryptainer_label, format_authenticator_label
+from wacomponents.utilities import format_cryptainer_label, format_authenticator_label
 from wacomponents.widgets.layout_components import build_fallback_information_box
 from wacomponents.widgets.popups import close_current_dialog, dialog_with_close_button, display_info_toast, \
     safe_catch_unhandled_exception_and_display_popup

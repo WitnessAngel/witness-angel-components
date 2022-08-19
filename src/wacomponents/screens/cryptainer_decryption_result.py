@@ -3,14 +3,12 @@ from pathlib import Path
 from kivy.factory import Factory
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty, BooleanProperty, ListProperty
-from kivy.uix.gridlayout import GridLayout
 from kivymd.uix.screen import Screen
-from kivymd.uix.label import MDLabel
 
 from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
 from wacomponents.screens.base import WAScreenName
-from wacomponents.utilities import format_revelation_request_error, format_cryptainer_label
+from wacomponents.utilities import format_revelation_request_error
 from wacomponents.widgets.layout_components import build_fallback_information_box
 
 Builder.load_file(str(Path(__file__).parent / 'cryptainer_decryption_result.kv'))
@@ -73,12 +71,11 @@ class CryptainerDecryptionResultScreen(Screen):
 
                     revelation_report_file = EXTERNAL_EXPORTS_DIR.joinpath(
                         str(decryption_results_per_cryptainer["cryptainer_name"]) + "_revelation_report.txt")
-                    # revelation_report_file.parent.mkdir(parents=False, exist_ok=True)
                     dump_to_text_file(revelation_report_file, error_report_text)
 
                 else:
                     error_report_text = tr._("No error/warning when decrypting the container")
-                error_box = Factory.WASelectableLabel(text=error_report_text, size_hint_y=None, full_height=False)
+                error_box = Factory.WASelectableLabel(text=tr._(error_report_text), size_hint_y=None, full_height=False)
                 layout.add_widget(error_box)
 
 

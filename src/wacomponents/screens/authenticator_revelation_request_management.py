@@ -71,7 +71,7 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
             revelation_request_uid=revelation_request["revelation_request_uid"],
             revelation_request_creation_datetime=revelation_request["created_at"])
 
-        revelationRequestEntry.title = revelation_request_label
+        revelationRequestEntry.title = tr._(revelation_request_label)
 
         target_public_authenticator_label = format_authenticator_label(
             authenticator_owner=revelation_request["target_public_authenticator"]["keystore_owner"],
