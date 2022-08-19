@@ -60,8 +60,8 @@ class FolderKeyStoreListItem(Factory.ThinTwoLineAvatarIconListItem):
 
 class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
     AUTHENTICATOR_ARCHIVE_FORMAT = "zip"
-    authenticator_creation_form_screenname = WAScreenName.authenticator_creation_form
-    authenticator_revelation_request_management_screenname = WAScreenName.authenticator_revelation_request_management
+    authenticator_creation_form_screen_name = WAScreenName.authenticator_creation_form
+    authenticator_revelation_request_management_screen_name = WAScreenName.authenticator_revelation_request_management
 
     AUTHENTICATOR_INITIALIZATION_STATUS_ICONS = {
         True: "check-circle-outline",  # or check-bold

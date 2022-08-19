@@ -87,7 +87,7 @@
                 WAOperationButton:
                     icon: "account-key-outline"
                     text: tr._("Initialize")
-                    on_press: root.manager.current = root.authenticator_creation_form_screenname
+                    on_press: root.manager.current = root.authenticator_creation_form_screen_name
                     size_hint_x: 1  # HACK
 
                 WAOperationButton:
@@ -128,4 +128,4 @@
                     icon: "lock-open-outline"
                     text: tr._("Manage authorization requests")
                     size_hint_x: 1
-                    on_press: root.manager.current = root.authenticator_revelation_request_management_screenname
+                    on_press: root.manager.current = root.authenticator_revelation_request_management_screen_name
