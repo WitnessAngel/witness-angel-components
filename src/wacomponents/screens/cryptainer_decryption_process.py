@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 from kivy.factory import Factory
@@ -9,7 +10,7 @@ from kivymd.uix.snackbar import Snackbar
 
 from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
-from wacomponents.utilities import shorten_uid, format_keypair_label, format_cryptainer_label, \
+from wacomponents.utilities import format_keypair_label, format_cryptainer_label, \
     format_authenticator_label
 from wacomponents.widgets.layout_components import build_fallback_information_box
 from wacomponents.widgets.popups import dialog_with_close_button, close_current_dialog, \
@@ -35,7 +36,7 @@ class CryptainerDecryptionProcessScreen(Screen):
     passphrase_mapper = {}
 
     def go_to_previous_screen(self):
-        self.manager.current = "CryptainerManagement"
+        self.manager.current = "cryptainer_storage_management"
 
     def get_container_summary(self):
         self.ids.selected_cryptainer_table.clear_widgets()
@@ -257,29 +258,42 @@ class CryptainerDecryptionProcessScreen(Screen):
         assert self.filesystem_cryptainer_storage, self.filesystem_cryptainer_storage  # By construction...
 
         errors = []
-
+        decryption_results = []
+        decrypted_cryptainer_number = 0
         for cryptainer_name in self.selected_cryptainer_names:
+            decryption_status = False
             try:
                 EXTERNAL_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
                 # FIXME make this asynchronous, to avoid stalling the app!
-                result, errors = self.filesystem_cryptainer_storage.decrypt_cryptainer_from_storage(cryptainer_name, passphrase_mapper=self.passphrase_mapper)
+                result, errors = self.filesystem_cryptainer_storage.decrypt_cryptainer_from_storage(cryptainer_name,
+                                                                                                    passphrase_mapper=self.passphrase_mapper)
                 # FIXME add here real management of teh error report, and treat the case where result is None
                 assert not errors, errors
                 assert result
                 target_path = EXTERNAL_EXPORTS_DIR / (Path(cryptainer_name).with_suffix(""))
                 target_path.write_bytes(result)
+                decryption_status = True
+                decrypted_cryptainer_number += 1
                 # print(">> Successfully exported data file to %s" % target_path)
             except Exception as exc:
                 # print(">>>>> close_dialog_decipher_cryptainer() exception thrown:", exc)  # TEMPORARY
+                assert errors
                 logger.warning("Error decrypting container %s: %r" % (cryptainer_name, exc))
-                # errors.append(exc)
-                self.launch_remote_decryption_request_error_page(errors)
-                print("Decryption errors encountered:", errors)
+                # print("Decryption errors encountered:", errors)
 
-        if errors:
-            message = "Errors happened during decryption, see logs"  # TODO TRADUIRE
-        else:
+            decryption_result_per_cryptainer = dict(
+                cryptainer_name=cryptainer_name,
+                decryption_status=decryption_status,
+                decryption_error=errors
+            )
+            decryption_results.append(decryption_result_per_cryptainer)
+        decryption_info = (decrypted_cryptainer_number, decryption_results)
+        self.launch_remote_decryption_request_error_page(decryption_info)
+
+        if decrypted_cryptainer_number:
             message = "Decryption successful, see export folder for results"  # TODO TRADUIRE
+        else:
+            message = "Errors happened during decryption, see logs" # TODO TRADUIRE
 
         Snackbar(
             text=message,
@@ -287,23 +301,15 @@ class CryptainerDecryptionProcessScreen(Screen):
             duration=5,
         ).open()
 
-    def launch_remote_decryption_request_error_page(self, errors):
-        error_text = ""
-        for error in errors:
-            error_exception = error.__getitem__("error_type")
-            error_text += "Error: {error_type}\nCriticity: {error_criticity}\nMessage: {error_message}\nException: {" \
-                          "error_exception}\n\n". \
-                format(error_type=error["error_type"], error_criticity=error["error_criticity"],
-                       error_message=error["error_message"], error_exception=error_exception)
-
-        decryption_request_error_screen_name = "DecryptionRequestError"
+    def launch_remote_decryption_request_error_page(self, decryption_info):
+        decryption_request_error_screen_name = "cryptainer_decryption_result"
         decryption_request_error_screen = self.manager.get_screen(decryption_request_error_screen_name)
-        decryption_request_error_screen.error_report = error_text
+        decryption_request_error_screen.last_decryption_info = decryption_info
         self.manager.current = decryption_request_error_screen_name
 
     def launch_remote_decryption_request(self):
 
-        remote_decryption_request_screen_name = "DecryptionRequestForm"
+        remote_decryption_request_screen_name = "claimant_revelation_request_creation_form"
         remote_decryption_request_screen = self.manager.get_screen(remote_decryption_request_screen_name)
         remote_decryption_request_screen.selected_cryptainer_names = self.selected_cryptainer_names
         remote_decryption_request_screen.trustee_data = self.trustee_data  # FIXME rename here too

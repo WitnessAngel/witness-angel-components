@@ -128,7 +128,6 @@
         text: root.message
 
 <WATextInput@TextInput>:
-    size_hint: 1, 1
     padding: [10,10]
     halign: "left"
     background_color: app.theme_cls.bg_normal
@@ -155,8 +154,9 @@
 
 
 <-WASelectableLabel>:
+    full_height: True
     size_hint: 1, None
-    height: max((len(self._lines)+1) * self.line_height, self.parent.height)
+    height: max((len(self._lines)+1) * self.line_height, self.parent.height) if self.full_height else ((len(self._lines)+1) * self.line_height)
     padding: [10,10]
     halign: "left"
     background_color: app.theme_cls.bg_normal

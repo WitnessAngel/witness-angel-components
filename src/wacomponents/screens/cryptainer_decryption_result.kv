@@ -1,7 +1,17 @@
 #:import tr wacomponents.i18n.tr
 #:import strip_external_app_root_prefix wacomponents.default_settings.strip_external_app_root_prefix
 
-<RevelationRequestErrorReportScreen>:
+<DecryptionStatusLabel@MDLabel>:
+    padding_x: "10dp"
+    size_hint_y: None
+    height: 40
+    halign: "center"
+    md_bg_color: .7, .7, .7, 1
+    #theme_text_color: "Custom"
+    #text_color: 0, 0, 1, 1
+
+
+<CryptainerDecryptionResultScreen>:
 
     on_pre_enter:
         # Lazy-init hack to workaround Clock iteration troubles
@@ -18,14 +28,19 @@
 
             WAElevatedBoxLayout:
                 MDLabel:
-                    text: tr._("Revelation request error report")
+                    text: tr._("Revelation request report")
                     padding_x: "10dp"
 
             WAVerticalScrollView:
-                size_hint_y: 0.5
-                padding: [20, 20]
-                id: error_report_scrollview
+                size_hint_y: 1
 
-                WASelectableLabel:
-                    id: error_report
-                    text: tr._("No decryption_error")
+                GridLayout:
+                    id: decryption_info_list
+                    padding_x: "10dp"
+                    size_hint: 1, None
+                    cols: 1
+                    # height: self.minimum_height
+                    # cols:1
+
+
+
