@@ -92,7 +92,7 @@ def get_nice_size(size):
 
 # Utilities for formatted text
 
-def format_keypair_label(keychain_uid: uuid.UUID, key_algo: str, private_key_present=None, error_on_missing_key=True,
+def format_keypair_label(key_algo: str, keychain_uid: uuid.UUID, private_key_present=None, error_on_missing_key=True,
                          short_uid=True) -> str:
 
     if short_uid:

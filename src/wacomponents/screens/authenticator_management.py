@@ -420,8 +420,8 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
             details = tr._("Keypairs successfully tested: %s") % keypair_count
         else:
             result = tr._("Failure")
-            missing_private_keys_shortened = [shorten_uid(k) for k in missing_private_keys]
-            undecodable_private_keys_shortened = [shorten_uid(k) for k in undecodable_private_keys]
+            missing_private_keys_shortened = [format_keypair_label(*key) for key in missing_private_keys]
+            undecodable_private_keys_shortened = [format_keypair_label(*key) for key in undecodable_private_keys]
             details = tr._(
                 "Keypairs tested: {keypair_count}\nMissing private keys: {missing_private_keys}\nWrong passphrase for keys:  {undecodable_private_keys}").format(
                 keypair_count=keypair_count,
@@ -445,7 +445,7 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
             keychain_uid = key_information["keychain_uid"]
             key_algo = key_information["key_algo"]
             if not key_information["private_key_present"]:
-                missing_private_keys.append(keychain_uid)
+                missing_private_keys.append((key_algo, keychain_uid))
                 continue
             private_key_pem = filesystem_keystore.get_private_key(keychain_uid=keychain_uid, key_algo=key_algo)
             try:
@@ -454,7 +454,7 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
                 )
                 assert key_obj, key_obj
             except KeyLoadingError:
-                undecodable_private_keys.append(keychain_uid)
+                undecodable_private_keys.append((key_algo, keychain_uid))
 
         return dict(keypair_count=len(keypair_identifiers),
                     missing_private_keys=missing_private_keys,
