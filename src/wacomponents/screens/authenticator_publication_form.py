@@ -141,21 +141,22 @@ class AuthenticatorPublicationFormScreen(Screen):
                            Missing key(s) in remote: {missing_keys_in_remote}
                   """)).format(**publication_details)
 
-        authenticator_label = format_authenticator_label(authenticator_owner=keystore_owner,
-                                                         keystore_uid=keystore_uid, short_uid=False)
         _displayed_values = dict(
             gateway=self._app.get_wagateway_url(),
             status=synchronization_status,
             message=message,
-            authenticator_label=authenticator_label,
+            authenticator_owner=keystore_owner,
+            authenticator_uid=str(keystore_uid)
         )
 
         synchronization_info_text = dedent(tr._("""\
                         Gateway: {gateway}
+
                         Remote status: {status}
                         Message: {message}
                         
-                        Authenticator : {authenticator_label}
+                        Authenticator owner : {authenticator_owner}
+                        Authenticator ID: {authenticator_uid}
                     """)).format(**_displayed_values)
 
         if is_published:

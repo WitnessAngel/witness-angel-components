@@ -315,7 +315,7 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
 
     def display_help_popup(self):
         help_text = dedent(tr._("""\
-         Add this!!!
+         This page summarizes the authorization requests that have been sent to remote Key Guardians, in order to decrypt some local containers.
          """))
         help_text_popup(
             title=tr._("Remote request revelation page"),
