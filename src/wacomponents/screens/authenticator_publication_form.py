@@ -1,6 +1,5 @@
 from copy import deepcopy
 from pathlib import Path
-from textwrap import dedent
 from uuid import UUID
 
 from jsonrpc_requests import JSONRPCError
@@ -13,8 +12,9 @@ from kivymd.uix.screen import Screen
 from wacomponents.i18n import tr
 from wacomponents.screens.authenticator_management import shorten_uid
 from wacomponents.screens.base import WAScreenName
-from wacomponents.utilities import format_authenticator_label
-from wacomponents.widgets.popups import help_text_popup, display_info_toast, safe_catch_unhandled_exception_and_display_popup
+from wacomponents.utilities import format_authenticator_label, COLON, LINEBREAK, indent_text
+from wacomponents.widgets.popups import help_text_popup, display_info_toast, \
+    safe_catch_unhandled_exception_and_display_popup
 from wacryptolib.exceptions import ExistenceError
 from wacryptolib.keystore import load_keystore_metadata, ReadonlyFilesystemKeystore
 
@@ -130,16 +130,12 @@ class AuthenticatorPublicationFormScreen(Screen):
                 exceeding_public_keys_shortened = [shorten_uid(k[0]) for k in report["exceeding_keys_in_remote"]]
                 missing_public_keys_shortened = [shorten_uid(k[0]) for k in report["missing_keys_in_remote"]]
 
-                publication_details = dict(
-                    exceeding_keys_in_remote=(", ".join(exceeding_public_keys_shortened) or "-"),
-                    missing_keys_in_remote=(", ".join(missing_public_keys_shortened) or "-"),
-                )
+                exceeding_keys_in_remote = (", ".join(exceeding_public_keys_shortened) or "-"),
+                missing_keys_in_remote = (", ".join(missing_public_keys_shortened) or "-"),
 
-                synchronization_details_text = dedent(tr._("""\
-                      Error details:
-                           Exceeding key(s) in remote: {exceeding_keys_in_remote}
-                           Missing key(s) in remote: {missing_keys_in_remote}
-                  """)).format(**publication_details)
+                synchronization_details_text = tr._("Error details") + COLON + LINEBREAK + \
+                                               indent_text(tr._("Exceeding key(s) in remote") + COLON + str(exceeding_keys_in_remote)) + LINEBREAK + \
+                                               indent_text(tr._("Missing key(s) in remote") + COLON + str(missing_keys_in_remote))
 
         _displayed_values = dict(
             gateway=self._app.get_wagateway_url(),
@@ -148,19 +144,15 @@ class AuthenticatorPublicationFormScreen(Screen):
             authenticator_owner=keystore_owner,
             authenticator_uid=str(keystore_uid)
         )
-
-        synchronization_info_text = dedent(tr._("""\
-                        Gateway: {gateway}
-
-                        Remote status: {status}
-                        Message: {message}
-                        
-                        Authenticator owner : {authenticator_owner}
-                        Authenticator ID: {authenticator_uid}
-                    """)).format(**_displayed_values)
+        synchronization_info_text = tr._("Gateway") + COLON + _displayed_values["gateway"] + LINEBREAK + LINEBREAK + \
+                                    tr._("Remote status") + COLON + _displayed_values["status"] + LINEBREAK + \
+                                    tr._("Message") + COLON + _displayed_values["message"] + LINEBREAK + LINEBREAK + \
+                                    tr._("Authenticator owner") + COLON + _displayed_values["authenticator_owner"] + LINEBREAK + \
+                                    tr._("Authenticator ID") + COLON + _displayed_values["authenticator_uid"]
 
         if is_published:
-            synchronization_info_text += tr._("Provide this ID to users wanting to rely on you as a Key Guardian") + "\n"
+            synchronization_info_text += LINEBREAK + tr._(
+                "Provide this ID to users wanting to rely on you as a Key Guardian") + LINEBREAK
 
         if synchronization_details_text:
             synchronization_info_text += "\n" + synchronization_details_text
@@ -196,13 +188,14 @@ class AuthenticatorPublicationFormScreen(Screen):
         self.refresh_synchronization_status()
 
     def display_help_popup(self):
-        help_text = dedent(tr._("""\
-        This page allows to publish the PUBLIC part of an authenticator to a remote Witness Angel Gateway, so that other users may import it to secure their recordings.
-        
-        For now, a published authenticator can't be modified or deleted.
-        
-        In case of incoherences between the keys locally and remotely stored, errors are displayed here.
-        """))
+
         help_text_popup(
             title=tr._("Authenticator publishing"),
-            text=help_text, )
+            text=AUTHENTICATOR_PUBLICATION_HELP_PAGE, )
+
+AUTHENTICATOR_PUBLICATION_HELP_PAGE = tr._(
+                                         """This page allows to publish the PUBLIC part of an authenticator to a remote Witness Angel Gateway, so that other users may import it to secure their recordings.""") + LINEBREAK * 2 + \
+                                     tr._(
+                                         """For now, a published authenticator can't be modified or deleted.""") + LINEBREAK * 2 + \
+                                     tr._(
+                                         """In case of incoherences between the keys locally and remotely stored, errors are displayed here.""")

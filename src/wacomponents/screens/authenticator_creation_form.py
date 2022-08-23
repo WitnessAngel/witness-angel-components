@@ -1,6 +1,5 @@
 from concurrent.futures.thread import ThreadPoolExecutor
 from pathlib import Path
-from textwrap import dedent
 
 from functools import partial
 from kivy.animation import Animation
@@ -11,6 +10,7 @@ from kivymd.uix.screen import Screen
 
 from wacomponents.i18n import tr
 from wacomponents.screens.base import WAScreenName
+from wacomponents.utilities import LINEBREAK
 from wacomponents.widgets.popups import dialog_with_close_button, process_method_with_gui_spinner, help_text_popup
 from wacryptolib.authenticator import initialize_authenticator
 from wacryptolib.keygen import generate_keypair
@@ -174,13 +174,13 @@ class AuthenticatorCreationFormScreen(Screen):
                                      title=tr._("Failure"), on_dismiss=lambda x: self.go_to_home_screen())
 
     def display_help_popup(self):
-        help_text = dedent(tr._("""\
-        On this page, you can initialize an authenticator inside an empty folder; this authenticator actually consists in metadata files as well as a set of asymmetric keypairs.
-        
-        To proceed, you have to input your user name or pseudo, a long passphrase (e.g. consisting of 4 different words), and a public hint to help your remember your passphrase later.
-        
-        You should keep your passphrase somewhere safe (in a digital password manager, on a paper in a vault...), because if you forget any of its aspects (upper/lower case, accents, spaces...), there is no way to recover it.
-        """))
         help_text_popup(
             title=tr._("Authenticator creation page"),
-            text=help_text, )
+            text=AUTHENTICATOR_CREATION_FORM_HELP_PAGE, )
+
+AUTHENTICATOR_CREATION_FORM_HELP_PAGE = tr._(
+                                         """On this page, you can initialize an authenticator inside an empty folder; this authenticator actually consists in metadata files as well as a set of asymmetric keypairs.""") + LINEBREAK * 2 + \
+                                     tr._(
+                                         """To proceed, you have to input your user name or pseudo, a long passphrase (e.g. consisting of 4 different words), and a public hint to help your remember your passphrase later.""") + LINEBREAK * 2 + \
+                                     tr._(
+                                         """You should keep your passphrase somewhere safe (in a digital password manager, on a paper in a vault...), because if you forget any of its aspects (upper/lower case, accents, spaces...), there is no way to recover it.""")

@@ -1,5 +1,4 @@
 from pathlib import Path
-from textwrap import dedent
 
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty
@@ -23,7 +22,7 @@ from wacryptolib.utilities import load_from_json_bytes, dump_to_json_bytes
 
 from wacomponents.i18n import tr
 from wacomponents.utilities import format_revelation_request_label, format_keypair_label, \
-    format_authenticator_label
+    format_authenticator_label, COLON, LINEBREAK
 from wacomponents.widgets.popups import dialog_with_close_button, close_current_dialog, display_info_snackbar, \
     help_text_popup, safe_catch_unhandled_exception_and_display_popup
 
@@ -86,12 +85,9 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
             request_description=revelation_request["revelation_request_description"],
             response_key_label=response_key_label,
         )
-
-        revelation_request_summary_text = dedent(tr._("""\
-                                    Public authenticator: {target_public_authenticator_label}
-                                    Description: {request_description}
-                                    Response public key: {response_key_label}\
-                                """)).format(**_displayed_values)
+        revelation_request_summary_text = tr._("Public authenticator") + COLON + _displayed_values["target_public_authenticator_label"] + LINEBREAK + \
+                                          tr._("Description") + COLON + _displayed_values["request_description"] + LINEBREAK + \
+                                          tr._("Response public key") + COLON + _displayed_values["response_key_label"]
 
         revelationRequestEntry.revelation_request_summary.text = revelation_request_summary_text
 
@@ -134,16 +130,15 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
                                                        key_algo=authenticator_key_algo)
 
         _displayed_values = dict(
-            authenticator_key=authenticator_key_label,
+            authenticator_key_label=authenticator_key_label,
             cryptainer_metadata=symkey_decryption["cryptainer_metadata"],
             symkey_decryption_status=symkey_decryption["symkey_decryption_status"]
         )
 
-        symkey_decryption_info_text = dedent(tr._("""\
-                                   Cryptainer metadata: {cryptainer_metadata}
-                                   Authenticator key: {authenticator_key}
-                                   Decryption status: {symkey_decryption_status}
-                               """)).format(**_displayed_values)
+        symkey_decryption_info_text = tr._("Cryptainer metadata") + COLON + str(_displayed_values["cryptainer_metadata"]) + LINEBREAK + \
+                                          tr._("Authenticator key") + COLON + _displayed_values["authenticator_key_label"] + LINEBREAK + \
+                                          tr._("Decryption status") + COLON + _displayed_values["symkey_decryption_status"]
+
         dialog_with_close_button(
             close_btn_label=tr._("Close"),
             title=tr._("Symkey decryption request details"),
@@ -157,8 +152,10 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
             type="custom",
             content_cls=Factory.CheckPassphraseContent(),
             buttons=[
-                MDFlatButton(text=tr._("Accept"), on_release=lambda *args: (close_current_dialog(), self.accept_revelation_request(
-                    passphrase=dialog.content_cls.ids.passphrase.text, revelation_request=revelation_request)))],
+                MDFlatButton(text=tr._("Accept"),
+                             on_release=lambda *args: (close_current_dialog(), self.accept_revelation_request(
+                                 passphrase=dialog.content_cls.ids.passphrase.text,
+                                 revelation_request=revelation_request)))],
         )
 
     def open_dialog_reject_request(self, revelation_request):
@@ -167,8 +164,9 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
             title=tr._("Do you want to reject this request?"),
             type="custom",
             buttons=[
-                MDFlatButton(text=tr._("Reject"), on_release=lambda *args: (close_current_dialog(), self.reject_revelation_request(
-                    revelation_request=revelation_request)))],
+                MDFlatButton(text=tr._("Reject"),
+                             on_release=lambda *args: (close_current_dialog(), self.reject_revelation_request(
+                                 revelation_request=revelation_request)))],
         )
 
     def display_remote_revelation_request(self, list_revelation_requests_per_status):  # TODO change name function
@@ -231,7 +229,6 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
             return
 
         # FIXME ADD PLACEHOLDER WHEN list_authenticator_revelation_requests is empty
-
 
         list_revelation_requests_per_status = self.sort_list_revelation_request_per_status(
             list_authenticator_revelation_requests)
@@ -314,9 +311,11 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
         self.fetch_and_display_revelation_requests()
 
     def display_help_popup(self):
-        help_text = dedent(tr._("""\
-         This page summarizes the authorization requests that have been sent to remote Key Guardians, in order to decrypt some local containers.
-         """))
         help_text_popup(
             title=tr._("Remote request revelation page"),
-            text=help_text, )
+            text=AUTHENTICATOR_REVELATION_REQUEST_MANAGEMENT_HELP_PAGE, )
+
+
+AUTHENTICATOR_REVELATION_REQUEST_MANAGEMENT_HELP_PAGE = tr._("""
+This page summarizes the authorization requests that have been sent to remote Key Guardians, in order to decrypt some local containers.
+""")

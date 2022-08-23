@@ -2,7 +2,6 @@ import os
 from datetime import datetime
 from enum import Enum, unique
 from pathlib import Path
-from textwrap import dedent
 
 import shutil
 from functools import partial
@@ -22,14 +21,14 @@ from wacomponents.i18n import tr
 from wacomponents.screens.base import WAScreenName
 from wacomponents.system_permissions import request_external_storage_dirs_access
 from wacomponents.utilities import convert_bytes_to_human_representation, shorten_uid, format_authenticator_label, \
-    format_keypair_label, format_datetime_label
+    format_keypair_label, format_datetime_label, COLON, LINEBREAK, indent_text
 from wacomponents.widgets.layout_components import LanguageSwitcherScreenMixin
 from wacomponents.widgets.popups import dialog_with_close_button, register_current_dialog, close_current_dialog, \
     help_text_popup, display_info_toast
 from wacomponents.widgets.popups import safe_catch_unhandled_exception_and_display_popup
 from wacryptolib.authdevice import list_available_authdevices
 from wacryptolib.authenticator import is_authenticator_initialized
-from wacryptolib.exceptions import KeyLoadingError, SchemaValidationError
+from wacryptolib.exceptions import KeyLoadingError, SchemaValidationError, KeyDoesNotExist
 from wacryptolib.keygen import load_asymmetric_key_from_pem_bytestring
 from wacryptolib.keystore import FilesystemKeystore, load_keystore_metadata, _get_keystore_metadata_file_path
 
@@ -248,7 +247,6 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
                 keypair_identifiers = filesystem_keystore.list_keypair_identifiers()
 
                 keypairs_label = ""
-                indent = 4 * " "
 
                 for index, key_information in enumerate(keypair_identifiers, start=1):
                     private_key_present = True
@@ -256,12 +254,12 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
                     key_algo = key_information["key_algo"]
                     try:
                         filesystem_keystore.get_private_key(keychain_uid=keychain_uid, key_algo=key_algo)
-                    except:
+                    except KeyDoesNotExist:
                         private_key_present = False
 
-                    keypairs_label += indent + format_keypair_label(keychain_uid=keychain_uid,
-                                                                    key_algo=key_algo,
-                                                                    private_key_present=private_key_present) + "\n"
+                    keypairs_label += format_keypair_label(keychain_uid=keychain_uid, key_algo=key_algo,
+                                                           private_key_present=private_key_present) + LINEBREAK
+                keypairs_label_indented = indent_text(keypairs_label)
 
                 authenticator_label = format_authenticator_label(
                     authenticator_owner=authenticator_metadata["keystore_owner"],
@@ -269,25 +267,18 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
 
                 keystore_creation_datetime_label = "Inconnu"
                 if "keystore_creation_datetime" in authenticator_metadata:
-                    keystore_creation_datetime_label = format_datetime_label(field_datetime=authenticator_metadata["keystore_creation_datetime"],
-                                                                             show_time=True)
+                    keystore_creation_datetime_label = format_datetime_label(
+                        field_datetime=authenticator_metadata["keystore_creation_datetime"],
+                        show_time=True)
 
-                _displayed_values = dict(
-                    authenticator_dir=authenticator_dir_shortened,
-                    authenticator_label=authenticator_label,
-                    keystore_passphrase_hint=authenticator_metadata["keystore_passphrase_hint"],
-                    # FIXME might be missing because OPTIONAL!!!
-                    keystore_creation_datetime_label=keystore_creation_datetime_label,
-                    keypairs_label=keypairs_label)
+                keystore_passphrase_hint = authenticator_metadata["keystore_passphrase_hint"]
 
-                authenticator_info_text = dedent(tr._("""\
-                    Path: {authenticator_dir}
-                    Authentifieur: {authenticator_label}
-                    Password hint: {keystore_passphrase_hint}
-                    Creation date: {keystore_creation_datetime_label}
-                    Keypairs: 
-                    {keypairs_label}
-                    """)).format(**_displayed_values)
+                authenticator_info_text = tr._("Path") + COLON + str(authenticator_dir) + LINEBREAK + \
+                                          tr._("Authentifieur") + COLON + authenticator_label + LINEBREAK + \
+                                          tr._("Password hint") + COLON + keystore_passphrase_hint + LINEBREAK + \
+                                          tr._("Creation date") + COLON + keystore_creation_datetime_label + LINEBREAK + \
+                                          tr._("Keypairs") + COLON + LINEBREAK + \
+                                          keypairs_label_indented
 
         textarea = self.ids.authenticator_information
         textarea.text = authenticator_info_text
@@ -394,8 +385,9 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
             type="custom",
             content_cls=Factory.AuthenticatorTesterContent(),
             buttons=[MDFlatButton(text=tr._("Check"),
-                                  on_release=lambda *args: (close_current_dialog(), self._check_authenticator_integrity(dialog,
-                                                                                               authenticator_dir)))],
+                                  on_release=lambda *args: (
+                                      close_current_dialog(), self._check_authenticator_integrity(dialog,
+                                                                                                  authenticator_dir)))],
         )
 
         def _set_focus_on_passphrase(*args):
@@ -466,17 +458,18 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
         # publish_authenticator_screen.refresh_status()
 
     def display_help_popup(self):
-        help_text = dedent(tr._("""\
-        On this page, you can manage your authenticators, which are actually digital keychains identified by unique IDs.
-        
-        These keychains contain both public keys, which can be freely shared, and their corresponding private keys, protected by passphrases, which must be kept hidden.
-        
-        Authenticators can be stored in your user profile or in a custom folder, especially at the root of removable devices.
-        
-        You can initialize new authenticators from scratch, import/export them from/to ZIP archives, or check their integrity by providing their passphrases.
-        
-        Note that if you destroy an authenticator and all its exported ZIP archives, the WitnessAngel recordings which used it as a trusted third party might not be decryptable anymore (unless they used a shared secret with other trusted third parties).
-        """))
         help_text_popup(
             title=tr._("Authenticator management page"),
-            text=help_text, )
+            text=AUTHENTICATOR_MANAGEMENT_HELP_PAGE, )
+
+
+AUTHENTICATOR_MANAGEMENT_HELP_PAGE = tr._(
+                                         """On this page, you can manage your authenticators, which are actually digital keychains identified by unique IDs.""") + LINEBREAK * 2 + \
+                                     tr._(
+                                         """These keychains contain both public keys, which can be freely shared, and their corresponding private keys, protected by passphrases, which must be kept hidden.""") + LINEBREAK * 2 + \
+                                     tr._(
+                                         """Authenticators can be stored in your user profile or in a custom folder, especially at the root of removable devices.""") + LINEBREAK * 2 + \
+                                     tr._(
+                                         """You can initialize new authenticators from scratch, import/export them from/to ZIP archives, or check their integrity by providing their passphrases.""") + LINEBREAK * 2 + \
+                                     tr._(
+                                         """Note that if you destroy an authenticator and all its exported ZIP archives, the WitnessAngel recordings which used it as a trusted third party might not be decryptable anymore (unless they used a shared secret with other trusted third parties).""")

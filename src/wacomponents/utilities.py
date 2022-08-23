@@ -3,6 +3,7 @@ import uuid
 from datetime import datetime, date
 from pathlib import Path
 from typing import Optional
+from textwrap import indent
 
 from kivy.uix.filechooser import filesize_units
 
@@ -10,6 +11,9 @@ from wacomponents.i18n import tr
 
 ASSETS_PATH = Path(__file__).parents[1].joinpath("assets")
 
+COLON = tr._(": ")
+LINEBREAK = "\n"
+INDENT_TEXT = 6 * " "
 
 class InterruptableEvent(threading.Event):
     """An Event which handles ctrl-C on Windows too"""
@@ -91,6 +95,10 @@ def get_nice_size(size):
 
 
 # Utilities for formatted text
+
+def indent_text(string, indent_value = INDENT_TEXT):
+    string_indented = indent(string, indent_value)
+    return string_indented
 
 def format_keypair_label(key_algo: str, keychain_uid: uuid.UUID, private_key_present=None, error_on_missing_key=True,
                          short_uid=True) -> str:
