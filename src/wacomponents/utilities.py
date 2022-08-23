@@ -6,6 +6,8 @@ from typing import Optional
 
 from kivy.uix.filechooser import filesize_units
 
+from wacomponents.i18n import tr
+
 ASSETS_PATH = Path(__file__).parents[1].joinpath("assets")
 
 
@@ -92,20 +94,27 @@ def get_nice_size(size):
 
 def format_keypair_label(keychain_uid: uuid.UUID, key_algo: str, private_key_present=None, error_on_missing_key=True,
                          short_uid=True) -> str:
-    # RSA-OAEP …0abf25421"
 
     if short_uid:
         keychain_uid = shorten_uid(keychain_uid)
 
-    keypair_label = "{key_algo}{keychain_uid}".format(key_algo=key_algo, keychain_uid=keychain_uid)
+    keypair_label = "{key_algo} {keychain_uid}".format(
+        key_algo=key_algo.replace("_", "-"),
+        keychain_uid=keychain_uid)
 
-    if private_key_present:
-        keypair_label += " (Private key present)"
-    elif private_key_present is False:
-        missing_private_key_label = " (Private key not present)"
-        if error_on_missing_key:
-            missing_private_key_label = " (Missing private key)"
-        keypair_label += missing_private_key_label
+    if private_key_present is not None:
+        if private_key_present:
+            if error_on_missing_key:
+                label_suffix = ""  # Persence is expected, so nothing to display
+            else:
+                label_suffix = tr._("(private key present)")
+        else:
+            if error_on_missing_key:
+                label_suffix = tr._("(missing private key)")
+            else:
+                label_suffix = tr._("(private key not present)")
+        if label_suffix:
+            keypair_label += " " + label_suffix
 
     return keypair_label
 

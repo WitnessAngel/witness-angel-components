@@ -2,7 +2,7 @@ from pathlib import Path
 from textwrap import dedent
 
 from kivy.lang import Builder
-from kivy.properties import ObjectProperty, BooleanProperty, StringProperty
+from kivy.properties import ObjectProperty
 
 from kivymd.app import MDApp
 from kivy.factory import Factory
