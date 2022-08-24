@@ -151,7 +151,10 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
             authenticator_dir = INTERNAL_AUTHENTICATOR_DIR
 
         elif authenticator_type == AuthenticatorType.CUSTOM_FOLDER:
-            authenticator_dir = self.selected_custom_folder_path.joinpath("authenticator.keystore")
+            if self.selected_custom_folder_path:
+                authenticator_dir = self.selected_custom_folder_path.joinpath("authenticator.keystore")
+            else:
+                authenticator_dir = ""
 
         else:
             assert authenticator_type == AuthenticatorType.USB_DEVICE
@@ -360,16 +363,11 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
         # FIXME protect against any OSERROR here!!
         # FIXME Move this operation to WACRYPTOLIB?
 
-        for filename in os.listdir(authenticator_dir):
-            filepath = authenticator_dir.joinpath(filename)
-            try:
-                if os.path.isfile(filepath) or os.path.islink(filepath):
-                    filepath.unlink()  # Delete file
-                elif os.path.isdir(filepath):
-                    shutil.rmtree(filepath)  # Delete subdirectory
-                # TODO use missing_ok=True later
-            except FileNotFoundError:
-                pass
+        try:
+            shutil.rmtree(authenticator_dir)
+        except FileNotFoundError as exc:
+            raise ValueError("Path %s not found (%s)" % (authenticator_dir, exc))
+
         dialog_with_close_button(
             title=tr._("Deletion is over"),
             text=tr._("All authentication data from folder %s has been removed.") % authenticator_dir,
@@ -464,7 +462,7 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
 
 
 AUTHENTICATOR_MANAGEMENT_HELP_PAGE = tr._(
-                                         """On this page, you can manage your authenticators, which are actually digital keychains identified by unique IDs.""") + LINEBREAK * 2 + \
+    """On this page, you can manage your authenticators, which are actually digital keychains identified by unique IDs.""") + LINEBREAK * 2 + \
                                      tr._(
                                          """These keychains contain both public keys, which can be freely shared, and their corresponding private keys, protected by passphrases, which must be kept hidden.""") + LINEBREAK * 2 + \
                                      tr._(
