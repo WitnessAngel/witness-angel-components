@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 
 from kivy.factory import Factory
@@ -12,7 +11,7 @@ from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
 from wacomponents.screens.base import WAScreenName
 from wacomponents.utilities import format_keypair_label, format_cryptainer_label, \
-    format_authenticator_label
+    format_authenticator_label, SPACE, COLON, LINEBREAK
 from wacomponents.widgets.layout_components import build_fallback_information_box
 from wacomponents.widgets.popups import dialog_with_close_button, close_current_dialog, \
     safe_catch_unhandled_exception_and_display_popup, display_info_toast
@@ -50,8 +49,8 @@ class CryptainerDecryptionProcessScreen(Screen):
 
         for index, cryptainer_name in enumerate(reversed(self.selected_cryptainer_names), start=1):
             cryptainer_label = format_cryptainer_label(cryptainer_name=cryptainer_name)
-            cryptainer_entry_label = tr._("N° {index}: {cryptainer_label}").format(index=index,
-                                                                                   cryptainer_label=cryptainer_label)
+            cryptainer_entry_label= tr._("N°") + SPACE + str(index) + COLON + cryptainer_label
+
             cryptainer_entry = Factory.WAListItemEntry(text=cryptainer_entry_label)  # FIXME RENAME THIS
             cryptainer_entry.unique_identifier = cryptainer_name
 
@@ -145,11 +144,13 @@ class CryptainerDecryptionProcessScreen(Screen):
                                                    trustee_type=status["trustee_type"],
                                                    keystore_uid=status["keystore_uid"])
 
-        trustee_info = tr._("Trustee: {trustee_label}").format(trustee_label=trustee_label)
+        trustee_info = tr._("Trustee") + COLON + trustee_label
 
-        trustee_present = tr._("Key guardian: {trustee_status}").format(**status)
+        trustee_present = tr._("Key guardian") + COLON + "{trustee_status}".format(**status)
+
         trustee_private_keys_missing_text = tr._("Private keys needed for decryption are present")
-        passphrase = tr._("Passphrase: {passphrase_status}").format(**status)
+
+        passphrase = tr._("Passphrase") + COLON + "{passphrase_status}".format(**status)
 
         if status["trustee_is_present"]:
             if status["trustee_private_keys_missing"]:
@@ -157,8 +158,8 @@ class CryptainerDecryptionProcessScreen(Screen):
                 for private_key_missing in status["trustee_private_keys_missing"]:
                     trustee_key_missing_label = format_keypair_label(**private_key_missing)
                     trustee_keys_missing_label.append(trustee_key_missing_label)
-                trustee_private_keys_missing_text = tr._("Missing private key(s): {trustee_keys_missing_label}").format(
-                    trustee_keys_missing_label=",".join(trustee_keys_missing_label))
+                trustee_private_keys_missing_text = tr._("Missing private key(s)") + COLON + "{trustee_keys_missing_label}".format(
+                    trustee_keys_missing_label=", ".join(trustee_keys_missing_label))
 
         dependencies_status_text = Factory.WAThreeListItemEntry(text=trustee_info,
                                                                 secondary_text=trustee_present + ', ' + passphrase,
@@ -171,8 +172,7 @@ class CryptainerDecryptionProcessScreen(Screen):
                                                  private_key_present=False if keypair_identifier in status[
                                                      "trustee_private_keys_missing"] else True,
                                                  error_on_missing_key=False)
-
-            message += tr._("Key n° {index}: {keypair_label}\n").format(index=index, keypair_label=keypair_label)
+            message += tr._("Key n°") + SPACE + str(index) + COLON + keypair_label + LINEBREAK
 
         def information_callback(widget, message=message):
             self.show_trustee_keypair_identifiers(message=message)
@@ -194,7 +194,7 @@ class CryptainerDecryptionProcessScreen(Screen):
 
         if [passphrase] in self.passphrase_mapper.values():
             result = tr._("Failure")
-            details = tr._("Already existing passphrase %s" % (passphrase))
+            details = tr._("Already existing passphrase") + SPACE + passphrase
 
         else:
             # Default values

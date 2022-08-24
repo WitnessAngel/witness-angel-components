@@ -15,7 +15,7 @@ from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
 from wacomponents.logging.handlers import safe_catch_unhandled_exception
 from wacomponents.screens.base import WAScreenName
-from wacomponents.utilities import format_cryptainer_label, format_authenticator_label
+from wacomponents.utilities import format_cryptainer_label, format_authenticator_label, SPACE, COLON, LINEBREAK
 from wacomponents.widgets.layout_components import build_fallback_information_box
 from wacomponents.widgets.popups import close_current_dialog, dialog_with_close_button, display_info_toast, \
     safe_catch_unhandled_exception_and_display_popup
@@ -109,8 +109,7 @@ class CryptainerStorageManagementScreen(Screen):
     def _load_cryptainer(self, index, cryptainer_name):
         cryptainer_label = format_cryptainer_label(cryptainer_name=cryptainer_name)
 
-        cryptainer_entry_label = tr._("N° {index}: {cryptainer_label}").format(index=index,
-                                                                               cryptainer_label=cryptainer_label)
+        cryptainer_entry_label = tr._("N°") + SPACE + str(index) + COLON + cryptainer_label
 
         cryptainer_entry = Factory.WASelectableListItemEntry(text=cryptainer_entry_label)  # FIXME RENAME THIS
         cryptainer_entry.unique_identifier = cryptainer_name
@@ -155,14 +154,14 @@ class CryptainerStorageManagementScreen(Screen):
             message = repr(exc)[:800]
 
         else:
-            message = tr._("Key Guardians used: ") + "\n\n"
+            message = tr._("Key Guardians used") + COLON + LINEBREAK*2
             for index, key_guardian_used in enumerate(interesting_dependencies, start=1):
                 key_guardian_label = format_authenticator_label(authenticator_owner=key_guardian_used["keystore_owner"],
                                                                 keystore_uid=key_guardian_used["keystore_uid"],
                                                                 trustee_type=key_guardian_used["trustee_type"])
 
-                message += tr._("N° {index}: {key_guardian_label}\n").format(index=index,
-                                                                             key_guardian_label=key_guardian_label)
+                message += tr._("N°") + SPACE + str(index) + COLON + key_guardian_label + LINEBREAK
+
             cryptainer_uid = cryptainer["cryptainer_uid"]
             cryptainer_label = format_cryptainer_label(cryptainer_name=cryptainer_name, cryptainer_uid=cryptainer_uid)
 
@@ -171,7 +170,7 @@ class CryptainerStorageManagementScreen(Screen):
     def open_cryptainer_details_dialog(self, message, cryptainer_info):
         dialog_with_close_button(
             close_btn_label=tr._("Close"),
-            title=tr._("Conteneur: {cryptainer_info}").format(cryptainer_info=cryptainer_info),
+            title= tr._("Conteneur") + COLON + cryptainer_info,
             text=message,
         )
         '''

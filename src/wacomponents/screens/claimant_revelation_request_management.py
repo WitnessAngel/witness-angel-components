@@ -1,22 +1,16 @@
 from pathlib import Path
-from textwrap import dedent
 
 from jsonrpc_requests import JSONRPCError
 from kivy.factory import Factory
 from kivy.lang import Builder
-from kivy.uix.accordion import Accordion, AccordionItem
 from kivymd.app import MDApp
-from kivymd.uix.gridlayout import MDGridLayout
-from kivymd.uix.list import MDList
 from kivymd.uix.screen import Screen
-from wacryptolib.jsonrpc_client import JsonRpcProxy, status_slugs_response_error_handler
-from wacryptolib.exceptions import ExistenceError
 
 from wacomponents.screens.base import WAScreenName
 from wacomponents.widgets.layout_components import GrowingAccordion, build_fallback_information_box
 from wacomponents.i18n import tr
-from wacomponents.utilities import shorten_uid, format_revelation_request_label, format_authenticator_label, \
-    format_keypair_label
+from wacomponents.utilities import format_revelation_request_label, format_authenticator_label, \
+    format_keypair_label, COLON, LINEBREAK
 from wacomponents.widgets.popups import dialog_with_close_button, display_info_snackbar
 
 Builder.load_file(str(Path(__file__).parent / 'claimant_revelation_request_management.kv'))
@@ -77,7 +71,7 @@ class ClaimantRevelationRequestManagementScreen(Screen):
 
         for decryption_request_per_cryptainer in decryption_requests_per_cryptainer.items():
 
-            container_item = Factory.ContainerItem(title='Cryptainer: %s ' % decryption_request_per_cryptainer[0])
+            container_item = Factory.ContainerItem(title=tr._("Container") + COLON + str(decryption_request_per_cryptainer[0]))
 
             for revelation_request in decryption_request_per_cryptainer[1]:
                 revelation_request_label = format_revelation_request_label(
@@ -109,14 +103,11 @@ class ClaimantRevelationRequestManagementScreen(Screen):
                     authenticator_key_label=authenticator_key_label,
                 )
 
-                # FIXME retranslate all these text blocks, using update_i18n.sh
-                revelation_request_summary_text = dedent(tr._("""\
-                                    Description: {revelation_request_description}
-                                    Authenticator: {target_public_authenticator_label}
-                                    Authenticator encryption key: {authenticator_key_label}
-                                    Response key: {response_key_label}
-                                    Symkey Decryption status: {symkey_decryption_status}
-                                                                       """)).format(**_displayed_values)
+                revelation_request_summary_text = tr._("Description") + COLON + _displayed_values["revelation_request_description"] + LINEBREAK + \
+                                                  tr._("Authenticator") + COLON + _displayed_values["target_public_authenticator_label"] + LINEBREAK + \
+                                                  tr._("Authenticator encryption key") + COLON + _displayed_values["authenticator_key_label"] + LINEBREAK + \
+                                                  tr._("Response key") + COLON + _displayed_values["response_key_label"] + LINEBREAK + \
+                                                  tr._("Symkey Decryption status") + COLON + _displayed_values["symkey_decryption_status"] + LINEBREAK
 
                 revelation_request_entry = Factory.WAIconListItemEntry(text=revelation_request_label)
 

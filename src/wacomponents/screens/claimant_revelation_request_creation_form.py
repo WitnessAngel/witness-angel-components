@@ -1,23 +1,18 @@
 from pathlib import Path
-from textwrap import dedent
-from typing import Sequence
 
-from jsonrpc_requests import JSONRPCError
 from kivy.factory import Factory
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty, BooleanProperty
 from kivymd.app import MDApp
 from kivymd.uix.screen import Screen
-from wacryptolib.cryptainer import SHARED_SECRET_ALGO_MARKER, get_trustee_id, gather_decryptable_symkeys
-from wacryptolib.jsonrpc_client import JsonRpcProxy, status_slugs_response_error_handler
-from wacryptolib.keystore import generate_keypair_for_storage, FilesystemKeystore
-from wacryptolib.utilities import load_from_json_bytes, generate_uuid0, dump_to_json_file, load_from_json_file
-from wacryptolib.exceptions import KeystoreDoesNotExist, KeyDoesNotExist, KeystoreDoesNotExist
+from wacryptolib.cryptainer import gather_decryptable_symkeys
+from wacryptolib.keystore import generate_keypair_for_storage
+from wacryptolib.utilities import generate_uuid0
+from wacryptolib.exceptions import KeyDoesNotExist, KeystoreDoesNotExist
 
-from wacomponents.default_settings import INTERNAL_APP_ROOT
 from wacomponents.i18n import tr
 from wacomponents.screens.base import WAScreenName
-from wacomponents.utilities import shorten_uid, format_authenticator_label
+from wacomponents.utilities import shorten_uid, format_authenticator_label, LINEBREAK, COLON, indent_text, SPACE
 from wacomponents.widgets.popups import display_info_toast, dialog_with_close_button, safe_catch_unhandled_exception_and_display_popup
 
 Builder.load_file(str(Path(__file__).parent / 'claimant_revelation_request_creation_form.kv'))
@@ -54,19 +49,15 @@ class ClaimantRevelationRequestCreationFormScreen(Screen):
         # Display summary
         cryptainer_names = [str(cryptainer_name) for cryptainer_name in self.selected_cryptainer_names]
 
-        cryptainer_string_names = "\n\t".join(cryptainer_names)
+        cryptainer_string_names = "\n".join(cryptainer_names)
 
         _displayed_values = dict(
             containers_selected=cryptainer_string_names,
             gateway_url=self._app.get_wagateway_url()
         )
-
-        revelation_request_summary_text = dedent(tr._("""\
-                                            Container(s) selected: 
-                                                {containers_selected}
-                                            
-                                            Gateway url: {gateway_url}                                           
-                                        """)).format(**_displayed_values)
+        revelation_request_summary_text = tr._("Container(s) selected") + COLON + LINEBREAK +\
+                                          indent_text(_displayed_values["containers_selected"]) + LINEBREAK*2 +\
+                                          tr._("Gateway url") + COLON + _displayed_values["gateway_url"]
 
         self.ids.revelation_request_summary.text = revelation_request_summary_text
 
@@ -76,8 +67,7 @@ class ClaimantRevelationRequestCreationFormScreen(Screen):
             authenticator_label = format_authenticator_label(authenticator_owner=trustee_info["keystore_owner"],
                                                              keystore_uid=keystore_uid)
 
-            authenticator_entry = Factory.ListItemWithCheckbox(
-                text=tr._("Authenticator {authenticator_label}").format(authenticator_label=authenticator_label))
+            authenticator_entry = Factory.ListItemWithCheckbox(text=tr._("Authenticator") + SPACE + authenticator_label)
             authenticator_entry.unique_identifier = keystore_uid
             self.ids.authenticator_checklist.add_widget(authenticator_entry)
 
@@ -155,7 +145,7 @@ class ClaimantRevelationRequestCreationFormScreen(Screen):
                         trustee_data["keystore_uid"]))
                     error.append(message)
 
-        error_report = ",\n    - ".join(error)
+        error_report = "\n".join(error)
 
         _displayed_values = dict(
             successful_request_count=successful_request_count,
@@ -163,15 +153,10 @@ class ClaimantRevelationRequestCreationFormScreen(Screen):
             error_report=error_report
         )
 
-        operation_report_text = dedent(tr._("""\
-                        Successful requests: {successful_request_count} sur {len_authenticator_selected}
-                                                """)).format(**_displayed_values)
+        operation_report_text = tr._("Successful requests: {successful_request_count} out of {"
+                                     "len_authenticator_selected}").format(**_displayed_values)
 
-        error_report_text = dedent(tr._("""\
-        
-                                                Error Report: 
-                                                    - {error_report}                                           
-                                                        """)).format(**_displayed_values)
+        error_report_text = LINEBREAK*2 + tr._("Error Report") + COLON + LINEBREAK + indent_text(error_report)
 
         if successful_request_count != len(authenticator_selected):
             operation_report_text += error_report_text

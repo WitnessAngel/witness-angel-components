@@ -14,6 +14,7 @@ ASSETS_PATH = Path(__file__).parents[1].joinpath("assets")
 COLON = tr._(": ")
 LINEBREAK = "\n"
 INDENT_TEXT = 6 * " "
+SPACE = " "
 
 class InterruptableEvent(threading.Event):
     """An Event which handles ctrl-C on Windows too"""
@@ -152,12 +153,12 @@ def format_revelation_request_label(revelation_request_creation_datetime: dateti
     refformatted_revelation_request_creation_date = format_datetime_label(
         field_datetime=revelation_request_creation_datetime)
 
-    revelation_request_label = "Revelation request (ID {revelation_request_uid}, created on: {refformatted_revelation_request_creation_date})".format(
+    revelation_request_label = tr._("Revelation request (ID {revelation_request_uid}, created on: {refformatted_revelation_request_creation_date})").format(
         revelation_request_uid=revelation_request_uid,
         refformatted_revelation_request_creation_date=refformatted_revelation_request_creation_date)
 
     if revelation_request_status:
-        revelation_request_label += ", Status: {revelation_request_status}".format(revelation_request_status=revelation_request_status)
+        revelation_request_label += ", " + tr._("Status") + COLON + revelation_request_status
 
     return revelation_request_label
 
@@ -178,7 +179,7 @@ def format_datetime_label(field_datetime: datetime, show_time=False):
 
     if show_time:
         field_time_str = str(field_datetime.time())
-        datetime_label += " at {field_time_str}".format(field_time_str=field_time_str)
+        datetime_label += tr._("at") + SPACE + field_time_str
 
     return datetime_label
 
@@ -204,12 +205,12 @@ def format_cryptainer_label(cryptainer_name: str, cryptainer_uid: Optional[uuid.
 def format_revelation_request_error(error_criticity: str, error_type: str, error_message: str, error_exception):
     # Criticity: ASYMMETRIC_DECRYPTION_ERROR
     # Message:
-    # Exception: ASYMMETRIC_DECRYPTION_ERROR
+    # Exception:
+
     if error_exception:
         error_exception = error_exception.__class__.__name__
 
-    error_label = "{error_criticity}: {error_type}\n" \
-                  "Message: {error_message}\n" \
-                  "Exception: {error_exception}".format(error_criticity=error_criticity, error_type=error_type,
-                                                        error_message=error_message, error_exception=error_exception)
+    error_label = error_criticity + COLON + error_type + LINEBREAK +\
+                  tr._("Message") + COLON + error_message + LINEBREAK +\
+                  tr._("Exception") + COLON + str(error_exception)
     return error_label

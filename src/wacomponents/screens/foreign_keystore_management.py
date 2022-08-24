@@ -3,7 +3,6 @@ import uuid
 from pathlib import Path
 
 import shutil
-from jsonrpc_requests import JSONRPCError
 from kivy.factory import Factory
 from kivy.lang import Builder
 from kivy.logger import Logger as logger
@@ -13,8 +12,8 @@ from kivymd.uix.button import MDFlatButton
 from kivymd.uix.screen import Screen
 
 from wacomponents.i18n import tr
-from wacomponents.logging.handlers import safe_catch_unhandled_exception
-from wacomponents.utilities import shorten_uid, format_authenticator_label, format_keypair_label
+from wacomponents.utilities import shorten_uid, format_authenticator_label, format_keypair_label, COLON, LINEBREAK, \
+    SPACE
 from wacomponents.widgets.layout_components import build_fallback_information_box
 from wacomponents.widgets.popups import display_info_toast, close_current_dialog, dialog_with_close_button, safe_catch_unhandled_exception_and_display_popup
 from wacryptolib.authdevice import list_available_authdevices
@@ -187,7 +186,7 @@ class ForeignKeystoreManagementScreen(Screen):
             authenticator_label = format_authenticator_label(authenticator_owner=metadata["keystore_owner"],
                                                              keystore_uid=metadata["keystore_uid"], short_uid=True)
 
-            foreign_authenticator_label = tr._("User {authenticator_label}").format(authenticator_label=authenticator_label)
+            foreign_authenticator_label = tr._("User") + " " + authenticator_label
 
             authenticator_entry = Factory.WASelectableListItemEntry(text=foreign_authenticator_label)  # FIXME RENAME THIS
 
@@ -298,8 +297,7 @@ class ForeignKeystoreManagementScreen(Screen):
                                                  private_key_present=private_key_present, error_on_missing_key=False)
 
             # FIXME it's private key SINGULAR HERE!!
-            message += tr._("Key n° {index}: {keypair_label}\n").format( index=index, keypair_label=keypair_label,
-                    )
+            message += tr._("Key n°") + SPACE + str(index) + COLON + keypair_label + LINEBREAK
 
         self.open_keystore_details_dialog(message, keystore_owner=keystore_owner)
 

@@ -39,7 +39,7 @@ class CryptainerDecryptionResultScreen(Screen):
             layout.bind(minimum_height=layout.setter('height'))
 
             # Selected Cryptainer decryption resume
-            cryptainer_decryption_resume_label = tr._("{decrypted_container} sur {selected_container} container(s) "
+            cryptainer_decryption_resume_label = tr._("{decrypted_container} out of {selected_container} container(s) "
                                                       "have been decrypted").format(
                 decrypted_container=decrypted_container_number,
                 selected_container=len(decryption_results))
