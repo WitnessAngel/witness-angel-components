@@ -8,9 +8,9 @@ msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-08-25 09:34+0200\n"
-"PO-Revision-Date: 2022-08-26 02:38+0200\n"
-"Last-Translator: ATCHADE Géraldine <atchadegeraldine@gmail.com>\n"
-"Language-Team: witnessangel\n"
+"PO-Revision-Date: 2022-08-26 13:23+0200\n"
+"Last-Translator: Pascal <pythoniks@gmail.com>\n"
+"Language-Team: Nothing\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -586,7 +586,6 @@ msgid "Message"
 msgstr "Message"
 
 #: src/wacomponents/screens/authenticator_publication_form.py:150
-#, fuzzy
 msgid "Authenticator owner"
 msgstr "Propriétaire de l'authentifieur"
 
@@ -674,7 +673,6 @@ msgid "Description"
 msgstr "Description"
 
 #: src/wacomponents/screens/authenticator_revelation_request_management.py:90
-#, fuzzy
 msgid "Response public key"
 msgstr "Clé publique de la réponse"
 
@@ -727,9 +725,8 @@ msgid "Authenticator %s does not exist on remote server"
 msgstr "L'authentifieur %s n'existe pas sur le serveur distant"
 
 #: src/wacomponents/screens/authenticator_revelation_request_management.py:228
-#, fuzzy
 msgid "The keystore secret of authenticator is not valid"
-msgstr "Le keystore secret de l'authentifieur n'est pas valide"
+msgstr "Le secret de keystpre de l'authentifieur n'est pas valide"
 
 #: src/wacomponents/screens/authenticator_revelation_request_management.py:275
 msgid "Loading of private key failed (wrong passphrase?)"
@@ -744,9 +741,8 @@ msgid "The revelation request was rejected"
 msgstr "La demande de déchiffrement a été rejetée"
 
 #: src/wacomponents/screens/authenticator_revelation_request_management.py:315
-#, fuzzy
 msgid "Remote request revelation page"
-msgstr "Page de demande de revelation à distance"
+msgstr "Page de demande de révélation à distance"
 
 #: src/wacomponents/screens/authenticator_revelation_request_management.py:319
 msgid ""
@@ -840,16 +836,14 @@ msgid "Error Report"
 msgstr "Rapport d'erreurs"
 
 #: src/wacomponents/screens/claimant_revelation_request_creation_form.py:166
-#, fuzzy
 msgid "Operation Report"
-msgstr "Rapport"
+msgstr "Rapport d'Opération"
 
 #: src/wacomponents/screens/claimant_revelation_request_management.kv:29
 msgid "View authorization requests"
 msgstr "Voir les demandes d'autorisation"
 
 #: src/wacomponents/screens/claimant_revelation_request_management.py:60
-#, fuzzy
 msgid "Network error, please check the gateway url"
 msgstr "Erreur de réseau, veuillez vérifier l'url de la passerelle"
 
@@ -866,9 +860,8 @@ msgid "Authenticator encryption key"
 msgstr "Clé de chiffrement de l'authentifieur"
 
 #: src/wacomponents/screens/claimant_revelation_request_management.py:109
-#, fuzzy
 msgid "Response key"
-msgstr "Clé de la reponse"
+msgstr "Clé de la réponse"
 
 #: src/wacomponents/screens/claimant_revelation_request_management.py:110
 msgid "Symkey Decryption status"
