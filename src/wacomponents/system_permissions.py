@@ -58,5 +58,9 @@ def request_external_storage_dirs_access():  # FIXME rename to request_external_
         #logger.info("Has single permission %r is %s" % (permission, res))
         if not res:
             return False
-    EXTERNAL_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)  # On ALL environments!
+    try:
+        EXTERNAL_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)  # On ALL environments, we check SUBFOLDER creation!
+    except OSError:  # Smartphone permissions can be complex
+        return False
+
     return True
