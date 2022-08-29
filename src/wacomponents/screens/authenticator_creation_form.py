@@ -174,13 +174,14 @@ class AuthenticatorCreationFormScreen(Screen):
                                      title=tr._("Failure"), on_dismiss=lambda x: self.go_to_home_screen())
 
     def display_help_popup(self):
+        authenticator_creation_form_help_text = \
+            tr._(
+             """On this page, you can initialize an authenticator inside an empty folder; this authenticator actually consists in metadata files as well as a set of asymmetric keypairs.""") + LINEBREAK * 2 + \
+            tr._(
+             """To proceed, you have to input your user name or pseudo, a long passphrase (e.g. consisting of 4 different words), and a public hint to help your remember your passphrase later.""") + LINEBREAK * 2 + \
+            tr._(
+             """You should keep your passphrase somewhere safe (in a digital password manager, on a paper in a vault...), because if you forget any of its aspects (upper/lower case, accents, spaces...), there is no way to recover it.""")
+
         help_text_popup(
             title=tr._("Authenticator creation page"),
-            text=AUTHENTICATOR_CREATION_FORM_HELP_PAGE, )
-
-AUTHENTICATOR_CREATION_FORM_HELP_PAGE = tr._(
-                                         """On this page, you can initialize an authenticator inside an empty folder; this authenticator actually consists in metadata files as well as a set of asymmetric keypairs.""") + LINEBREAK * 2 + \
-                                     tr._(
-                                         """To proceed, you have to input your user name or pseudo, a long passphrase (e.g. consisting of 4 different words), and a public hint to help your remember your passphrase later.""") + LINEBREAK * 2 + \
-                                     tr._(
-                                         """You should keep your passphrase somewhere safe (in a digital password manager, on a paper in a vault...), because if you forget any of its aspects (upper/lower case, accents, spaces...), there is no way to recover it.""")
+            text=authenticator_creation_form_help_text, )

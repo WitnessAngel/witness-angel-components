@@ -188,14 +188,14 @@ class AuthenticatorPublicationFormScreen(Screen):
         self.refresh_synchronization_status()
 
     def display_help_popup(self):
-
+        authenticator_publication_help_text = \
+            tr._(
+                 """This page allows to publish the PUBLIC part of an authenticator to a remote Witness Angel Gateway, so that other users may import it to secure their recordings.""") + LINEBREAK * 2 + \
+            tr._(
+                 """For now, a published authenticator can't be modified or deleted.""") + LINEBREAK * 2 + \
+            tr._(
+                 """In case of incoherences between the keys locally and remotely stored, errors are displayed here.""")
         help_text_popup(
             title=tr._("Authenticator publishing"),
-            text=AUTHENTICATOR_PUBLICATION_HELP_PAGE, )
+            text=authenticator_publication_help_text)
 
-AUTHENTICATOR_PUBLICATION_HELP_PAGE = tr._(
-                                         """This page allows to publish the PUBLIC part of an authenticator to a remote Witness Angel Gateway, so that other users may import it to secure their recordings.""") + LINEBREAK * 2 + \
-                                     tr._(
-                                         """For now, a published authenticator can't be modified or deleted.""") + LINEBREAK * 2 + \
-                                     tr._(
-                                         """In case of incoherences between the keys locally and remotely stored, errors are displayed here.""")

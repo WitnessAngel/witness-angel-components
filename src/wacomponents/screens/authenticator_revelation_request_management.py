@@ -311,11 +311,11 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
         self.fetch_and_display_revelation_requests()
 
     def display_help_popup(self):
+        authenticator_revelation_request_management_help_text = tr._(
+            """This page summarizes the authorization requests that have been sent to remote Key Guardians, in order to decrypt some local containers.""")
+
         help_text_popup(
             title=tr._("Remote request revelation page"),
-            text=AUTHENTICATOR_REVELATION_REQUEST_MANAGEMENT_HELP_PAGE, )
+            text=authenticator_revelation_request_management_help_text, )
 
 
-AUTHENTICATOR_REVELATION_REQUEST_MANAGEMENT_HELP_PAGE = tr._("""
-This page summarizes the authorization requests that have been sent to remote Key Guardians, in order to decrypt some local containers.
-""")

@@ -279,7 +279,7 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
                 authenticator_info_text = tr._("Path") + COLON + str(authenticator_dir) + LINEBREAK + \
                                           tr._("Authentifieur") + COLON + authenticator_label + LINEBREAK + \
                                           tr._("Password hint") + COLON + keystore_passphrase_hint + LINEBREAK + \
-                                          tr._("Creation date") + COLON + keystore_creation_datetime_label + LINEBREAK + \
+                                          tr._("Creation date") + COLON + keystore_creation_datetime_label + LINEBREAK + LINEBREAK + \
                                           tr._("Keypairs") + COLON + LINEBREAK + \
                                           keypairs_label_indented
 
@@ -370,7 +370,7 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
 
         dialog_with_close_button(
             title=tr._("Deletion is over"),
-            text=tr._("All authentication data from folder %s has been removed.") % authenticator_dir,
+            text=tr._("Folder %s has been properly removed.") % authenticator_dir,
         )
         self.refresh_authenticator_list()
 
@@ -456,18 +456,21 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
         # publish_authenticator_screen.refresh_status()
 
     def display_help_popup(self):
+
+        authenticator_management_help_text = \
+            tr._(
+            """On this page, you can manage your authenticators, which are actually digital keychains identified by unique IDs.""") + LINEBREAK * 2 + \
+            tr._(
+                 """These keychains contain both public keys, which can be freely shared, and their corresponding private keys, protected by passphrases, which must be kept hidden.""") + LINEBREAK * 2 + \
+            tr._(
+                 """Authenticators can be stored in your user profile or in a custom folder, especially at the root of removable devices.""") + LINEBREAK * 2 + \
+            tr._(
+                 """You can initialize new authenticators from scratch, import/export them from/to ZIP archives, or check their integrity by providing their passphrases.""") + LINEBREAK * 2 + \
+            tr._(
+                 """Note that if you destroy an authenticator and all its exported ZIP archives, the WitnessAngel recordings which used it as a trusted third party might not be decryptable anymore (unless they used a shared secret with other trusted third parties).""")
+
         help_text_popup(
             title=tr._("Authenticator management page"),
-            text=AUTHENTICATOR_MANAGEMENT_HELP_PAGE, )
+            text=authenticator_management_help_text, )
 
 
-AUTHENTICATOR_MANAGEMENT_HELP_PAGE = tr._(
-    """On this page, you can manage your authenticators, which are actually digital keychains identified by unique IDs.""") + LINEBREAK * 2 + \
-                                     tr._(
-                                         """These keychains contain both public keys, which can be freely shared, and their corresponding private keys, protected by passphrases, which must be kept hidden.""") + LINEBREAK * 2 + \
-                                     tr._(
-                                         """Authenticators can be stored in your user profile or in a custom folder, especially at the root of removable devices.""") + LINEBREAK * 2 + \
-                                     tr._(
-                                         """You can initialize new authenticators from scratch, import/export them from/to ZIP archives, or check their integrity by providing their passphrases.""") + LINEBREAK * 2 + \
-                                     tr._(
-                                         """Note that if you destroy an authenticator and all its exported ZIP archives, the WitnessAngel recordings which used it as a trusted third party might not be decryptable anymore (unless they used a shared secret with other trusted third parties).""")
