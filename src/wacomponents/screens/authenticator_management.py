@@ -171,9 +171,10 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
             return
         file_manager_path = EXTERNAL_APP_ROOT
         previously_selected_custom_folder_path = self.selected_custom_folder_path
-        if previously_selected_custom_folder_path and previously_selected_custom_folder_path.is_dir():
+        if previously_selected_custom_folder_path and previously_selected_custom_folder_path.is_dir() \
+            and os.access(previously_selected_custom_folder_path, os.R_OK):  # Else file manager fails silently if path is unreadable
             file_manager_path = previously_selected_custom_folder_path
-        self._folder_chooser.show(str(file_manager_path))  # Soon use .show_disks!!
+        self._folder_chooser.show(str(file_manager_path))
         register_current_dialog(self._folder_chooser)
 
     def reselect_previously_selected_authenticator(self):
@@ -294,7 +295,7 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
         if not request_external_storage_dirs_access():
             return
         file_manager_path = EXTERNAL_EXPORTS_DIR
-        self._archive_chooser.show(str(file_manager_path))  # Soon use .show_disks!!
+        self._archive_chooser.show(str(file_manager_path))
         register_current_dialog(self._archive_chooser)
 
     @safe_catch_unhandled_exception_and_display_popup
