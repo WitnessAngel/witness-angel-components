@@ -41,9 +41,7 @@ if IS_ANDROID:
     Environment = autoclass("android.os.Environment")
     # FIXME we must use getExternalFilesDir now!!
     EXTERNAL_APP_ROOT_PREFIX = Environment.getExternalStorageDirectory().toString()  # Can be stripped as <sdcard>
-    EXTERNAL_APP_ROOT = (
-        Path(EXTERNAL_APP_ROOT_PREFIX) / "WitnessAngel"
-    )
+    EXTERNAL_APP_ROOT = Path(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).toString())
 
     AndroidPackageManager = autoclass('android.content.pm.PackageManager')  # Precached for permission checking
 
