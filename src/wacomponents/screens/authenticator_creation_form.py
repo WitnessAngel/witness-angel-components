@@ -11,7 +11,8 @@ from kivymd.uix.screen import Screen
 from wacomponents.i18n import tr
 from wacomponents.screens.base import WAScreenName
 from wacomponents.utilities import LINEBREAK
-from wacomponents.widgets.popups import dialog_with_close_button, process_method_with_gui_spinner, help_text_popup
+from wacomponents.widgets.popups import dialog_with_close_button, process_method_with_gui_spinner, help_text_popup, \
+    safe_catch_unhandled_exception_and_display_popup
 from wacryptolib.authenticator import initialize_authenticator
 from wacryptolib.keygen import generate_keypair
 from wacryptolib.keystore import FilesystemKeystore
@@ -146,6 +147,7 @@ class AuthenticatorCreationFormScreen(Screen):
     def _do_update_progress_bar(self, percent, *args, **kwargs):
         self.ids.progress_bar.value = percent
 
+    @safe_catch_unhandled_exception_and_display_popup
     def _launch_authenticator_initialization(self, form_values):
         authenticator_dir = self.selected_authenticator_dir
         assert authenticator_dir, authenticator_dir  # Should have been transmitted to this Screen
