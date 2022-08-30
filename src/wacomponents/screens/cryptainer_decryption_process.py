@@ -36,7 +36,7 @@ class CryptainerDecryptionProcessScreen(Screen):
     filesystem_keystore_pool = ObjectProperty(None)
     ##found_trustees_lacking_passphrase = BooleanProperty(0)
     passphrase_mapper = {}
-    cryptainer_decryption_result_screen_name=WAScreenName.cryptainer_decryption_result
+    cryptainer_decryption_result_screen_name = WAScreenName.cryptainer_decryption_result
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -57,7 +57,7 @@ class CryptainerDecryptionProcessScreen(Screen):
 
         for index, cryptainer_name in enumerate(reversed(self.selected_cryptainer_names), start=1):
             cryptainer_label = format_cryptainer_label(cryptainer_name=cryptainer_name)
-            cryptainer_entry_label= tr._("N°") + SPACE + str(index) + COLON + cryptainer_label
+            cryptainer_entry_label = tr._("N°") + SPACE + str(index) + COLON + cryptainer_label
 
             cryptainer_entry = Factory.WAListItemEntry(text=cryptainer_entry_label)  # FIXME RENAME THIS
             cryptainer_entry.unique_identifier = cryptainer_name
@@ -166,7 +166,8 @@ class CryptainerDecryptionProcessScreen(Screen):
                 for private_key_missing in status["trustee_private_keys_missing"]:
                     trustee_key_missing_label = format_keypair_label(**private_key_missing)
                     trustee_keys_missing_label.append(trustee_key_missing_label)
-                trustee_private_keys_missing_text = tr._("Missing private key(s)") + COLON + "{trustee_keys_missing_label}".format(
+                trustee_private_keys_missing_text = tr._(
+                    "Missing private key(s)") + COLON + "{trustee_keys_missing_label}".format(
                     trustee_keys_missing_label=", ".join(trustee_keys_missing_label))
 
         dependencies_status_text = Factory.WAThreeListItemEntry(text=trustee_info,
@@ -241,7 +242,8 @@ class CryptainerDecryptionProcessScreen(Screen):
                     pass  # This was not the right keystore
                 else:
                     trustee_id = get_trustee_id(trustee_conf)
-                    self.passphrase_mapper[trustee_id] = [passphrase]  # For now we assume only ONE PASSPHRASE per trustee, here
+                    self.passphrase_mapper[trustee_id] = [
+                        passphrase]  # For now we assume only ONE PASSPHRASE per trustee, here
                     result = tr._("Success")
                     details = tr._("Passphrase recognized")
 
@@ -260,12 +262,11 @@ class CryptainerDecryptionProcessScreen(Screen):
             content_cls=Factory.CheckPassphraseContent(),
             buttons=[
                 MDFlatButton(text=tr._("Check"),
-                             on_release=lambda *args:(close_current_dialog(), self.check_passphrase(dialog.content_cls.ids.passphrase.text)))],
+                             on_release=lambda *args: (
+                             close_current_dialog(), self.check_passphrase(dialog.content_cls.ids.passphrase.text)))],
         )
 
-    @safe_catch_unhandled_exception_and_display_popup
-    def decipher_cryptainers(self):
-        assert self.filesystem_cryptainer_storage, self.filesystem_cryptainer_storage  # By construction...
+    def decrypt_cryptainers_from_storage(self):
         errors = []
         decryption_results = []
         decrypted_cryptainer_number = 0
@@ -276,7 +277,7 @@ class CryptainerDecryptionProcessScreen(Screen):
                 # FIXME make this asynchronous, to avoid stalling the app!
                 result, errors = self.filesystem_cryptainer_storage.decrypt_cryptainer_from_storage(cryptainer_name,
                                                                                                     passphrase_mapper=self.passphrase_mapper,
-                                                                                                    revelation_requestor_uid= self.revelation_requestor_uid,
+                                                                                                    revelation_requestor_uid=self.revelation_requestor_uid,
                                                                                                     gateway_url_list=[self.jsonrpc_url])
                 # FIXME add here real management of teh error report, and treat the case where result is None
                 # assert not errors, errors
@@ -299,18 +300,29 @@ class CryptainerDecryptionProcessScreen(Screen):
             )
             decryption_results.append(decryption_result_per_cryptainer)
         decryption_info = (decrypted_cryptainer_number, decryption_results)
-        self.launch_remote_decryption_request_error_page(decryption_info)
+        return decryption_info
 
-        if decrypted_cryptainer_number:
-            message = "Decryption successful, see export folder for results"  # TODO TRADUIRE
-        else:
-            message = "Errors happened during decryption, see logs" # TODO TRADUIRE
+    @safe_catch_unhandled_exception_and_display_popup
+    def decipher_cryptainers(self):
+        assert self.filesystem_cryptainer_storage, self.filesystem_cryptainer_storage  # By construction...
 
-        Snackbar(
-            text=message,
-            font_size="12sp",
-            duration=5,
-        ).open()
+        def resultat_callable(decryption_info, *args, **kwargs):  # FIXME CHANGE THIS NAME
+            decrypted_cryptainer_number, decryption_results = decryption_info
+
+            self.launch_remote_decryption_request_error_page(decryption_info)
+
+            if decrypted_cryptainer_number:
+                message = "Decryption successful, see export folder for results"  # TODO TRADUIRE
+            else:
+                message = "Errors happened during decryption, see logs"  # TODO TRADUIRE
+
+            Snackbar(
+                text=message,
+                font_size="12sp",
+                duration=5,
+            ).open()
+
+        self._app._offload_task_with_spinner(self.decrypt_cryptainers_from_storage, resultat_callable)
 
     def launch_remote_decryption_request_error_page(self, decryption_info):
         decryption_request_error_screen_name = WAScreenName.cryptainer_decryption_result
@@ -321,7 +333,8 @@ class CryptainerDecryptionProcessScreen(Screen):
     def launch_remote_decryption_request(self):
 
         claimant_revelation_request_creation_form_screen_name = WAScreenName.claimant_revelation_request_creation_form
-        remote_decryption_request_screen = self.manager.get_screen(claimant_revelation_request_creation_form_screen_name)
+        remote_decryption_request_screen = self.manager.get_screen(
+            claimant_revelation_request_creation_form_screen_name)
         remote_decryption_request_screen.selected_cryptainer_names = self.selected_cryptainer_names
         remote_decryption_request_screen.trustee_data = self.trustee_data  # FIXME rename here too
         self.manager.current = claimant_revelation_request_creation_form_screen_name
