@@ -29,7 +29,7 @@ class ClaimantRevelationRequestManagementScreen(Screen):
         self.manager.current = WAScreenName.cryptainer_storage_management
 
     @staticmethod
-    def _list_decryption_request_reformatted(
+    def _list_revelation_request_reformatted(
             list_decryption_request):  # FIXME both have wrong named, and restructured better than reformatted (which means strings)
         decryption_request_per_cryptainer = {}
 
@@ -47,80 +47,90 @@ class ClaimantRevelationRequestManagementScreen(Screen):
 
         return decryption_request_per_cryptainer
 
-    def display_decryption_request_list(self):
-        self.ids.list_decryption_request_scrollview.clear_widgets()
-
+    def list_requestor_revelation_requests(self):
         revelation_requestor_uid = self._app.get_wa_device_uid()
-
+        requestor_revelation_requests = []
         try:
-            list_decryption_requests = self.gateway_proxy.list_requestor_revelation_requests(
+            requestor_revelation_requests= self.gateway_proxy.list_requestor_revelation_requests(
                 revelation_requestor_uid=revelation_requestor_uid)  # FIXME RENAME list_decryption_requests
 
         except(JSONRPCError, OSError):
-            display_info_snackbar(tr._("Network error, please check the gateway url"))
-            list_decryption_requests = []
+            requestor_revelation_requests = None
 
-        if not list_decryption_requests:  # FIXME RENAME ALL decryption requests!!!!
-            fallback_info_box = build_fallback_information_box(tr._("No revelation requests found"))
-            self.ids.list_decryption_request_scrollview.add_widget(fallback_info_box)
-            return
+        return requestor_revelation_requests
 
-        decryption_requests_per_cryptainer = self._list_decryption_request_reformatted(list_decryption_requests)
 
-        display_layout = GrowingAccordion(orientation='vertical', size_hint=(1, None))
+    def display_decryption_request_list(self):
+        self.ids.list_decryption_request_scrollview.clear_widgets()
 
-        for decryption_request_per_cryptainer in decryption_requests_per_cryptainer.items():
+        def resultat_callable(requestor_revelation_requests, *args, **kwargs):  # FIXME CHANGE THIS NAME
+            if requestor_revelation_requests is None:
+                display_info_snackbar(tr._("Network error, please check the gateway url"))
+                return
 
-            container_item = Factory.ContainerItem(title=tr._("Container") + COLON + str(decryption_request_per_cryptainer[0]))
+            if requestor_revelation_requests == []:  # FIXME RENAME ALL decryption requests!!!!
+                fallback_info_box = build_fallback_information_box(tr._("No revelation requests found"))
+                self.ids.list_decryption_request_scrollview.add_widget(fallback_info_box)
+                return
 
-            for revelation_request in decryption_request_per_cryptainer[1]:
-                revelation_request_label = format_revelation_request_label(
-                    revelation_request_uid=revelation_request["revelation_request_uid"],
-                    revelation_request_creation_datetime=revelation_request["created_at"],
-                    revelation_request_status=revelation_request["revelation_request_status"])
+            revelation_requests_per_cryptainer = self._list_revelation_request_reformatted(requestor_revelation_requests)
 
-                target_public_authenticator_label = format_authenticator_label(
-                    authenticator_owner=revelation_request["target_public_authenticator"]["keystore_owner"],
-                    keystore_uid=revelation_request["target_public_authenticator"]["keystore_uid"])
+            display_layout = GrowingAccordion(orientation='vertical', size_hint=(1, None))
 
-                authenticator_key_algo = revelation_request["symkey_decryption_request"]["target_public_authenticator_key"]["key_algo"]
-                authenticator_keychain_uid = revelation_request["symkey_decryption_request"]["target_public_authenticator_key"]["keychain_uid"]
+            for revelation_request_per_cryptainer in revelation_requests_per_cryptainer.items():
 
-                authenticator_key_label = format_keypair_label(keychain_uid=authenticator_keychain_uid,
-                                                               key_algo=authenticator_key_algo)
+                container_item = Factory.ContainerItem(title=tr._("Container") + COLON + str(revelation_request_per_cryptainer[0]))
 
-                response_key_label = format_keypair_label(
-                    keychain_uid=revelation_request["revelation_response_keychain_uid"],
-                    key_algo=revelation_request["revelation_response_key_algo"])
+                for revelation_request in revelation_request_per_cryptainer[1]:
+                    revelation_request_label = format_revelation_request_label(
+                        revelation_request_uid=revelation_request["revelation_request_uid"],
+                        revelation_request_creation_datetime=revelation_request["created_at"],
+                        revelation_request_status=revelation_request["revelation_request_status"])
 
-                _displayed_values = dict(
-                    revelation_request_label=revelation_request_label,
-                    revelation_request_description=revelation_request["revelation_request_description"],
-                    target_public_authenticator_label=target_public_authenticator_label,
-                    response_key_label=response_key_label,
-                    symkey_decryption_status=revelation_request["symkey_decryption_request"][
-                        "symkey_decryption_status"],
-                    authenticator_key_label=authenticator_key_label,
-                )
+                    target_public_authenticator_label = format_authenticator_label(
+                        authenticator_owner=revelation_request["target_public_authenticator"]["keystore_owner"],
+                        keystore_uid=revelation_request["target_public_authenticator"]["keystore_uid"])
 
-                revelation_request_summary_text = tr._("Description") + COLON + _displayed_values["revelation_request_description"] + LINEBREAK + \
-                                                  tr._("Authenticator") + COLON + _displayed_values["target_public_authenticator_label"] + LINEBREAK + \
-                                                  tr._("Authenticator encryption key") + COLON + _displayed_values["authenticator_key_label"] + LINEBREAK + \
-                                                  tr._("Response key") + COLON + _displayed_values["response_key_label"] + LINEBREAK + \
-                                                  tr._("Symkey Decryption status") + COLON + _displayed_values["symkey_decryption_status"] + LINEBREAK
+                    authenticator_key_algo = revelation_request["symkey_decryption_request"]["target_public_authenticator_key"]["key_algo"]
+                    authenticator_keychain_uid = revelation_request["symkey_decryption_request"]["target_public_authenticator_key"]["keychain_uid"]
 
-                revelation_request_entry = Factory.WAIconListItemEntry(text=revelation_request_label)
+                    authenticator_key_label = format_keypair_label(keychain_uid=authenticator_keychain_uid,
+                                                                   key_algo=authenticator_key_algo)
 
-                def information_callback(widget, revelation_request_info=revelation_request_summary_text):
-                    self.show_revelation_request_info(revelation_request_info=revelation_request_info)
+                    response_key_label = format_keypair_label(
+                        keychain_uid=revelation_request["revelation_response_keychain_uid"],
+                        key_algo=revelation_request["revelation_response_key_algo"])
 
-                information_icon = revelation_request_entry.ids.information_icon
-                information_icon.bind(on_press=information_callback)
+                    _displayed_values = dict(
+                        revelation_request_label=revelation_request_label,
+                        revelation_request_description=revelation_request["revelation_request_description"],
+                        target_public_authenticator_label=target_public_authenticator_label,
+                        response_key_label=response_key_label,
+                        symkey_decryption_status=revelation_request["symkey_decryption_request"][
+                            "symkey_decryption_status"],
+                        authenticator_key_label=authenticator_key_label,
+                    )
 
-                container_item.decryption_requests_list.add_widget(revelation_request_entry)
+                    revelation_request_summary_text = tr._("Description") + COLON + _displayed_values["revelation_request_description"] + LINEBREAK + \
+                                                      tr._("Authenticator") + COLON + _displayed_values["target_public_authenticator_label"] + LINEBREAK + \
+                                                      tr._("Authenticator encryption key") + COLON + _displayed_values["authenticator_key_label"] + LINEBREAK + \
+                                                      tr._("Response key") + COLON + _displayed_values["response_key_label"] + LINEBREAK + \
+                                                      tr._("Symkey Decryption status") + COLON + _displayed_values["symkey_decryption_status"] + LINEBREAK
 
-            display_layout.add_widget(container_item)
-        self.ids.list_decryption_request_scrollview.add_widget(display_layout)
+                    revelation_request_entry = Factory.WAIconListItemEntry(text=revelation_request_label)
+
+                    def information_callback(widget, revelation_request_info=revelation_request_summary_text):
+                        self.show_revelation_request_info(revelation_request_info=revelation_request_info)
+
+                    information_icon = revelation_request_entry.ids.information_icon
+                    information_icon.bind(on_press=information_callback)
+
+                    container_item.revelation_requests_list.add_widget(revelation_request_entry)
+
+                display_layout.add_widget(container_item)
+            self.ids.list_decryption_request_scrollview.add_widget(display_layout)
+
+        self._app._offload_task_with_spinner(self.list_requestor_revelation_requests, resultat_callable)
 
     def show_revelation_request_info(self, revelation_request_info):
         dialog_with_close_button(

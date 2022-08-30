@@ -55,7 +55,7 @@ class CryptainerDecryptionResultScreen(Screen):
                     "Decryption status of {cryptainer_name}: {decryption_status}").format(
                     cryptainer_name=decryption_results_per_cryptainer["cryptainer_name"],
                     decryption_status=DecryptionStatus.SUCCESS if decryption_results_per_cryptainer[
-                                                                      "decryption_error"] == True
+                                                                      "decryption_status"] == True
                     else DecryptionStatus.FAILURE)
 
                 cryptainer_decryption_status_label = Factory.DecryptionStatusLabel(text=cryptainer_decryption_status,

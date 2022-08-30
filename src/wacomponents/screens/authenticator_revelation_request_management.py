@@ -28,7 +28,6 @@ from wacomponents.widgets.popups import dialog_with_close_button, close_current_
 
 Builder.load_file(str(Path(__file__).parent / 'authenticator_revelation_request_management.kv'))
 
-
 # FIXME RENAME THIS FILE AND KV FILE to authenticator_decryption_request_management.py
 
 # FIXME IN ALL FILES @Francinette:
@@ -169,7 +168,7 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
                                  revelation_request=revelation_request)))],
         )
 
-    def display_remote_revelation_request(self, list_revelation_requests_per_status):  # TODO change name function
+    def display_remote_revelation_request(self, revelation_requests_per_status_list):  # TODO change name function
         # TODO add list_decryption_request to parameter of this function
         # why????
 
@@ -177,7 +176,7 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
                               REJECTED=self.ids.rejected_revelation_request,
                               ACCEPTED=self.ids.accepted_revelation_request)
 
-        for status, revelation_requests in list_revelation_requests_per_status.items():
+        for status, revelation_requests in revelation_requests_per_status_list.items():
 
             if not revelation_requests:
                 fallback_info_box = build_fallback_information_box(tr._("No decryption request"))
@@ -194,13 +193,36 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
             tab_per_status[status].add_widget(scroll)
 
     @staticmethod
-    def sort_list_revelation_request_per_status(list_authenticator_revelation_requests):
+    def sort_list_revelation_request_per_status(authenticator_revelation_request_list):
         DECRYPTION_REQUEST_STATUSES = ["PENDING", "ACCEPTED", "REJECTED"]  # KEEP IN SYNC with WASERVER
         revelation_requests_per_status = {status: [] for status in DECRYPTION_REQUEST_STATUSES}
 
-        for revelation_request in list_authenticator_revelation_requests:
+        for revelation_request in authenticator_revelation_request_list:
             revelation_requests_per_status[revelation_request["revelation_request_status"]].append(revelation_request)
         return revelation_requests_per_status
+
+    def get_revelation_request_list_per_status(self): #FIXME NAMING
+        authenticator_path = self.selected_authenticator_dir
+        revelation_requests_per_status_list = None
+        authenticator_metadata = load_keystore_metadata(authenticator_path)
+        keystore_uid = authenticator_metadata["keystore_uid"]
+
+        try:
+            authenticator_revelation_request_list = self.gateway_proxy.list_authenticator_revelation_requests(
+                authenticator_keystore_secret=authenticator_metadata["keystore_secret"],
+                authenticator_keystore_uid=keystore_uid)
+            revelation_requests_per_status_list = self.sort_list_revelation_request_per_status(
+                authenticator_revelation_request_list)
+            message = tr._("The list of revelation requests is up to date")
+
+        except KeystoreDoesNotExist:  # FIXME why would this pop out ? Why not just an empty list ???
+            # Fixme Because without this popup, we do not understand why the empty screen is empty
+            message = tr._("Authenticator %s does not exist on remote server") % keystore_uid
+
+        except AuthenticationError:
+            message = tr._("The keystore secret of authenticator is not valid")
+
+        return revelation_requests_per_status_list, message
 
     @safe_catch_unhandled_exception_and_display_popup
     def fetch_and_display_revelation_requests(self):
@@ -209,31 +231,14 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
         self.ids.rejected_revelation_request.clear_widgets()
         self.ids.accepted_revelation_request.clear_widgets()
 
-        authenticator_path = self.selected_authenticator_dir
-
-        authenticator_metadata = load_keystore_metadata(authenticator_path)
-        keystore_uid = authenticator_metadata["keystore_uid"]
-
-        try:
-            list_authenticator_revelation_requests = self.gateway_proxy.list_authenticator_revelation_requests(
-                authenticator_keystore_secret=authenticator_metadata["keystore_secret"],
-                authenticator_keystore_uid=keystore_uid)
-
-        except KeystoreDoesNotExist:  # FIXME why would this pop out ? Why not just an empty list ???
-            # Fixme Because without this popup, we do not understand why the empty screen is empty
-            display_info_snackbar(tr._("Authenticator %s does not exist on remote server") % keystore_uid)
-            return
-
-        except AuthenticationError:
-            display_info_snackbar(tr._("The keystore secret of authenticator is not valid"))
-            return
-
         # FIXME ADD PLACEHOLDER WHEN list_authenticator_revelation_requests is empty
+        def resultat_callable(result, *args, **kwargs): # FIXME CHANGE THIS NAME
+            revelation_requests_per_status_list, message = result
+            display_info_snackbar(message=message)
+            if revelation_requests_per_status_list is not None:
+                self.display_remote_revelation_request(revelation_requests_per_status_list=revelation_requests_per_status_list)
 
-        list_revelation_requests_per_status = self.sort_list_revelation_request_per_status(
-            list_authenticator_revelation_requests)
-
-        self.display_remote_revelation_request(list_revelation_requests_per_status=list_revelation_requests_per_status)
+        self._app._offload_task_with_spinner(self.get_revelation_request_list_per_status, resultat_callable)
 
     @safe_catch_unhandled_exception_and_display_popup
     def accept_revelation_request(self, passphrase, revelation_request):

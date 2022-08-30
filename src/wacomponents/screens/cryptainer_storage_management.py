@@ -170,7 +170,7 @@ class CryptainerStorageManagementScreen(Screen):
     def open_cryptainer_details_dialog(self, message, cryptainer_info):
         dialog_with_close_button(
             close_btn_label=tr._("Close"),
-            title= tr._("Conteneur") + COLON + cryptainer_info,
+            title= tr._("Container") + COLON + cryptainer_info,
             text=message,
         )
         '''
