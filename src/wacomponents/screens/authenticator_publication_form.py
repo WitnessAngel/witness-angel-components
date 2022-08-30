@@ -130,12 +130,12 @@ class AuthenticatorPublicationFormScreen(Screen):
                 exceeding_public_keys_shortened = [shorten_uid(k[0]) for k in report["exceeding_keys_in_remote"]]
                 missing_public_keys_shortened = [shorten_uid(k[0]) for k in report["missing_keys_in_remote"]]
 
-                exceeding_keys_in_remote = (", ".join(exceeding_public_keys_shortened) or "-"),
-                missing_keys_in_remote = (", ".join(missing_public_keys_shortened) or "-"),
+                exceeding_keys_in_remote = ", ".join(exceeding_public_keys_shortened) or "-"
+                missing_keys_in_remote = ", ".join(missing_public_keys_shortened) or "-"
 
                 synchronization_details_text = tr._("Error details") + COLON + LINEBREAK + \
-                                               indent_text(tr._("Exceeding key(s) in remote") + COLON + str(exceeding_keys_in_remote)) + LINEBREAK + \
-                                               indent_text(tr._("Missing key(s) in remote") + COLON + str(missing_keys_in_remote))
+                                               indent_text(tr._("Exceeding key(s) in remote") + COLON + exceeding_keys_in_remote) + LINEBREAK + \
+                                               indent_text(tr._("Missing key(s) in remote") + COLON + missing_keys_in_remote)
 
         _displayed_values = dict(
             gateway=self._app.get_wagateway_url(),
