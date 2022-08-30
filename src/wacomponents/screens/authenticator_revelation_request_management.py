@@ -232,7 +232,7 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
         self.ids.accepted_revelation_request.clear_widgets()
 
         # FIXME ADD PLACEHOLDER WHEN list_authenticator_revelation_requests is empty
-        def resultat_callable(result, *args, **kwargs):
+        def resultat_callable(result, *args, **kwargs): # FIXME CHANGE THIS NAME
             revelation_requests_per_status_list, message = result
             display_info_snackbar(message=message)
             if revelation_requests_per_status_list is not None:

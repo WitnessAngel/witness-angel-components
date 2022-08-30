@@ -87,86 +87,99 @@ class AuthenticatorPublicationFormScreen(Screen):
 
         return report
 
+
+    def get_remote_public_authenticator_status(self):
+        remote_public_authenticator = None
+        local_metadata = self._query_local_authenticator_status()
+        keystore_uid = local_metadata["keystore_uid"]
+        keystore_owner = local_metadata["keystore_owner"]
+        msg=""
+
+        try:
+            remote_public_authenticator = self._query_remote_authenticator_status(
+                keystore_uid=local_metadata["keystore_uid"])
+        except(JSONRPCError, OSError) as exc:
+            logger.error("Error calling gateway server: %r", exc)
+            msg = tr._("Error querying gateway server, please check its url")
+
+        return  remote_public_authenticator, msg # Do not touch anything of the GUI
+
     @safe_catch_unhandled_exception_and_display_popup
     def refresh_synchronization_status(self):
-        self.enable_publish_button = enable_publish_button = False  # Defensive setup
 
         local_metadata = self._query_local_authenticator_status()
         keystore_uid = local_metadata["keystore_uid"]
         keystore_owner = local_metadata["keystore_owner"]
 
-        try:
-            remote_public_authenticator = self._query_remote_authenticator_status(
-                keystore_uid=local_metadata["keystore_uid"])
+        def resultat_callable(result, *args, **kwargs): # FIXME CHANGE THIS NAME
 
-        except(JSONRPCError, OSError) as exc:
-            logger.error("Error calling gateway server: %r", exc)
-            msg = tr._("Error querying gateway server, please check its url")
-            display_info_toast(msg)
-            return  # Do not touch anything of the GUI
+            self.enable_publish_button = enable_publish_button = False  # Defensive setup
 
-        synchronization_details_text = ""
+            remote_public_authenticator, message = result
+            if message:
+                self.ids.synchronization_information.text = tr._("No information available")
+                display_info_toast(message)
+                return
 
-        if remote_public_authenticator is None:
-            is_published = False
-            synchronization_status = tr._("NOT PUBLISHED")
-            message = tr._("The local authenticator does not exist in the remote repository.")
-            enable_publish_button = True
-
-        else:
-
-            is_published = True
-            synchronization_status = tr._("PUBLISHED")
-
-            report = self._compare_local_and_remote_status(
-                local_metadata=local_metadata, remote_public_authenticator=remote_public_authenticator)
-
-            if report["is_synchronized"]:
-                message = tr._("The remote authenticator is up to date.")
-
+            synchronization_details_text = ""
+            if remote_public_authenticator is None:
+                is_published = False
+                synchronization_status = tr._("NOT PUBLISHED")
+                message = tr._("The local authenticator does not exist in the remote repository.")
+                enable_publish_button = True
             else:
-                message = tr._("An inconsistency has been detected between the local and remote authenticator.")
+                is_published = True
+                synchronization_status = tr._("PUBLISHED")
 
-                exceeding_public_keys_shortened = [shorten_uid(k[0]) for k in report["exceeding_keys_in_remote"]]
-                missing_public_keys_shortened = [shorten_uid(k[0]) for k in report["missing_keys_in_remote"]]
+                report = self._compare_local_and_remote_status(
+                    local_metadata=local_metadata, remote_public_authenticator=remote_public_authenticator)
 
-                exceeding_keys_in_remote = (", ".join(exceeding_public_keys_shortened) or "-"),
-                missing_keys_in_remote = (", ".join(missing_public_keys_shortened) or "-"),
+                if report["is_synchronized"]:
+                    message = tr._("The remote authenticator is up to date.")
 
-                synchronization_details_text = tr._("Error details") + COLON + LINEBREAK + \
-                                               indent_text(tr._("Exceeding key(s) in remote") + COLON + str(exceeding_keys_in_remote)) + LINEBREAK + \
-                                               indent_text(tr._("Missing key(s) in remote") + COLON + str(missing_keys_in_remote))
+                else:
+                    message = tr._("An inconsistency has been detected between the local and remote authenticator.")
 
-        _displayed_values = dict(
-            gateway=self._app.get_wagateway_url(),
-            status=synchronization_status,
-            message=message,
-            authenticator_owner=keystore_owner,
-            authenticator_uid=str(keystore_uid)
-        )
-        synchronization_info_text = tr._("Gateway") + COLON + _displayed_values["gateway"] + LINEBREAK + LINEBREAK + \
-                                    tr._("Remote status") + COLON + _displayed_values["status"] + LINEBREAK + \
-                                    tr._("Message") + COLON + _displayed_values["message"] + LINEBREAK + LINEBREAK + \
-                                    tr._("Authenticator owner") + COLON + _displayed_values["authenticator_owner"] + LINEBREAK + \
-                                    tr._("Authenticator ID") + COLON + _displayed_values["authenticator_uid"]
+                    exceeding_public_keys_shortened = [shorten_uid(k[0]) for k in report["exceeding_keys_in_remote"]]
+                    missing_public_keys_shortened = [shorten_uid(k[0]) for k in report["missing_keys_in_remote"]]
 
-        if is_published:
-            synchronization_info_text += LINEBREAK + tr._(
-                "Provide this ID to users wanting to rely on you as a Key Guardian") + LINEBREAK
+                    exceeding_keys_in_remote = (", ".join(exceeding_public_keys_shortened) or "-"),
+                    missing_keys_in_remote = (", ".join(missing_public_keys_shortened) or "-"),
 
-        if synchronization_details_text:
-            synchronization_info_text += "\n" + synchronization_details_text
+                    synchronization_details_text = tr._("Error details") + COLON + LINEBREAK + \
+                                                   indent_text(tr._("Exceeding key(s) in remote") + COLON + str(exceeding_keys_in_remote)) + LINEBREAK + \
+                                                   indent_text(tr._("Missing key(s) in remote") + COLON + str(missing_keys_in_remote))
 
-        # Update the GUI
+            _displayed_values = dict(
+                gateway=self._app.get_wagateway_url(),
+                status=synchronization_status,
+                message=message,
+                authenticator_owner=keystore_owner,
+                authenticator_uid=str(keystore_uid)
+            )
+            synchronization_info_text = tr._("Gateway") + COLON + _displayed_values["gateway"] + LINEBREAK + LINEBREAK + \
+                                        tr._("Remote status") + COLON + _displayed_values["status"] + LINEBREAK + \
+                                        tr._("Message") + COLON + _displayed_values["message"] + LINEBREAK + LINEBREAK + \
+                                        tr._("Authenticator owner") + COLON + _displayed_values["authenticator_owner"] + LINEBREAK + \
+                                        tr._("Authenticator ID") + COLON + _displayed_values["authenticator_uid"]
 
-        self.ids.synchronization_information.text = synchronization_info_text
-        display_info_toast(tr._("Remote authenticator status has been updated"))
+            if is_published:
+                synchronization_info_text += LINEBREAK + tr._(
+                    "Provide this ID to users wanting to rely on you as a Key Guardian") + LINEBREAK
 
-        self.enable_publish_button = enable_publish_button
+            if synchronization_details_text:
+                synchronization_info_text += "\n" + synchronization_details_text
 
-    @safe_catch_unhandled_exception_and_display_popup
-    def publish_authenticator(self):
+            # Update the GUI
 
+            self.ids.synchronization_information.text = synchronization_info_text
+            display_info_toast(tr._("Remote authenticator status has been updated"))
+
+            self.enable_publish_button = enable_publish_button
+
+        self._app._offload_task_with_spinner(self.get_remote_public_authenticator_status, resultat_callable)
+
+    def set_public_authenticator(self):
         local_metadata = self._query_local_authenticator_status()
 
         authenticator_path = self.selected_authenticator_dir
@@ -182,10 +195,16 @@ class AuthenticatorPublicationFormScreen(Screen):
             })
         local_authenticator = deepcopy(local_metadata)
         local_authenticator["public_keys"] = public_keys
-
         self.gateway_proxy.set_public_authenticator(**local_authenticator)
+        return True
 
-        self.refresh_synchronization_status()
+    @safe_catch_unhandled_exception_and_display_popup
+    def publish_authenticator(self):
+
+        def resultat_callable(result, *args, **kwargs):  # FIXME CHANGE THIS NAME
+            self.refresh_synchronization_status()
+
+        self._app._offload_task_with_spinner(self.set_public_authenticator, resultat_callable)
 
     def display_help_popup(self):
 
