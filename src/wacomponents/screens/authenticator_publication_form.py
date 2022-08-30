@@ -87,14 +87,10 @@ class AuthenticatorPublicationFormScreen(Screen):
 
         return report
 
-
     def get_remote_public_authenticator_status(self):
         remote_public_authenticator = None
         local_metadata = self._query_local_authenticator_status()
-        keystore_uid = local_metadata["keystore_uid"]
-        keystore_owner = local_metadata["keystore_owner"]
-        msg=""
-
+        msg = ""
         try:
             remote_public_authenticator = self._query_remote_authenticator_status(
                 keystore_uid=local_metadata["keystore_uid"])
@@ -102,7 +98,7 @@ class AuthenticatorPublicationFormScreen(Screen):
             logger.error("Error calling gateway server: %r", exc)
             msg = tr._("Error querying gateway server, please check its url")
 
-        return  remote_public_authenticator, msg # Do not touch anything of the GUI
+        return remote_public_authenticator, msg  # Do not touch anything of the GUI
 
     @safe_catch_unhandled_exception_and_display_popup
     def refresh_synchronization_status(self):
@@ -111,7 +107,7 @@ class AuthenticatorPublicationFormScreen(Screen):
         keystore_uid = local_metadata["keystore_uid"]
         keystore_owner = local_metadata["keystore_owner"]
 
-        def resultat_callable(result, *args, **kwargs): # FIXME CHANGE THIS NAME
+        def resultat_callable(result, *args, **kwargs):  # FIXME CHANGE THIS NAME
 
             self.enable_publish_button = enable_publish_button = False  # Defensive setup
 
@@ -147,8 +143,10 @@ class AuthenticatorPublicationFormScreen(Screen):
                     missing_keys_in_remote = (", ".join(missing_public_keys_shortened) or "-"),
 
                     synchronization_details_text = tr._("Error details") + COLON + LINEBREAK + \
-                                                   indent_text(tr._("Exceeding key(s) in remote") + COLON + str(exceeding_keys_in_remote)) + LINEBREAK + \
-                                                   indent_text(tr._("Missing key(s) in remote") + COLON + str(missing_keys_in_remote))
+                                                   indent_text(tr._("Exceeding key(s) in remote") + COLON + str(
+                                                       exceeding_keys_in_remote)) + LINEBREAK + \
+                                                   indent_text(tr._("Missing key(s) in remote") + COLON + str(
+                                                       missing_keys_in_remote))
 
             _displayed_values = dict(
                 gateway=self._app.get_wagateway_url(),
@@ -160,7 +158,8 @@ class AuthenticatorPublicationFormScreen(Screen):
             synchronization_info_text = tr._("Gateway") + COLON + _displayed_values["gateway"] + LINEBREAK + LINEBREAK + \
                                         tr._("Remote status") + COLON + _displayed_values["status"] + LINEBREAK + \
                                         tr._("Message") + COLON + _displayed_values["message"] + LINEBREAK + LINEBREAK + \
-                                        tr._("Authenticator owner") + COLON + _displayed_values["authenticator_owner"] + LINEBREAK + \
+                                        tr._("Authenticator owner") + COLON + _displayed_values[
+                                            "authenticator_owner"] + LINEBREAK + \
                                         tr._("Authenticator ID") + COLON + _displayed_values["authenticator_uid"]
 
             if is_published:
@@ -212,9 +211,10 @@ class AuthenticatorPublicationFormScreen(Screen):
             title=tr._("Authenticator publishing"),
             text=AUTHENTICATOR_PUBLICATION_HELP_PAGE, )
 
+
 AUTHENTICATOR_PUBLICATION_HELP_PAGE = tr._(
-                                         """This page allows to publish the PUBLIC part of an authenticator to a remote Witness Angel Gateway, so that other users may import it to secure their recordings.""") + LINEBREAK * 2 + \
-                                     tr._(
-                                         """For now, a published authenticator can't be modified or deleted.""") + LINEBREAK * 2 + \
-                                     tr._(
-                                         """In case of incoherences between the keys locally and remotely stored, errors are displayed here.""")
+    """This page allows to publish the PUBLIC part of an authenticator to a remote Witness Angel Gateway, so that other users may import it to secure their recordings.""") + LINEBREAK * 2 + \
+                                      tr._(
+                                          """For now, a published authenticator can't be modified or deleted.""") + LINEBREAK * 2 + \
+                                      tr._(
+                                          """In case of incoherences between the keys locally and remotely stored, errors are displayed here.""")
