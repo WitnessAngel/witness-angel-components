@@ -68,7 +68,7 @@ def request_external_storage_dirs_access():  # FIXME rename to request_external_
 
 
 def is_folder_writable(path):
-    """CREATES temp folder to test actual access,
+    """CREATES temp folder with a subfile in it, to test actual access to filesystem,
     since os.access() and such are UNRELIABLE on Windows
 
     The `path` folder must ALREADY exist.
@@ -76,9 +76,12 @@ def is_folder_writable(path):
     if not path.is_dir():
         raise RuntimeError("path does not exist")
     try:
-        test_folder_path = path.joinpath("~testfolder%d" % random.randint(0, 100000))
+        test_folder_path = path.joinpath("~test-folder-%d" % random.randint(0, 100000))
+        test_subfile_path = test_folder_path.joinpath("~test-file.tmp")
         test_folder_path.mkdir()
-        test_folder_path.rmdir()  # Might fail in rare corner cases with ACLs
+        test_subfile_path.touch(exist_ok=False)
+        test_subfile_path.unlink()  # Might fail in rare corner cases with ACLs
+        test_folder_path.rmdir()  # Same here, rare failures are possible
     except OSError as exc:
         return False
     return True
