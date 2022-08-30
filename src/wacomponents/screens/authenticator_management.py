@@ -19,7 +19,7 @@ from wacomponents.default_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_A
     strip_external_app_root_prefix, INTERNAL_APP_ROOT
 from wacomponents.i18n import tr
 from wacomponents.screens.base import WAScreenName
-from wacomponents.system_permissions import request_external_storage_dirs_access
+from wacomponents.system_permissions import request_external_storage_dirs_access, is_folder_readable, is_folder_writable
 from wacomponents.utilities import convert_bytes_to_human_representation, shorten_uid, format_authenticator_label, \
     format_keypair_label, format_datetime_label, COLON, LINEBREAK, indent_text
 from wacomponents.widgets.layout_components import LanguageSwitcherScreenMixin
@@ -172,7 +172,7 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
         file_manager_path = EXTERNAL_APP_ROOT
         previously_selected_custom_folder_path = self.selected_custom_folder_path
         if previously_selected_custom_folder_path and previously_selected_custom_folder_path.is_dir() \
-            and os.access(previously_selected_custom_folder_path, os.R_OK):  # Else file manager fails silently if path is unreadable
+            and is_folder_readable(previously_selected_custom_folder_path):  # Else file manager fails silently if path is unreadable
             file_manager_path = previously_selected_custom_folder_path
         self._folder_chooser.show(str(file_manager_path))
         register_current_dialog(self._folder_chooser)
@@ -233,7 +233,17 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
 
         elif not is_authenticator_initialized(authenticator_dir):
             authenticator_info_text = tr._("Path: %s") % authenticator_dir_shortened
-            authenticator_status = False
+            if authenticator_dir.exists() and not authenticator_dir.is_dir():  # E.g. it's a file or symlink
+                authenticator_info_text += 2 * LINEBREAK + tr._("Beware, this is not a folder!")
+                authenticator_status = None
+            elif authenticator_dir.is_dir() and not is_folder_writable(authenticator_dir):
+                authenticator_info_text += 2 * LINEBREAK + tr._("Beware, this folder is NOT writable!")
+                authenticator_status = None  # Final dir is not writable for json/keys
+            elif not authenticator_dir.exists() and not is_folder_writable(authenticator_dir.parent):
+                authenticator_info_text += 2 * LINEBREAK + tr._("Beware, parent folder is NOT writable!")
+                authenticator_status = None  # Can't create keystore folder
+            else:
+                authenticator_status = False  # Authenticator folder or metadata/keys are missing BUT creatable
 
         elif is_authenticator_initialized(authenticator_dir):
 
