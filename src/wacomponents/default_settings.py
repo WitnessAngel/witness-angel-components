@@ -41,7 +41,8 @@ if IS_ANDROID:
     Environment = autoclass("android.os.Environment")
     # FIXME we must use getExternalFilesDir now!!
     EXTERNAL_APP_ROOT_PREFIX = Environment.getExternalStorageDirectory().toString()  # Can be stripped as <sdcard>
-    EXTERNAL_APP_ROOT = Path(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).toString())
+    _documents_folder = Path(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).toString())
+    EXTERNAL_APP_ROOT = _documents_folder.joinpath("WitnessAngel")
 
     AndroidPackageManager = autoclass('android.content.pm.PackageManager')  # Precached for permission checking
 
@@ -53,7 +54,7 @@ elif IS_IOS:
     INTERNAL_APP_ROOT = _home_dir / "Library" / "Application Support"  # Might NOT EXIST yet
     INTERNAL_CACHE_DIR = _home_dir / "tmp"
     EXTERNAL_APP_ROOT_PREFIX = None
-    EXTERNAL_APP_ROOT = _home_dir / "Documents"  # Will be accessible to Files thanks to special xcode flags
+    EXTERNAL_APP_ROOT = _home_dir / "Documents"  # Will be accessible to "Files" app, thanks to special xcode flags
 
 else:
     _home_dir = _strip_filepath_scheme(storagepath.get_home_dir())
