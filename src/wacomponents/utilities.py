@@ -150,12 +150,12 @@ def format_revelation_request_label(revelation_request_creation_datetime: dateti
         revelation_request_uid = shorten_uid(revelation_request_uid)
 
     # Date into isoformat
-    refformatted_revelation_request_creation_date = format_datetime_label(
+    reformatted_revelation_request_creation_date = format_datetime_label(
         field_datetime=revelation_request_creation_datetime)
 
-    revelation_request_label = tr._("Revelation request (ID {revelation_request_uid}, created on: {refformatted_revelation_request_creation_date})").format(
+    revelation_request_label = tr._("Revelation request (ID {revelation_request_uid}, created on {refformatted_revelation_request_creation_date})").format(
         revelation_request_uid=revelation_request_uid,
-        refformatted_revelation_request_creation_date=refformatted_revelation_request_creation_date)
+        refformatted_revelation_request_creation_date=reformatted_revelation_request_creation_date)
 
     if revelation_request_status:
         revelation_request_label += ", " + tr._("Status") + COLON + revelation_request_status
@@ -164,22 +164,14 @@ def format_revelation_request_label(revelation_request_creation_datetime: dateti
 
 
 def format_datetime_label(field_datetime: datetime, show_time=False):
-    # Created on: 2022-08-03
-
-    # Remove mcrosecond
-    field_datetime = field_datetime.replace(microsecond=0)
+    # Displays "Created on: 2022-08-03"
 
     # Extract et convert to string date
-    field_date_string = str(field_datetime.date())
-
-    # Convert into isofromat(Japanese)
-    refformatted_field_date = date.fromisoformat(field_date_string)
-
-    datetime_label = "{refformatted_field_date}".format(refformatted_field_date=refformatted_field_date)
+    datetime_label = field_datetime.date().isoformat()
 
     if show_time:
-        field_time_str = str(field_datetime.time())
-        datetime_label += tr._("at") + SPACE + field_time_str
+        field_time_str = field_datetime.time().replace(microsecond=0).isoformat()
+        datetime_label += SPACE + tr._("at") + SPACE + field_time_str
 
     return datetime_label
 

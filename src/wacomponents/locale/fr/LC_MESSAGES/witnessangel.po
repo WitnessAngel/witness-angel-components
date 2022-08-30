@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-30 10:41+0200\n"
-"PO-Revision-Date: 2022-08-30 10:41+0200\n"
+"POT-Creation-Date: 2022-08-30 16:04+0200\n"
+"PO-Revision-Date: 2022-08-30 16:06+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
@@ -136,7 +136,7 @@ msgid "Passphrase hint"
 msgstr "Indice de phrase secrète"
 
 #: src/wacomponents/screens/authenticator_creation_form.kv:53
-#: src/wacomponents/screens/authenticator_management.kv:90
+#: src/wacomponents/screens/authenticator_management.kv:91
 msgid "Initialize"
 msgstr "Initialiser"
 
@@ -275,37 +275,37 @@ msgstr "Paramètres"
 msgid "Please select an authenticator location"
 msgstr "Veuillez sélectionner un emplacement d'authentifieur"
 
-#: src/wacomponents/screens/authenticator_management.kv:83
+#: src/wacomponents/screens/authenticator_management.kv:84
 #: src/wacomponents/screens/authenticator_publication_form.kv:37
 #: src/wacomponents/screens/claimant_revelation_request_creation_form.kv:53
 msgid "No information available"
 msgstr "Aucune information disponible"
 
-#: src/wacomponents/screens/authenticator_management.kv:96
+#: src/wacomponents/screens/authenticator_management.kv:97
 #: src/wacomponents/screens/foreign_keystore_management.py:319
 msgid "Import"
 msgstr "Importer"
 
-#: src/wacomponents/screens/authenticator_management.kv:106
+#: src/wacomponents/screens/authenticator_management.kv:107
 msgid "Export"
 msgstr "Exporter"
 
-#: src/wacomponents/screens/authenticator_management.kv:112
+#: src/wacomponents/screens/authenticator_management.kv:113
 #: src/wacomponents/screens/authenticator_management.py:396
 #: src/wacomponents/screens/cryptainer_decryption_process.py:254
 msgid "Check"
 msgstr "Vérifier"
 
-#: src/wacomponents/screens/authenticator_management.kv:118
+#: src/wacomponents/screens/authenticator_management.kv:119
 msgid "Destroy"
 msgstr "Détruire"
 
-#: src/wacomponents/screens/authenticator_management.kv:124
+#: src/wacomponents/screens/authenticator_management.kv:125
 #: src/wacomponents/screens/authenticator_publication_form.kv:46
 msgid "Publish"
 msgstr "Publier"
 
-#: src/wacomponents/screens/authenticator_management.kv:130
+#: src/wacomponents/screens/authenticator_management.kv:131
 msgid "Authorizations"
 msgstr "Autorisations"
 
@@ -589,7 +589,7 @@ msgid "Remote status"
 msgstr "Statut distant"
 
 #: src/wacomponents/screens/authenticator_publication_form.py:149
-#: src/wacomponents/utilities.py:214
+#: src/wacomponents/utilities.py:206
 msgid "Message"
 msgstr "Message"
 
@@ -1209,21 +1209,21 @@ msgstr "(Clé privée non présente)"
 #: src/wacomponents/utilities.py:156
 #, python-brace-format
 msgid ""
-"Revelation request (ID {revelation_request_uid}, created on: "
+"Revelation request (ID {revelation_request_uid}, created on "
 "{refformatted_revelation_request_creation_date})"
 msgstr ""
-"Demande de révélation (ID {revelation_request_uid}, créée le: "
+"Demande de révélation (ID {revelation_request_uid}, créée le "
 "{refformatted_revelation_request_creation_date})"
 
 #: src/wacomponents/utilities.py:161
 msgid "Status"
 msgstr "Statut"
 
-#: src/wacomponents/utilities.py:182
+#: src/wacomponents/utilities.py:174
 msgid "at"
 msgstr "à"
 
-#: src/wacomponents/utilities.py:215
+#: src/wacomponents/utilities.py:207
 msgid "Exception"
 msgstr "Exception"
 
