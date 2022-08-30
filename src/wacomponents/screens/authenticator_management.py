@@ -219,7 +219,6 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
             child.bg_color = authenticator_widget.theme_cls.bg_light
         authenticator_widget.bg_color = authenticator_widget.theme_cls.bg_darkest
 
-        authenticator_info_text = ""
         authenticator_dir = self._get_authenticator_dir_from_metadata(authenticator_metadata)
         authenticator_dir_shortened = strip_external_app_root_prefix(authenticator_dir)
 
@@ -227,25 +226,26 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
             authenticator_info_text = tr._("Please select an authenticator folder")
             authenticator_status = None
 
-        elif not authenticator_dir.parent.exists():  # Parent folder only is enough!
-            authenticator_info_text = tr._("Selected folder is invalid\nPath: %s" % authenticator_dir_shortened)
-            authenticator_status = None
-
         elif not is_authenticator_initialized(authenticator_dir):
             authenticator_info_text = tr._("Path: %s") % authenticator_dir_shortened
-            if authenticator_dir.exists() and not authenticator_dir.is_dir():  # E.g. it's a file or symlink
+
+            if not authenticator_dir.parent.exists():  # Parent folder only is enough!
+                authenticator_info_text += 2 * LINEBREAK + tr._("Selected folder is invalid!")
+                authenticator_status = None
+            elif not authenticator_dir.exists() and not is_folder_writable(authenticator_dir.parent):
+                authenticator_info_text += 2 * LINEBREAK + tr._("Beware, parent folder is NOT writable!")
+                authenticator_status = None  # Can't create keystore folder
+            elif authenticator_dir.exists() and not authenticator_dir.is_dir():  # E.g. it's a file or symlink
                 authenticator_info_text += 2 * LINEBREAK + tr._("Beware, this is not a folder!")
                 authenticator_status = None
             elif authenticator_dir.is_dir() and not is_folder_writable(authenticator_dir):
                 authenticator_info_text += 2 * LINEBREAK + tr._("Beware, this folder is NOT writable!")
                 authenticator_status = None  # Final dir is not writable for json/keys
-            elif not authenticator_dir.exists() and not is_folder_writable(authenticator_dir.parent):
-                authenticator_info_text += 2 * LINEBREAK + tr._("Beware, parent folder is NOT writable!")
-                authenticator_status = None  # Can't create keystore folder
             else:
                 authenticator_status = False  # Authenticator folder or metadata/keys are missing BUT creatable
 
-        elif is_authenticator_initialized(authenticator_dir):
+        else:
+            assert is_authenticator_initialized(authenticator_dir)
 
             try:
                 authenticator_metadata = load_keystore_metadata(authenticator_dir)
@@ -287,7 +287,7 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
 
                 keystore_passphrase_hint = authenticator_metadata["keystore_passphrase_hint"]
 
-                authenticator_info_text = tr._("Path") + COLON + str(authenticator_dir) + LINEBREAK + \
+                authenticator_info_text = tr._("Path") + COLON + str(authenticator_dir_shortened) + LINEBREAK + \
                                           tr._("Authentifieur") + COLON + authenticator_label + LINEBREAK + \
                                           tr._("Password hint") + COLON + keystore_passphrase_hint + LINEBREAK + \
                                           tr._("Creation date") + COLON + keystore_creation_datetime_label + LINEBREAK + LINEBREAK + \

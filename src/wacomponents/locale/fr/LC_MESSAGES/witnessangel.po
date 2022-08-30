@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-30 10:23+0200\n"
-"PO-Revision-Date: 2022-08-30 10:25+0200\n"
+"POT-Creation-Date: 2022-08-30 10:41+0200\n"
+"PO-Revision-Date: 2022-08-30 10:41+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
@@ -339,35 +339,30 @@ msgstr "Authentifieur non initialisé"
 msgid "Authenticator initialized"
 msgstr "Authentifieur initialisé"
 
-#: src/wacomponents/screens/authenticator_management.py:227
+#: src/wacomponents/screens/authenticator_management.py:226
 msgid "Please select an authenticator folder"
 msgstr "Veuillez sélectionner un dossier d'authentifieur"
 
-#: src/wacomponents/screens/authenticator_management.py:231
-#, python-format
-msgid ""
-"Selected folder is invalid\n"
-"Path: %s"
-msgstr ""
-"Le dossier sélectionné est invalide\n"
-"Chemin : %s"
-
-#: src/wacomponents/screens/authenticator_management.py:235
+#: src/wacomponents/screens/authenticator_management.py:230
 #, python-format
 msgid "Path: %s"
 msgstr "Chemin : %s"
 
-#: src/wacomponents/screens/authenticator_management.py:237
+#: src/wacomponents/screens/authenticator_management.py:233
+msgid "Selected folder is invalid!"
+msgstr "Le dossier sélectionné est invalide !"
+
+#: src/wacomponents/screens/authenticator_management.py:236
+msgid "Beware, parent folder is NOT writable!"
+msgstr "Attention, le dossier parent n'est PAS accessible en écriture !"
+
+#: src/wacomponents/screens/authenticator_management.py:239
 msgid "Beware, this is not a folder!"
 msgstr "Attention, ce n'est pas un dossier !"
 
-#: src/wacomponents/screens/authenticator_management.py:240
+#: src/wacomponents/screens/authenticator_management.py:242
 msgid "Beware, this folder is NOT writable!"
 msgstr "Attention, ce dossier n'est PAS accessible en écriture !"
-
-#: src/wacomponents/screens/authenticator_management.py:243
-msgid "Beware, parent folder is NOT writable!"
-msgstr "Attention, le dossier parent n'est PAS accessible en écriture !"
 
 #: src/wacomponents/screens/authenticator_management.py:254
 #, python-format
