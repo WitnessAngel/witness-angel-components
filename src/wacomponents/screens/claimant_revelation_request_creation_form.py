@@ -89,25 +89,12 @@ class ClaimantRevelationRequestCreationFormScreen(Screen):
                 selected_authenticator.append(authenticator_entry.unique_identifier)
         return selected_authenticator
 
-    @safe_catch_unhandled_exception_and_display_popup
-    def submit_decryption_request(self):
-
-        revelation_requestor_uid = self._app.get_wa_device_uid()
-
-        gateway_proxy = self._app.get_gateway_proxy()
-
-        # Authenticator selected
+    def submit_revelation_request(self):
         authenticator_selected = self._get_selected_authenticator()
-        if not authenticator_selected:
-            msg = tr._("Please select authenticators")
-            display_info_toast(msg)
-            return
-
-        # Description not empty (description.strip must have at least 10 characters)
+        revelation_requestor_uid = self._app.get_wa_device_uid()
+        gateway_proxy = self._app.get_gateway_proxy()
         request_description = self.ids.request_description.text.strip()
-        if len(request_description) < DESCRIPTION_MIN_LENGTH:
-            display_info_toast(tr._("Description must be at least %s characters long.") % DESCRIPTION_MIN_LENGTH)
-            return
+
 
         # Symkeys decryptable per trustee for containers selected
         cryptainers_with_names = self._get_cryptainers_with_cryptainer_names(self.selected_cryptainer_names)
@@ -145,25 +132,48 @@ class ClaimantRevelationRequestCreationFormScreen(Screen):
                         trustee_data["keystore_uid"]))
                     error.append(message)
 
-        error_report = "\n".join(error)
+        return error, successful_request_count
 
-        _displayed_values = dict(
-            successful_request_count=successful_request_count,
-            len_authenticator_selected=len(authenticator_selected),
-            error_report=error_report
-        )
+    @safe_catch_unhandled_exception_and_display_popup
+    def submit_decryption_request(self):
 
-        operation_report_text = tr._("Successful requests: {successful_request_count} out of {"
-                                     "len_authenticator_selected}").format(**_displayed_values)
+        # Authenticator selected
+        authenticator_selected = self._get_selected_authenticator()
+        if not authenticator_selected:
+            msg = tr._("Please select authenticators")
+            display_info_toast(msg)
+            return
 
-        error_report_text = LINEBREAK*2 + tr._("Error Report") + COLON + LINEBREAK + indent_text(error_report)
+        # Description not empty (description.strip must have at least 10 characters)
+        request_description = self.ids.request_description.text.strip()
+        if len(request_description) < DESCRIPTION_MIN_LENGTH:
+            display_info_toast(tr._("Description must be at least %s characters long.") % DESCRIPTION_MIN_LENGTH)
+            return
 
-        if successful_request_count != len(authenticator_selected):
-            operation_report_text += error_report_text
+        def resultat_callable(result, *args, **kwargs):  # FIXME CHANGE THIS NAME
+            error, successful_request_count = result
 
-        dialog_with_close_button(
-            close_btn_label=tr._("Close"),
-            title=tr._("Operation Report"),
-            text=operation_report_text,
-            close_btn_callback=self.go_to_management_screen()
-        )
+            error_report = "\n".join(error)
+
+            _displayed_values = dict(
+                successful_request_count=successful_request_count,
+                len_authenticator_selected=len(authenticator_selected),
+                error_report=error_report
+            )
+
+            operation_report_text = tr._("Successful requests: {successful_request_count} out of {"
+                                         "len_authenticator_selected}").format(**_displayed_values)
+
+            error_report_text = LINEBREAK * 2 + tr._("Error Report") + COLON + LINEBREAK + indent_text(error_report)
+
+            if successful_request_count != len(authenticator_selected):
+                operation_report_text += error_report_text
+
+            dialog_with_close_button(
+                close_btn_label=tr._("Close"),
+                title=tr._("Operation Report"),
+                text=operation_report_text,
+                close_btn_callback=self.go_to_management_screen()
+            )
+
+        self._app._offload_task_with_spinner(self.submit_revelation_request, resultat_callable)
