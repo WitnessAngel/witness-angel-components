@@ -7,6 +7,8 @@ from kivymd.uix.button import MDFlatButton
 from kivymd.uix.screen import Screen
 from kivymd.uix.snackbar import Snackbar
 
+from kivymd.app import MDApp
+
 from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
 from wacomponents.screens.base import WAScreenName
@@ -35,6 +37,12 @@ class CryptainerDecryptionProcessScreen(Screen):
     ##found_trustees_lacking_passphrase = BooleanProperty(0)
     passphrase_mapper = {}
     cryptainer_decryption_result_screen_name=WAScreenName.cryptainer_decryption_result
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._app = MDApp.get_running_app()
+        self.jsonrpc_url = self._app.get_wagateway_url()
+        self.revelation_requestor_uid = self._app.get_wa_device_uid()
 
     def go_to_previous_screen(self):
         self.manager.current = WAScreenName.cryptainer_storage_management
@@ -258,7 +266,6 @@ class CryptainerDecryptionProcessScreen(Screen):
     @safe_catch_unhandled_exception_and_display_popup
     def decipher_cryptainers(self):
         assert self.filesystem_cryptainer_storage, self.filesystem_cryptainer_storage  # By construction...
-
         errors = []
         decryption_results = []
         decrypted_cryptainer_number = 0
@@ -268,9 +275,11 @@ class CryptainerDecryptionProcessScreen(Screen):
                 EXTERNAL_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
                 # FIXME make this asynchronous, to avoid stalling the app!
                 result, errors = self.filesystem_cryptainer_storage.decrypt_cryptainer_from_storage(cryptainer_name,
-                                                                                                    passphrase_mapper=self.passphrase_mapper)
+                                                                                                    passphrase_mapper=self.passphrase_mapper,
+                                                                                                    revelation_requestor_uid= self.revelation_requestor_uid,
+                                                                                                    gateway_url_list=[self.jsonrpc_url])
                 # FIXME add here real management of teh error report, and treat the case where result is None
-                assert not errors, errors
+                # assert not errors, errors
                 assert result
                 target_path = EXTERNAL_EXPORTS_DIR / (Path(cryptainer_name).with_suffix(""))
                 target_path.write_bytes(result)
