@@ -22,7 +22,7 @@ from wacryptolib.utilities import load_from_json_bytes, dump_to_json_bytes
 
 from wacomponents.i18n import tr
 from wacomponents.utilities import format_revelation_request_label, format_keypair_label, \
-    format_authenticator_label, COLON, LINEBREAK
+    format_authenticator_label, COLON, LINEBREAK, format_cryptainer_label
 from wacomponents.widgets.popups import dialog_with_close_button, close_current_dialog, display_info_snackbar, \
     help_text_popup, safe_catch_unhandled_exception_and_display_popup, display_info_toast
 
@@ -94,8 +94,9 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
         revelationRequestEntry.revelation_request_summary.text = revelation_request_summary_text
 
         for index, symkey_decryption in enumerate(revelation_request['symkey_decryption_requests'], start=1):
-            symkey_decryption_label = tr._("Container N° {key_index}: {Container_uid} "). \
-                format(key_index=index, Container_uid=symkey_decryption["cryptainer_uid"])
+            cryptainer_label = format_cryptainer_label(cryptainer_name=symkey_decryption["cryptainer_name"], cryptainer_uid=symkey_decryption["cryptainer_uid"])
+
+            symkey_decryption_label = tr._("Container N° {key_index}: {cryptainer_label} ").format(key_index=index, cryptainer_label=cryptainer_label)
 
             symkey_decryption_item = Factory.WAIconListItemEntry(text=symkey_decryption_label)  # FIXME RENAME THIS
 

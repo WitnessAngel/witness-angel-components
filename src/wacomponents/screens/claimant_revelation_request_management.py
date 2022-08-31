@@ -10,7 +10,7 @@ from wacomponents.screens.base import WAScreenName
 from wacomponents.widgets.layout_components import GrowingAccordion, build_fallback_information_box
 from wacomponents.i18n import tr
 from wacomponents.utilities import format_revelation_request_label, format_authenticator_label, \
-    format_keypair_label, COLON, LINEBREAK
+    format_keypair_label, COLON, LINEBREAK, format_cryptainer_label
 from wacomponents.widgets.popups import dialog_with_close_button, display_info_snackbar
 
 Builder.load_file(str(Path(__file__).parent / 'claimant_revelation_request_management.kv'))
@@ -49,9 +49,8 @@ class ClaimantRevelationRequestManagementScreen(Screen):
 
     def list_requestor_revelation_requests(self):
         revelation_requestor_uid = self._app.get_wa_device_uid()
-        requestor_revelation_requests = []
         try:
-            requestor_revelation_requests= self.gateway_proxy.list_requestor_revelation_requests(
+            requestor_revelation_requests = self.gateway_proxy.list_requestor_revelation_requests(
                 revelation_requestor_uid=revelation_requestor_uid)  # FIXME RENAME list_decryption_requests
 
         except(JSONRPCError, OSError):
@@ -78,8 +77,15 @@ class ClaimantRevelationRequestManagementScreen(Screen):
             display_layout = GrowingAccordion(orientation='vertical', size_hint=(1, None))
 
             for revelation_request_per_cryptainer in revelation_requests_per_cryptainer.items():
+                print(revelation_request_per_cryptainer)
 
-                container_item = Factory.ContainerItem(title=tr._("Container") + COLON + str(revelation_request_per_cryptainer[0]))
+                cryptainer_name = revelation_request_per_cryptainer[1][0]["symkey_decryption_request"]["cryptainer_name"]
+                cryptainer_uid = revelation_request_per_cryptainer[1][0]["symkey_decryption_request"]["cryptainer_uid"]
+                assert cryptainer_uid == revelation_request_per_cryptainer[0]
+                cryptainer_label = format_cryptainer_label(cryptainer_name=cryptainer_name,
+                                                           cryptainer_uid=cryptainer_uid)
+
+                container_item = Factory.ContainerItem(title=tr._("Container") + COLON + cryptainer_label)
 
                 for revelation_request in revelation_request_per_cryptainer[1]:
                     revelation_request_label = format_revelation_request_label(
