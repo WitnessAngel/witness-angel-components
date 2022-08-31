@@ -23,7 +23,7 @@ class CryptainerDecryptionResultScreen(Screen):
     last_decryption_info = ObjectProperty(None, allownone=True)
 
     def go_to_previous_screen(self):
-        self.manager.current = WAScreenName.cryptainer_decryption_process
+        self.manager.current = WAScreenName.cryptainer_storage_management
 
     def display_revelation_request_error(self):
         self.ids.decryption_info_list.clear_widgets()

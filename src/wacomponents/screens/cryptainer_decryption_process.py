@@ -38,6 +38,7 @@ class CryptainerDecryptionProcessScreen(Screen):
     passphrase_mapper = {}
     cryptainer_decryption_result_screen_name = WAScreenName.cryptainer_decryption_result
 
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._app = MDApp.get_running_app()
@@ -300,6 +301,12 @@ class CryptainerDecryptionProcessScreen(Screen):
             )
             decryption_results.append(decryption_result_per_cryptainer)
         decryption_info = (decrypted_cryptainer_number, decryption_results)
+
+        # Mettre à jour le bouton "Last decryption result"
+        cryptainer_storage_management_screen_name = WAScreenName.cryptainer_storage_management
+        cryptainer_storage_management_screen = self.manager.get_screen(cryptainer_storage_management_screen_name)
+        cryptainer_storage_management_screen.last_decryption_result_is_disabled = True
+
         return decryption_info
 
     @safe_catch_unhandled_exception_and_display_popup
@@ -325,10 +332,9 @@ class CryptainerDecryptionProcessScreen(Screen):
         self._app._offload_task_with_spinner(self.decrypt_cryptainers_from_storage, resultat_callable)
 
     def launch_remote_decryption_request_error_page(self, decryption_info):
-        decryption_request_error_screen_name = WAScreenName.cryptainer_decryption_result
-        decryption_request_error_screen = self.manager.get_screen(decryption_request_error_screen_name)
+        decryption_request_error_screen = self.manager.get_screen(self.cryptainer_decryption_result_screen_name)
         decryption_request_error_screen.last_decryption_info = decryption_info
-        self.manager.current = decryption_request_error_screen_name
+        self.manager.current = self.cryptainer_decryption_result_screen_name
 
     def launch_remote_decryption_request(self):
 

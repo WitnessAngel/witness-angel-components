@@ -19,6 +19,7 @@
         cryptainer_delete_btn.size_hint_x = 0.5
         cryptainer_decrypt_btn.size_hint_x = 0.5
         remote_decryption_request_list_btn.size_hint_x=0.5
+        decryption_request_error_btn.size_hint_x = 0.5
         root.get_detected_cryptainer()  # FIXME rename this!!!
 
     on_pre_leave:
@@ -64,4 +65,11 @@
                     icon: "format-list-text"
                     text: tr._("View remote authorization requests")
                     on_press:  root.manager.current = root.claimant_revelation_request_management_scree_name
+
+                WAOperationButton:
+                    disabled: root.last_decryption_result_is_disabled is False
+                    id: decryption_request_error_btn
+                    icon: "remote"
+                    text: tr._("Last decryption report")
+                    on_press: root.manager.current = root.cryptainer_decryption_result_screen_name
 

@@ -33,7 +33,9 @@ class CryptainerStorageManagementScreen(Screen):
     filesystem_cryptainer_storage = ObjectProperty(None, allownone=True)
     cryptainer_names_to_be_loaded = ObjectProperty(None, allownone=True)
     cryptainer_loading_schedule = ObjectProperty(None, allownone=True)
-    claimant_revelation_request_management_scree_name=WAScreenName.claimant_revelation_request_management
+    last_decryption_result_is_disabled = ObjectProperty(False, allownone=False)
+    claimant_revelation_request_management_scree_name = WAScreenName.claimant_revelation_request_management
+    cryptainer_decryption_result_screen_name = WAScreenName.cryptainer_decryption_result
 
     CRYPTAINER_LOADING_INTERVAL = 0.05
 
@@ -154,7 +156,7 @@ class CryptainerStorageManagementScreen(Screen):
             message = repr(exc)[:800]
 
         else:
-            message = tr._("Key Guardians used") + COLON + LINEBREAK*2
+            message = tr._("Key Guardians used") + COLON + LINEBREAK * 2
             for index, key_guardian_used in enumerate(interesting_dependencies, start=1):
                 key_guardian_label = format_authenticator_label(authenticator_owner=key_guardian_used["keystore_owner"],
                                                                 keystore_uid=key_guardian_used["keystore_uid"],
@@ -170,7 +172,7 @@ class CryptainerStorageManagementScreen(Screen):
     def open_cryptainer_details_dialog(self, message, cryptainer_info):
         dialog_with_close_button(
             close_btn_label=tr._("Close"),
-            title= tr._("Container") + COLON + cryptainer_info,
+            title=tr._("Container") + COLON + cryptainer_info,
             text=message,
         )
         '''
