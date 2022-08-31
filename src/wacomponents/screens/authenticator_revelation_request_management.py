@@ -24,9 +24,10 @@ from wacomponents.i18n import tr
 from wacomponents.utilities import format_revelation_request_label, format_keypair_label, \
     format_authenticator_label, COLON, LINEBREAK
 from wacomponents.widgets.popups import dialog_with_close_button, close_current_dialog, display_info_snackbar, \
-    help_text_popup, safe_catch_unhandled_exception_and_display_popup
+    help_text_popup, safe_catch_unhandled_exception_and_display_popup, display_info_toast
 
 Builder.load_file(str(Path(__file__).parent / 'authenticator_revelation_request_management.kv'))
+
 
 # FIXME RENAME THIS FILE AND KV FILE to authenticator_decryption_request_management.py
 
@@ -84,8 +85,10 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
             request_description=revelation_request["revelation_request_description"],
             response_key_label=response_key_label,
         )
-        revelation_request_summary_text = tr._("Public authenticator") + COLON + _displayed_values["target_public_authenticator_label"] + LINEBREAK + \
-                                          tr._("Description") + COLON + _displayed_values["request_description"] + LINEBREAK + \
+        revelation_request_summary_text = tr._("Public authenticator") + COLON + _displayed_values[
+            "target_public_authenticator_label"] + LINEBREAK + \
+                                          tr._("Description") + COLON + _displayed_values[
+                                              "request_description"] + LINEBREAK + \
                                           tr._("Response public key") + COLON + _displayed_values["response_key_label"]
 
         revelationRequestEntry.revelation_request_summary.text = revelation_request_summary_text
@@ -134,9 +137,11 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
             symkey_decryption_status=symkey_decryption["symkey_decryption_status"]
         )
 
-        symkey_decryption_info_text = tr._("Cryptainer metadata") + COLON + str(_displayed_values["cryptainer_metadata"]) + LINEBREAK + \
-                                          tr._("Authenticator key") + COLON + _displayed_values["authenticator_key_label"] + LINEBREAK + \
-                                          tr._("Decryption status") + COLON + _displayed_values["symkey_decryption_status"]
+        symkey_decryption_info_text = tr._("Cryptainer metadata") + COLON + str(
+            _displayed_values["cryptainer_metadata"]) + LINEBREAK + \
+                                      tr._("Authenticator key") + COLON + _displayed_values[
+                                          "authenticator_key_label"] + LINEBREAK + \
+                                      tr._("Decryption status") + COLON + _displayed_values["symkey_decryption_status"]
 
         dialog_with_close_button(
             close_btn_label=tr._("Close"),
@@ -201,12 +206,11 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
             revelation_requests_per_status[revelation_request["revelation_request_status"]].append(revelation_request)
         return revelation_requests_per_status
 
-    def get_revelation_request_list_per_status(self): #FIXME NAMING
+    def get_revelation_request_list_per_status(self):  # FIXME NAMING
         authenticator_path = self.selected_authenticator_dir
         revelation_requests_per_status_list = None
         authenticator_metadata = load_keystore_metadata(authenticator_path)
         keystore_uid = authenticator_metadata["keystore_uid"]
-
         try:
             authenticator_revelation_request_list = self.gateway_proxy.list_authenticator_revelation_requests(
                 authenticator_keystore_secret=authenticator_metadata["keystore_secret"],
@@ -232,11 +236,14 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
         self.ids.accepted_revelation_request.clear_widgets()
 
         # FIXME ADD PLACEHOLDER WHEN list_authenticator_revelation_requests is empty
-        def resultat_callable(result, *args, **kwargs): # FIXME CHANGE THIS NAME
-            revelation_requests_per_status_list, message = result
-            display_info_snackbar(message=message)
-            if revelation_requests_per_status_list is not None:
-                self.display_remote_revelation_request(revelation_requests_per_status_list=revelation_requests_per_status_list)
+        def resultat_callable(result, *args, **kwargs):  # FIXME CHANGE THIS NAME
+            revelation_requests_per_status_list, message= result
+            if revelation_requests_per_status_list is None:
+                display_info_snackbar(message)
+            else:
+                display_info_toast(message)
+                self.display_remote_revelation_request(
+                    revelation_requests_per_status_list=revelation_requests_per_status_list)
 
         self._app._offload_task_with_spinner(self.get_revelation_request_list_per_status, resultat_callable)
 
@@ -297,7 +304,7 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
 
         message = tr._("The decryption request was accepted")
 
-        display_info_snackbar(message)
+        display_info_toast(message)
         self.fetch_and_display_revelation_requests()
 
     @safe_catch_unhandled_exception_and_display_popup
@@ -312,7 +319,7 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
             revelation_request_uid=revelation_request_uid)
         message = tr._("The revelation request was rejected")
 
-        display_info_snackbar(message)
+        display_info_toast(message)
         self.fetch_and_display_revelation_requests()
 
     def display_help_popup(self):
