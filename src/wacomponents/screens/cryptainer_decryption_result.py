@@ -4,6 +4,8 @@ from kivy.factory import Factory
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty, BooleanProperty, ListProperty
 from kivymd.uix.screen import Screen
+from wacryptolib.cryptainer import CRYPTAINER_DATETIME_FORMAT
+from wacryptolib.utilities import get_utc_now_date
 
 from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
@@ -69,8 +71,11 @@ class CryptainerDecryptionResultScreen(Screen):
                         error_label = format_revelation_request_error(**error)
                         error_report_text += error_label + "\n\n"
 
+                    datetime = get_utc_now_date()
+                    from_ts = datetime.strftime(CRYPTAINER_DATETIME_FORMAT)
                     revelation_report_file = EXTERNAL_EXPORTS_DIR.joinpath(
-                        str(decryption_results_per_cryptainer["cryptainer_name"]) + "_revelation_report.txt")
+                        str(decryption_results_per_cryptainer[
+                                "cryptainer_name"]) + "_revelation_report" + "_" + from_ts + ".txt")
                     dump_to_text_file(revelation_report_file, error_report_text)
 
                 else:
