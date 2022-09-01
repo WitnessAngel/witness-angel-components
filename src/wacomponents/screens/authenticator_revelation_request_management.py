@@ -168,7 +168,7 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
                                  revelation_request=revelation_request)))],
         )
 
-    def display_remote_revelation_request(self, revelation_requests_per_status_list):  # TODO change name function
+    def display_remote_revelation_request(self, revelation_requests_per_status_list):
         # TODO add list_decryption_request to parameter of this function
         # why????
 

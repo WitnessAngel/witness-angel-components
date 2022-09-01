@@ -27,7 +27,6 @@ class WaRuntimeSupportMixin:
     #: The actual basename of local configuration file, to be overridden
     config_file_basename = None
 
-
     def _get_class_package_path(self):
         """Guess the Path of the folder where the object's real (sub)class is defined"""
         return Path(inspect.getfile(self.__class__)).parent
