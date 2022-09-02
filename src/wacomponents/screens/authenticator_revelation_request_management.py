@@ -85,11 +85,11 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
             request_description=revelation_request["revelation_request_description"],
             response_key_label=response_key_label,
         )
-        revelation_request_summary_text = tr._("Public authenticator") + COLON + _displayed_values[
+        revelation_request_summary_text = tr._("Public authenticator") + COLON() + _displayed_values[
             "target_public_authenticator_label"] + LINEBREAK + \
-                                          tr._("Description") + COLON + _displayed_values[
+                                          tr._("Description") + COLON() + _displayed_values[
                                               "request_description"] + LINEBREAK + \
-                                          tr._("Response public key") + COLON + _displayed_values["response_key_label"]
+                                          tr._("Response public key") + COLON() + _displayed_values["response_key_label"]
 
         revelationRequestEntry.revelation_request_summary.text = revelation_request_summary_text
 
@@ -138,11 +138,11 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
             symkey_decryption_status=symkey_decryption["symkey_decryption_status"]
         )
 
-        symkey_decryption_info_text = tr._("Cryptainer metadata") + COLON + str(
+        symkey_decryption_info_text = tr._("Cryptainer metadata") + COLON() + str(
             _displayed_values["cryptainer_metadata"]) + LINEBREAK + \
-                                      tr._("Authenticator key") + COLON + _displayed_values[
+                                      tr._("Authenticator key") + COLON() + _displayed_values[
                                           "authenticator_key_label"] + LINEBREAK + \
-                                      tr._("Decryption status") + COLON + _displayed_values["symkey_decryption_status"]
+                                      tr._("Decryption status") + COLON() + _displayed_values["symkey_decryption_status"]
 
         dialog_with_close_button(
             close_btn_label=tr._("Close"),

@@ -142,10 +142,10 @@ class AuthenticatorPublicationFormScreen(Screen):
                     exceeding_keys_in_remote = (", ".join(exceeding_public_keys_shortened) or "-"),
                     missing_keys_in_remote = (", ".join(missing_public_keys_shortened) or "-"),
 
-                    synchronization_details_text = tr._("Error details") + COLON + LINEBREAK + \
-                                                   indent_text(tr._("Exceeding key(s) in remote") + COLON + str(
+                    synchronization_details_text = tr._("Error details") + COLON() + LINEBREAK + \
+                                                   indent_text(tr._("Exceeding key(s) in remote") + COLON() + str(
                                                        exceeding_keys_in_remote)) + LINEBREAK + \
-                                                   indent_text(tr._("Missing key(s) in remote") + COLON + str(
+                                                   indent_text(tr._("Missing key(s) in remote") + COLON() + str(
                                                        missing_keys_in_remote))
 
             _displayed_values = dict(
@@ -156,12 +156,12 @@ class AuthenticatorPublicationFormScreen(Screen):
                 authenticator_uid=str(keystore_uid)
             )
             synchronization_info_text = \
-                tr._("Local path") + COLON + strip_external_app_root_prefix(self.selected_authenticator_dir) + LINEBREAK + \
-                tr._("Gateway") + COLON + _displayed_values["gateway"] + LINEBREAK + LINEBREAK + \
-                tr._("Remote status") + COLON + _displayed_values["status"] + LINEBREAK + \
-                tr._("Message") + COLON + _displayed_values["message"] + LINEBREAK + LINEBREAK + \
-                tr._("User") + COLON + _displayed_values["authenticator_owner"] + LINEBREAK + \
-                tr._("ID") + COLON + _displayed_values["authenticator_uid"]
+                tr._("Local path") + COLON() + strip_external_app_root_prefix(self.selected_authenticator_dir) + LINEBREAK + \
+                tr._("Gateway") + COLON() + _displayed_values["gateway"] + LINEBREAK + LINEBREAK + \
+                tr._("Remote status") + COLON() + _displayed_values["status"] + LINEBREAK + \
+                tr._("Message") + COLON() + _displayed_values["message"] + LINEBREAK + LINEBREAK + \
+                tr._("User") + COLON() + _displayed_values["authenticator_owner"] + LINEBREAK + \
+                tr._("ID") + COLON() + _displayed_values["authenticator_uid"]
 
             if is_published:
                 synchronization_info_text += LINEBREAK + LINEBREAK + tr._(

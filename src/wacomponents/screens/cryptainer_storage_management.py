@@ -111,7 +111,7 @@ class CryptainerStorageManagementScreen(Screen):
     def _load_cryptainer(self, index, cryptainer_name):
         cryptainer_label = format_cryptainer_label(cryptainer_name=cryptainer_name)
 
-        cryptainer_entry_label = tr._("N°") + SPACE + str(index) + COLON + cryptainer_label
+        cryptainer_entry_label = tr._("N°") + SPACE + str(index) + COLON() + cryptainer_label
 
         cryptainer_entry = Factory.WASelectableListItemEntry(text=cryptainer_entry_label)  # FIXME RENAME THIS
         cryptainer_entry.unique_identifier = cryptainer_name
@@ -156,13 +156,13 @@ class CryptainerStorageManagementScreen(Screen):
             message = repr(exc)[:800]
 
         else:
-            message = tr._("Key Guardians used") + COLON + LINEBREAK * 2
+            message = tr._("Key Guardians used") + COLON() + LINEBREAK * 2
             for index, key_guardian_used in enumerate(interesting_dependencies, start=1):
                 key_guardian_label = format_authenticator_label(authenticator_owner=key_guardian_used["keystore_owner"],
                                                                 keystore_uid=key_guardian_used["keystore_uid"],
                                                                 trustee_type=key_guardian_used["trustee_type"])
 
-                message += tr._("N°") + SPACE + str(index) + COLON + key_guardian_label + LINEBREAK
+                message += tr._("N°") + SPACE + str(index) + COLON() + key_guardian_label + LINEBREAK
 
             cryptainer_uid = cryptainer["cryptainer_uid"]
             cryptainer_label = format_cryptainer_label(cryptainer_name=cryptainer_name, cryptainer_uid=cryptainer_uid)
@@ -172,7 +172,7 @@ class CryptainerStorageManagementScreen(Screen):
     def open_cryptainer_details_dialog(self, message, cryptainer_info):
         dialog_with_close_button(
             close_btn_label=tr._("Close"),
-            title=tr._("Container") + COLON + cryptainer_info,
+            title=tr._("Container") + COLON() + cryptainer_info,
             text=message,
         )
         '''

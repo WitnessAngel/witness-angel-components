@@ -55,9 +55,9 @@ class ClaimantRevelationRequestCreationFormScreen(Screen):
             containers_selected=cryptainer_string_names,
             gateway_url=self._app.get_wagateway_url()
         )
-        revelation_request_summary_text = tr._("Container(s) selected") + COLON + LINEBREAK +\
+        revelation_request_summary_text = tr._("Container(s) selected") + COLON() + LINEBREAK +\
                                           indent_text(_displayed_values["containers_selected"]) + LINEBREAK*2 +\
-                                          tr._("Gateway url") + COLON + _displayed_values["gateway_url"]
+                                          tr._("Gateway url") + COLON() + _displayed_values["gateway_url"]
 
         self.ids.revelation_request_summary.text = revelation_request_summary_text
 
@@ -164,7 +164,7 @@ class ClaimantRevelationRequestCreationFormScreen(Screen):
             operation_report_text = tr._("Successful requests: {successful_request_count} out of {"
                                          "len_authenticator_selected}").format(**_displayed_values)
 
-            error_report_text = LINEBREAK * 2 + tr._("Error Report") + COLON + LINEBREAK + indent_text(error_report)
+            error_report_text = LINEBREAK * 2 + tr._("Error Report") + COLON() + LINEBREAK + indent_text(error_report)
 
             if successful_request_count != len(authenticator_selected):
                 operation_report_text += error_report_text

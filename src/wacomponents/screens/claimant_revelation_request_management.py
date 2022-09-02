@@ -85,7 +85,7 @@ class ClaimantRevelationRequestManagementScreen(Screen):
                 cryptainer_label = format_cryptainer_label(cryptainer_name=cryptainer_name,
                                                            cryptainer_uid=cryptainer_uid)
 
-                container_item = Factory.ContainerItem(title=tr._("Container") + COLON + cryptainer_label)
+                container_item = Factory.ContainerItem(title=tr._("Container") + COLON() + cryptainer_label)
 
                 for revelation_request in revelation_request_per_cryptainer[1]:
                     revelation_request_label = format_revelation_request_label(
@@ -117,11 +117,11 @@ class ClaimantRevelationRequestManagementScreen(Screen):
                         authenticator_key_label=authenticator_key_label,
                     )
 
-                    revelation_request_summary_text = tr._("Description") + COLON + _displayed_values["revelation_request_description"] + LINEBREAK + \
-                                                      tr._("Authenticator") + COLON + _displayed_values["target_public_authenticator_label"] + LINEBREAK + \
-                                                      tr._("Authenticator encryption key") + COLON + _displayed_values["authenticator_key_label"] + LINEBREAK + \
-                                                      tr._("Response key") + COLON + _displayed_values["response_key_label"] + LINEBREAK + \
-                                                      tr._("Symkey Decryption status") + COLON + _displayed_values["symkey_decryption_status"] + LINEBREAK
+                    revelation_request_summary_text = tr._("Description") + COLON() + _displayed_values["revelation_request_description"] + LINEBREAK + \
+                                                      tr._("Authenticator") + COLON() + _displayed_values["target_public_authenticator_label"] + LINEBREAK + \
+                                                      tr._("Authenticator encryption key") + COLON() + _displayed_values["authenticator_key_label"] + LINEBREAK + \
+                                                      tr._("Response key") + COLON() + _displayed_values["response_key_label"] + LINEBREAK + \
+                                                      tr._("Symkey Decryption status") + COLON() + _displayed_values["symkey_decryption_status"] + LINEBREAK
 
                     revelation_request_entry = Factory.WAIconListItemEntry(text=revelation_request_label)
 

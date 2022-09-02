@@ -297,7 +297,7 @@ class ForeignKeystoreManagementScreen(Screen):
                                                  private_key_present=private_key_present, error_on_missing_key=False)
 
             # FIXME it's private key SINGULAR HERE!!
-            message += tr._("Key n°") + SPACE + str(index) + COLON + keypair_label + LINEBREAK
+            message += tr._("Key n°") + SPACE + str(index) + COLON() + keypair_label + LINEBREAK
 
         self.open_keystore_details_dialog(message, keystore_owner=keystore_owner)
 

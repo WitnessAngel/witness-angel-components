@@ -11,9 +11,9 @@ from wacomponents.i18n import tr
 
 ASSETS_PATH = Path(__file__).parents[1].joinpath("assets")
 
-COLON = tr._(": ")
+COLON = lambda: tr._(": ")  # LAZY
 LINEBREAK = "\n"
-INDENT_TEXT = 6 * " "
+TEXT_INDENT = 4 * " "
 SPACE = " "
 
 class InterruptableEvent(threading.Event):
@@ -97,7 +97,7 @@ def get_nice_size(size):
 
 # Utilities for formatted text
 
-def indent_text(string, indent_value = INDENT_TEXT):
+def indent_text(string, indent_value=TEXT_INDENT):
     string_indented = indent(string, indent_value)
     return string_indented
 
@@ -158,7 +158,7 @@ def format_revelation_request_label(revelation_request_creation_datetime: dateti
         reformatted_revelation_request_creation_date=reformatted_revelation_request_creation_date)
 
     if revelation_request_status:
-        revelation_request_label += ", " + tr._("Status") + COLON + revelation_request_status
+        revelation_request_label += ", " + tr._("Status") + COLON() + revelation_request_status
 
     return revelation_request_label
 
@@ -203,7 +203,7 @@ def format_revelation_request_error(error_criticity: str, error_type: str, error
     if error_exception:
         error_exception = error_exception.__class__.__name__
 
-    error_label = error_criticity + COLON + error_type + LINEBREAK +\
-                  tr._("Message") + COLON + error_message + LINEBREAK +\
-                  tr._("Exception") + COLON + str(error_exception)
+    error_label = error_criticity + COLON() + error_type + LINEBREAK +\
+                  tr._("Message") + COLON() + error_message + LINEBREAK +\
+                  tr._("Exception") + COLON() + str(error_exception)
     return error_label
