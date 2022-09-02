@@ -88,6 +88,9 @@ class WaGenericGui(WaRuntimeSupportMixin, MDApp):
         #print(">>>>>>>>>>>>>>READING get_application_config"),
         return str(self.config_file_path)
 
+    def language_menu_select(self, lang_code):
+        self.destroy_settings()  # Thus they will be regenerated with proper wordings on next display
+
     # MISC UTILITIES #
 
     def _schedule_once(self, callable, *args, **kwargs):

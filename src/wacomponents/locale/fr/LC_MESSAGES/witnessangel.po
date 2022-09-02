@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-30 16:04+0200\n"
-"PO-Revision-Date: 2022-08-30 16:06+0200\n"
+"POT-Creation-Date: 2022-09-02 17:10+0200\n"
+"PO-Revision-Date: 2022-09-02 17:15+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
@@ -28,17 +28,17 @@ msgstr ""
 msgid "Configuration errors prevent recording"
 msgstr "Des erreurs de configuration empêchent l'enregistrement"
 
-#: src/wacomponents/application/_common_runtime_support.py:81
+#: src/wacomponents/application/_common_runtime_support.py:86
 #, python-brace-format
 msgid "Container storage: {cryptainer_dir}"
 msgstr "Stockage des conteneurs : {cryptainer_dir}"
 
-#: src/wacomponents/application/_common_runtime_support.py:83
+#: src/wacomponents/application/_common_runtime_support.py:88
 #, python-brace-format
 msgid "Invalid container storage: \"{cryptainer_dir}\""
 msgstr "Stockage des conteneurs invalide : {cryptainer_dir}"
 
-#: src/wacomponents/application/_common_runtime_support.py:88
+#: src/wacomponents/application/_common_runtime_support.py:93
 #, python-brace-format
 msgid ""
 "{keyguardian_count} key guardian(s) configured, {keyguardian_threshold} of "
@@ -47,44 +47,44 @@ msgstr ""
 "{keyguardian_count} gardien(s) de clés configuré(s), dont "
 "{keyguardian_threshold} nécessaire(s) pour le déchiffrement"
 
-#: src/wacomponents/application/_common_runtime_support.py:99
+#: src/wacomponents/application/_common_runtime_support.py:104
 #, python-brace-format
 msgid "Camera url: {camera_url}"
 msgstr "Url de la caméra : {camera_url}"
 
-#: src/wacomponents/application/_common_runtime_support.py:102
+#: src/wacomponents/application/_common_runtime_support.py:107
 #, python-brace-format
 msgid "Wrong camera url: \"{camera_url}\""
 msgstr "Mauvaise url de caméra : \"{camera_url}\""
 
-#: src/wacomponents/application/_common_runtime_support.py:110
+#: src/wacomponents/application/_common_runtime_support.py:115
 #, python-brace-format
 msgid "Gateway url: {wagateway_url}"
 msgstr "Url de la passerelle : {wagateway_url}"
 
-#: src/wacomponents/application/_common_runtime_support.py:113
+#: src/wacomponents/application/_common_runtime_support.py:118
 #, python-brace-format
 msgid "Wrong gateway url: '{wagateway_url}'"
 msgstr "Mauvaise url de passerelle : '{wagateway_url}'"
 
-#: src/wacomponents/application/_common_runtime_support.py:117
+#: src/wacomponents/application/_common_runtime_support.py:122
 #, python-brace-format
 msgid "Each container stores {video_recording_duration_mn} mn(s) of video"
 msgstr "Chaque conteneur stocke {video_recording_duration_mn} mn(s) de vidéo"
 
-#: src/wacomponents/application/_common_runtime_support.py:124
+#: src/wacomponents/application/_common_runtime_support.py:129
 #, python-brace-format
 msgid "Containers are kept for {max_cryptainer_age_day} day(s)"
 msgstr "Les conteneurs sont gardés {max_cryptainer_age_day} jour(s)"
 
-#: src/wacomponents/application/_common_runtime_support.py:136
+#: src/wacomponents/application/_common_runtime_support.py:141
 #, python-brace-format
 msgid ""
 "Ffmpeg module is installed with a compatible {ffmpeg_version:.1f} version"
 msgstr ""
 "Module ffmpeg installé avec une version {ffmpeg_version:.1f} compatible"
 
-#: src/wacomponents/application/_common_runtime_support.py:138
+#: src/wacomponents/application/_common_runtime_support.py:143
 #, python-brace-format
 msgid ""
 "Ffmpeg module is installed but this {ffmpeg_version:.1f} version is below "
@@ -127,7 +127,7 @@ msgstr "Utilisateur"
 #: src/wacomponents/screens/authenticator_management.kv:40
 #: src/wacomponents/screens/authenticator_revelation_request_management.kv:16
 #: src/wacomponents/screens/cryptainer_decryption_process.kv:15
-#: src/wacomponents/screens/cryptainer_decryption_process.py:153
+#: src/wacomponents/screens/cryptainer_decryption_process.py:162
 msgid "Passphrase"
 msgstr "Phrase secrète"
 
@@ -170,8 +170,8 @@ msgid "Initialization successfully completed."
 msgstr "Initialisation complétée avec succès."
 
 #: src/wacomponents/screens/authenticator_creation_form.py:173
-#: src/wacomponents/screens/authenticator_management.py:420
-#: src/wacomponents/screens/cryptainer_decryption_process.py:237
+#: src/wacomponents/screens/authenticator_management.py:417
+#: src/wacomponents/screens/cryptainer_decryption_process.py:248
 #: src/wacomponents/screens/foreign_keystore_management.py:401
 msgid "Success"
 msgstr "Succès"
@@ -181,9 +181,9 @@ msgid "Operation failed, check logs."
 msgstr "Opération échouée, vérifiez les logs."
 
 #: src/wacomponents/screens/authenticator_creation_form.py:176
-#: src/wacomponents/screens/authenticator_management.py:423
-#: src/wacomponents/screens/cryptainer_decryption_process.py:196
-#: src/wacomponents/screens/cryptainer_decryption_process.py:201
+#: src/wacomponents/screens/authenticator_management.py:420
+#: src/wacomponents/screens/cryptainer_decryption_process.py:206
+#: src/wacomponents/screens/cryptainer_decryption_process.py:211
 #: src/wacomponents/screens/foreign_keystore_management.py:379
 #: src/wacomponents/screens/foreign_keystore_management.py:383
 msgid "Failure"
@@ -226,8 +226,8 @@ msgid "Authenticator creation page"
 msgstr "Page de création d'authentifieur"
 
 #: src/wacomponents/screens/authenticator_management.kv:11
-msgid "User Profile"
-msgstr "Profil Utilisateur"
+msgid "User profile"
+msgstr "Profil utilisateur"
 
 #: src/wacomponents/screens/authenticator_management.kv:12
 msgid "Stored inside system disk"
@@ -246,8 +246,8 @@ msgid "Test integrity and passphrase of authenticator"
 msgstr "Tester l'intégrité et la phrase secrète de l'authentifieur"
 
 #: src/wacomponents/screens/authenticator_management.kv:52
-msgid "Manage Authenticators"
-msgstr "Gérer les Authentifieurs"
+msgid "Authenticators"
+msgstr "Authentifieurs"
 
 #: src/wacomponents/screens/authenticator_management.kv:53
 #: src/wacomponents/screens/authenticator_publication_form.kv:15
@@ -255,7 +255,7 @@ msgstr "Gérer les Authentifieurs"
 #: src/wacomponents/screens/claimant_revelation_request_creation_form.kv:30
 #: src/wacomponents/screens/claimant_revelation_request_management.kv:25
 #: src/wacomponents/screens/cryptainer_decryption_process.kv:37
-#: src/wacomponents/screens/cryptainer_storage_management.kv:35
+#: src/wacomponents/screens/cryptainer_storage_management.kv:36
 #: src/wacomponents/screens/foreign_keystore_management.kv:45
 #: src/wacomponents/screens/recorder_homepage.kv:16
 msgid "Refresh"
@@ -277,6 +277,7 @@ msgstr "Veuillez sélectionner un emplacement d'authentifieur"
 
 #: src/wacomponents/screens/authenticator_management.kv:84
 #: src/wacomponents/screens/authenticator_publication_form.kv:37
+#: src/wacomponents/screens/authenticator_publication_form.py:116
 #: src/wacomponents/screens/claimant_revelation_request_creation_form.kv:53
 msgid "No information available"
 msgstr "Aucune information disponible"
@@ -291,8 +292,8 @@ msgid "Export"
 msgstr "Exporter"
 
 #: src/wacomponents/screens/authenticator_management.kv:113
-#: src/wacomponents/screens/authenticator_management.py:396
-#: src/wacomponents/screens/cryptainer_decryption_process.py:254
+#: src/wacomponents/screens/authenticator_management.py:393
+#: src/wacomponents/screens/cryptainer_decryption_process.py:265
 msgid "Check"
 msgstr "Vérifier"
 
@@ -311,8 +312,8 @@ msgstr "Autorisations"
 
 #: src/wacomponents/screens/authenticator_management.py:128
 #, python-brace-format
-msgid "Drive: {drive} ({label})"
-msgstr "Disque : {drive} ({label})"
+msgid "Drive {drive} ({label})"
+msgstr "Disque {drive} ({label})"
 
 #: src/wacomponents/screens/authenticator_management.py:129
 msgid "no name"
@@ -369,31 +370,36 @@ msgstr "Attention, ce dossier n'est PAS accessible en écriture !"
 msgid "Invalid authenticator data in %s"
 msgstr "Données d'authentifieur invalides dans %s"
 
-#: src/wacomponents/screens/authenticator_management.py:290
+#: src/wacomponents/screens/authenticator_management.py:286
 msgid "Path"
 msgstr "Chemin"
 
-#: src/wacomponents/screens/authenticator_management.py:291
-msgid "Authentifieur"
-msgstr "Authentifieur"
+#: src/wacomponents/screens/authenticator_management.py:287
+msgid "ID"
+msgstr "ID"
 
-#: src/wacomponents/screens/authenticator_management.py:292
+#: src/wacomponents/screens/authenticator_management.py:288
+#: src/wacomponents/screens/foreign_keystore_management.py:189
+msgid "User"
+msgstr "Utilisateur"
+
+#: src/wacomponents/screens/authenticator_management.py:289
 msgid "Password hint"
 msgstr "Indice de phrase secrète"
 
-#: src/wacomponents/screens/authenticator_management.py:293
+#: src/wacomponents/screens/authenticator_management.py:290
 msgid "Creation date"
 msgstr "Date de création"
 
-#: src/wacomponents/screens/authenticator_management.py:294
+#: src/wacomponents/screens/authenticator_management.py:291
 msgid "Keypairs"
 msgstr "Paires de clés"
 
-#: src/wacomponents/screens/authenticator_management.py:321
+#: src/wacomponents/screens/authenticator_management.py:318
 msgid "Import successful"
 msgstr "Importation réussie"
 
-#: src/wacomponents/screens/authenticator_management.py:323
+#: src/wacomponents/screens/authenticator_management.py:320
 #, python-format
 msgid ""
 "Authenticator archive unpacked from %s, its integrity has not been checked "
@@ -402,47 +408,47 @@ msgstr ""
 "L'archive d'authentifieur a été décompressée depuis %s, son intégrité n'a "
 "cependant pas été vérifiée."
 
-#: src/wacomponents/screens/authenticator_management.py:330
-#: src/wacomponents/screens/authenticator_management.py:364
-#: src/wacomponents/screens/authenticator_management.py:392
-#: src/wacomponents/screens/authenticator_revelation_request_management.py:150
-#: src/wacomponents/screens/authenticator_revelation_request_management.py:163
-#: src/wacomponents/screens/cryptainer_decryption_process.py:249
-#: src/wacomponents/screens/cryptainer_storage_management.py:211
-#: src/wacomponents/screens/cryptainer_storage_management.py:292
+#: src/wacomponents/screens/authenticator_management.py:327
+#: src/wacomponents/screens/authenticator_management.py:361
+#: src/wacomponents/screens/authenticator_management.py:389
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:155
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:168
+#: src/wacomponents/screens/cryptainer_decryption_process.py:260
+#: src/wacomponents/screens/cryptainer_storage_management.py:213
+#: src/wacomponents/screens/cryptainer_storage_management.py:294
 #: src/wacomponents/screens/foreign_keystore_management.py:130
 #: src/wacomponents/screens/foreign_keystore_management.py:314
 #: src/wacomponents/screens/foreign_keystore_management.py:328
 msgid "Cancel"
 msgstr "Annuler"
 
-#: src/wacomponents/screens/authenticator_management.py:331
+#: src/wacomponents/screens/authenticator_management.py:328
 msgid "Export authenticator"
 msgstr "Exporter l'authentifieur"
 
-#: src/wacomponents/screens/authenticator_management.py:332
+#: src/wacomponents/screens/authenticator_management.py:329
 msgid "The exported archive should be kept in a secure place."
 msgstr "L'archive exportée doit être gardée en lieu sûr."
 
-#: src/wacomponents/screens/authenticator_management.py:334
-#: src/wacomponents/screens/authenticator_management.py:368
+#: src/wacomponents/screens/authenticator_management.py:331
+#: src/wacomponents/screens/authenticator_management.py:365
 msgid "Confirm"
 msgstr "Confirmer"
 
-#: src/wacomponents/screens/authenticator_management.py:357
+#: src/wacomponents/screens/authenticator_management.py:354
 msgid "Export successful"
 msgstr "Exportation réussie"
 
-#: src/wacomponents/screens/authenticator_management.py:358
+#: src/wacomponents/screens/authenticator_management.py:355
 #, python-format
 msgid "Authenticator archive exported to %s"
 msgstr "L'archive de l'authentifieur a été exportée vers %s"
 
-#: src/wacomponents/screens/authenticator_management.py:365
+#: src/wacomponents/screens/authenticator_management.py:362
 msgid "Destroy authenticator"
 msgstr "Détruire l'authentifieur"
 
-#: src/wacomponents/screens/authenticator_management.py:366
+#: src/wacomponents/screens/authenticator_management.py:363
 msgid ""
 "Beware, this might make encrypted data using these keys impossible to "
 "decrypt."
@@ -450,25 +456,25 @@ msgstr ""
 "Attention, cela peut rendre impossible le déchiffrement des données "
 "chiffrées utilisant ces clés."
 
-#: src/wacomponents/screens/authenticator_management.py:383
+#: src/wacomponents/screens/authenticator_management.py:380
 msgid "Deletion is over"
 msgstr "Destruction terminée"
 
-#: src/wacomponents/screens/authenticator_management.py:384
+#: src/wacomponents/screens/authenticator_management.py:381
 #, python-format
 msgid "Folder %s has been properly removed."
 msgstr "Le dossier %s a été correctement supprimé."
 
-#: src/wacomponents/screens/authenticator_management.py:393
+#: src/wacomponents/screens/authenticator_management.py:390
 msgid "Sanity check"
 msgstr "Contrôle d'intégrité"
 
-#: src/wacomponents/screens/authenticator_management.py:421
+#: src/wacomponents/screens/authenticator_management.py:418
 #, python-format
 msgid "Keypairs successfully tested: %s"
 msgstr "Paires de clés testées avec succès : %s"
 
-#: src/wacomponents/screens/authenticator_management.py:427
+#: src/wacomponents/screens/authenticator_management.py:424
 #, python-brace-format
 msgid ""
 "Keypairs tested: {keypair_count}\n"
@@ -479,14 +485,14 @@ msgstr ""
 "Clés privées manquantes : {missing_private_keys}\n"
 "Mauvaise phrase secrète pour les clés :  {undecodable_private_keys}"
 
-#: src/wacomponents/screens/authenticator_management.py:433
-#: src/wacomponents/screens/cryptainer_decryption_process.py:243
+#: src/wacomponents/screens/authenticator_management.py:430
+#: src/wacomponents/screens/cryptainer_decryption_process.py:254
 #: src/wacomponents/screens/foreign_keystore_management.py:405
 #, python-format
 msgid "Checkup result: %s"
 msgstr "Résultat du contrôle : %s"
 
-#: src/wacomponents/screens/authenticator_management.py:473
+#: src/wacomponents/screens/authenticator_management.py:470
 msgid ""
 "On this page, you can manage your authenticators, which are actually digital "
 "keychains identified by unique IDs."
@@ -494,7 +500,7 @@ msgstr ""
 "Sur cette page, vous pouvez gérer vos authentifieurs, qui sont en fait des "
 "trousseaux de clés numériques identifiés par des ID uniques."
 
-#: src/wacomponents/screens/authenticator_management.py:475
+#: src/wacomponents/screens/authenticator_management.py:472
 msgid ""
 "These keychains contain both public keys, which can be freely shared, and "
 "their corresponding private keys, protected by passphrases, which must be "
@@ -504,7 +510,7 @@ msgstr ""
 "partagées librement, et les clés privées correspondantes, protégées par des "
 "phrases secrètes, qui doivent rester cachées."
 
-#: src/wacomponents/screens/authenticator_management.py:477
+#: src/wacomponents/screens/authenticator_management.py:474
 msgid ""
 "Authenticators can be stored in your user profile or in a custom folder, "
 "especially at the root of removable devices."
@@ -513,7 +519,7 @@ msgstr ""
 "dans un dossier personnalisé, notamment à la racine des périphériques "
 "amovibles."
 
-#: src/wacomponents/screens/authenticator_management.py:479
+#: src/wacomponents/screens/authenticator_management.py:476
 msgid ""
 "You can initialize new authenticators from scratch, import/export them from/"
 "to ZIP archives, or check their integrity by providing their passphrases."
@@ -522,7 +528,7 @@ msgstr ""
 "importer/exporter depuis/vers des archives ZIP, ou vérifier leur intégrité "
 "en fournissant leurs phrases secrètes."
 
-#: src/wacomponents/screens/authenticator_management.py:481
+#: src/wacomponents/screens/authenticator_management.py:478
 msgid ""
 "Note that if you destroy an authenticator and all its exported ZIP archives, "
 "the WitnessAngel recordings which used it as a trusted third party might not "
@@ -534,7 +540,7 @@ msgstr ""
 "tiers de confiance risquent de ne plus pouvoir être déchiffrés (à moins "
 "qu'ils n'aient utilisé un secret partagé avec d'autres tiers de confiance)."
 
-#: src/wacomponents/screens/authenticator_management.py:484
+#: src/wacomponents/screens/authenticator_management.py:481
 msgid "Authenticator management page"
 msgstr "Page de gestion des authentifieurs"
 
@@ -542,77 +548,77 @@ msgstr "Page de gestion des authentifieurs"
 msgid "Publish authenticator"
 msgstr "Publier l'authentifieur"
 
-#: src/wacomponents/screens/authenticator_publication_form.py:104
+#: src/wacomponents/screens/authenticator_publication_form.py:99
 msgid "Error querying gateway server, please check its url"
 msgstr "Erreur lors de l'appel au serveur gateway, veuillez vérifier son url"
 
-#: src/wacomponents/screens/authenticator_publication_form.py:112
+#: src/wacomponents/screens/authenticator_publication_form.py:123
 msgid "NOT PUBLISHED"
 msgstr "NON PUBLIÉ"
 
-#: src/wacomponents/screens/authenticator_publication_form.py:113
+#: src/wacomponents/screens/authenticator_publication_form.py:124
 msgid "The local authenticator does not exist in the remote repository."
 msgstr "L'authentifieur local n'existe pas dans le dépôt distant."
 
-#: src/wacomponents/screens/authenticator_publication_form.py:119
+#: src/wacomponents/screens/authenticator_publication_form.py:128
 msgid "PUBLISHED"
 msgstr "PUBLIÉ"
 
-#: src/wacomponents/screens/authenticator_publication_form.py:125
+#: src/wacomponents/screens/authenticator_publication_form.py:134
 msgid "The remote authenticator is up to date."
 msgstr "L'authentifieur distant est à jour."
 
-#: src/wacomponents/screens/authenticator_publication_form.py:128
+#: src/wacomponents/screens/authenticator_publication_form.py:137
 msgid ""
 "An inconsistency has been detected between the local and remote "
 "authenticator."
 msgstr "Une incohérence a été détectée entre l'authentifieur local et distant"
 
-#: src/wacomponents/screens/authenticator_publication_form.py:136
+#: src/wacomponents/screens/authenticator_publication_form.py:145
 msgid "Error details"
 msgstr "Détails d'erreurs"
 
-#: src/wacomponents/screens/authenticator_publication_form.py:137
+#: src/wacomponents/screens/authenticator_publication_form.py:146
 msgid "Exceeding key(s) in remote"
 msgstr "Clés en excès côté distant"
 
-#: src/wacomponents/screens/authenticator_publication_form.py:138
+#: src/wacomponents/screens/authenticator_publication_form.py:148
 msgid "Missing key(s) in remote"
 msgstr "Clés manquantes côté distant"
 
-#: src/wacomponents/screens/authenticator_publication_form.py:147
+#: src/wacomponents/screens/authenticator_publication_form.py:158
 msgid "Gateway"
 msgstr "Passerelle"
 
-#: src/wacomponents/screens/authenticator_publication_form.py:148
+#: src/wacomponents/screens/authenticator_publication_form.py:159
 msgid "Remote status"
 msgstr "Statut distant"
 
-#: src/wacomponents/screens/authenticator_publication_form.py:149
-#: src/wacomponents/utilities.py:206
+#: src/wacomponents/screens/authenticator_publication_form.py:160
+#: src/wacomponents/utilities.py:207
 msgid "Message"
 msgstr "Message"
 
-#: src/wacomponents/screens/authenticator_publication_form.py:150
+#: src/wacomponents/screens/authenticator_publication_form.py:161
 msgid "Authenticator owner"
 msgstr "Propriétaire de l'authentifieur"
 
-#: src/wacomponents/screens/authenticator_publication_form.py:151
+#: src/wacomponents/screens/authenticator_publication_form.py:163
 #: src/wacomponents/screens/foreign_keystore_management.kv:14
 msgid "Authenticator ID"
 msgstr "ID d'authentifieur"
 
-#: src/wacomponents/screens/authenticator_publication_form.py:155
+#: src/wacomponents/screens/authenticator_publication_form.py:167
 msgid "Provide this ID to users wanting to rely on you as a Key Guardian"
 msgstr ""
 "Fournissez cet ID aux utilisateurs désirant vous ajouter comme Gardien de "
 "Clés"
 
-#: src/wacomponents/screens/authenticator_publication_form.py:163
+#: src/wacomponents/screens/authenticator_publication_form.py:175
 msgid "Remote authenticator status has been updated"
 msgstr "Le statut de l'authentifieur distant a été actualisé"
 
-#: src/wacomponents/screens/authenticator_publication_form.py:193
+#: src/wacomponents/screens/authenticator_publication_form.py:211
 msgid ""
 "This page allows to publish the PUBLIC part of an authenticator to a remote "
 "Witness Angel Gateway, so that other users may import it to secure their "
@@ -622,12 +628,12 @@ msgstr ""
 "passerelle Witness Angel distante, afin que d'autres utilisateurs puissent "
 "l'importer pour sécuriser leurs enregistrements."
 
-#: src/wacomponents/screens/authenticator_publication_form.py:195
+#: src/wacomponents/screens/authenticator_publication_form.py:213
 msgid "For now, a published authenticator can't be modified or deleted."
 msgstr ""
 "Pour l'instant, un authentifiant publié ne peut pas être modifié ou supprimé."
 
-#: src/wacomponents/screens/authenticator_publication_form.py:197
+#: src/wacomponents/screens/authenticator_publication_form.py:215
 msgid ""
 "In case of incoherences between the keys locally and remotely stored, errors "
 "are displayed here."
@@ -635,7 +641,7 @@ msgstr ""
 "En cas d'incohérences entre les clés stockées localement et à distance, des "
 "erreurs sont affichées ici."
 
-#: src/wacomponents/screens/authenticator_publication_form.py:199
+#: src/wacomponents/screens/authenticator_publication_form.py:217
 msgid "Authenticator publishing"
 msgstr "Publication de l'authentifieur"
 
@@ -645,12 +651,12 @@ msgid "Enter the passphrase to decrypt the selected containers:"
 msgstr "Entrez la phrase secrète pour déchiffrer les conteneurs sélectionnés:"
 
 #: src/wacomponents/screens/authenticator_revelation_request_management.kv:31
-#: src/wacomponents/screens/authenticator_revelation_request_management.py:155
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:160
 msgid "Accept"
 msgstr "Accepter"
 
 #: src/wacomponents/screens/authenticator_revelation_request_management.kv:38
-#: src/wacomponents/screens/authenticator_revelation_request_management.py:167
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:172
 msgid "Reject"
 msgstr "Rejeter"
 
@@ -674,59 +680,63 @@ msgstr "Rejeté"
 msgid "Public authenticator"
 msgstr "Authentifieur public"
 
-#: src/wacomponents/screens/authenticator_revelation_request_management.py:89
-#: src/wacomponents/screens/claimant_revelation_request_management.py:106
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:90
+#: src/wacomponents/screens/claimant_revelation_request_management.py:120
 msgid "Description"
 msgstr "Description"
 
-#: src/wacomponents/screens/authenticator_revelation_request_management.py:90
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:92
 msgid "Response public key"
 msgstr "Clé publique de la réponse"
 
-#: src/wacomponents/screens/authenticator_revelation_request_management.py:95
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:99
 #, python-brace-format
-msgid "Container N° {key_index}: {Container_uid} "
-msgstr "Container N° {key_index}: {Container_uid}"
+msgid "Container N° {key_index}: {cryptainer_label} "
+msgstr "Conteneur N° {key_index}: {cryptainer_label}"
 
-#: src/wacomponents/screens/authenticator_revelation_request_management.py:138
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:141
 msgid "Cryptainer metadata"
 msgstr "Metadata du cryptainer "
 
-#: src/wacomponents/screens/authenticator_revelation_request_management.py:139
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:143
 msgid "Authenticator key"
 msgstr "Clé de l'authentifieur"
 
-#: src/wacomponents/screens/authenticator_revelation_request_management.py:140
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:145
 msgid "Decryption status"
 msgstr "Statut de déchiffrement"
 
-#: src/wacomponents/screens/authenticator_revelation_request_management.py:143
-#: src/wacomponents/screens/claimant_revelation_request_creation_form.py:165
-#: src/wacomponents/screens/claimant_revelation_request_management.py:127
-#: src/wacomponents/screens/cryptainer_decryption_process.py:187
-#: src/wacomponents/screens/cryptainer_storage_management.py:172
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:148
+#: src/wacomponents/screens/claimant_revelation_request_creation_form.py:173
+#: src/wacomponents/screens/claimant_revelation_request_management.py:143
+#: src/wacomponents/screens/cryptainer_decryption_process.py:197
+#: src/wacomponents/screens/cryptainer_storage_management.py:174
 #: src/wacomponents/screens/foreign_keystore_management.py:306
 #: src/wacomponents/widgets/popups.py:50
 msgid "Close"
 msgstr "Fermer"
 
-#: src/wacomponents/screens/authenticator_revelation_request_management.py:144
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:149
 msgid "Symkey decryption request details"
 msgstr "Détails de demande déchiffrement de la Symkey"
 
-#: src/wacomponents/screens/authenticator_revelation_request_management.py:151
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:156
 msgid "Enter your passphrase"
 msgstr "Entrez votre phrase secrète"
 
-#: src/wacomponents/screens/authenticator_revelation_request_management.py:164
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:169
 msgid "Do you want to reject this request?"
 msgstr "Voulez-vous rejeter cette requête ?"
 
-#: src/wacomponents/screens/authenticator_revelation_request_management.py:183
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:188
 msgid "No decryption request"
 msgstr "Pas de requête de déchiffrement"
 
-#: src/wacomponents/screens/authenticator_revelation_request_management.py:224
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:221
+msgid "The list of revelation requests is up to date"
+msgstr "la liste des demandes de révélation est à jour"
+
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:225
 #, python-format
 msgid "Authenticator %s does not exist on remote server"
 msgstr "L'authentifieur %s n'existe pas sur le serveur distant"
@@ -735,19 +745,19 @@ msgstr "L'authentifieur %s n'existe pas sur le serveur distant"
 msgid "The keystore secret of authenticator is not valid"
 msgstr "Le secret de keystpre de l'authentifieur n'est pas valide"
 
-#: src/wacomponents/screens/authenticator_revelation_request_management.py:275
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:288
 msgid "Loading of private key failed (wrong passphrase?)"
 msgstr "Le chargement de la clé privée a échoué (mauvaise phrase secrète?)"
 
-#: src/wacomponents/screens/authenticator_revelation_request_management.py:293
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:306
 msgid "The decryption request was accepted"
 msgstr "La demande de déchiffrement a été acceptée"
 
-#: src/wacomponents/screens/authenticator_revelation_request_management.py:308
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:321
 msgid "The revelation request was rejected"
 msgstr "La demande de déchiffrement a été rejetée"
 
-#: src/wacomponents/screens/authenticator_revelation_request_management.py:315
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:328
 msgid ""
 "This page summarizes the authorization requests that have been sent to "
 "remote Key Guardians, in order to decrypt some local containers."
@@ -755,7 +765,7 @@ msgstr ""
 "Cette page résume les demandes d'autorisation qui ont été envoyées aux "
 "gardiens de clés distants, afin de déchiffrer certains conteneurs locaux."
 
-#: src/wacomponents/screens/authenticator_revelation_request_management.py:318
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:331
 msgid "Remote request revelation page"
 msgstr "Page de demande de révélation à distance"
 
@@ -763,7 +773,7 @@ msgstr "Page de demande de révélation à distance"
 #: src/wacomponents/screens/claimant_revelation_request_management.kv:25
 #: src/wacomponents/screens/cryptainer_decryption_process.kv:37
 #: src/wacomponents/screens/cryptainer_decryption_result.kv:28
-#: src/wacomponents/screens/cryptainer_storage_management.kv:35
+#: src/wacomponents/screens/cryptainer_storage_management.kv:36
 #: src/wacomponents/screens/foreign_keystore_management.kv:45
 msgid "Back to home"
 msgstr "Retour"
@@ -802,32 +812,32 @@ msgid "Gateway url"
 msgstr "Url de la passerelle"
 
 #: src/wacomponents/screens/claimant_revelation_request_creation_form.py:70
-#: src/wacomponents/screens/claimant_revelation_request_management.py:107
+#: src/wacomponents/screens/claimant_revelation_request_management.py:121
 msgid "Authenticator"
 msgstr "Authentifieur"
 
-#: src/wacomponents/screens/claimant_revelation_request_creation_form.py:102
-msgid "Please select authenticators"
-msgstr "Veuillez sélectionner un dossier d'authentifieur"
-
-#: src/wacomponents/screens/claimant_revelation_request_creation_form.py:109
-#, python-format
-msgid "Description must be at least %s characters long."
-msgstr "La description doit faire au moins %s caractères de long."
-
-#: src/wacomponents/screens/claimant_revelation_request_creation_form.py:140
+#: src/wacomponents/screens/claimant_revelation_request_creation_form.py:127
 #, python-format
 msgid "Authenticator %s does not exist in sql storage"
 msgstr "Authentifieur %s non existant dans le stockage sql"
 
-#: src/wacomponents/screens/claimant_revelation_request_creation_form.py:144
+#: src/wacomponents/screens/claimant_revelation_request_creation_form.py:131
 #, python-format
 msgid "Public key needed does not exist in key storage in %s authenticator"
 msgstr ""
 "La clé publique requise n'existe pas dans le stockage des clés de "
 "l'authentificateur %s."
 
-#: src/wacomponents/screens/claimant_revelation_request_creation_form.py:156
+#: src/wacomponents/screens/claimant_revelation_request_creation_form.py:143
+msgid "Please select authenticators"
+msgstr "Veuillez sélectionner un dossier d'authentifieur"
+
+#: src/wacomponents/screens/claimant_revelation_request_creation_form.py:150
+#, python-format
+msgid "Description must be at least %s characters long."
+msgstr "La description doit faire au moins %s caractères de long."
+
+#: src/wacomponents/screens/claimant_revelation_request_creation_form.py:164
 #, python-brace-format
 msgid ""
 "Successful requests: {successful_request_count} out of "
@@ -836,11 +846,11 @@ msgstr ""
 "Demandes réussies: {successful_request_count} sur "
 "{len_authenticator_selected}"
 
-#: src/wacomponents/screens/claimant_revelation_request_creation_form.py:159
+#: src/wacomponents/screens/claimant_revelation_request_creation_form.py:167
 msgid "Error Report"
 msgstr "Rapport d'erreurs"
 
-#: src/wacomponents/screens/claimant_revelation_request_creation_form.py:166
+#: src/wacomponents/screens/claimant_revelation_request_creation_form.py:174
 msgid "Operation Report"
 msgstr "Rapport d'Opération"
 
@@ -848,31 +858,32 @@ msgstr "Rapport d'Opération"
 msgid "View authorization requests"
 msgstr "Voir les demandes d'autorisation"
 
-#: src/wacomponents/screens/claimant_revelation_request_management.py:60
+#: src/wacomponents/screens/claimant_revelation_request_management.py:67
 msgid "Network error, please check the gateway url"
 msgstr "Erreur de réseau, veuillez vérifier l'url de la passerelle"
 
-#: src/wacomponents/screens/claimant_revelation_request_management.py:64
+#: src/wacomponents/screens/claimant_revelation_request_management.py:71
 msgid "No revelation requests found"
 msgstr "Aucune demande de déchiffrement trouvée"
 
-#: src/wacomponents/screens/claimant_revelation_request_management.py:74
+#: src/wacomponents/screens/claimant_revelation_request_management.py:88
+#: src/wacomponents/screens/cryptainer_storage_management.py:175
 msgid "Container"
 msgstr "Conteneur"
 
-#: src/wacomponents/screens/claimant_revelation_request_management.py:108
+#: src/wacomponents/screens/claimant_revelation_request_management.py:122
 msgid "Authenticator encryption key"
 msgstr "Clé de chiffrement de l'authentifieur"
 
-#: src/wacomponents/screens/claimant_revelation_request_management.py:109
+#: src/wacomponents/screens/claimant_revelation_request_management.py:123
 msgid "Response key"
 msgstr "Clé de la réponse"
 
-#: src/wacomponents/screens/claimant_revelation_request_management.py:110
+#: src/wacomponents/screens/claimant_revelation_request_management.py:124
 msgid "Symkey Decryption status"
 msgstr "Statut de déchiffrement de la Symkey"
 
-#: src/wacomponents/screens/claimant_revelation_request_management.py:128
+#: src/wacomponents/screens/claimant_revelation_request_management.py:144
 msgid "Revelation Request Summary"
 msgstr "Résumé de la demande de révélation"
 
@@ -892,78 +903,74 @@ msgstr "Ajouter une phrase secrète"
 msgid "Attempt decryption"
 msgstr "Tenter le déchiffrement"
 
-#: src/wacomponents/screens/cryptainer_decryption_process.kv:92
-msgid "Decryption request error"
-msgstr "Erreur de demande de déchiffrement"
-
-#: src/wacomponents/screens/cryptainer_decryption_process.py:46
+#: src/wacomponents/screens/cryptainer_decryption_process.py:55
 msgid "No containers selected"
 msgstr "Aucun conteneur sélectionné"
 
-#: src/wacomponents/screens/cryptainer_decryption_process.py:52
-#: src/wacomponents/screens/cryptainer_storage_management.py:112
-#: src/wacomponents/screens/cryptainer_storage_management.py:163
+#: src/wacomponents/screens/cryptainer_decryption_process.py:61
+#: src/wacomponents/screens/cryptainer_storage_management.py:114
+#: src/wacomponents/screens/cryptainer_storage_management.py:165
 msgid "N°"
 msgstr "N°"
 
-#: src/wacomponents/screens/cryptainer_decryption_process.py:59
+#: src/wacomponents/screens/cryptainer_decryption_process.py:68
 msgid "Refreshed concerned containers"
 msgstr "Liste des conteneurs concernés rafraichie"
 
-#: src/wacomponents/screens/cryptainer_decryption_process.py:65
+#: src/wacomponents/screens/cryptainer_decryption_process.py:74
 msgid "NOT found"
 msgstr "NON trouvé(e)"
 
-#: src/wacomponents/screens/cryptainer_decryption_process.py:68
+#: src/wacomponents/screens/cryptainer_decryption_process.py:77
 msgid "NOT set"
 msgstr "NON renseigné(e)"
 
-#: src/wacomponents/screens/cryptainer_decryption_process.py:74
+#: src/wacomponents/screens/cryptainer_decryption_process.py:83
 msgid "Found"
 msgstr "Trouvé"
 
-#: src/wacomponents/screens/cryptainer_decryption_process.py:81
+#: src/wacomponents/screens/cryptainer_decryption_process.py:90
 msgid "Set"
 msgstr "Renseigné"
 
-#: src/wacomponents/screens/cryptainer_decryption_process.py:147
+#: src/wacomponents/screens/cryptainer_decryption_process.py:156
 msgid "Trustee"
 msgstr "Trustee"
 
-#: src/wacomponents/screens/cryptainer_decryption_process.py:149
+#: src/wacomponents/screens/cryptainer_decryption_process.py:158
 msgid "Key guardian"
 msgstr "Gardien de Clés"
 
-#: src/wacomponents/screens/cryptainer_decryption_process.py:151
+#: src/wacomponents/screens/cryptainer_decryption_process.py:160
 msgid "Private keys needed for decryption are present"
 msgstr "Les clés privées nécessaires au déchiffrement sont présentes"
 
-#: src/wacomponents/screens/cryptainer_decryption_process.py:161
+#: src/wacomponents/screens/cryptainer_decryption_process.py:171
 msgid "Missing private key(s)"
 msgstr "Clé(s) privée(s) manquante(s)"
 
-#: src/wacomponents/screens/cryptainer_decryption_process.py:175
+#: src/wacomponents/screens/cryptainer_decryption_process.py:185
 #: src/wacomponents/screens/foreign_keystore_management.py:300
 msgid "Key n°"
 msgstr "Clé n°"
 
-#: src/wacomponents/screens/cryptainer_decryption_process.py:188
+#: src/wacomponents/screens/cryptainer_decryption_process.py:198
 msgid "Keypairs used"
 msgstr "Paires de clés utilisées"
 
-#: src/wacomponents/screens/cryptainer_decryption_process.py:197
+#: src/wacomponents/screens/cryptainer_decryption_process.py:207
 msgid "Already existing passphrase"
 msgstr "Phrase secrète déjà existante"
 
-#: src/wacomponents/screens/cryptainer_decryption_process.py:202
+#: src/wacomponents/screens/cryptainer_decryption_process.py:212
 msgid "Passphrase doesn't match any relevant private key"
 msgstr "La phrase secrète ne correspond à aucune clé privée pertinente"
 
-#: src/wacomponents/screens/cryptainer_decryption_process.py:238
+#: src/wacomponents/screens/cryptainer_decryption_process.py:249
 msgid "Passphrase recognized"
 msgstr "Phrase secrète reconnue"
 
-#: src/wacomponents/screens/cryptainer_decryption_process.py:250
+#: src/wacomponents/screens/cryptainer_decryption_process.py:261
 msgid "Check passphrase"
 msgstr "Vérifier la phrase secrète"
 
@@ -971,19 +978,19 @@ msgstr "Vérifier la phrase secrète"
 msgid "Revelation request report"
 msgstr "Rapport de demande de revelation"
 
-#: src/wacomponents/screens/cryptainer_decryption_result.py:18
+#: src/wacomponents/screens/cryptainer_decryption_result.py:20
 msgid "SUCCESS"
 msgstr "SUCCÈS"
 
-#: src/wacomponents/screens/cryptainer_decryption_result.py:19
+#: src/wacomponents/screens/cryptainer_decryption_result.py:21
 msgid "FAILURE"
 msgstr "ÉCHEC"
 
-#: src/wacomponents/screens/cryptainer_decryption_result.py:32
+#: src/wacomponents/screens/cryptainer_decryption_result.py:34
 msgid "No decryption was performed"
 msgstr "Aucun déchiffrement n'a été réalisé"
 
-#: src/wacomponents/screens/cryptainer_decryption_result.py:42
+#: src/wacomponents/screens/cryptainer_decryption_result.py:44
 #, python-brace-format
 msgid ""
 "{decrypted_container} out of {selected_container} container(s) have been "
@@ -992,67 +999,67 @@ msgstr ""
 "{decrypted_container} sur {selected_container} conteneur(s) ont été "
 "déchiffrés"
 
-#: src/wacomponents/screens/cryptainer_decryption_result.py:55
+#: src/wacomponents/screens/cryptainer_decryption_result.py:57
 #, python-brace-format
 msgid "Decryption status of {cryptainer_name}: {decryption_status}"
 msgstr "Statut de déchiffremeent de {cryptainer_name}: {decryption_status}"
 
-#: src/wacomponents/screens/cryptainer_decryption_result.py:77
+#: src/wacomponents/screens/cryptainer_decryption_result.py:82
 msgid "No error/warning when decrypting the container"
 msgstr "Aucune error/avertissement lors du déchiffrement du conteneur"
 
-#: src/wacomponents/screens/cryptainer_storage_management.kv:33
+#: src/wacomponents/screens/cryptainer_storage_management.kv:34
 msgid "Containers"
 msgstr "Conteneurs"
 
-#: src/wacomponents/screens/cryptainer_storage_management.kv:40
+#: src/wacomponents/screens/cryptainer_storage_management.kv:41
 msgid "View and manage encrypted containers"
 msgstr "Voir et gérer les conteneurs chiffrés"
 
-#: src/wacomponents/screens/cryptainer_storage_management.kv:52
+#: src/wacomponents/screens/cryptainer_storage_management.kv:53
 #: src/wacomponents/screens/foreign_keystore_management.kv:76
 msgid "Delete"
 msgstr "Supprimer"
 
-#: src/wacomponents/screens/cryptainer_storage_management.kv:58
+#: src/wacomponents/screens/cryptainer_storage_management.kv:59
 msgid "Launch decryption process"
 msgstr "Lancer un processus de déchiffrement"
 
-#: src/wacomponents/screens/cryptainer_storage_management.kv:65
+#: src/wacomponents/screens/cryptainer_storage_management.kv:66
 msgid "View remote authorization requests"
 msgstr ""
 "Liste des demandes de déchiffrement distantesles Voir les demandes "
 "d'autorisation à distance"
 
-#: src/wacomponents/screens/cryptainer_storage_management.py:79
+#: src/wacomponents/screens/cryptainer_storage_management.kv:73
+msgid "Last decryption report"
+msgstr "Dernier rapport de déchiffrement"
+
+#: src/wacomponents/screens/cryptainer_storage_management.py:81
 msgid "Container storage is invalid"
 msgstr "Le dépôt de conteneurs est invalide"
 
-#: src/wacomponents/screens/cryptainer_storage_management.py:88
+#: src/wacomponents/screens/cryptainer_storage_management.py:90
 msgid "No containers found"
 msgstr "Aucun conteneur trouvé"
 
-#: src/wacomponents/screens/cryptainer_storage_management.py:157
+#: src/wacomponents/screens/cryptainer_storage_management.py:159
 msgid "Key Guardians used"
 msgstr "Gardiens de Clés utilisés"
 
-#: src/wacomponents/screens/cryptainer_storage_management.py:173
-msgid "Conteneur"
-msgstr "Conteneur"
-
-#: src/wacomponents/screens/cryptainer_storage_management.py:190
+#: src/wacomponents/screens/cryptainer_storage_management.py:192
 msgid "Please select containers to delete"
 msgstr "Veuillez sélectionner les conteneurs à supprimer"
 
-#: src/wacomponents/screens/cryptainer_storage_management.py:212
+#: src/wacomponents/screens/cryptainer_storage_management.py:214
 msgid "Container deletion confirmation"
 msgstr "Confirmation de suppression de conteneur"
 
-#: src/wacomponents/screens/cryptainer_storage_management.py:293
+#: src/wacomponents/screens/cryptainer_storage_management.py:295
 msgid "Container decryption confirmation"
 msgstr "Confirmation de déchiffrement de conteneur"
 
-#: src/wacomponents/screens/cryptainer_storage_management.py:342
+#: src/wacomponents/screens/cryptainer_storage_management.py:344
 msgid "Please select containers to decrypt"
 msgstr "Veuillez sélectionner les conteneurs à déchiffrer"
 
@@ -1118,10 +1125,6 @@ msgstr "Confirmation de suppression de gardiens de clé"
 #: src/wacomponents/screens/foreign_keystore_management.py:135
 msgid "Confirm removal"
 msgstr "Confirmer suppression"
-
-#: src/wacomponents/screens/foreign_keystore_management.py:189
-msgid "User"
-msgstr "Utilisateur"
 
 #: src/wacomponents/screens/foreign_keystore_management.py:216
 msgid "Refreshed imported authenticators"
@@ -1219,11 +1222,11 @@ msgstr ""
 msgid "Status"
 msgstr "Statut"
 
-#: src/wacomponents/utilities.py:174
+#: src/wacomponents/utilities.py:175
 msgid "at"
 msgstr "à"
 
-#: src/wacomponents/utilities.py:207
+#: src/wacomponents/utilities.py:208
 msgid "Exception"
 msgstr "Exception"
 
@@ -1231,6 +1234,18 @@ msgstr "Exception"
 #, python-format
 msgid "Abnormal error caught: %s"
 msgstr "Erreur anormale détectée : %s"
+
+#~ msgid "Manage Authenticators"
+#~ msgstr "Gérer les Authentifieurs"
+
+#~ msgid "Authentifieur"
+#~ msgstr "Authentifieur"
+
+#~ msgid "Decryption request error"
+#~ msgstr "Erreur de demande de déchiffrement"
+
+#~ msgid "Conteneur"
+#~ msgstr "Conteneur"
 
 #~ msgid "All authentication data from folder %s has been removed."
 #~ msgstr ""

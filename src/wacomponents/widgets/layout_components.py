@@ -5,6 +5,7 @@ from kivy.lang import Builder
 from kivy.properties import ObjectProperty, Clock
 from kivy.uix.settings import SettingItem, SettingString
 from kivy.uix.textinput import TextInput
+from kivymd.app import MDApp
 from kivymd.uix.menu import MDDropdownMenu
 from kivy.uix.accordion import Accordion
 from kivy.factory import Factory
@@ -84,6 +85,7 @@ class LanguageSwitcherScreenMixin:
     def language_menu_select(self, lang_code):
         self._language_selector_menu.dismiss()
         tr.switch_lang(lang_code)
+        MDApp.get_running_app().language_menu_select(lang_code)  # Delegate to App
 
 
 class WASelectableLabel(TextInput):
