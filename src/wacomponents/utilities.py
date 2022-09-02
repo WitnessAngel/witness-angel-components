@@ -153,9 +153,9 @@ def format_revelation_request_label(revelation_request_creation_datetime: dateti
     reformatted_revelation_request_creation_date = format_utc_datetime_label(
         field_datetime=revelation_request_creation_datetime)
 
-    revelation_request_label = tr._("Revelation request (ID {revelation_request_uid}, created on {refformatted_revelation_request_creation_date})").format(
+    revelation_request_label = tr._("Revelation request (ID {revelation_request_uid}, created on {reformatted_revelation_request_creation_date})").format(
         revelation_request_uid=revelation_request_uid,
-        refformatted_revelation_request_creation_date=reformatted_revelation_request_creation_date)
+        reformatted_revelation_request_creation_date=reformatted_revelation_request_creation_date)
 
     if revelation_request_status:
         revelation_request_label += ", " + tr._("Status") + COLON + revelation_request_status

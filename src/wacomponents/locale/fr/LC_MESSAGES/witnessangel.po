@@ -1210,10 +1210,10 @@ msgstr "(Clé privée non présente)"
 #, python-brace-format
 msgid ""
 "Revelation request (ID {revelation_request_uid}, created on "
-"{refformatted_revelation_request_creation_date})"
+"{reformatted_revelation_request_creation_date})"
 msgstr ""
 "Demande de révélation (ID {revelation_request_uid}, créée le "
-"{refformatted_revelation_request_creation_date})"
+"{reformatted_revelation_request_creation_date})"
 
 #: src/wacomponents/utilities.py:161
 msgid "Status"
