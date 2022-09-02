@@ -9,6 +9,7 @@ from kivy.properties import ObjectProperty, BooleanProperty
 from kivymd.app import MDApp
 from kivymd.uix.screen import Screen
 
+from wacomponents.default_settings import strip_external_app_root_prefix
 from wacomponents.i18n import tr
 from wacomponents.screens.authenticator_management import shorten_uid
 from wacomponents.screens.base import WAScreenName
@@ -38,7 +39,6 @@ class AuthenticatorPublicationFormScreen(Screen):
 
         try:
             remote_public_authenticator = self.gateway_proxy.get_public_authenticator(keystore_uid=keystore_uid)
-
         except ExistenceError:
             remote_public_authenticator = None
 
@@ -155,16 +155,17 @@ class AuthenticatorPublicationFormScreen(Screen):
                 authenticator_owner=keystore_owner,
                 authenticator_uid=str(keystore_uid)
             )
-            synchronization_info_text = tr._("Gateway") + COLON + _displayed_values["gateway"] + LINEBREAK + LINEBREAK + \
-                                        tr._("Remote status") + COLON + _displayed_values["status"] + LINEBREAK + \
-                                        tr._("Message") + COLON + _displayed_values["message"] + LINEBREAK + LINEBREAK + \
-                                        tr._("Authenticator owner") + COLON + _displayed_values[
-                                            "authenticator_owner"] + LINEBREAK + \
-                                        tr._("Authenticator ID") + COLON + _displayed_values["authenticator_uid"]
+            synchronization_info_text = \
+                tr._("Local path") + COLON + strip_external_app_root_prefix(self.selected_authenticator_dir) + LINEBREAK + \
+                tr._("Gateway") + COLON + _displayed_values["gateway"] + LINEBREAK + LINEBREAK + \
+                tr._("Remote status") + COLON + _displayed_values["status"] + LINEBREAK + \
+                tr._("Message") + COLON + _displayed_values["message"] + LINEBREAK + LINEBREAK + \
+                tr._("User") + COLON + _displayed_values["authenticator_owner"] + LINEBREAK + \
+                tr._("ID") + COLON + _displayed_values["authenticator_uid"]
 
             if is_published:
-                synchronization_info_text += LINEBREAK + tr._(
-                    "Provide this ID to users wanting to rely on you as a Key Guardian") + LINEBREAK
+                synchronization_info_text += LINEBREAK + LINEBREAK + tr._(
+                    "Provide this Authenticator ID to users wanting to rely on you as a Key Guardian") + LINEBREAK
 
             if synchronization_details_text:
                 synchronization_info_text += "\n" + synchronization_details_text

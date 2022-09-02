@@ -1,5 +1,4 @@
 #:import tr wacomponents.i18n.tr
-#:import strip_external_app_root_prefix wacomponents.default_settings.strip_external_app_root_prefix
 
 <AuthenticatorPublicationFormScreen>:
 
@@ -15,14 +14,9 @@
             right_action_items: [["refresh", lambda x: root.refresh_synchronization_status(), tr._("Refresh")],["help-circle-outline", lambda x: root.display_help_popup(), tr._("Help")]]
 
         GridLayout:
-            padding: [20, 20, 20, 20]
+            padding: [0, 20, 0, 20]
             spacing: [20, 20]
             cols: 1
-
-            MDLabel:
-                text: tr._("Authenticator:") + " " + strip_external_app_root_prefix(root.selected_authenticator_dir)
-                halign: "center"
-
 
             ScrollView:
                 size_hint_y: 8

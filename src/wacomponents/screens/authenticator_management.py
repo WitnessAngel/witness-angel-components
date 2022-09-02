@@ -283,13 +283,14 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
 
                 keystore_passphrase_hint = authenticator_metadata["keystore_passphrase_hint"]
 
-                authenticator_info_text = tr._("Path") + COLON + str(authenticator_dir_shortened) + LINEBREAK + LINEBREAK + \
-                                          tr._("ID") + COLON + str(authenticator_metadata["keystore_uid"]) + LINEBREAK + \
-                                          tr._("User") + COLON + authenticator_metadata["keystore_owner"] + LINEBREAK + \
-                                          tr._("Password hint") + COLON + keystore_passphrase_hint + LINEBREAK + \
-                                          tr._("Creation date") + COLON + keystore_creation_datetime_label + LINEBREAK + LINEBREAK + \
-                                          tr._("Keypairs") + COLON + LINEBREAK + \
-                                          keypairs_label_indented
+                authenticator_info_text = \
+                    tr._("Path") + COLON + str(authenticator_dir_shortened) + LINEBREAK + LINEBREAK + \
+                   tr._("User") + COLON + authenticator_metadata["keystore_owner"] + LINEBREAK + \
+                   tr._("Password hint") + COLON + keystore_passphrase_hint + LINEBREAK + \
+                   tr._("Creation date") + COLON + keystore_creation_datetime_label + LINEBREAK + \
+                   tr._("ID") + COLON + str(authenticator_metadata["keystore_uid"]) + LINEBREAK + LINEBREAK + \
+                   tr._("Keypairs") + COLON + LINEBREAK + \
+                    keypairs_label_indented
 
         textarea = self.ids.authenticator_information
         textarea.text = authenticator_info_text
