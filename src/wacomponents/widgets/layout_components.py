@@ -87,6 +87,9 @@ class LanguageSwitcherScreenMixin:
 
 
 class WASelectableLabel(TextInput):
+
+    _tokenize_delimiters = TextInput._tokenize_delimiters + "/\\"  # Help properly cut FILEPATHS
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

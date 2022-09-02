@@ -8,7 +8,7 @@
     on_pos: self.pos = tuple(map(int, args[1]))
 
 <UserKeyStoreListItem@ThinTwoLineAvatarIconListItem>:
-    text: tr._("User Profile")
+    text: tr._("User profile")
     secondary_text: tr._("Stored inside system disk")
 
     IconLeftWidget:
@@ -49,7 +49,7 @@
         WAVerticalPanel:
 
             WAToolbar:
-                title: tr._("Manage Authenticators")
+                title: tr._("Authenticators")
                 right_action_items: [["refresh", lambda x: root.refresh_authenticator_list(), tr._("Refresh")], ["earth", lambda x: root.language_menu_open(x), tr._("Language")], ["help-circle-outline", lambda x: root.display_help_popup(), tr._("Help")], ['cog', lambda x: app.open_settings(), tr._("Settings")]]
 
             WAElevatedBoxLayout:

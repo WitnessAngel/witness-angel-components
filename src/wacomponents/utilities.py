@@ -150,7 +150,7 @@ def format_revelation_request_label(revelation_request_creation_datetime: dateti
         revelation_request_uid = shorten_uid(revelation_request_uid)
 
     # Date into isoformat
-    reformatted_revelation_request_creation_date = format_datetime_label(
+    reformatted_revelation_request_creation_date = format_utc_datetime_label(
         field_datetime=revelation_request_creation_datetime)
 
     revelation_request_label = tr._("Revelation request (ID {revelation_request_uid}, created on {refformatted_revelation_request_creation_date})").format(
@@ -163,15 +163,16 @@ def format_revelation_request_label(revelation_request_creation_datetime: dateti
     return revelation_request_label
 
 
-def format_datetime_label(field_datetime: datetime, show_time=False):
+def format_utc_datetime_label(field_datetime: datetime, show_time=False):
     # Displays "Created on: 2022-08-03"
+    assert field_datetime.utcoffset().total_seconds() == 0, field_datetime.utcoffset()  # We want only UTC datetimes here
 
     # Extract et convert to string date
     datetime_label = field_datetime.date().isoformat()
 
     if show_time:
         field_time_str = field_datetime.time().replace(microsecond=0).isoformat()
-        datetime_label += SPACE + tr._("at") + SPACE + field_time_str
+        datetime_label += SPACE + tr._("at") + SPACE + field_time_str + " UTC"
 
     return datetime_label
 

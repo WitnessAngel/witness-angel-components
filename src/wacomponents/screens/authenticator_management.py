@@ -21,7 +21,7 @@ from wacomponents.i18n import tr
 from wacomponents.screens.base import WAScreenName
 from wacomponents.system_permissions import request_external_storage_dirs_access, is_folder_readable, is_folder_writable
 from wacomponents.utilities import convert_bytes_to_human_representation, shorten_uid, format_authenticator_label, \
-    format_keypair_label, format_datetime_label, COLON, LINEBREAK, indent_text
+    format_keypair_label, format_utc_datetime_label, COLON, LINEBREAK, indent_text
 from wacomponents.widgets.layout_components import LanguageSwitcherScreenMixin
 from wacomponents.widgets.popups import dialog_with_close_button, register_current_dialog, close_current_dialog, \
     help_text_popup, display_info_toast
@@ -125,7 +125,7 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
             filesystem = authdevice["filesystem_format"].upper()
 
             authenticator_widget = Factory.ThinTwoLineAvatarIconListItem(
-                text=tr._("Drive: {drive} ({label})").format(drive=authdevice["partition_mountpoint"],
+                text=tr._("Drive {drive} ({label})").format(drive=authdevice["partition_mountpoint"],
                                                              label=authdevice["partition_label"] or tr._("no name")),
                 secondary_text=tr._("Size: {size}, Filesystem: {filesystem}").format(size=filesystem_size,
                                                                                      filesystem=filesystem),
@@ -275,20 +275,17 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
                                                            private_key_present=private_key_present) + LINEBREAK
                 keypairs_label_indented = indent_text(keypairs_label)
 
-                authenticator_label = format_authenticator_label(
-                    authenticator_owner=authenticator_metadata["keystore_owner"],
-                    keystore_uid=authenticator_metadata["keystore_uid"], short_uid=False)
-
                 keystore_creation_datetime_label = "Inconnu"
                 if "keystore_creation_datetime" in authenticator_metadata:
-                    keystore_creation_datetime_label = format_datetime_label(
+                    keystore_creation_datetime_label = format_utc_datetime_label(
                         field_datetime=authenticator_metadata["keystore_creation_datetime"],
                         show_time=True)
 
                 keystore_passphrase_hint = authenticator_metadata["keystore_passphrase_hint"]
 
-                authenticator_info_text = tr._("Path") + COLON + str(authenticator_dir_shortened) + LINEBREAK + \
-                                          tr._("Authentifieur") + COLON + authenticator_label + LINEBREAK + \
+                authenticator_info_text = tr._("Path") + COLON + str(authenticator_dir_shortened) + LINEBREAK + LINEBREAK + \
+                                          tr._("ID") + COLON + str(authenticator_metadata["keystore_uid"]) + LINEBREAK + \
+                                          tr._("User") + COLON + authenticator_metadata["keystore_owner"] + LINEBREAK + \
                                           tr._("Password hint") + COLON + keystore_passphrase_hint + LINEBREAK + \
                                           tr._("Creation date") + COLON + keystore_creation_datetime_label + LINEBREAK + LINEBREAK + \
                                           tr._("Keypairs") + COLON + LINEBREAK + \
