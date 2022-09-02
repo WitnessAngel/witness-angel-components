@@ -160,16 +160,15 @@ class WaRuntimeSupportMixin:
         device_uid = device_info["wa_device_uid"]
         return device_uid
 
-    @staticmethod  # FIXME you still have to remove other duplicates of this method in Screens
-    def get_gateway_proxy():
-        """ONLY available for GUI applications, not services!"""
+    def get_gateway_proxy(self):
         from kivymd.app import MDApp  # LAZY IMPORT
-        app = MDApp.get_running_app()
-        jsonrpc_url = app.get_wagateway_url()
+        jsonrpc_url = self.get_wagateway_url()
         gateway_proxy = JsonRpcProxy(
             url=jsonrpc_url, response_error_handler=status_slugs_response_error_handler
         )
         return gateway_proxy
+
+    ## Handling of offloaded tasks ##
 
     def _offload_task_with_spinner(self, task_callable, result_callback):
         @safe_catch_unhandled_exception_and_display_popup
