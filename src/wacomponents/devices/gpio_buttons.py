@@ -8,7 +8,7 @@ import RPi.GPIO as GPIO
 _real_gpio_cleanup = GPIO.cleanup
 atexit.register(_real_gpio_cleanup)  # We cleanup before we leave
 
-def fake_gpio_cleanup():
+def fake_gpio_cleanup(*args, **kwargs):
     print("# SKIPPING WRONG GPIO CLEANUP #")
 GPIO.cleanup = fake_gpio_cleanup
 
