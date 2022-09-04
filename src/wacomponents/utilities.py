@@ -33,10 +33,14 @@ def get_system_information(disk_storage_path: Path):
     Handles unexisting folders too."""
     import psutil
 
-    def _to_bytes_size_str(stat):  # FIXME find better name
+    def _to_size_str(stat):
+        if stat is None:
+            return "?"
         return convert_bytes_to_human_representation(stat)
 
     def _to_percent_str(stat):
+        if stat is None:
+            return "?%"
         return "%s%%" % int(stat)
 
     virtual_memory = psutil.virtual_memory()
@@ -65,8 +69,8 @@ def get_system_information(disk_storage_path: Path):
     now_datetime = datetime.now()
 
     return {
-        "disk_left": "%s  (%s)" % (_to_bytes_size_str(available_disk), _to_percent_str(available_disk_percent)),
-        "ram_left": "%s  (%s)" % (_to_bytes_size_str(available_memory), _to_percent_str(available_memory_percent)),
+        "disk_left": "%s  (%s)" % (_to_size_str(available_disk), _to_percent_str(available_disk_percent)),
+        "ram_left": "%s  (%s)" % (_to_size_str(available_memory), _to_percent_str(available_memory_percent)),
         "wifi_status": "ON" if wifi_status else "OFF",
         "ethernet_status": "ON" if ethernet_status else "OFF",
         "now_datetime": now_datetime,
