@@ -1,4 +1,5 @@
 import json
+from functools import partial
 
 import functools
 from kivy.clock import Clock
@@ -6,7 +7,9 @@ from kivy.uix.settings import SettingsWithSpinner
 from kivymd.app import MDApp
 
 from wacomponents.application._common_runtime_support import WaRuntimeSupportMixin
+from wacomponents.utilities import MONOTHREAD_POOL_EXECUTOR
 from wacomponents.widgets.layout_components import SettingStringTruncated
+from wacomponents.widgets.popups import safe_catch_unhandled_exception_and_display_popup
 
 
 class ImprovedSettingsWithSpinner(SettingsWithSpinner):
@@ -97,3 +100,21 @@ class WaGenericGui(WaRuntimeSupportMixin, MDApp):
         """Schedule a task for single launch on main GUI thread."""
         callback = functools.partial(callable, *args, **kwargs)
         Clock.schedule_once(callback)
+
+    ## HANDLING OF OFFLOADED TASKS ##
+
+    def _offload_task_with_spinner(self, task_callable, result_callback):
+        @safe_catch_unhandled_exception_and_display_popup
+        def execute_task_callable_and_schedule_result():
+            Clock.schedule_once(partial(self._activate_or_disable_spinner, True))
+            try:
+                result = task_callable()
+                result_callback_bound = functools.partial(result_callback, result)
+                Clock.schedule_once(result_callback_bound)
+
+            finally:
+                Clock.schedule_once(partial(self._activate_or_disable_spinner, False))
+        MONOTHREAD_POOL_EXECUTOR.submit(execute_task_callable_and_schedule_result)
+
+    def _activate_or_disable_spinner(self, value, *args, **kwargs):
+        self.root.ids.wait_spinner.active = value  # Spinner with "wait_spinner" must exist

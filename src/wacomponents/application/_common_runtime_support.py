@@ -15,7 +15,6 @@ from wacomponents.default_settings import INTERNAL_APP_ROOT, INTERNAL_CRYPTAINER
 from wacomponents.i18n import tr
 
 from wacomponents.sensors.camera.rtsp_stream import get_ffmpeg_version
-from wacomponents.widgets.popups import safe_catch_unhandled_exception_and_display_popup
 
 
 class WaRuntimeSupportMixin:
@@ -168,23 +167,3 @@ class WaRuntimeSupportMixin:
             url=jsonrpc_url, response_error_handler=status_slugs_response_error_handler
         )
         return gateway_proxy
-
-    ## Handling of offloaded tasks ##
-
-    def _offload_task_with_spinner(self, task_callable, result_callback):
-        @safe_catch_unhandled_exception_and_display_popup
-        def execute_task_callable_and_schedule_result():
-            Clock.schedule_once(partial(self._activate_or_disable_spinner, True))
-            try:
-                result = task_callable()
-                result_callback_bound = functools.partial(result_callback, result)
-                Clock.schedule_once(result_callback_bound)
-
-            finally:
-                Clock.schedule_once(partial(self._activate_or_disable_spinner, False))
-        MONOTHREAD_POOL_EXECUTOR.submit(execute_task_callable_and_schedule_result)
-
-    def _activate_or_disable_spinner(self, value, *args, **kwargs):
-        from kivymd.app import MDApp  # LAZY IMPORT
-        app = MDApp.get_running_app()
-        app.root.ids.wait_spinner.active = value
