@@ -10,7 +10,7 @@ from wacomponents.default_settings import IS_ANDROID, WIP_RECORDING_MARKER
 from wacomponents.logging.handlers import CallbackHandler, safe_catch_unhandled_exception
 from wacomponents.recording_toolchain import start_recording_toolchain, stop_recording_toolchain
 from wacomponents.service_control import get_osc_server, get_osc_client
-from wacomponents.utilities import InterruptableEvent
+from wacomponents.utilities import InterruptableEvent, MONOTHREAD_POOL_EXECUTOR
 
 # os.environ["KIVY_NO_CONSOLELOG"] = "1"  # IMPORTANT
 
@@ -38,9 +38,6 @@ class WaRecorderService(WaRuntimeSupportMixin):
 
     While the server is alive, recordings can be started and stopped several times without problem.
     """
-
-    # CLASS VARIABLES TO BE OVERRIDEN #
-    thread_pool_executor: ThreadPoolExecutor = None
 
     _sock = None
     _recording_toolchain = None
@@ -119,8 +116,8 @@ class WaRecorderService(WaRuntimeSupportMixin):
             ##)
             return
 
-    def _offload_task(self, method, *args, **kwargs):
-        return self.thread_pool_executor.submit(method, *args, **kwargs)
+    def _offload_task(self, method, *args, **kwargs):  # FIXME move to common runtime
+        return MONOTHREAD_POOL_EXECUTOR.submit(method, *args, **kwargs)
 
     @osc.address_method("/ping")
     @safe_catch_unhandled_exception

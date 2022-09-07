@@ -1,4 +1,4 @@
-from concurrent.futures.thread import ThreadPoolExecutor
+
 from pathlib import Path
 
 from functools import partial
@@ -10,7 +10,7 @@ from kivymd.uix.screen import Screen
 
 from wacomponents.i18n import tr
 from wacomponents.screens.base import WAScreenName
-from wacomponents.utilities import LINEBREAK
+from wacomponents.utilities import LINEBREAK, MONOTHREAD_POOL_EXECUTOR
 from wacomponents.widgets.popups import dialog_with_close_button, process_method_with_gui_spinner, help_text_popup, \
     safe_catch_unhandled_exception_and_display_popup
 from wacryptolib.authenticator import initialize_authenticator
@@ -20,9 +20,6 @@ from wacryptolib.utilities import generate_uuid0
 
 Builder.load_file(str(Path(__file__).parent / 'authenticator_creation_form.kv'))
 
-THREAD_POOL_EXECUTOR = ThreadPoolExecutor(
-    max_workers=1, thread_name_prefix="authenticator_keygen_worker"  # SINGLE worker for now, to avoid concurrency
-)
 
 GENERATED_KEYS_COUNT = 3  # Not too high, since mobile devices have trouble with that!
 PASSPHRASE_MIN_LENGTH = 20
@@ -163,7 +160,7 @@ class AuthenticatorCreationFormScreen(Screen):
         self.set_form_fields_status(enabled=False)
         self.ids.initialization_form_toolbar.disabled = True
 
-        THREAD_POOL_EXECUTOR.submit(self._offloaded_initialize_authenticator,
+        MONOTHREAD_POOL_EXECUTOR.submit(self._offloaded_initialize_authenticator,
                                     form_values=form_values,
                                     authenticator_dir=authenticator_dir)
 

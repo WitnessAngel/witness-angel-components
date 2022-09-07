@@ -1,5 +1,6 @@
 import threading
 import uuid
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, date
 from pathlib import Path
 from typing import Optional
@@ -15,6 +16,11 @@ COLON = lambda: tr._(": ")  # LAZY
 LINEBREAK = "\n"
 TEXT_INDENT = 4 * " "
 SPACE = " "
+
+
+MONOTHREAD_POOL_EXECUTOR = ThreadPoolExecutor(
+    max_workers=1, thread_name_prefix="authenticator_keygen_worker"  # SINGLE worker for now, to avoid concurrency
+)
 
 class InterruptableEvent(threading.Event):
     """An Event which handles ctrl-C on Windows too"""

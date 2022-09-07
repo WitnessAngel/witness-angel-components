@@ -5,13 +5,14 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from kivy.clock import Clock
+
+from wacomponents.utilities import MONOTHREAD_POOL_EXECUTOR
 from wacryptolib.jsonrpc_client import JsonRpcProxy, status_slugs_response_error_handler
 from wacryptolib.utilities import load_from_json_file, generate_uuid0, dump_to_json_file
 
 from wacomponents.default_settings import INTERNAL_APP_ROOT, INTERNAL_CRYPTAINER_DIR, INTERNAL_KEYSTORE_POOL_DIR, \
     INTERNAL_LOGS_DIR
 from wacomponents.i18n import tr
-from wacomponents.screens.authenticator_creation_form import THREAD_POOL_EXECUTOR
 
 from wacomponents.sensors.camera.rtsp_stream import get_ffmpeg_version
 from wacomponents.widgets.popups import safe_catch_unhandled_exception_and_display_popup
@@ -181,7 +182,7 @@ class WaRuntimeSupportMixin:
 
             finally:
                 Clock.schedule_once(partial(self._activate_or_disable_spinner, False))
-        THREAD_POOL_EXECUTOR.submit(execute_task_callable_and_schedule_result)
+        MONOTHREAD_POOL_EXECUTOR.submit(execute_task_callable_and_schedule_result)
 
     def _activate_or_disable_spinner(self, value, *args, **kwargs):
         from kivymd.app import MDApp  # LAZY IMPORT

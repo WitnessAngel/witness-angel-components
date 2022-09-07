@@ -45,10 +45,12 @@ def launch_main_module_with_crash_handler(main_module: str, client_type: str):
     setup_app_environment(setup_kivy=(client_type=="APPLICATION"))
 
     # We can only do it now that Kivy is setup!
-    if (client_type == "SERVICE" and _is_service_alive()):
-        dt = datetime.now()
-        print(">>> %s - WANVR service already started and listening on its UNIX socket, aborting relaunch" % dt)
-        return
+    if (client_type == "SERVICE"):
+        sys.modules["kivymd.uix"] = None  # Force early failure if service tries to load Kivy GUI
+        if _is_service_alive():
+            dt = datetime.now()
+            print(">>> %s - WANVR service already started and listening on its UNIX socket, aborting relaunch" % dt)
+            return
 
     try:
         module = importlib.import_module(main_module)  # NOW ONLY we trigger conf loading
