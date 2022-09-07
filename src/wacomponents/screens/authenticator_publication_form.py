@@ -103,6 +103,8 @@ class AuthenticatorPublicationFormScreen(Screen):
     @safe_catch_unhandled_exception_and_display_popup
     def refresh_synchronization_status(self):
 
+        self.ids.synchronization_information.text = ""
+
         local_metadata = self._query_local_authenticator_status()
         keystore_uid = local_metadata["keystore_uid"]
         keystore_owner = local_metadata["keystore_owner"]
@@ -213,7 +215,7 @@ class AuthenticatorPublicationFormScreen(Screen):
             tr._(
                  """For now, a published authenticator can't be modified or deleted.""") + LINEBREAK * 2 + \
             tr._(
-                 """In case of incoherences between the keys locally and remotely stored, errors are displayed here.""")
+                 """In case of incoherences between the keys locally and remotely stored, these errors are displayed here.""")
         help_text_popup(
             title=tr._("Authenticator publishing"),
             text=authenticator_publication_help_text)

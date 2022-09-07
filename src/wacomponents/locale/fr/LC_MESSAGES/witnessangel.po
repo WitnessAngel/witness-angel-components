@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-02 17:39+0200\n"
+"POT-Creation-Date: 2022-09-07 12:46+0200\n"
 "PO-Revision-Date: 2022-09-02 17:42+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
@@ -275,8 +275,7 @@ msgid "Please select an authenticator location"
 msgstr "Veuillez sélectionner un emplacement d'authentifieur"
 
 #: src/wacomponents/screens/authenticator_management.kv:84
-#: src/wacomponents/screens/authenticator_publication_form.kv:31
-#: src/wacomponents/screens/authenticator_publication_form.py:116
+#: src/wacomponents/screens/authenticator_publication_form.py:118
 #: src/wacomponents/screens/claimant_revelation_request_creation_form.kv:53
 msgid "No information available"
 msgstr "Aucune information disponible"
@@ -374,7 +373,7 @@ msgid "Path"
 msgstr "Chemin"
 
 #: src/wacomponents/screens/authenticator_management.py:288
-#: src/wacomponents/screens/authenticator_publication_form.py:163
+#: src/wacomponents/screens/authenticator_publication_form.py:165
 #: src/wacomponents/screens/foreign_keystore_management.py:189
 msgid "User"
 msgstr "Utilisateur"
@@ -388,7 +387,7 @@ msgid "Creation date"
 msgstr "Date de création"
 
 #: src/wacomponents/screens/authenticator_management.py:291
-#: src/wacomponents/screens/authenticator_publication_form.py:164
+#: src/wacomponents/screens/authenticator_publication_form.py:166
 msgid "ID"
 msgstr "ID"
 
@@ -553,58 +552,58 @@ msgstr "Publier l'authentifieur"
 msgid "Error querying gateway server, please check its url"
 msgstr "Erreur lors de l'appel au serveur gateway, veuillez vérifier son url"
 
-#: src/wacomponents/screens/authenticator_publication_form.py:123
+#: src/wacomponents/screens/authenticator_publication_form.py:125
 msgid "NOT PUBLISHED"
 msgstr "NON PUBLIÉ"
 
-#: src/wacomponents/screens/authenticator_publication_form.py:124
+#: src/wacomponents/screens/authenticator_publication_form.py:126
 msgid "The local authenticator does not exist in the remote repository."
 msgstr "L'authentifieur local n'existe pas dans le dépôt distant."
 
-#: src/wacomponents/screens/authenticator_publication_form.py:128
+#: src/wacomponents/screens/authenticator_publication_form.py:130
 msgid "PUBLISHED"
 msgstr "PUBLIÉ"
 
-#: src/wacomponents/screens/authenticator_publication_form.py:134
+#: src/wacomponents/screens/authenticator_publication_form.py:136
 msgid "The remote authenticator is up to date."
 msgstr "L'authentifieur distant est à jour."
 
-#: src/wacomponents/screens/authenticator_publication_form.py:137
+#: src/wacomponents/screens/authenticator_publication_form.py:139
 msgid ""
 "An inconsistency has been detected between the local and remote "
 "authenticator."
 msgstr "Une incohérence a été détectée entre l'authentifieur local et distant"
 
-#: src/wacomponents/screens/authenticator_publication_form.py:145
+#: src/wacomponents/screens/authenticator_publication_form.py:147
 msgid "Error details"
 msgstr "Détails d'erreurs"
 
-#: src/wacomponents/screens/authenticator_publication_form.py:146
+#: src/wacomponents/screens/authenticator_publication_form.py:148
 msgid "Exceeding key(s) in remote"
 msgstr "Clés en excès côté distant"
 
-#: src/wacomponents/screens/authenticator_publication_form.py:148
+#: src/wacomponents/screens/authenticator_publication_form.py:150
 msgid "Missing key(s) in remote"
 msgstr "Clés manquantes côté distant"
 
-#: src/wacomponents/screens/authenticator_publication_form.py:159
+#: src/wacomponents/screens/authenticator_publication_form.py:161
 msgid "Local path"
 msgstr "Chemin local"
 
-#: src/wacomponents/screens/authenticator_publication_form.py:160
+#: src/wacomponents/screens/authenticator_publication_form.py:162
 msgid "Gateway"
 msgstr "Passerelle"
 
-#: src/wacomponents/screens/authenticator_publication_form.py:161
+#: src/wacomponents/screens/authenticator_publication_form.py:163
 msgid "Remote status"
 msgstr "Statut distant"
 
-#: src/wacomponents/screens/authenticator_publication_form.py:162
-#: src/wacomponents/utilities.py:207
+#: src/wacomponents/screens/authenticator_publication_form.py:164
+#: src/wacomponents/utilities.py:211
 msgid "Message"
 msgstr "Message"
 
-#: src/wacomponents/screens/authenticator_publication_form.py:168
+#: src/wacomponents/screens/authenticator_publication_form.py:170
 msgid ""
 "Provide this Authenticator ID to users wanting to rely on you as a Key "
 "Guardian"
@@ -612,11 +611,11 @@ msgstr ""
 "Fournissez cet ID d'Authentifieur aux utilisateurs désirant vous ajouter "
 "comme Gardien de Clés"
 
-#: src/wacomponents/screens/authenticator_publication_form.py:176
+#: src/wacomponents/screens/authenticator_publication_form.py:178
 msgid "Remote authenticator status has been updated"
 msgstr "Le statut de l'authentifieur distant a été actualisé"
 
-#: src/wacomponents/screens/authenticator_publication_form.py:212
+#: src/wacomponents/screens/authenticator_publication_form.py:214
 msgid ""
 "This page allows to publish the PUBLIC part of an authenticator to a remote "
 "Witness Angel Gateway, so that other users may import it to secure their "
@@ -626,20 +625,20 @@ msgstr ""
 "passerelle Witness Angel distante, afin que d'autres utilisateurs puissent "
 "l'importer pour sécuriser leurs enregistrements."
 
-#: src/wacomponents/screens/authenticator_publication_form.py:214
+#: src/wacomponents/screens/authenticator_publication_form.py:216
 msgid "For now, a published authenticator can't be modified or deleted."
 msgstr ""
 "Pour l'instant, un authentifiant publié ne peut pas être modifié ou supprimé."
 
-#: src/wacomponents/screens/authenticator_publication_form.py:216
+#: src/wacomponents/screens/authenticator_publication_form.py:218
 msgid ""
-"In case of incoherences between the keys locally and remotely stored, errors "
-"are displayed here."
+"In case of incoherences between the keys locally and remotely stored, these "
+"errors are displayed here."
 msgstr ""
-"En cas d'incohérences entre les clés stockées localement et à distance, des "
+"En cas d'incohérences entre les clés stockées localement et à distance, ces "
 "erreurs sont affichées ici."
 
-#: src/wacomponents/screens/authenticator_publication_form.py:218
+#: src/wacomponents/screens/authenticator_publication_form.py:220
 msgid "Authenticator publishing"
 msgstr "Publication de l'authentifieur"
 
@@ -1199,19 +1198,19 @@ msgstr ""
 msgid ": "
 msgstr " : "
 
-#: src/wacomponents/utilities.py:119
+#: src/wacomponents/utilities.py:123
 msgid "(private key present)"
 msgstr "(Clé privée présente)"
 
-#: src/wacomponents/utilities.py:122
+#: src/wacomponents/utilities.py:126
 msgid "(missing private key)"
 msgstr "(Clé privée manquante)"
 
-#: src/wacomponents/utilities.py:124
+#: src/wacomponents/utilities.py:128
 msgid "(private key not present)"
 msgstr "(Clé privée non présente)"
 
-#: src/wacomponents/utilities.py:156
+#: src/wacomponents/utilities.py:160
 #, python-brace-format
 msgid ""
 "Revelation request (ID {revelation_request_uid}, created on "
@@ -1220,15 +1219,15 @@ msgstr ""
 "Demande de révélation (ID {revelation_request_uid}, créée le "
 "{reformatted_revelation_request_creation_date})"
 
-#: src/wacomponents/utilities.py:161
+#: src/wacomponents/utilities.py:165
 msgid "Status"
 msgstr "Statut"
 
-#: src/wacomponents/utilities.py:175
+#: src/wacomponents/utilities.py:179
 msgid "at"
 msgstr "à"
 
-#: src/wacomponents/utilities.py:208
+#: src/wacomponents/utilities.py:212
 msgid "Exception"
 msgstr "Exception"
 
