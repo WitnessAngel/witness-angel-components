@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-07 14:49+0200\n"
-"PO-Revision-Date: 2022-09-07 14:53+0200\n"
+"POT-Creation-Date: 2022-09-07 17:20+0200\n"
+"PO-Revision-Date: 2022-09-07 17:22+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
@@ -731,8 +731,8 @@ msgid "No decryption request"
 msgstr "Pas de requête de déchiffrement"
 
 #: src/wacomponents/screens/authenticator_revelation_request_management.py:221
-msgid "The list of revelation requests is up to date"
-msgstr "la liste des demandes de révélation est à jour"
+msgid "Revelation requests were updated"
+msgstr "Requêtes de révélation mises à jour"
 
 #: src/wacomponents/screens/authenticator_revelation_request_management.py:225
 #, python-format
@@ -1237,6 +1237,9 @@ msgstr "Exception"
 #, python-format
 msgid "Abnormal error caught: %s"
 msgstr "Erreur anormale détectée : %s"
+
+#~ msgid "The list of revelation requests is up to date"
+#~ msgstr "la liste des demandes de révélation est à jour"
 
 #~ msgid "Manage authorization requests"
 #~ msgstr "Gérer les demandes d'autorisation"

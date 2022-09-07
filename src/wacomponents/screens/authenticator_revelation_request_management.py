@@ -218,7 +218,7 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
                 authenticator_keystore_uid=keystore_uid)
             revelation_requests_per_status_list = self.sort_list_revelation_request_per_status(
                 authenticator_revelation_request_list)
-            message = tr._("The list of revelation requests is up to date")
+            message = tr._("Revelation requests were updated")
 
         except KeystoreDoesNotExist:  # FIXME why would this pop out ? Why not just an empty list ???
             # Fixme Because without this popup, we do not understand why the empty screen is empty
