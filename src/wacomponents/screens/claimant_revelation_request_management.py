@@ -126,6 +126,7 @@ class ClaimantRevelationRequestManagementScreen(Screen):
                     revelation_request_entry = Factory.WAIconListItemEntry(text=revelation_request_label)
 
                     def information_callback(widget, revelation_request_info=revelation_request_summary_text):
+                        # We MUST use this "revelation_request_info" parameter to freeze the "variable revelation_request_summary_text"
                         self.show_revelation_request_info(revelation_request_info=revelation_request_info)
 
                     information_icon = revelation_request_entry.ids.information_icon
