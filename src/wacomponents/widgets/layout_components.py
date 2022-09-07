@@ -64,7 +64,7 @@ class LanguageSwitcherScreenMixin:
             {
                 "text": lang,
                 "viewclass": "OneLineListItem",
-                "on_release": lambda x=lang_code: self.language_menu_select(x),
+                "on_release": lambda x=lang_code: self.on_language_change(x),
             } for (lang, lang_code) in [("English", "en"), ("Français", "fr")]
         ]
 
@@ -82,10 +82,10 @@ class LanguageSwitcherScreenMixin:
         self._language_selector_menu.caller = button
         self._language_selector_menu.open()
 
-    def language_menu_select(self, lang_code):
+    def on_language_change(self, lang_code):
         self._language_selector_menu.dismiss()
         tr.switch_lang(lang_code)
-        MDApp.get_running_app().language_menu_select(lang_code)  # Delegate to App
+        MDApp.get_running_app().on_language_change(lang_code)  # Propagate to App
 
 
 class WASelectableLabel(TextInput):

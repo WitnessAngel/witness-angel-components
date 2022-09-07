@@ -92,8 +92,8 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
             select_path=lambda x: (close_current_dialog(), self._import_authenticator_from_archive(x)),
         )
 
-    def language_menu_select(self, lang_code):
-        super().language_menu_select(lang_code)
+    def on_language_change(self, lang_code):
+        super().on_language_change(lang_code)
         self.refresh_authenticator_list()  # Refresh translation of Drive etc.
 
     @safe_catch_unhandled_exception_and_display_popup

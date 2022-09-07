@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-07 17:20+0200\n"
+"POT-Creation-Date: 2022-09-07 23:44+0200\n"
 "PO-Revision-Date: 2022-09-07 17:22+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
@@ -139,47 +139,47 @@ msgstr "Indice de phrase secrète"
 msgid "Initialize"
 msgstr "Initialiser"
 
-#: src/wacomponents/screens/authenticator_creation_form.py:61
+#: src/wacomponents/screens/authenticator_creation_form.py:58
 msgid "Please enter a username, passphrase and passphrase hint."
 msgstr ""
 "Veuillez entrer un nom d'utilisateur, une phrase secrète et son indice."
 
-#: src/wacomponents/screens/authenticator_creation_form.py:64
+#: src/wacomponents/screens/authenticator_creation_form.py:61
 #, python-format
 msgid "Username, passphrase and passphrase hint must not exceed %s characters"
 msgstr ""
 "Le nom d'utilisateur, la phrase secrète et son indice ne doivent pas "
 "dépasser %s caractères."
 
-#: src/wacomponents/screens/authenticator_creation_form.py:67
+#: src/wacomponents/screens/authenticator_creation_form.py:64
 #, python-format
 msgid "Passphrase must be at least %s characters long."
 msgstr "La phrase secrète doit faire au moins %s caractères de long."
 
-#: src/wacomponents/screens/authenticator_creation_form.py:78
+#: src/wacomponents/screens/authenticator_creation_form.py:75
 msgid "Validation error"
 msgstr "Erreur de validation"
 
-#: src/wacomponents/screens/authenticator_creation_form.py:161
+#: src/wacomponents/screens/authenticator_creation_form.py:158
 msgid "Please wait, initialization might take a few minutes."
 msgstr "Veuillez attendre, l'initialisation peut prendre quelques minutes."
 
-#: src/wacomponents/screens/authenticator_creation_form.py:172
+#: src/wacomponents/screens/authenticator_creation_form.py:169
 msgid "Initialization successfully completed."
 msgstr "Initialisation complétée avec succès."
 
-#: src/wacomponents/screens/authenticator_creation_form.py:173
+#: src/wacomponents/screens/authenticator_creation_form.py:170
 #: src/wacomponents/screens/authenticator_management.py:418
 #: src/wacomponents/screens/cryptainer_decryption_process.py:248
 #: src/wacomponents/screens/foreign_keystore_management.py:401
 msgid "Success"
 msgstr "Succès"
 
-#: src/wacomponents/screens/authenticator_creation_form.py:175
+#: src/wacomponents/screens/authenticator_creation_form.py:172
 msgid "Operation failed, check logs."
 msgstr "Opération échouée, vérifiez les logs."
 
-#: src/wacomponents/screens/authenticator_creation_form.py:176
+#: src/wacomponents/screens/authenticator_creation_form.py:173
 #: src/wacomponents/screens/authenticator_management.py:421
 #: src/wacomponents/screens/cryptainer_decryption_process.py:206
 #: src/wacomponents/screens/cryptainer_decryption_process.py:211
@@ -188,7 +188,7 @@ msgstr "Opération échouée, vérifiez les logs."
 msgid "Failure"
 msgstr "Échec"
 
-#: src/wacomponents/screens/authenticator_creation_form.py:181
+#: src/wacomponents/screens/authenticator_creation_form.py:178
 msgid ""
 "On this page, you can initialize an authenticator inside an empty folder; "
 "this authenticator actually consists in metadata files as well as a set of "
@@ -198,7 +198,7 @@ msgstr ""
 "vide ; cet authentifieur consiste en réalité en des fichiers de métadonnées, "
 "ainsi qu'en un ensemble de paires de clés asymétriques."
 
-#: src/wacomponents/screens/authenticator_creation_form.py:183
+#: src/wacomponents/screens/authenticator_creation_form.py:180
 msgid ""
 "To proceed, you have to input your user name or pseudo, a long passphrase (e."
 "g. consisting of 4 different words), and a public hint to help your remember "
@@ -209,7 +209,7 @@ msgstr ""
 "indice public pour vous aider à vous souvenir de votre phrase secrète plus "
 "tard."
 
-#: src/wacomponents/screens/authenticator_creation_form.py:185
+#: src/wacomponents/screens/authenticator_creation_form.py:182
 msgid ""
 "You should keep your passphrase somewhere safe (in a digital password "
 "manager, on a paper in a vault...), because if you forget any of its aspects "
@@ -220,7 +220,7 @@ msgstr ""
 "vous oubliez l'un de ses aspects (majuscules/minuscules, accents, "
 "espaces...), il n'y a aucun moyen de la récupérer."
 
-#: src/wacomponents/screens/authenticator_creation_form.py:188
+#: src/wacomponents/screens/authenticator_creation_form.py:185
 msgid "Authenticator creation page"
 msgstr "Page de création d'authentifieur"
 
@@ -599,7 +599,7 @@ msgid "Remote status"
 msgstr "Statut distant"
 
 #: src/wacomponents/screens/authenticator_publication_form.py:164
-#: src/wacomponents/utilities.py:211
+#: src/wacomponents/utilities.py:217
 msgid "Message"
 msgstr "Message"
 
@@ -730,34 +730,34 @@ msgstr "Voulez-vous rejeter cette requête ?"
 msgid "No decryption request"
 msgstr "Pas de requête de déchiffrement"
 
-#: src/wacomponents/screens/authenticator_revelation_request_management.py:221
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:223
 msgid "Revelation requests were updated"
 msgstr "Requêtes de révélation mises à jour"
 
-#: src/wacomponents/screens/authenticator_revelation_request_management.py:225
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:227
 #, python-format
 msgid "Authenticator %s does not exist on remote server"
 msgstr "L'authentifieur %s n'existe pas sur le serveur distant"
 
-#: src/wacomponents/screens/authenticator_revelation_request_management.py:228
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:230
 msgid "The keystore secret of authenticator is not valid"
 msgstr "Le secret de keystpre de l'authentifieur n'est pas valide"
 
-#: src/wacomponents/screens/authenticator_revelation_request_management.py:280
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:282
 msgid "Loading of authenticator private key failed (wrong passphrase?)"
 msgstr ""
 "Le chargement de la clé privée d'authentifieur a échoué (mauvaise phrase "
 "secrète?)"
 
-#: src/wacomponents/screens/authenticator_revelation_request_management.py:307
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:309
 msgid "The decryption request was accepted"
 msgstr "La demande de déchiffrement a été acceptée"
 
-#: src/wacomponents/screens/authenticator_revelation_request_management.py:322
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:324
 msgid "The revelation request was rejected"
 msgstr "La demande de déchiffrement a été rejetée"
 
-#: src/wacomponents/screens/authenticator_revelation_request_management.py:329
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:331
 msgid ""
 "This page summarizes the authorization requests that have been sent to "
 "remote Key Guardians, in order to decrypt some local containers."
@@ -765,7 +765,7 @@ msgstr ""
 "Cette page résume les demandes d'autorisation qui ont été envoyées aux "
 "gardiens de clés distants, afin de déchiffrer certains conteneurs locaux."
 
-#: src/wacomponents/screens/authenticator_revelation_request_management.py:332
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:334
 msgid "Remote request revelation page"
 msgstr "Page de demande de révélation à distance"
 
@@ -1087,11 +1087,11 @@ msgstr ""
 
 #: src/wacomponents/screens/foreign_keystore_management.kv:64
 msgid "Import from USB"
-msgstr "Import depuis USB"
+msgstr "Importer depuis USB"
 
 #: src/wacomponents/screens/foreign_keystore_management.kv:70
 msgid "Import from Web"
-msgstr "Import depuis Web"
+msgstr "Importer depuis Web"
 
 #: src/wacomponents/screens/foreign_keystore_management.py:49
 msgid "No connected authentication devices found"
@@ -1171,8 +1171,8 @@ msgid "Authenticator has been imported successfully"
 msgstr "L'authentifieur a été importé avec succès"
 
 #: src/wacomponents/screens/recorder_homepage.kv:14
-msgid "Control Recorder"
-msgstr "Contrôler Enregistreur"
+msgid "Recorder"
+msgstr "Enregistreur"
 
 #: src/wacomponents/screens/recorder_homepage.kv:16
 msgid "Reset background service"
@@ -1196,23 +1196,23 @@ msgid ""
 msgstr ""
 "Module ffmpeg installé, mais attention sa version n'a pas pu être déterminée"
 
-#: src/wacomponents/utilities.py:14
+#: src/wacomponents/utilities.py:15
 msgid ": "
 msgstr " : "
 
-#: src/wacomponents/utilities.py:123
+#: src/wacomponents/utilities.py:129
 msgid "(private key present)"
 msgstr "(Clé privée présente)"
 
-#: src/wacomponents/utilities.py:126
+#: src/wacomponents/utilities.py:132
 msgid "(missing private key)"
 msgstr "(Clé privée manquante)"
 
-#: src/wacomponents/utilities.py:128
+#: src/wacomponents/utilities.py:134
 msgid "(private key not present)"
 msgstr "(Clé privée non présente)"
 
-#: src/wacomponents/utilities.py:160
+#: src/wacomponents/utilities.py:166
 #, python-brace-format
 msgid ""
 "Request {revelation_request_uid} "
@@ -1221,15 +1221,15 @@ msgstr ""
 "Demande {revelation_request_uid} "
 "({reformatted_revelation_request_creation_date})"
 
-#: src/wacomponents/utilities.py:165
+#: src/wacomponents/utilities.py:171
 msgid "Status"
 msgstr "Statut"
 
-#: src/wacomponents/utilities.py:179
+#: src/wacomponents/utilities.py:185
 msgid "at"
 msgstr "à"
 
-#: src/wacomponents/utilities.py:212
+#: src/wacomponents/utilities.py:218
 msgid "Exception"
 msgstr "Exception"
 
