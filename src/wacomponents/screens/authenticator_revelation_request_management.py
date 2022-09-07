@@ -232,6 +232,8 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
     @safe_catch_unhandled_exception_and_display_popup
     def fetch_and_display_revelation_requests(self):
 
+        self.ids.tabs.switch_tab(self.ids.tabs.get_tab_list()[0])  # Return to first Tab
+
         self.ids.pending_revelation_request.clear_widgets()
         self.ids.rejected_revelation_request.clear_widgets()
         self.ids.accepted_revelation_request.clear_widgets()
