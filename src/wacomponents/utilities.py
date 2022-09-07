@@ -155,9 +155,9 @@ def format_revelation_request_label(revelation_request_creation_datetime: dateti
 
     # Date into isoformat
     reformatted_revelation_request_creation_date = format_utc_datetime_label(
-        field_datetime=revelation_request_creation_datetime)
+        field_datetime=revelation_request_creation_datetime, show_time=False)
 
-    revelation_request_label = tr._("Revelation request (ID {revelation_request_uid}, created on {reformatted_revelation_request_creation_date})").format(
+    revelation_request_label = tr._("Request {revelation_request_uid} ({reformatted_revelation_request_creation_date})").format(
         revelation_request_uid=revelation_request_uid,
         reformatted_revelation_request_creation_date=reformatted_revelation_request_creation_date)
 

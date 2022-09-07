@@ -2,6 +2,7 @@
 #:import strip_external_app_root_prefix wacomponents.default_settings.strip_external_app_root_prefix
 
 
+# FIXME RENAME THIS
 <CheckPassphraseContent@MDBoxLayout>: # TODO Move to layout component
     orientation: "vertical"
     spacing: "12dp"
@@ -9,7 +10,7 @@
     height: "90dp"
 
     MDLabel:
-        text: tr._("Enter the passphrase to decrypt the selected containers:")
+        text: tr._("This will provide access to the requested key parts")
 
     MDTextField:
         id: passphrase
@@ -40,6 +41,7 @@
         size_hint_x: 1  # HACK
 
 
+# FIXME rename with capital
 <revelationRequestEntry@AccordionItem>
     revelation_request_summary : revelation_request_summary
     symkeys_decryption : symkeys_decryption
@@ -69,7 +71,7 @@
         orientation: "vertical"
 
         WAToolbar:
-            title: tr._("Manage authorization requests")
+            title: tr._("Authorization requests")
             id: initialization_form_toolbar
             left_action_items: [["arrow-left", lambda x: root.go_to_home_screen(), tr._("Back")]]
             right_action_items: [["refresh", lambda x: root.fetch_and_display_revelation_requests(), tr._("Refresh")],["help-circle-outline", lambda x: root.display_help_popup(), tr._("Help")]]

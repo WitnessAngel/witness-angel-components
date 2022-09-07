@@ -22,7 +22,7 @@ from wacryptolib.utilities import load_from_json_bytes, dump_to_json_bytes
 
 from wacomponents.i18n import tr
 from wacomponents.utilities import format_revelation_request_label, format_keypair_label, \
-    format_authenticator_label, COLON, LINEBREAK, format_cryptainer_label
+    format_authenticator_label, COLON, LINEBREAK, format_cryptainer_label, shorten_uid
 from wacomponents.widgets.popups import dialog_with_close_button, close_current_dialog, display_info_snackbar, \
     help_text_popup, safe_catch_unhandled_exception_and_display_popup, display_info_toast
 
@@ -85,20 +85,23 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
             request_description=revelation_request["revelation_request_description"],
             response_key_label=response_key_label,
         )
-        revelation_request_summary_text = tr._("Public authenticator") + COLON() + _displayed_values[
+        revelation_request_summary_text = tr._("Authenticator") + COLON() + _displayed_values[
             "target_public_authenticator_label"] + LINEBREAK + \
                                           tr._("Description") + COLON() + _displayed_values[
                                               "request_description"] + LINEBREAK + \
-                                          tr._("Response public key") + COLON() + _displayed_values["response_key_label"]
+                                          tr._("Local response key") + COLON() + _displayed_values["response_key_label"]
 
         revelationRequestEntry.revelation_request_summary.text = revelation_request_summary_text
 
         for index, symkey_decryption in enumerate(revelation_request['symkey_decryption_requests'], start=1):
-            cryptainer_label = format_cryptainer_label(cryptainer_name=symkey_decryption["cryptainer_name"], cryptainer_uid=symkey_decryption["cryptainer_uid"])
 
-            symkey_decryption_label = tr._("Container N° {key_index}: {cryptainer_label} ").format(key_index=index, cryptainer_label=cryptainer_label)
+            symkey_decryption_label1 = tr._("Key of container {short_cryptainer_uid}").format(
+                key_index=index,
+                short_cryptainer_uid=shorten_uid(symkey_decryption["cryptainer_uid"]))
+            symkey_decryption_label2 = format_cryptainer_label(cryptainer_name=symkey_decryption["cryptainer_name"])
 
-            symkey_decryption_item = Factory.WAIconListItemEntry(text=symkey_decryption_label)  # FIXME RENAME THIS
+            symkey_decryption_item = Factory.WAIconListItemEntry(
+                text=symkey_decryption_label1, secondary_text=symkey_decryption_label2)  # FIXME RENAME THIS
 
             def information_callback(widget, symkey_decryption=symkey_decryption):
                 self.show_symkey_decryption_details(symkey_decryption=symkey_decryption)
@@ -132,28 +135,27 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
         authenticator_key_label = format_keypair_label(keychain_uid=authenticator_keychain_uid,
                                                        key_algo=authenticator_key_algo)
 
-        _displayed_values = dict(
+        _displayed_values = dict(  # FIXME remove this useless dict! and others too!
             authenticator_key_label=authenticator_key_label,
             cryptainer_metadata=symkey_decryption["cryptainer_metadata"],
             symkey_decryption_status=symkey_decryption["symkey_decryption_status"]
         )
 
-        symkey_decryption_info_text = tr._("Cryptainer metadata") + COLON() + str(
-            _displayed_values["cryptainer_metadata"]) + LINEBREAK + \
-                                      tr._("Authenticator key") + COLON() + _displayed_values[
-                                          "authenticator_key_label"] + LINEBREAK + \
-                                      tr._("Decryption status") + COLON() + _displayed_values["symkey_decryption_status"]
+        symkey_decryption_info_text = \
+            tr._("Concerned authenticator key") + COLON() + _displayed_values["authenticator_key_label"] + LINEBREAK + \
+            tr._("Cryptainer metadata") + COLON() + str(_displayed_values["cryptainer_metadata"]) + LINEBREAK + \
+            tr._("Decryption status") + COLON() + _displayed_values["symkey_decryption_status"]
 
         dialog_with_close_button(
             close_btn_label=tr._("Close"),
-            title=tr._("Symkey decryption request details"),
+            title=tr._("Symkey decryption request"),
             text=symkey_decryption_info_text,
         )
 
     def open_dialog_accept_request(self, revelation_request):
         dialog = dialog_with_close_button(
             close_btn_label=tr._("Cancel"),
-            title=tr._("Enter your passphrase"),
+            title=tr._("Enter your authenticator passphrase"),
             type="custom",
             content_cls=Factory.CheckPassphraseContent(),
             buttons=[
@@ -175,8 +177,6 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
         )
 
     def display_remote_revelation_request(self, revelation_requests_per_status_list):
-        # TODO add list_decryption_request to parameter of this function
-        # why????
 
         tab_per_status = dict(PENDING=self.ids.pending_revelation_request,
                               REJECTED=self.ids.rejected_revelation_request,
@@ -238,7 +238,6 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
         self.ids.rejected_revelation_request.clear_widgets()
         self.ids.accepted_revelation_request.clear_widgets()
 
-        # FIXME ADD PLACEHOLDER WHEN list_authenticator_revelation_requests is empty
         def resultat_callable(result, *args, **kwargs):  # FIXME CHANGE THIS NAME
             revelation_requests_per_status_list, message= result
             if revelation_requests_per_status_list is None:
@@ -267,28 +266,28 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
             cipher_algo = symkey_decryption["target_public_authenticator_key"]["key_algo"]
             passphrases = [passphrase]
             cipherdict = load_from_json_bytes(symkey_decryption["symkey_decryption_request_data"])
-            response_data = b""
+
             try:
 
                 key_struct_bytes = trustee_api.decrypt_with_private_key(keychain_uid=keychain_uid,
                                                                         cipher_algo=cipher_algo,
                                                                         cipherdict=cipherdict, passphrases=passphrases)
-                response_key_algo = revelation_request["revelation_response_key_algo"]
-                response_public_key = revelation_request["revelation_response_public_key"]
-
-                public_key = load_asymmetric_key_from_pem_bytestring(key_pem=response_public_key, key_algo=cipher_algo)
-
-                response_data_dict = encrypt_bytestring(
-                    plaintext=key_struct_bytes, cipher_algo=response_key_algo, key_dict=dict(key=public_key)
-                )
-                response_data = dump_to_json_bytes(response_data_dict)
 
             except KeyDoesNotExist:
                 decryption_status = SymkeyDecryptionStatus.PRIVATE_KEY_MISSING
 
             except KeyLoadingError:
-                display_info_snackbar(tr._("Loading of private key failed (wrong passphrase?)"))
-                return
+                display_info_snackbar(tr._("Loading of authenticator private key failed (wrong passphrase?)"))
+                return  # Abort everything, since the same passphrase is used for all Authenticator keys anyway...
+
+            # We encrypt teh response with the provided response key, this shouldn't fail
+            response_key_algo = revelation_request["revelation_response_key_algo"]
+            response_public_key = revelation_request["revelation_response_public_key"]
+            public_key = load_asymmetric_key_from_pem_bytestring(key_pem=response_public_key, key_algo=cipher_algo)
+            response_data_dict = encrypt_bytestring(
+                plaintext=key_struct_bytes, cipher_algo=response_key_algo, key_dict=dict(key=public_key)
+            )
+            response_data = dump_to_json_bytes(response_data_dict)
 
             symkey_decryption_result = {
                 "symkey_decryption_request_data": symkey_decryption["symkey_decryption_request_data"],
