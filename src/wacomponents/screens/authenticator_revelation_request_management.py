@@ -191,6 +191,8 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
 
             scroll = Factory.WAVerticalScrollView()
             root = GrowingAccordion(orientation='vertical', size_hint=(1, None), height=self.height)
+
+            revelation_requests.sort(key=lambda request: request["created_at"], reverse=True)
             for revelation_request in revelation_requests:
                 revelation_request_entry = self._display_single_remote_revelation_request(
                     status=status, revelation_request=revelation_request)
