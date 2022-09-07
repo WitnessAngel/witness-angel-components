@@ -24,7 +24,7 @@ THREAD_POOL_EXECUTOR = ThreadPoolExecutor(
     max_workers=1, thread_name_prefix="authenticator_keygen_worker"  # SINGLE worker for now, to avoid concurrency
 )
 
-GENERATED_KEYS_COUNT = 7
+GENERATED_KEYS_COUNT = 3  # Not too high, since mobile devices have trouble with that!
 PASSPHRASE_MIN_LENGTH = 20
 MAX_WA_CHARFIELD_LENGTH = 100
 
