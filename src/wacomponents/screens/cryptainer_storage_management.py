@@ -147,6 +147,7 @@ class CryptainerStorageManagementScreen(Screen):
         """
         assert self.filesystem_cryptainer_storage, self.filesystem_cryptainer_storage  # By construction...
         cryptainer_label = ""
+
         try:
             cryptainer = self.filesystem_cryptainer_storage.load_cryptainer_from_storage(cryptainer_name)
             all_dependencies = gather_trustee_dependencies([cryptainer])
@@ -156,23 +157,27 @@ class CryptainerStorageManagementScreen(Screen):
             message = repr(exc)[:800]
 
         else:
-            message = tr._("Key Guardians used") + COLON() + LINEBREAK * 2
+
+            message = tr._("Container ID") + COLON() + str(cryptainer["cryptainer_uid"]) + 2*LINEBREAK
+
+            message += tr._("Key Guardians used") + COLON() + LINEBREAK * 2
             for index, key_guardian_used in enumerate(interesting_dependencies, start=1):
-                key_guardian_label = format_authenticator_label(authenticator_owner=key_guardian_used["keystore_owner"],
-                                                                keystore_uid=key_guardian_used["keystore_uid"],
-                                                                trustee_type=key_guardian_used["trustee_type"])
+                key_guardian_label = format_authenticator_label(
+                    authenticator_owner=key_guardian_used["keystore_owner"],
+                    keystore_uid=key_guardian_used["keystore_uid"],
+                    trustee_type=key_guardian_used["trustee_type"])
 
                 message += tr._("N°") + SPACE + str(index) + COLON() + key_guardian_label + LINEBREAK
 
-            cryptainer_uid = cryptainer["cryptainer_uid"]
-            cryptainer_label = format_cryptainer_label(cryptainer_name=cryptainer_name, cryptainer_uid=cryptainer_uid)
+            cryptainer_label = str(cryptainer_name)  # It's a Path object
 
-        self.open_cryptainer_details_dialog(message, cryptainer_info=cryptainer_label)
+        self.open_cryptainer_details_dialog(message, cryptainer_label=cryptainer_label)
 
-    def open_cryptainer_details_dialog(self, message, cryptainer_info):
+    def open_cryptainer_details_dialog(self, message, cryptainer_label):
+
         dialog_with_close_button(
             close_btn_label=tr._("Close"),
-            title=tr._("Container") + COLON() + cryptainer_info,
+            title=cryptainer_label,
             text=message,
         )
         '''

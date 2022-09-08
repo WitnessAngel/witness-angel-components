@@ -56,14 +56,14 @@
                 WAOperationButton:
                     id: cryptainer_decrypt_btn
                     icon: "eye-circle-outline"
-                    text: tr._("Launch decryption process")
+                    text: tr._("Launch decryption")
                     # on_press: root.open_cryptainer_decryption_dialog()
                     on_press: root.launch_cryptainer_decryption()
 
                 WAOperationButton:
                     id: remote_decryption_request_list_btn
                     icon: "format-list-text"
-                    text: tr._("View remote authorization requests")
+                    text: tr._("Remote authorizations")
                     on_press:  root.manager.current = root.claimant_revelation_request_management_scree_name
 
                 WAOperationButton:
