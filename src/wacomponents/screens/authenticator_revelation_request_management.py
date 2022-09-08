@@ -224,9 +224,8 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
                 authenticator_revelation_request_list)
             message = tr._("Revelation requests were updated")
 
-        except KeystoreDoesNotExist:  # FIXME why would this pop out ? Why not just an empty list ???
-            # Fixme Because without this popup, we do not understand why the empty screen is empty
-            message = tr._("Authenticator %s does not exist on remote server") % keystore_uid
+        except KeystoreDoesNotExist:
+            message = tr._("Authenticator does not exist in remote registry") % keystore_uid
 
         except AuthenticationError:
             message = tr._("The keystore secret of authenticator is not valid")
