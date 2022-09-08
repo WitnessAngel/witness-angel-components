@@ -202,6 +202,7 @@ class ForeignKeystoreManagementScreen(Screen):
 
             information_icon = authenticator_entry.ids.information_icon
 
+            @safe_catch_unhandled_exception_and_display_popup
             def information_callback(widget, keystore_uid=keystore_uid,
                                      metadata=metadata):  # Force keystore_uid save here, else scope bug
                 self.display_keystore_details(keystore_uid=keystore_uid, keystore_owner=metadata["keystore_owner"])
@@ -213,7 +214,7 @@ class ForeignKeystoreManagementScreen(Screen):
             # Keys_page_ids.device_table.add_widget(device_row)
 
         if display_toast:
-            display_info_toast(tr._("Refreshed imported authenticators"))
+            display_info_toast(tr._("Refreshed imported key guardians"))
         """
                 file_metadata = Path(dir_key_sorage).joinpath(".metadata.json")
                 if file_metadata.exists():
@@ -282,14 +283,13 @@ class ForeignKeystoreManagementScreen(Screen):
 
     def display_keystore_details(self, keystore_uid, keystore_owner):
 
-        """
-        display the information of the keys stored in the selected usb
+        foreign_metadata = self.filesystem_keystore_pool.get_keystore_metadata(keystore_uid=keystore_uid)
 
-        """
         foreign_keystore = self.filesystem_keystore_pool.get_foreign_keystore(keystore_uid=keystore_uid)
         keypair_identifiers = foreign_keystore.list_keypair_identifiers()
 
-        message = ""
+        message = tr._("Type: {keystore_type}").format(keystore_type=foreign_metadata["keystore_type"].upper()) + 2 * LINEBREAK
+
         for index, keypair_identifier in enumerate(keypair_identifiers, start=1):
             private_key_present = True if keypair_identifier["private_key_present"] else False
             keypair_label = format_keypair_label(keychain_uid=keypair_identifier["keychain_uid"],
