@@ -158,7 +158,7 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
             close_btn_label=tr._("Cancel"),
             title=tr._("Enter your authenticator passphrase"),
             type="custom",
-            content_cls=Factory.CheckPassphraseContent(),
+            content_cls=Factory.AddPersonalPassphraseContent(),
             buttons=[
                 MDFlatButton(text=tr._("Accept"),
                              on_release=lambda *args: (close_current_dialog(), self.accept_revelation_request(

@@ -1,14 +1,14 @@
 #:import tr wacomponents.i18n.tr
 #:import strip_external_app_root_prefix wacomponents.default_settings.strip_external_app_root_prefix
 
-<CheckPassphraseContent@MDBoxLayout>
+<AddForeignPassphraseContent@MDBoxLayout>
     orientation: "vertical"
     spacing: "12dp"
     size_hint_y: None
     height: "90dp"
 
     MDLabel:
-        text: tr._("Enter the passphrase to decrypt the selected containers:")
+        text: tr._("Enter the passphrase for one of the key guardians")
 
     MDTextField:
         id: passphrase
@@ -32,14 +32,14 @@
         WAVerticalPanel:
 
             WAToolbar:
-                title: "Witness Angel"
+                title: tr._("Launch decryption")
                 left_action_items: [["arrow-left", lambda x: root.go_to_previous_screen(), tr._("Back")]]
                 right_action_items: [["refresh", lambda x: root.get_container_summary(), tr._("Refresh")], ["home", lambda x: app.get_back_to_home_screen(), tr._("Back to home")],]
 
             WAElevatedBoxLayout:
 
                 MDLabel:
-                    text: tr._("Prepare container decryption")
+                    text: tr._("Containers selected for decryption")
                     padding_x: "10dp"
 
             WAVerticalScrollView:
@@ -50,15 +50,16 @@
             WAElevatedBoxLayout:
                 md_bg_color: app.theme_cls.bg_normal
 
-                MDIcon:
-                    icon: "information-outline"
-                    halign: "center"
-                    pos_hint: {"center_y": .5}
-                    width: dp(80)
-                    size_hint_x: None
+                #MDIcon:
+                #    icon: "information-outline"
+                #    halign: "center"
+                #    pos_hint: {"center_y": .5}
+                #    width: dp(80)
+                #    size_hint_x: None
 
                 MDLabel:
                     text: tr._("Summary of related key guardians")
+                    padding_x: "10dp"
 
             WAVerticalScrollView:
 

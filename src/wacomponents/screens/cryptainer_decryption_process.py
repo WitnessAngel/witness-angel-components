@@ -57,7 +57,7 @@ class CryptainerDecryptionProcessScreen(Screen):
             return
 
         for index, cryptainer_name in enumerate(reversed(self.selected_cryptainer_names), start=1):
-            cryptainer_label = format_cryptainer_label(cryptainer_name=cryptainer_name)
+            cryptainer_label = format_cryptainer_label(cryptainer_name=cryptainer_name)  # No need for Cryptainer ID here...
             cryptainer_entry_label = tr._("N°") + SPACE + str(index) + COLON() + cryptainer_label
 
             cryptainer_entry = Factory.WAListItemEntry(text=cryptainer_entry_label)  # FIXME RENAME THIS
@@ -71,23 +71,23 @@ class CryptainerDecryptionProcessScreen(Screen):
                                                   trustee_keypair_identifiers):
 
         trustee_is_present = False
-        trustee_status = tr._("NOT found")
+        trustee_status = tr._("not found")
         trustee_owner = None
         trustee_private_keys_missing = []
-        passphrase_status = tr._("NOT set")
+        passphrase_status = tr._("not set")
 
         try:
             filesystem_keystore = self.filesystem_keystore_pool.get_foreign_keystore(keystore_uid=keystore_uid)
 
             trustee_is_present = True
-            trustee_status = tr._("Found")
+            trustee_status = tr._("found")
 
             foreign_keystore_dir = self.filesystem_keystore_pool._get_foreign_keystore_dir(keystore_uid=keystore_uid)
             metadata = load_keystore_metadata(foreign_keystore_dir)
             trustee_owner = metadata["keystore_owner"]
 
             if self.passphrase_mapper.get(trustee_id):
-                passphrase_status = tr._("Set")
+                passphrase_status = tr._("set")
                 ##self.found_trustees_lacking_passphrase = False
             else:
                 pass
@@ -153,23 +153,26 @@ class CryptainerDecryptionProcessScreen(Screen):
                                                    trustee_type=status["trustee_type"],
                                                    keystore_uid=status["keystore_uid"])
 
-        trustee_info = tr._("Trustee") + COLON() + trustee_label
+        trustee_info = tr._("Key guardian") + COLON() + trustee_label
 
-        trustee_present = tr._("Key guardian") + COLON() + "{trustee_status}".format(**status)
+        trustee_present = tr._("Status") + COLON() + status["trustee_status"].upper()
 
         trustee_private_keys_missing_text = tr._("Private keys needed for decryption are present")
 
-        passphrase = tr._("Passphrase") + COLON() + "{passphrase_status}".format(**status)
+        passphrase = tr._("passphrase") + COLON() + status["passphrase_status"].upper()
 
         if status["trustee_is_present"]:
             if status["trustee_private_keys_missing"]:
-                trustee_keys_missing_label = []
+                trustee_keys_missing_labels = []
                 for private_key_missing in status["trustee_private_keys_missing"]:
                     trustee_key_missing_label = format_keypair_label(**private_key_missing)
-                    trustee_keys_missing_label.append(trustee_key_missing_label)
+                    trustee_keys_missing_labels.append(trustee_key_missing_label)
+
+                trustee_keys_missing_full_label = ", ".join(trustee_keys_missing_labels) if trustee_keys_missing_labels else tr._("None")
+
                 trustee_private_keys_missing_text = tr._(
-                    "Missing private key(s)") + COLON() + "{trustee_keys_missing_label}".format(
-                    trustee_keys_missing_label=", ".join(trustee_keys_missing_label))
+                    "Missing private key(s)") + COLON() + "{trustee_keys_missing_full_label}".format(
+                    trustee_keys_missing_full_label=trustee_keys_missing_full_label)
 
         dependencies_status_text = Factory.WAThreeListItemEntry(text=trustee_info,
                                                                 secondary_text=trustee_present + ', ' + passphrase,
@@ -258,9 +261,9 @@ class CryptainerDecryptionProcessScreen(Screen):
     def open_dialog_check_passphrase(self):  # FIXME RENAME
         dialog = dialog_with_close_button(
             close_btn_label=tr._("Cancel"),
-            title=tr._("Check passphrase"),
+            title=tr._("Add passphrase"),
             type="custom",
-            content_cls=Factory.CheckPassphraseContent(),
+            content_cls=Factory.AddForeignPassphraseContent(),
             buttons=[
                 MDFlatButton(text=tr._("Check"),
                              on_release=lambda *args: (
