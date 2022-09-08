@@ -3,12 +3,14 @@ from pathlib import Path
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty
 
+from jsonrpc_requests import JSONRPCError
 from kivymd.app import MDApp
 from kivy.factory import Factory
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.screen import Screen
 from kivymd.uix.tab import MDTabsBase
+from kivy.logger import Logger as logger
 
 from wacomponents.screens.base import WAScreenName
 from wacomponents.widgets.layout_components import GrowingAccordion, build_fallback_information_box
@@ -57,7 +59,6 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._app = MDApp.get_running_app()
-        self.gateway_proxy = self._app.get_gateway_proxy()
 
     def go_to_home_screen(self):  # Fixme deduplicate and push to App!
         self.manager.current = WAScreenName.authenticator_management
@@ -214,8 +215,9 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
         revelation_requests_per_status_list = None
         authenticator_metadata = load_keystore_metadata(authenticator_path)
         keystore_uid = authenticator_metadata["keystore_uid"]
+        gateway_proxy = self._app.get_gateway_proxy()
         try:
-            authenticator_revelation_request_list = self.gateway_proxy.list_authenticator_revelation_requests(
+            authenticator_revelation_request_list = gateway_proxy.list_authenticator_revelation_requests(
                 authenticator_keystore_secret=authenticator_metadata["keystore_secret"],
                 authenticator_keystore_uid=keystore_uid)
             revelation_requests_per_status_list = self.sort_list_revelation_request_per_status(
@@ -228,6 +230,10 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
 
         except AuthenticationError:
             message = tr._("The keystore secret of authenticator is not valid")
+
+        except(JSONRPCError, OSError) as exc:  # FIXME factorize this!
+            logger.error("Error calling gateway server: %r", exc)
+            message = tr._("Error querying gateway server, please check its url")
 
         return revelation_requests_per_status_list, message
 
@@ -301,7 +307,8 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
 
         revelation_request_uid = revelation_request["revelation_request_uid"]
 
-        self.gateway_proxy.accept_revelation_request(
+        gateway_proxy = self._app.get_gateway_proxy()
+        gateway_proxy.accept_revelation_request(
             authenticator_keystore_secret=authenticator_metadata["keystore_secret"],
             revelation_request_uid=revelation_request_uid,
             symkey_decryption_results=symkey_decryption_results)
@@ -313,12 +320,12 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
 
     @safe_catch_unhandled_exception_and_display_popup
     def reject_revelation_request(self, revelation_request):
-        # USE THIS FORM BEFORE :                text=tr._("Confirm removal"), on_release=lambda *args: (
-        #                         close_current_dialog(), self.delete_keystores(keystore_uids=keystore_uids))
+
         authenticator_metadata = load_keystore_metadata(keystore_dir=self.selected_authenticator_dir)
         revelation_request_uid = revelation_request["revelation_request_uid"]
 
-        self.gateway_proxy.reject_revelation_request(
+        gateway_proxy = self._app.get_gateway_proxy()
+        gateway_proxy.reject_revelation_request(
             authenticator_keystore_secret=authenticator_metadata["keystore_secret"],
             revelation_request_uid=revelation_request_uid)
         message = tr._("The revelation request was rejected")

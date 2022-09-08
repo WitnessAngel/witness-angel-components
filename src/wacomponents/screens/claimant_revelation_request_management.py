@@ -22,7 +22,6 @@ class ClaimantRevelationRequestManagementScreen(Screen):
 
     def __init__(self, *args, **kwargs):
         self._app = MDApp.get_running_app()
-        self.gateway_proxy = self._app.get_gateway_proxy()
         super().__init__(*args, **kwargs)
 
     def go_to_previous_screen(self):
@@ -49,10 +48,10 @@ class ClaimantRevelationRequestManagementScreen(Screen):
 
     def list_requestor_revelation_requests(self):
         revelation_requestor_uid = self._app.get_wa_device_uid()
+        gateway_proxy = self._app.get_gateway_proxy()
         try:
-            requestor_revelation_requests = self.gateway_proxy.list_requestor_revelation_requests(
+            requestor_revelation_requests = gateway_proxy.list_requestor_revelation_requests(
                 revelation_requestor_uid=revelation_requestor_uid)  # FIXME RENAME list_decryption_requests
-
         except(JSONRPCError, OSError):
             requestor_revelation_requests = None
 

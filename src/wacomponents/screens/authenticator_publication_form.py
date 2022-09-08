@@ -15,7 +15,7 @@ from wacomponents.screens.authenticator_management import shorten_uid
 from wacomponents.screens.base import WAScreenName
 from wacomponents.utilities import format_authenticator_label, COLON, LINEBREAK, indent_text
 from wacomponents.widgets.popups import help_text_popup, display_info_toast, \
-    safe_catch_unhandled_exception_and_display_popup
+    safe_catch_unhandled_exception_and_display_popup, display_info_snackbar
 from wacryptolib.exceptions import ExistenceError
 from wacryptolib.keystore import load_keystore_metadata, ReadonlyFilesystemKeystore
 
@@ -30,15 +30,16 @@ class AuthenticatorPublicationFormScreen(Screen):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._app = MDApp.get_running_app()
-        self.gateway_proxy = self._app.get_gateway_proxy()
 
     def go_to_home_screen(self):  # Fixme deduplicate and push to App!
         self.manager.current = WAScreenName.authenticator_management
 
     def _query_remote_authenticator_status(self, keystore_uid: UUID):  # Fixme rename?
 
+        gateway_proxy = self._app.get_gateway_proxy()
+
         try:
-            remote_public_authenticator = self.gateway_proxy.get_public_authenticator(keystore_uid=keystore_uid)
+            remote_public_authenticator = gateway_proxy.get_public_authenticator(keystore_uid=keystore_uid)
         except ExistenceError:
             remote_public_authenticator = None
 
@@ -114,9 +115,9 @@ class AuthenticatorPublicationFormScreen(Screen):
             self.enable_publish_button = enable_publish_button = False  # Defensive setup
 
             remote_public_authenticator, message = result
-            if message:
+            if message:  # Always an error, here!
                 self.ids.synchronization_information.text = tr._("No information available")
-                display_info_toast(message)
+                display_info_snackbar(message)
                 return
 
             synchronization_details_text = ""
@@ -197,7 +198,8 @@ class AuthenticatorPublicationFormScreen(Screen):
             })
         local_authenticator = deepcopy(local_metadata)
         local_authenticator["public_keys"] = public_keys
-        self.gateway_proxy.set_public_authenticator(**local_authenticator)
+        gateway_proxy = self._app.get_gateway_proxy()
+        gateway_proxy.set_public_authenticator(**local_authenticator)
         return True
 
     @safe_catch_unhandled_exception_and_display_popup

@@ -27,8 +27,8 @@ class ClaimantRevelationRequestCreationFormScreen(Screen):
     trustee_data = ObjectProperty(None, allownone=True)
 
     def __init__(self, *args, **kwargs):
-        self._app = MDApp.get_running_app()
         super().__init__(*args, **kwargs)
+        self._app = MDApp.get_running_app()
 
     def go_to_previous_screen(self):
         self.manager.current = WAScreenName.cryptainer_decryption_process
@@ -92,9 +92,7 @@ class ClaimantRevelationRequestCreationFormScreen(Screen):
     def submit_revelation_request(self):
         authenticator_selected = self._get_selected_authenticator()
         revelation_requestor_uid = self._app.get_wa_device_uid()
-        gateway_proxy = self._app.get_gateway_proxy()
         request_description = self.ids.request_description.text.strip()
-
 
         # Symkeys decryptable per trustee for containers selected
         cryptainers_with_names = self._get_cryptainers_with_cryptainer_names(self.selected_cryptainer_names)
@@ -107,6 +105,9 @@ class ClaimantRevelationRequestCreationFormScreen(Screen):
         successful_request_count = 0
         error = []
         # message = ""
+
+        gateway_proxy = self._app.get_gateway_proxy()
+
         for trustee_id, decryptable_data in decryptable_symkeys_per_trustee.items():
             trustee_data, symkey_decryption_requests = decryptable_data
             if trustee_data["keystore_uid"] in authenticator_selected:

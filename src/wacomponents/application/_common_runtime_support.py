@@ -161,7 +161,6 @@ class WaRuntimeSupportMixin:
         return device_uid
 
     def get_gateway_proxy(self):
-        from kivymd.app import MDApp  # LAZY IMPORT
         jsonrpc_url = self.get_wagateway_url()
         gateway_proxy = JsonRpcProxy(
             url=jsonrpc_url, response_error_handler=status_slugs_response_error_handler
