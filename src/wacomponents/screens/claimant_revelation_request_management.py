@@ -84,13 +84,15 @@ class ClaimantRevelationRequestManagementScreen(Screen):
                 cryptainer_label = format_cryptainer_label(cryptainer_name=cryptainer_name,
                                                            cryptainer_uid=cryptainer_uid)
 
-                container_item = Factory.ContainerItem(title=tr._("Container") + COLON() + cryptainer_label)
+                container_item = Factory.ContainerItem(title=tr._("Container") + " " + cryptainer_label)
 
                 for revelation_request in revelation_request_per_cryptainer[1]:
-                    revelation_request_label = format_revelation_request_label(
+
+                    revelation_request_label1 = format_revelation_request_label(
                         revelation_request_uid=revelation_request["revelation_request_uid"],
-                        revelation_request_creation_datetime=revelation_request["created_at"],
-                        revelation_request_status=revelation_request["revelation_request_status"])
+                        revelation_request_creation_datetime=revelation_request["created_at"])
+
+                    revelation_request_label2 = tr._("Status") + COLON() + revelation_request["revelation_request_status"]
 
                     target_public_authenticator_label = format_authenticator_label(
                         authenticator_owner=revelation_request["target_public_authenticator"]["keystore_owner"],
@@ -106,8 +108,7 @@ class ClaimantRevelationRequestManagementScreen(Screen):
                         keychain_uid=revelation_request["revelation_response_keychain_uid"],
                         key_algo=revelation_request["revelation_response_key_algo"])
 
-                    _displayed_values = dict(
-                        revelation_request_label=revelation_request_label,
+                    _displayed_values = dict(  # FIXME remove that
                         revelation_request_description=revelation_request["revelation_request_description"],
                         target_public_authenticator_label=target_public_authenticator_label,
                         response_key_label=response_key_label,
@@ -116,13 +117,14 @@ class ClaimantRevelationRequestManagementScreen(Screen):
                         authenticator_key_label=authenticator_key_label,
                     )
 
-                    revelation_request_summary_text = tr._("Description") + COLON() + _displayed_values["revelation_request_description"] + LINEBREAK + \
+                    revelation_request_summary_text = tr._("Description") + COLON() + _displayed_values["revelation_request_description"] + 2*LINEBREAK + \
                                                       tr._("Authenticator") + COLON() + _displayed_values["target_public_authenticator_label"] + LINEBREAK + \
-                                                      tr._("Authenticator encryption key") + COLON() + _displayed_values["authenticator_key_label"] + LINEBREAK + \
-                                                      tr._("Response key") + COLON() + _displayed_values["response_key_label"] + LINEBREAK + \
-                                                      tr._("Symkey Decryption status") + COLON() + _displayed_values["symkey_decryption_status"] + LINEBREAK
+                                                      tr._("Authenticator key") + COLON() + _displayed_values["authenticator_key_label"] + LINEBREAK + \
+                                                      tr._("Local response key") + COLON() + _displayed_values["response_key_label"] + 2*LINEBREAK + \
+                                                      tr._("Symkey Decryption status") + COLON() + _displayed_values["symkey_decryption_status"]
 
-                    revelation_request_entry = Factory.WAIconListItemEntry(text=revelation_request_label)
+                    revelation_request_entry = Factory.WAIconListItemEntry(
+                        text=revelation_request_label1, secondary_text=revelation_request_label2)
 
                     def information_callback(widget, revelation_request_info=revelation_request_summary_text):
                         # We MUST use this "revelation_request_info" parameter to freeze the "variable revelation_request_summary_text"
@@ -141,6 +143,6 @@ class ClaimantRevelationRequestManagementScreen(Screen):
     def show_revelation_request_info(self, revelation_request_info):
         dialog_with_close_button(
             close_btn_label=tr._("Close"),
-            title=tr._("Revelation Request Summary"),
+            title=tr._("Revelation request summary"),
             text=revelation_request_info,
         )

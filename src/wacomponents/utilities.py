@@ -152,7 +152,8 @@ def format_authenticator_label(authenticator_owner: str, keystore_uid: uuid.UUID
     return authenticator_label
 
 
-def format_revelation_request_label(revelation_request_creation_datetime: datetime, revelation_request_uid: uuid.UUID,
+def format_revelation_request_label(revelation_request_creation_datetime: datetime,
+                                    revelation_request_uid: uuid.UUID,
                                     revelation_request_status: Optional[str] = None, short_uid=True):
     # Revelation request id: ... 1abfb5411 (Created on: 2022/05/22)
 
