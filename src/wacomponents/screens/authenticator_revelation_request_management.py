@@ -198,6 +198,8 @@ class AuthenticatorRevelationRequestManagementScreen(Screen):
                 revelation_request_entry = self._display_single_remote_revelation_request(
                     status=status, revelation_request=revelation_request)
                 root.add_widget(revelation_request_entry)
+
+            root.select(root.children[-1])  # Open FIRST entry
             scroll.add_widget(root)
             tab_per_status[status].add_widget(scroll)
 

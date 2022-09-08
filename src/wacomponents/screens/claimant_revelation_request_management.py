@@ -34,11 +34,12 @@ class ClaimantRevelationRequestManagementScreen(Screen):
 
         for decryption_request in list_decryption_request:
 
+            # FIXME wrong name
             decryption_request_per_symkey = {key: value for key, value in decryption_request.items() if
                                              key != 'symkey_decryption_requests'}
 
             for symkey_decryption_request in decryption_request["symkey_decryption_requests"]:
-                decryption_request_per_symkey["symkey_decryption_request"] = symkey_decryption_request
+                decryption_request_per_symkey["symkey_decryption_request"] = symkey_decryption_request  # FIXME wrong, written multiple times
 
                 cryptainer_uid = symkey_decryption_request["cryptainer_uid"]
                 _decryption_request_per_cryptainer = decryption_request_per_cryptainer.setdefault(cryptainer_uid, [])
@@ -52,11 +53,10 @@ class ClaimantRevelationRequestManagementScreen(Screen):
         try:
             requestor_revelation_requests = gateway_proxy.list_requestor_revelation_requests(
                 revelation_requestor_uid=revelation_requestor_uid)  # FIXME RENAME list_decryption_requests
-        except(JSONRPCError, OSError):
+        except(JSONRPCError, OSError):  # FIXME factorize code with snackbar here?
             requestor_revelation_requests = None
 
         return requestor_revelation_requests
-
 
     def display_decryption_request_list(self):
         self.ids.list_decryption_request_scrollview.clear_widgets()
@@ -75,8 +75,8 @@ class ClaimantRevelationRequestManagementScreen(Screen):
 
             display_layout = GrowingAccordion(orientation='vertical', size_hint=(1, None))
 
-            for revelation_request_per_cryptainer in revelation_requests_per_cryptainer.items():
-                print(revelation_request_per_cryptainer)
+            # Sorting kinda works because UUID0 are built by datetime!
+            for revelation_request_per_cryptainer in sorted(revelation_requests_per_cryptainer.items(), reverse=True):
 
                 cryptainer_name = revelation_request_per_cryptainer[1][0]["symkey_decryption_request"]["cryptainer_name"]
                 cryptainer_uid = revelation_request_per_cryptainer[1][0]["symkey_decryption_request"]["cryptainer_uid"]
@@ -136,6 +136,8 @@ class ClaimantRevelationRequestManagementScreen(Screen):
                     container_item.revelation_requests_list.add_widget(revelation_request_entry)
 
                 display_layout.add_widget(container_item)
+
+            display_layout.select(display_layout.children[-1])  # Open FIRST entry
             self.ids.list_decryption_request_scrollview.add_widget(display_layout)
 
         self._app._offload_task_with_spinner(self.list_requestor_revelation_requests, resultat_callable)
