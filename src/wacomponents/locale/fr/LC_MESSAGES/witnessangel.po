@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-12 17:26+0200\n"
-"PO-Revision-Date: 2022-09-12 17:32+0200\n"
+"POT-Creation-Date: 2022-09-12 20:00+0200\n"
+"PO-Revision-Date: 2022-09-12 20:01+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
@@ -119,22 +119,22 @@ msgstr "Aide"
 msgid "Authenticator: %s"
 msgstr "Authentifieur : %s"
 
-#: src/wacomponents/screens/authenticator_creation_form.kv:26
+#: src/wacomponents/screens/authenticator_creation_form.kv:25
 msgid "User name"
 msgstr "Utilisateur"
 
-#: src/wacomponents/screens/authenticator_creation_form.kv:38
+#: src/wacomponents/screens/authenticator_creation_form.kv:37
 #: src/wacomponents/screens/authenticator_management.kv:39
 #: src/wacomponents/screens/authenticator_revelation_request_management.kv:16
 #: src/wacomponents/screens/cryptainer_decryption_process.kv:16
 msgid "Passphrase"
 msgstr "Phrase secrète"
 
-#: src/wacomponents/screens/authenticator_creation_form.kv:42
+#: src/wacomponents/screens/authenticator_creation_form.kv:41
 msgid "Passphrase hint"
 msgstr "Indice de phrase secrète"
 
-#: src/wacomponents/screens/authenticator_creation_form.kv:51
+#: src/wacomponents/screens/authenticator_creation_form.kv:50
 #: src/wacomponents/screens/authenticator_management.kv:90
 msgid "Initialize"
 msgstr "Initialiser"
@@ -747,7 +747,7 @@ msgstr "Le secret de keystpre de l'authentifieur n'est pas valide"
 msgid "Loading of authenticator private key failed (wrong passphrase?)"
 msgstr ""
 "Le chargement de la clé privée d'authentifieur a échoué (mauvaise phrase "
-"secrète?)"
+"secrète ?)"
 
 #: src/wacomponents/screens/authenticator_revelation_request_management.py:314
 msgid "The decryption request was accepted"
@@ -765,9 +765,27 @@ msgstr ""
 "Cette page résume les demandes d'autorisation qui ont été envoyées aux "
 "gardiens de clés distants, afin de déchiffrer certains conteneurs locaux."
 
-#: src/wacomponents/screens/authenticator_revelation_request_management.py:339
-msgid "Remote request revelation page"
-msgstr "Page de demande de révélation à distance"
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:337
+msgid ""
+"Requests can be freely rejected. Else, to accept them, you must input your "
+"passphrase, which will be used to load your private keys and generate "
+"authorization tokens for the requester."
+msgstr ""
+"Les demandes peuvent être librement rejetées. Sinon, pour les accepter, vous "
+"devez saisir votre phrase secrète, qui sera utilisée pour charger vos clés "
+"privées et générer des jetons d'autorisation pour le demandeur."
+
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:338
+msgid ""
+"For now, it is not possible to change the status of a request which has been "
+"accepted or rejected."
+msgstr ""
+"Pour l'instant, il n'est pas possible de modifier le statut d'une demande "
+"qui a été acceptée ou rejetée."
+
+#: src/wacomponents/screens/authenticator_revelation_request_management.py:341
+msgid "Remote revelation requests page"
+msgstr "Page des demandes de révélation distantes"
 
 #: src/wacomponents/screens/claimant_revelation_request_creation_form.kv:26
 msgid "Submit authorization request"
@@ -1272,6 +1290,9 @@ msgstr "à"
 #, python-format
 msgid "Abnormal error caught: %s"
 msgstr "Erreur anormale détectée : %s"
+
+#~ msgid "Remote request revelation page"
+#~ msgstr "Page de demande de révélation à distance"
 
 #~ msgid "NOT set"
 #~ msgstr "NON renseigné(e)"

@@ -332,11 +332,13 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
         self.fetch_and_display_revelation_requests()
 
     def display_help_popup(self):
-        authenticator_revelation_request_management_help_text = tr._(
-            """This page summarizes the authorization requests that have been sent to remote Key Guardians, in order to decrypt some local containers.""")
+        authenticator_revelation_request_management_help_text = \
+            tr._("""This page summarizes the authorization requests that have been sent to remote Key Guardians, in order to decrypt some local containers.""") + LINEBREAK * 2 + \
+            tr._("""Requests can be freely rejected. Else, to accept them, you must input your passphrase, which will be used to load your private keys and generate authorization tokens for the requester.""") + LINEBREAK * 2 + \
+            tr._("""For now, it is not possible to change the status of a request which has been accepted or rejected.""")
 
         help_text_popup(
-            title=tr._("Remote request revelation page"),
+            title=tr._("Remote revelation requests page"),
             text=authenticator_revelation_request_management_help_text, )
 
 
