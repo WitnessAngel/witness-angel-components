@@ -314,9 +314,9 @@ class CryptainerDecryptionProcessScreen(Screen):
             self.launch_remote_decryption_request_error_page(decryption_info)
 
             if decrypted_cryptainer_number:
-                message = "Decryption successful, see export folder for results"  # TODO TRADUIRE
+                message = tr._("See exports folder for results")
             else:
-                message = "Errors happened during decryption, see logs"  # TODO TRADUIRE
+                message = tr._("All decryptions failed, see reports")
 
             Snackbar(
                 text=message,

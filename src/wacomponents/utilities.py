@@ -211,10 +211,10 @@ def format_revelation_request_error(error_criticity: str, error_type: str, error
     # Message:
     # Exception:
 
+    error_exception_suffix = ""
     if error_exception:
-        error_exception = error_exception.__class__.__name__
+        error_exception_suffix = " (%s)" % error_exception.__class__.__name__
 
-    error_label = error_criticity + COLON() + error_type + LINEBREAK +\
-                  tr._("Message") + COLON() + error_message + LINEBREAK +\
-                  tr._("Exception") + COLON() + str(error_exception)
+    error_label = error_criticity + COLON() + error_type.replace("_", " ").title() + error_exception_suffix + LINEBREAK +\
+                  tr._("Message") + COLON() + error_message
     return error_label

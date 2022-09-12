@@ -233,7 +233,7 @@ class CryptainerStorageManagementScreen(Screen):
         self.get_detected_cryptainer()  # FIXME rename
 
     @safe_catch_unhandled_exception_and_display_popup
-    def open_cryptainer_decryption_dialog(self):
+    def _____OBSOLETE_open_cryptainer_decryption_dialog(self):
 
         cryptainer_names = self._get_selected_cryptainer_names()
         if not cryptainer_names:
@@ -307,7 +307,7 @@ class CryptainerStorageManagementScreen(Screen):
         )
 
     @safe_catch_unhandled_exception_and_display_popup
-    def decipher_cryptainers(self, cryptainer_names, input_content_cls):
+    def ___OBSOLETE_decipher_cryptainers(self, cryptainer_names, input_content_cls):
         assert self.filesystem_cryptainer_storage, self.filesystem_cryptainer_storage  # By construction...
 
         inputs = list(reversed(input_content_cls.children))
@@ -330,7 +330,7 @@ class CryptainerStorageManagementScreen(Screen):
                 errors.append(exc)
 
         if errors:
-            message = "Errors happened during decryption, see logs"
+            message = "Errors happened during decryption, see reports"
         else:
             message = "Decryption successful, see export folder for results"
 

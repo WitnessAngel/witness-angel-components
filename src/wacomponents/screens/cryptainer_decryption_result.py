@@ -54,7 +54,7 @@ class CryptainerDecryptionResultScreen(Screen):
 
                 # Cryptainer decryption status(MDLabel)
                 cryptainer_decryption_status = tr._(
-                    "Decryption status of {cryptainer_name}: {decryption_status}").format(
+                    "Decryption status for {cryptainer_name}: {decryption_status}").format(
                     cryptainer_name=decryption_results_per_cryptainer["cryptainer_name"],
                     decryption_status=DecryptionStatus.SUCCESS if decryption_results_per_cryptainer[
                                                                       "decryption_status"] == True
@@ -79,7 +79,7 @@ class CryptainerDecryptionResultScreen(Screen):
                     dump_to_text_file(revelation_report_file, error_report_text)
 
                 else:
-                    error_report_text = tr._("No error/warning when decrypting the container")
+                    error_report_text = tr._("No errors/warnings when decrypting the container")
                 error_box = Factory.WASelectableLabel(text=tr._(error_report_text), size_hint_y=None, full_height=False)
                 layout.add_widget(error_box)
 
