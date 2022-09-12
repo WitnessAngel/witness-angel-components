@@ -1,6 +1,6 @@
 #:import tr wacomponents.i18n.tr
 #:import strip_external_app_root_prefix wacomponents.default_settings.strip_external_app_root_prefix
-
+#:import WAScreenName wacomponents.screens.base.WAScreenName
 
 <ThinTwoLineAvatarIconListItem@TwoLineAvatarIconListItem>
     _height: dp(60)
@@ -89,7 +89,7 @@
                 WAOperationButton:
                     icon: "account-key-outline"
                     text: tr._("Initialize")
-                    on_press: root.manager.current = root.authenticator_creation_form_screen_name
+                    on_press: root.manager.current = WAScreenName.authenticator_creation_form
                     size_hint_x: 1  # HACK
 
                 WAOperationButton:
@@ -130,4 +130,4 @@
                     icon: "lock-open-outline"
                     text: tr._("Authorizations")
                     size_hint_x: 1
-                    on_press: root.manager.current = root.authenticator_revelation_request_management_screen_name
+                    on_press: root.manager.current = WAScreenName.authenticator_revelation_request_management

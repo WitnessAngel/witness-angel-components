@@ -15,8 +15,7 @@ from kivymd.uix.filemanager import MDFileManager
 from kivymd.uix.list import IconLeftWidget
 from kivymd.uix.screen import Screen
 
-from wacomponents.default_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_APP_ROOT, EXTERNAL_EXPORTS_DIR, \
-    strip_external_app_root_prefix, INTERNAL_APP_ROOT
+from wacomponents.default_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_APP_ROOT, EXTERNAL_EXPORTS_DIR, strip_external_app_root_prefix
 from wacomponents.i18n import tr
 from wacomponents.screens.base import WAScreenName
 from wacomponents.system_permissions import request_external_storage_dirs_access, is_folder_readable, is_folder_writable
@@ -59,8 +58,6 @@ class FolderKeyStoreListItem(Factory.ThinTwoLineAvatarIconListItem):
 
 class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
     AUTHENTICATOR_ARCHIVE_FORMAT = "zip"
-    authenticator_creation_form_screen_name = WAScreenName.authenticator_creation_form
-    authenticator_revelation_request_management_screen_name = WAScreenName.authenticator_revelation_request_management
 
     AUTHENTICATOR_INITIALIZATION_STATUS_ICONS = {
         True: "check-circle-outline",  # or check-bold

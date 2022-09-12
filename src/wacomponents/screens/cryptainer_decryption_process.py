@@ -36,7 +36,6 @@ class CryptainerDecryptionProcessScreen(Screen):
     filesystem_keystore_pool = ObjectProperty(None)
     ##found_trustees_lacking_passphrase = BooleanProperty(0)
     passphrase_mapper = {}
-    cryptainer_decryption_result_screen_name = WAScreenName.cryptainer_decryption_result
 
 
     def __init__(self, *args, **kwargs):
@@ -306,9 +305,7 @@ class CryptainerDecryptionProcessScreen(Screen):
         decryption_info = (decrypted_cryptainer_number, decryption_results)
 
         # Mettre à jour le bouton "Last decryption result"
-        cryptainer_storage_management_screen_name = WAScreenName.cryptainer_storage_management
-        cryptainer_storage_management_screen = self.manager.get_screen(cryptainer_storage_management_screen_name)
-        cryptainer_storage_management_screen.last_decryption_result_is_disabled = True
+        cryptainer_storage_management_screen = self.manager.get_screen(WAScreenName.cryptainer_storage_management)
 
         return decryption_info
 
@@ -335,15 +332,19 @@ class CryptainerDecryptionProcessScreen(Screen):
         self._app._offload_task_with_spinner(self.decrypt_cryptainers_from_storage, resultat_callable)
 
     def launch_remote_decryption_request_error_page(self, decryption_info):
-        decryption_request_error_screen = self.manager.get_screen(self.cryptainer_decryption_result_screen_name)
+        # FIXME rename variables
+        decryption_request_error_screen = self.manager.get_screen(WAScreenName.cryptainer_decryption_result)
         decryption_request_error_screen.last_decryption_info = decryption_info
         self.manager.current = self.cryptainer_decryption_result_screen_name
 
     def launch_remote_decryption_request(self):
-
-        claimant_revelation_request_creation_form_screen_name = WAScreenName.claimant_revelation_request_creation_form
+        _claimant_revelation_request_creation_form_screen_name = WAScreenName.claimant_revelation_request_creation_form
         remote_decryption_request_screen = self.manager.get_screen(
-            claimant_revelation_request_creation_form_screen_name)
+            _claimant_revelation_request_creation_form_screen_name)
         remote_decryption_request_screen.selected_cryptainer_names = self.selected_cryptainer_names
         remote_decryption_request_screen.trustee_data = self.trustee_data  # FIXME rename here too
-        self.manager.current = claimant_revelation_request_creation_form_screen_name
+        self.manager.current = _claimant_revelation_request_creation_form_screen_name
+
+    def has_last_decryption_info(self):
+        decryption_request_error_screen = self.manager.get_screen(WAScreenName.cryptainer_decryption_result)
+        return bool(decryption_request_error_screen.last_decryption_info)

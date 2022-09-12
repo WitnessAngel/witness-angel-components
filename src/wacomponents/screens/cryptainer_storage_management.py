@@ -33,9 +33,6 @@ class CryptainerStorageManagementScreen(Screen):
     filesystem_cryptainer_storage = ObjectProperty(None, allownone=True)
     cryptainer_names_to_be_loaded = ObjectProperty(None, allownone=True)
     cryptainer_loading_schedule = ObjectProperty(None, allownone=True)
-    last_decryption_result_is_disabled = ObjectProperty(False, allownone=False)
-    claimant_revelation_request_management_scree_name = WAScreenName.claimant_revelation_request_management
-    cryptainer_decryption_result_screen_name = WAScreenName.cryptainer_decryption_result
 
     CRYPTAINER_LOADING_INTERVAL = 0.05
 
