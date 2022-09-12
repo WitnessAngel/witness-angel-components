@@ -4,15 +4,13 @@ from kivy.lang import Builder
 from kivy.properties import ObjectProperty
 
 from jsonrpc_requests import JSONRPCError
-from kivymd.app import MDApp
 from kivy.factory import Factory
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.floatlayout import MDFloatLayout
-from kivymd.uix.screen import Screen
 from kivymd.uix.tab import MDTabsBase
 from kivy.logger import Logger as logger
 
-from wacomponents.screens.base import WAScreenName
+from wacomponents.screens.base import WAScreenName, WAScreenBase
 from wacomponents.widgets.layout_components import GrowingAccordion, build_fallback_information_box
 from wacryptolib.cipher import encrypt_bytestring
 from wacryptolib.exceptions import KeyLoadingError, KeyDoesNotExist, KeystoreDoesNotExist, \
@@ -52,13 +50,12 @@ class SymkeyDecryptionStatus:  # FIXME name this enum more precisely, unless we 
     PENDING = 'PENDING'
 
 
-class AuthenticatorRevelationRequestManagementScreen(Screen):
+class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
     index = 0
     selected_authenticator_dir = ObjectProperty(None, allownone=True)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._app = MDApp.get_running_app()
 
     def go_to_home_screen(self):  # Fixme deduplicate and push to App!
         self.manager.current = WAScreenName.authenticator_management

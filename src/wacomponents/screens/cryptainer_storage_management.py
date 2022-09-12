@@ -8,13 +8,12 @@ from kivy.properties import ObjectProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
 from kivymd.uix.button import MDFlatButton
-from kivymd.uix.screen import Screen
 from kivymd.uix.snackbar import Snackbar
 
 from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
 from wacomponents.logging.handlers import safe_catch_unhandled_exception
-from wacomponents.screens.base import WAScreenName
+from wacomponents.screens.base import WAScreenName, WAScreenBase
 from wacomponents.utilities import format_cryptainer_label, format_authenticator_label, SPACE, COLON, LINEBREAK
 from wacomponents.widgets.layout_components import build_fallback_information_box
 from wacomponents.widgets.popups import close_current_dialog, dialog_with_close_button, display_info_toast, \
@@ -28,7 +27,7 @@ class PassphrasesDialogContent(BoxLayout):
     pass
 
 
-class CryptainerStorageManagementScreen(Screen):
+class CryptainerStorageManagementScreen(WAScreenBase):
     #: The container storage managed by this Screen, might be None if unset
     filesystem_cryptainer_storage = ObjectProperty(None, allownone=True)
     cryptainer_names_to_be_loaded = ObjectProperty(None, allownone=True)

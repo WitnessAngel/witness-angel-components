@@ -3,15 +3,13 @@ from pathlib import Path
 from kivy.factory import Factory
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty, BooleanProperty
-from kivymd.app import MDApp
-from kivymd.uix.screen import Screen
 from wacryptolib.cryptainer import gather_decryptable_symkeys
 from wacryptolib.keystore import generate_keypair_for_storage
 from wacryptolib.utilities import generate_uuid0
 from wacryptolib.exceptions import KeyDoesNotExist, KeystoreDoesNotExist
 
 from wacomponents.i18n import tr
-from wacomponents.screens.base import WAScreenName
+from wacomponents.screens.base import WAScreenName, WAScreenBase
 from wacomponents.utilities import shorten_uid, format_authenticator_label, LINEBREAK, COLON, indent_text, SPACE
 from wacomponents.widgets.popups import display_info_toast, dialog_with_close_button, safe_catch_unhandled_exception_and_display_popup
 
@@ -21,14 +19,10 @@ DESCRIPTION_MIN_LENGTH = 10
 
 # FIXME RENAME THIS FILE AND KV FILE to decryption_request_creation_form.py (and later revelation_request_creation_form.py)
 
-class ClaimantRevelationRequestCreationFormScreen(Screen):
+class ClaimantRevelationRequestCreationFormScreen(WAScreenBase):
     selected_cryptainer_names = ObjectProperty(None, allownone=True)
     filesystem_keystore_pool = ObjectProperty(None)
     trustee_data = ObjectProperty(None, allownone=True)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._app = MDApp.get_running_app()
 
     def go_to_previous_screen(self):
         self.manager.current = WAScreenName.cryptainer_decryption_process

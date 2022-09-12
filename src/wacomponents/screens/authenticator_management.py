@@ -10,15 +10,13 @@ from kivy.factory import Factory
 from kivy.lang import Builder
 from kivy.logger import Logger as logger
 from kivy.properties import ObjectProperty, StringProperty
-from kivymd.app import MDApp
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.filemanager import MDFileManager
 from kivymd.uix.list import IconLeftWidget
-from kivymd.uix.screen import Screen
 
 from wacomponents.default_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_APP_ROOT, EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
-from wacomponents.screens.base import WAScreenName
+from wacomponents.screens.base import WAScreenName, WAScreenBase
 from wacomponents.system_permissions import request_external_storage_dirs_access, is_folder_readable, is_folder_writable
 from wacomponents.utilities import convert_bytes_to_human_representation, shorten_uid, format_authenticator_label, \
     format_keypair_label, format_utc_datetime_label, COLON, LINEBREAK, indent_text
@@ -57,7 +55,7 @@ class FolderKeyStoreListItem(Factory.ThinTwoLineAvatarIconListItem):
     '''
 
 
-class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
+class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
     AUTHENTICATOR_ARCHIVE_FORMAT = "zip"
 
     AUTHENTICATOR_INITIALIZATION_STATUS_ICONS = {
@@ -89,7 +87,6 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
             exit_manager=lambda x: close_current_dialog(),
             select_path=lambda x: (close_current_dialog(), self._import_authenticator_from_archive(x)),
         )
-        self._app = MDApp.get_running_app()
 
     def on_language_change(self, lang_code):
         super().on_language_change(lang_code)

@@ -4,14 +4,11 @@ from kivy.factory import Factory
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty, BooleanProperty
 from kivymd.uix.button import MDFlatButton
-from kivymd.uix.screen import Screen
 from kivymd.uix.snackbar import Snackbar
-
-from kivymd.app import MDApp
 
 from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
-from wacomponents.screens.base import WAScreenName
+from wacomponents.screens.base import WAScreenName, WAScreenBase
 from wacomponents.utilities import format_keypair_label, format_cryptainer_label, \
     format_authenticator_label, SPACE, COLON, LINEBREAK
 from wacomponents.widgets.layout_components import build_fallback_information_box
@@ -28,7 +25,7 @@ Builder.load_file(str(Path(__file__).parent / 'cryptainer_decryption_process.kv'
 from kivy.logger import Logger as logger
 
 
-class CryptainerDecryptionProcessScreen(Screen):
+class CryptainerDecryptionProcessScreen(WAScreenBase):
     selected_cryptainer_names = ObjectProperty(None, allownone=True)
     trustee_data = ObjectProperty(None,
                                   allownone=True)  # FIXME name not clea, i.e. "trustee_dependencies_for_encryption" ?
@@ -41,7 +38,6 @@ class CryptainerDecryptionProcessScreen(Screen):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._app = MDApp.get_running_app()
         self.jsonrpc_url = self._app.get_wagateway_url()
         self.revelation_requestor_uid = self._app.get_wa_device_uid()
 

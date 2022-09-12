@@ -3,13 +3,12 @@ from pathlib import Path
 from kivy.factory import Factory
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty, BooleanProperty, ListProperty
-from kivymd.uix.screen import Screen
 from wacryptolib.cryptainer import CRYPTAINER_DATETIME_FORMAT
 from wacryptolib.utilities import get_utc_now_date
 
 from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
-from wacomponents.screens.base import WAScreenName
+from wacomponents.screens.base import WAScreenName, WAScreenBase
 from wacomponents.utilities import format_revelation_request_error
 from wacomponents.widgets.layout_components import build_fallback_information_box
 
@@ -21,7 +20,7 @@ class DecryptionStatus:
     FAILURE = tr._("FAILURE")
 
 
-class CryptainerDecryptionResultScreen(Screen):
+class CryptainerDecryptionResultScreen(WAScreenBase):
     last_decryption_info = ObjectProperty(None, allownone=True)
 
     def go_to_previous_screen(self):

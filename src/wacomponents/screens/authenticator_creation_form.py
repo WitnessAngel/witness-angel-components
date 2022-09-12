@@ -6,10 +6,9 @@ from kivy.animation import Animation
 from kivy.clock import Clock
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty, StringProperty
-from kivymd.uix.screen import Screen
 
 from wacomponents.i18n import tr
-from wacomponents.screens.base import WAScreenName
+from wacomponents.screens.base import WAScreenName, WAScreenBase
 from wacomponents.utilities import LINEBREAK, MONOTHREAD_POOL_EXECUTOR
 from wacomponents.widgets.popups import dialog_with_close_button, process_method_with_gui_spinner, help_text_popup, \
     safe_catch_unhandled_exception_and_display_popup
@@ -26,7 +25,7 @@ PASSPHRASE_MIN_LENGTH = 20
 MAX_WA_CHARFIELD_LENGTH = 100
 
 
-class AuthenticatorCreationFormScreen(Screen):
+class AuthenticatorCreationFormScreen(WAScreenBase):
 
     selected_authenticator_dir = ObjectProperty(None, allownone=True)
 

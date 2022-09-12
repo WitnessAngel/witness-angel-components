@@ -3,10 +3,8 @@ from pathlib import Path
 from jsonrpc_requests import JSONRPCError
 from kivy.factory import Factory
 from kivy.lang import Builder
-from kivymd.app import MDApp
-from kivymd.uix.screen import Screen
 
-from wacomponents.screens.base import WAScreenName
+from wacomponents.screens.base import WAScreenName, WAScreenBase
 from wacomponents.widgets.layout_components import GrowingAccordion, build_fallback_information_box
 from wacomponents.i18n import tr
 from wacomponents.utilities import format_revelation_request_label, format_authenticator_label, \
@@ -18,11 +16,7 @@ Builder.load_file(str(Path(__file__).parent / 'claimant_revelation_request_manag
 
 # FIXME RENAME THIS FILE AND KV FILE to decryption_request_visualization.py (and later revelation_request_visualization.py)
 
-class ClaimantRevelationRequestManagementScreen(Screen):
-
-    def __init__(self, *args, **kwargs):
-        self._app = MDApp.get_running_app()
-        super().__init__(*args, **kwargs)
+class ClaimantRevelationRequestManagementScreen(WAScreenBase):
 
     def go_to_previous_screen(self):
         self.manager.current = WAScreenName.cryptainer_storage_management

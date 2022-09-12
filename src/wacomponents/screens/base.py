@@ -1,3 +1,7 @@
+from kivymd.app import MDApp
+from kivymd.uix import Screen
+
+
 class WAScreenName:
     """Common registry for all the screen names to be used in WA applications"""
 
@@ -15,3 +19,9 @@ class WAScreenName:
     authenticator_creation_form = "authenticator_creation_form"
     authenticator_publication_form = "authenticator_publication_form"
     authenticator_revelation_request_management = "authenticator_revelation_request_management"
+
+
+class WAScreenBase(Screen):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._app = MDApp.get_running_app()

@@ -7,11 +7,10 @@ from kivy.factory import Factory
 from kivy.lang import Builder
 from kivy.logger import Logger as logger
 from kivy.properties import ObjectProperty
-from kivymd.app import MDApp
 from kivymd.uix.button import MDFlatButton
-from kivymd.uix.screen import Screen
 
 from wacomponents.i18n import tr
+from wacomponents.screens.base import WAScreenBase
 from wacomponents.utilities import shorten_uid, format_authenticator_label, format_keypair_label, COLON, LINEBREAK, \
     SPACE
 from wacomponents.widgets.layout_components import build_fallback_information_box
@@ -25,13 +24,12 @@ from wacryptolib.keystore import FilesystemKeystore, KEYSTORE_FORMAT, validate_k
 Builder.load_file(str(Path(__file__).parent / 'foreign_keystore_management.kv'))
 
 
-class ForeignKeystoreManagementScreen(Screen):
+class ForeignKeystoreManagementScreen(WAScreenBase):
     filesystem_keystore_pool = ObjectProperty(None)
 
     def __init__(self, *args, **kwargs):
         self.selected_keystore_uids = []  # List of STRINGS
         self.register_event_type('on_selected_keyguardians_changed')
-        self._app = MDApp.get_running_app()
         super().__init__(*args, **kwargs)
 
     def on_selected_keyguardians_changed(self, *args):

@@ -6,12 +6,10 @@ from jsonrpc_requests import JSONRPCError
 from kivy.lang import Builder
 from kivy.logger import Logger as logger
 from kivy.properties import ObjectProperty, BooleanProperty
-from kivymd.app import MDApp
-from kivymd.uix.screen import Screen
 
 from wacomponents.i18n import tr
 from wacomponents.screens.authenticator_management import shorten_uid
-from wacomponents.screens.base import WAScreenName
+from wacomponents.screens.base import WAScreenName, WAScreenBase
 from wacomponents.utilities import format_authenticator_label, COLON, LINEBREAK, indent_text
 from wacomponents.widgets.popups import help_text_popup, display_info_toast, \
     safe_catch_unhandled_exception_and_display_popup, display_info_snackbar
@@ -21,14 +19,10 @@ from wacryptolib.keystore import load_keystore_metadata, ReadonlyFilesystemKeyst
 Builder.load_file(str(Path(__file__).parent / 'authenticator_publication_form.kv'))
 
 
-class AuthenticatorPublicationFormScreen(Screen):
+class AuthenticatorPublicationFormScreen(WAScreenBase):
     selected_authenticator_dir = ObjectProperty(None, allownone=True)
 
     enable_publish_button = BooleanProperty(False)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._app = MDApp.get_running_app()
 
     def go_to_home_screen(self):  # Fixme deduplicate and push to App!
         self.manager.current = WAScreenName.authenticator_management
