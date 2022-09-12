@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-12 20:00+0200\n"
-"PO-Revision-Date: 2022-09-12 20:01+0200\n"
+"POT-Creation-Date: 2022-09-12 23:21+0200\n"
+"PO-Revision-Date: 2022-09-12 23:24+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
@@ -548,8 +548,11 @@ msgstr "Publier l'authentifieur"
 
 #: src/wacomponents/screens/authenticator_publication_form.py:93
 #: src/wacomponents/screens/authenticator_revelation_request_management.py:234
-msgid "Error querying gateway server, please check its url"
-msgstr "Erreur lors de l'appel au serveur gateway, veuillez vérifier son url"
+msgid ""
+"Error querying gateway server, please check its url and you connectivity"
+msgstr ""
+"Erreur lors de l'appel au serveur gateway, veuillez vérifier son url et "
+"votre connectivité"
 
 #: src/wacomponents/screens/authenticator_publication_form.py:119
 msgid "NOT PUBLISHED"
@@ -931,7 +934,7 @@ msgstr "Tenter le déchiffrement"
 
 #: src/wacomponents/screens/cryptainer_decryption_process.kv:89
 msgid "Request remote authorization"
-msgstr "Demande d'autorisation à distance"
+msgstr "Demander l'autorisation à distance"
 
 #: src/wacomponents/screens/cryptainer_decryption_process.kv:96
 msgid "Last decryption report"

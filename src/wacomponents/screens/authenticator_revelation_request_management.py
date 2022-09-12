@@ -231,7 +231,7 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
 
         except(JSONRPCError, OSError) as exc:  # FIXME factorize this!
             logger.error("Error calling gateway server: %r", exc)
-            message = tr._("Error querying gateway server, please check its url")
+            message = tr._("Error querying gateway server, please check its url and you connectivity")
 
         return revelation_requests_per_status_list, message
 

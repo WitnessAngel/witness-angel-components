@@ -90,7 +90,7 @@ class AuthenticatorPublicationFormScreen(WAScreenBase):
                 keystore_uid=local_metadata["keystore_uid"])
         except(JSONRPCError, OSError) as exc:
             logger.error("Error calling gateway server: %r", exc)
-            msg = tr._("Error querying gateway server, please check its url")
+            msg = tr._("Error querying gateway server, please check its url and you connectivity")
 
         return remote_public_authenticator, msg  # Do not touch anything of the GUI
 
