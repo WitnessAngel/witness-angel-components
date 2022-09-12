@@ -1,5 +1,7 @@
 #:import tr wacomponents.i18n.tr
 #:import strip_external_app_root_prefix wacomponents.default_settings.strip_external_app_root_prefix
+#:import WAScreenName wacomponents.screens.base.WAScreenName
+
 
 <AddForeignPassphraseContent@MDBoxLayout>
     orientation: "vertical"
@@ -13,7 +15,6 @@
     MDTextField:
         id: passphrase
         hint_text: tr._("Passphrase")
-
 
 
 <CryptainerDecryptionProcessScreen>:
@@ -92,8 +93,8 @@
                 WAOperationButton:
                     disabled: not root.has_last_decryption_info
                     id: decryption_request_error_btn
-                    icon: "remote"
+                    icon: "format-list-text"
                     text: tr._("Last decryption report")
-                    on_press: root.manager.current = root.cryptainer_decryption_result_screen_name
+                    on_press: root.manager.current = WAScreenName.cryptainer_decryption_result
 
 

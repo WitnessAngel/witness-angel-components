@@ -402,6 +402,6 @@ class ForeignKeystoreManagementScreen(Screen):
             details = tr._("Authenticator has been imported successfully")
 
         dialog_with_close_button(
-            title=tr._("Checkup result: %s") % result,
+            title=tr._("Import result: %s") % result,
             text=details,
         )

@@ -121,7 +121,7 @@ class ClaimantRevelationRequestManagementScreen(Screen):
                                                       tr._("Authenticator") + COLON() + _displayed_values["target_public_authenticator_label"] + LINEBREAK + \
                                                       tr._("Authenticator key") + COLON() + _displayed_values["authenticator_key_label"] + LINEBREAK + \
                                                       tr._("Local response key") + COLON() + _displayed_values["response_key_label"] + 2*LINEBREAK + \
-                                                      tr._("Symkey Decryption status") + COLON() + _displayed_values["symkey_decryption_status"]
+                                                      tr._("Symkey decryption status") + COLON() + _displayed_values["symkey_decryption_status"]
 
                     revelation_request_entry = Factory.WAIconListItemEntry(
                         text=revelation_request_label1, secondary_text=revelation_request_label2)

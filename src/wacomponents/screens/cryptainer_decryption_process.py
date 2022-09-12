@@ -37,6 +37,7 @@ class CryptainerDecryptionProcessScreen(Screen):
     ##found_trustees_lacking_passphrase = BooleanProperty(0)
     passphrase_mapper = {}
 
+    has_last_decryption_info = BooleanProperty(False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -82,15 +83,13 @@ class CryptainerDecryptionProcessScreen(Screen):
             trustee_status = tr._("found")
 
             foreign_keystore_dir = self.filesystem_keystore_pool._get_foreign_keystore_dir(keystore_uid=keystore_uid)
-            metadata = load_keystore_metadata(foreign_keystore_dir)
+            metadata = load_keystore_metadata(foreign_keystore_dir)  # Might raise nasty exceptions ifcorruption
             trustee_owner = metadata["keystore_owner"]
 
             if self.passphrase_mapper.get(trustee_id):
                 passphrase_status = tr._("set")
-                ##self.found_trustees_lacking_passphrase = False
             else:
                 pass
-                ##self.found_trustees_lacking_passphrase = True
 
             for keypair_identifier in trustee_keypair_identifiers:
                 try:
@@ -156,7 +155,7 @@ class CryptainerDecryptionProcessScreen(Screen):
 
         trustee_present = tr._("Status") + COLON() + status["trustee_status"].upper()
 
-        trustee_private_keys_missing_text = tr._("Private keys needed for decryption are present")
+        trustee_private_keys_status_text = tr._("Private key(s) needed for decryption: present")
 
         passphrase = tr._("passphrase") + COLON() + status["passphrase_status"].upper()
 
@@ -169,13 +168,13 @@ class CryptainerDecryptionProcessScreen(Screen):
 
                 trustee_keys_missing_full_label = ", ".join(trustee_keys_missing_labels) if trustee_keys_missing_labels else tr._("None")
 
-                trustee_private_keys_missing_text = tr._(
+                trustee_private_keys_status_text = tr._(
                     "Missing private key(s)") + COLON() + "{trustee_keys_missing_full_label}".format(
                     trustee_keys_missing_full_label=trustee_keys_missing_full_label)
 
         dependencies_status_text = Factory.WAThreeListItemEntry(text=trustee_info,
                                                                 secondary_text=trustee_present + ', ' + passphrase,
-                                                                tertiary_text=trustee_private_keys_missing_text)  # FIXME RENAME THIS
+                                                                tertiary_text=trustee_private_keys_status_text)
 
         message = ""
         for index, keypair_identifier in enumerate(status["trustee_keypair_identifiers"], start=1):
@@ -253,7 +252,7 @@ class CryptainerDecryptionProcessScreen(Screen):
         self.get_cryptainer_trustee_dependency_status()
 
         dialog_with_close_button(
-            title=tr._("Checkup result: %s") % result,
+            title=tr._("Validation result: %s") % result,
             text=details,
         )
 
@@ -303,10 +302,6 @@ class CryptainerDecryptionProcessScreen(Screen):
             )
             decryption_results.append(decryption_result_per_cryptainer)
         decryption_info = (decrypted_cryptainer_number, decryption_results)
-
-        # Mettre à jour le bouton "Last decryption result"
-        cryptainer_storage_management_screen = self.manager.get_screen(WAScreenName.cryptainer_storage_management)
-
         return decryption_info
 
     @safe_catch_unhandled_exception_and_display_popup
@@ -335,7 +330,8 @@ class CryptainerDecryptionProcessScreen(Screen):
         # FIXME rename variables
         decryption_request_error_screen = self.manager.get_screen(WAScreenName.cryptainer_decryption_result)
         decryption_request_error_screen.last_decryption_info = decryption_info
-        self.manager.current = self.cryptainer_decryption_result_screen_name
+        self.has_last_decryption_info = True  # Activate button to get back to that screen later
+        self.manager.current = WAScreenName.cryptainer_decryption_result
 
     def launch_remote_decryption_request(self):
         _claimant_revelation_request_creation_form_screen_name = WAScreenName.claimant_revelation_request_creation_form
@@ -344,7 +340,3 @@ class CryptainerDecryptionProcessScreen(Screen):
         remote_decryption_request_screen.selected_cryptainer_names = self.selected_cryptainer_names
         remote_decryption_request_screen.trustee_data = self.trustee_data  # FIXME rename here too
         self.manager.current = _claimant_revelation_request_creation_form_screen_name
-
-    def has_last_decryption_info(self):
-        decryption_request_error_screen = self.manager.get_screen(WAScreenName.cryptainer_decryption_result)
-        return bool(decryption_request_error_screen.last_decryption_info)
