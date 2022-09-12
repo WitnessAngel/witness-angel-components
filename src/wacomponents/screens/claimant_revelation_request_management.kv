@@ -20,13 +20,13 @@
         WAVerticalPanel:
 
             WAToolbar:
-                title: "Witness Angel"
+                title: tr._("Authorization requests")
                 left_action_items: [["arrow-left", lambda x: root.go_to_previous_screen(), tr._("Back")]]
                 right_action_items: [["refresh", lambda x: root.display_decryption_request_list(), tr._("Refresh")], ["home", lambda x: app.get_back_to_home_screen(), tr._("Back to home")],]
 
             WAElevatedBoxLayout:
                 MDLabel:
-                    text: tr._("View authorization requests")
+                    text: tr._("View all submitted authorization requests")
                     padding_x: "10dp"
 
             WAVerticalScrollView:
