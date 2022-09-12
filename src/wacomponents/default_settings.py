@@ -90,12 +90,3 @@ INTERNAL_CRYPTAINER_DIR.mkdir(exist_ok=True)
 
 EXTERNAL_EXPORTS_DIR = EXTERNAL_APP_ROOT / "exports"  # Might no exist yet (and require permissions!)
 
-
-def strip_external_app_root_prefix(path):  # FIXME rename this, make it mor clear
-    if not path:
-        return ""
-    path = str(path)  # Convert from Path if needed
-    if EXTERNAL_APP_ROOT_PREFIX and path.startswith(EXTERNAL_APP_ROOT_PREFIX):
-        path = path[len(EXTERNAL_APP_ROOT_PREFIX):]
-        path = "<sdcard>" + path  # e.g. sdcard/subfolder/...
-    return path

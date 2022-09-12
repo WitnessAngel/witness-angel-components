@@ -9,7 +9,6 @@ from kivy.properties import ObjectProperty, BooleanProperty
 from kivymd.app import MDApp
 from kivymd.uix.screen import Screen
 
-from wacomponents.default_settings import strip_external_app_root_prefix
 from wacomponents.i18n import tr
 from wacomponents.screens.authenticator_management import shorten_uid
 from wacomponents.screens.base import WAScreenName
@@ -159,7 +158,7 @@ class AuthenticatorPublicationFormScreen(Screen):
                 authenticator_uid=str(keystore_uid)
             )
             synchronization_info_text = \
-                tr._("Local path") + COLON() + strip_external_app_root_prefix(self.selected_authenticator_dir) + LINEBREAK + \
+                tr._("Local path") + COLON() + self._app.format_path_for_display(self.selected_authenticator_dir) + LINEBREAK + \
                 tr._("Gateway") + COLON() + _displayed_values["gateway"] + LINEBREAK + LINEBREAK + \
                 tr._("Remote status") + COLON() + _displayed_values["status"] + LINEBREAK + \
                 tr._("Message") + COLON() + _displayed_values["message"] + LINEBREAK + LINEBREAK + \

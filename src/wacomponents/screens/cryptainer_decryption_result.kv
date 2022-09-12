@@ -1,6 +1,6 @@
 #:import tr wacomponents.i18n.tr
-#:import strip_external_app_root_prefix wacomponents.default_settings.strip_external_app_root_prefix
 #:import EXTERNAL_EXPORTS_DIR wacomponents.default_settings.EXTERNAL_EXPORTS_DIR
+
 
 <DecryptionStatusLabel@MDLabel>:
     padding_x: "10dp"
@@ -29,7 +29,7 @@
 
             WAElevatedBoxLayout:
                 MDLabel:
-                    text: tr._("Export folder: %s") % EXTERNAL_EXPORTS_DIR
+                    text: tr._("Export folder: %s") % app.format_path_for_display(EXTERNAL_EXPORTS_DIR)
                     padding_x: "10dp"
 
             WAVerticalScrollView:

@@ -11,7 +11,7 @@ from wacryptolib.jsonrpc_client import JsonRpcProxy, status_slugs_response_error
 from wacryptolib.utilities import load_from_json_file, generate_uuid0, dump_to_json_file
 
 from wacomponents.default_settings import INTERNAL_APP_ROOT, INTERNAL_CRYPTAINER_DIR, INTERNAL_KEYSTORE_POOL_DIR, \
-    INTERNAL_LOGS_DIR
+    INTERNAL_LOGS_DIR, EXTERNAL_APP_ROOT_PREFIX
 from wacomponents.i18n import tr
 
 from wacomponents.sensors.camera.rtsp_stream import get_ffmpeg_version
@@ -59,6 +59,15 @@ class WaRuntimeSupportMixin:
     def internal_logs_dir(self) -> str:  # FIXME switch to Path!
         """For all app logs"""
         return str(INTERNAL_LOGS_DIR)
+
+    def format_path_for_display(self, path):
+        if not path:
+            return ""
+        path = str(path)  # Convert from Path if needed
+        if EXTERNAL_APP_ROOT_PREFIX and path.startswith(EXTERNAL_APP_ROOT_PREFIX):
+            path = path[len(EXTERNAL_APP_ROOT_PREFIX):]
+            path = "<sdcard>" + path  # e.g. sdcard/subfolder/...
+        return path
 
     def _get_status_checkers(self) -> list:
         """Return ready-to-call bound checkers from below"""

@@ -10,12 +10,13 @@ from kivy.factory import Factory
 from kivy.lang import Builder
 from kivy.logger import Logger as logger
 from kivy.properties import ObjectProperty, StringProperty
+from kivymd.app import MDApp
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.filemanager import MDFileManager
 from kivymd.uix.list import IconLeftWidget
 from kivymd.uix.screen import Screen
 
-from wacomponents.default_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_APP_ROOT, EXTERNAL_EXPORTS_DIR, strip_external_app_root_prefix
+from wacomponents.default_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_APP_ROOT, EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
 from wacomponents.screens.base import WAScreenName
 from wacomponents.system_permissions import request_external_storage_dirs_access, is_folder_readable, is_folder_writable
@@ -88,6 +89,7 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
             exit_manager=lambda x: close_current_dialog(),
             select_path=lambda x: (close_current_dialog(), self._import_authenticator_from_archive(x)),
         )
+        self._app = MDApp.get_running_app()
 
     def on_language_change(self, lang_code):
         super().on_language_change(lang_code)
@@ -217,7 +219,7 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
         authenticator_widget.bg_color = authenticator_widget.theme_cls.bg_darkest
 
         authenticator_dir = self._get_authenticator_dir_from_metadata(authenticator_metadata)
-        authenticator_dir_shortened = strip_external_app_root_prefix(authenticator_dir)
+        authenticator_dir_shortened = self._app.format_path_for_display(authenticator_dir)
 
         if not authenticator_dir:
             authenticator_info_text = tr._("Please select an authenticator folder")
@@ -350,7 +352,7 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, Screen):
 
         dialog_with_close_button(
             title=tr._("Export successful"),
-            text=tr._("Authenticator archive exported to %s") % strip_external_app_root_prefix(archive_path),
+            text=tr._("Authenticator archive exported to %s") % self._app.format_path_for_display(archive_path),
         )
 
     def show_authenticator_destroy_confirmation_dialog(self):

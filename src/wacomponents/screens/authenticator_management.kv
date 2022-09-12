@@ -1,5 +1,4 @@
 #:import tr wacomponents.i18n.tr
-#:import strip_external_app_root_prefix wacomponents.default_settings.strip_external_app_root_prefix
 #:import WAScreenName wacomponents.screens.base.WAScreenName
 
 <ThinTwoLineAvatarIconListItem@TwoLineAvatarIconListItem>
@@ -17,7 +16,7 @@
 <FolderKeyStoreListItem>:
     selected_path: None
     text: tr._("Custom location")
-    secondary_text: strip_external_app_root_prefix(self.selected_path) if self.selected_path else tr._("Please select a folder")
+    secondary_text: app.format_path_for_display(self.selected_path) if self.selected_path else tr._("Please select a folder")
 
     IconLeftWidget:
         icon: "folder"
