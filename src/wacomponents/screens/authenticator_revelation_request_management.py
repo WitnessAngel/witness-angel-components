@@ -183,7 +183,7 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
         for status, revelation_requests in revelation_requests_per_status_list.items():
 
             if not revelation_requests:
-                fallback_info_box = build_fallback_information_box(tr._("No decryption request"))
+                fallback_info_box = build_fallback_information_box(tr._("No authorization request"))
                 tab_per_status[status].add_widget(fallback_info_box)
                 continue
 
@@ -221,7 +221,7 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
                 authenticator_keystore_uid=keystore_uid)
             revelation_requests_per_status_list = self.sort_list_revelation_request_per_status(
                 authenticator_revelation_request_list)
-            message = tr._("Revelation requests were updated")
+            message = tr._("Authorization requests were updated")
 
         except KeystoreDoesNotExist:
             message = tr._("Authenticator does not exist in remote registry")
@@ -326,7 +326,7 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
         gateway_proxy.reject_revelation_request(
             authenticator_keystore_secret=authenticator_metadata["keystore_secret"],
             revelation_request_uid=revelation_request_uid)
-        message = tr._("The revelation request was rejected")
+        message = tr._("The authorization request was rejected")
 
         display_info_toast(message)
         self.fetch_and_display_revelation_requests()
@@ -338,7 +338,7 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
             tr._("""For now, it is not possible to change the status of a request which has been accepted or rejected.""")
 
         help_text_popup(
-            title=tr._("Remote revelation requests page"),
+            title=tr._("Remote authorization requests page"),
             text=authenticator_revelation_request_management_help_text, )
 
 

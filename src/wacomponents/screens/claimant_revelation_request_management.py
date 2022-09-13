@@ -61,7 +61,7 @@ class ClaimantRevelationRequestManagementScreen(WAScreenBase):
                 return
 
             if requestor_revelation_requests == []:  # FIXME RENAME ALL decryption requests!!!!
-                fallback_info_box = build_fallback_information_box(tr._("No revelation requests found"))
+                fallback_info_box = build_fallback_information_box(tr._("No authorization requests found"))
                 self.ids.list_decryption_request_scrollview.add_widget(fallback_info_box)
                 return
 
@@ -139,6 +139,6 @@ class ClaimantRevelationRequestManagementScreen(WAScreenBase):
     def show_revelation_request_info(self, revelation_request_info):
         dialog_with_close_button(
             close_btn_label=tr._("Close"),
-            title=tr._("Revelation request summary"),
+            title=tr._("Authorization request summary"),
             text=revelation_request_info,
         )

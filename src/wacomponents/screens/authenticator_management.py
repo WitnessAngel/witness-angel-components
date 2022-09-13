@@ -14,7 +14,7 @@ from kivymd.uix.button import MDFlatButton
 from kivymd.uix.filemanager import MDFileManager
 from kivymd.uix.list import IconLeftWidget
 
-from wacomponents.default_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_APP_ROOT, EXTERNAL_EXPORTS_DIR
+from wacomponents.default_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_APP_ROOT, EXTERNAL_EXPORTS_DIR, IS_MOBILE
 from wacomponents.i18n import tr
 from wacomponents.screens.base import WAScreenName, WAScreenBase
 from wacomponents.system_permissions import request_external_storage_dirs_access, is_folder_readable, is_folder_writable
@@ -137,7 +137,8 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
             authenticator_widget.bind(on_release=authenticator_widget._onrelease_callback)
             authenticator_list_widget.add_widget(authenticator_widget)
 
-        display_info_toast(tr._("Refreshed authenticator locations"))
+        if not IS_MOBILE:  # Too intrusive on main page of mobile app
+            display_info_toast(tr._("Refreshed authenticator locations"))
 
         self.reselect_previously_selected_authenticator()  # Preserve previous selection across refreshes
 
