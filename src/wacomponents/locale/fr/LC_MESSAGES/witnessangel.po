@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-12 23:21+0200\n"
-"PO-Revision-Date: 2022-09-12 23:24+0200\n"
+"POT-Creation-Date: 2022-09-13 09:22+0200\n"
+"PO-Revision-Date: 2022-09-13 09:24+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
@@ -161,8 +161,10 @@ msgid "Validation error"
 msgstr "Erreur de validation"
 
 #: src/wacomponents/screens/authenticator_creation_form.py:157
-msgid "Please wait, initialization might take a few minutes."
-msgstr "Veuillez attendre, l'initialisation peut prendre quelques minutes."
+msgid "Please wait, generation of cryptographic keys might take a few minutes."
+msgstr ""
+"Veuillez attendre, la génération des clés cryptographiques peut prendre "
+"quelques minutes."
 
 #: src/wacomponents/screens/authenticator_creation_form.py:168
 msgid "Initialization successfully completed."

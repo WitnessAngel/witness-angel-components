@@ -154,7 +154,7 @@ class AuthenticatorCreationFormScreen(WAScreenBase):
 
         self.ids.button_initialize.disabled = True
         self.ids.formfield_passphrase.text = "***"  # PRIVACY
-        self.operation_status = tr._("Please wait, initialization might take a few minutes.")
+        self.operation_status = tr._("Please wait, generation of cryptographic keys might take a few minutes.")
 
         self.set_form_fields_status(enabled=False)
         self.ids.initialization_form_toolbar.disabled = True

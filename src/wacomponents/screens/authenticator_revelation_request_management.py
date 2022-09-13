@@ -224,7 +224,7 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
             message = tr._("Revelation requests were updated")
 
         except KeystoreDoesNotExist:
-            message = tr._("Authenticator does not exist in remote registry") % keystore_uid
+            message = tr._("Authenticator does not exist in remote registry")
 
         except AuthenticationError:
             message = tr._("The keystore secret of authenticator is not valid")
