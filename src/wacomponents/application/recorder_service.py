@@ -105,7 +105,7 @@ class WaRecorderService(WaRuntimeSupportMixin):
         return self._send_message("/log_output", "Service: " + msg)
 
     def _send_message(self, address, *values):
-        #print("Message sent from service to app: %s %s" % (address, values))
+        print("IMPORTANT Message sent from service to app: %s %s" % (address, values))
         try:
             return self._osc_client.send_message(address, values=values)
         except OSError as exc:
@@ -142,9 +142,10 @@ class WaRecorderService(WaRuntimeSupportMixin):
 
     @safe_catch_unhandled_exception
     def _offloaded_start_recording(self, env):
+        print("IMPORTANT service calling _offloaded_start_recording")
         try:
             if self.is_recording:
-                #logger.debug("Ignoring redundant call to service.start_recording()")
+                print("IMPORTANT Ignoring redundant call to service.start_recording()")
                 return
             logger.info("Starting offloaded recording")
 
@@ -206,9 +207,10 @@ class WaRecorderService(WaRuntimeSupportMixin):
 
     @safe_catch_unhandled_exception
     def _offloaded_stop_recording(self):
+        print("IMPORTANT service calling _offloaded_stop_recording")
         try:
             if not self.is_recording:
-                #logger.debug("Ignoring redundant call to service.stop_recording()")
+                print("IMPORTANT Ignoring redundant call to service.stop_recording()")
                 return
             logger.info("Stopping recording")
             stop_recording_toolchain(self._recording_toolchain)

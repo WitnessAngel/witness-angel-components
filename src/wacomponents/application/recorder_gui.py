@@ -97,6 +97,7 @@ class WaRecorderGui(WaGenericGui):  # FIXME WaGui instead?
         Might also be called as a reaction to the service broadcasting a changed state.
          Let it propagate anyway in this case, the service will just ignore the duplicated command.
         """
+        print("IMPORTANT switch_to_recording_state called with", is_recording)
         self.set_recording_btn_state(disabled=True)
         if is_recording:
 

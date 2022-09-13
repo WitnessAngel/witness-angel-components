@@ -9,7 +9,7 @@ class ServiceControllerBase:
         self._osc_client = get_osc_client(to_app=False)
 
     def _send_message(self, address, *values):
-        #print("Message sent from app to service: %s %s" % (address, values))
+        print("IMPORTANT Message sent from app to service: %s %s" % (address, values))
         try:
             return self._osc_client.send_message(address, values=values)
         except ConnectionError:
