@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-13 10:17+0200\n"
-"PO-Revision-Date: 2022-09-13 10:18+0200\n"
+"POT-Creation-Date: 2022-09-13 19:01+0200\n"
+"PO-Revision-Date: 2022-09-13 19:01+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
@@ -24,7 +24,7 @@ msgstr ""
 "Certains changements de configuration pourraient ne s'appliquer qu'au "
 "redémarrage de l'enregistrement"
 
-#: src/wacomponents/application/recorder_gui.py:104
+#: src/wacomponents/application/recorder_gui.py:105
 msgid "Configuration errors prevent recording"
 msgstr "Des erreurs de configuration empêchent l'enregistrement"
 
@@ -416,8 +416,8 @@ msgstr ""
 #: src/wacomponents/screens/authenticator_revelation_request_management.py:155
 #: src/wacomponents/screens/authenticator_revelation_request_management.py:168
 #: src/wacomponents/screens/cryptainer_decryption_process.py:257
-#: src/wacomponents/screens/cryptainer_storage_management.py:214
-#: src/wacomponents/screens/cryptainer_storage_management.py:295
+#: src/wacomponents/screens/cryptainer_storage_management.py:222
+#: src/wacomponents/screens/cryptainer_storage_management.py:303
 #: src/wacomponents/screens/foreign_keystore_management.py:128
 #: src/wacomponents/screens/foreign_keystore_management.py:312
 #: src/wacomponents/screens/foreign_keystore_management.py:326
@@ -714,7 +714,7 @@ msgstr "Statut de déchiffrement"
 #: src/wacomponents/screens/claimant_revelation_request_creation_form.py:168
 #: src/wacomponents/screens/claimant_revelation_request_management.py:141
 #: src/wacomponents/screens/cryptainer_decryption_process.py:194
-#: src/wacomponents/screens/cryptainer_storage_management.py:175
+#: src/wacomponents/screens/cryptainer_storage_management.py:183
 #: src/wacomponents/screens/foreign_keystore_management.py:304
 #: src/wacomponents/widgets/popups.py:55
 msgid "Close"
@@ -947,8 +947,8 @@ msgid "No containers selected"
 msgstr "Aucun conteneur sélectionné"
 
 #: src/wacomponents/screens/cryptainer_decryption_process.py:57
-#: src/wacomponents/screens/cryptainer_storage_management.py:110
-#: src/wacomponents/screens/cryptainer_storage_management.py:166
+#: src/wacomponents/screens/cryptainer_storage_management.py:114
+#: src/wacomponents/screens/cryptainer_storage_management.py:174
 msgid "N°"
 msgstr "N°"
 
@@ -1086,35 +1086,39 @@ msgstr "Supprimer"
 msgid "Remote authorizations"
 msgstr "Autorisations distantes"
 
-#: src/wacomponents/screens/cryptainer_storage_management.py:77
+#: src/wacomponents/screens/cryptainer_storage_management.py:78
 msgid "Container storage is invalid"
 msgstr "Le dépôt de conteneurs est invalide"
 
-#: src/wacomponents/screens/cryptainer_storage_management.py:86
+#: src/wacomponents/screens/cryptainer_storage_management.py:87
 msgid "No containers found"
 msgstr "Aucun conteneur trouvé"
 
-#: src/wacomponents/screens/cryptainer_storage_management.py:157
+#: src/wacomponents/screens/cryptainer_storage_management.py:118
+msgid "missing"
+msgstr "manquant"
+
+#: src/wacomponents/screens/cryptainer_storage_management.py:165
 msgid "Container ID"
 msgstr "ID de conteneur"
 
-#: src/wacomponents/screens/cryptainer_storage_management.py:159
+#: src/wacomponents/screens/cryptainer_storage_management.py:167
 msgid "Key Guardians used"
 msgstr "Gardiens de Clés utilisés"
 
-#: src/wacomponents/screens/cryptainer_storage_management.py:193
+#: src/wacomponents/screens/cryptainer_storage_management.py:201
 msgid "Please select containers to delete"
 msgstr "Veuillez sélectionner les conteneurs à supprimer"
 
-#: src/wacomponents/screens/cryptainer_storage_management.py:215
+#: src/wacomponents/screens/cryptainer_storage_management.py:223
 msgid "Container deletion confirmation"
 msgstr "Confirmation de suppression de conteneur"
 
-#: src/wacomponents/screens/cryptainer_storage_management.py:296
+#: src/wacomponents/screens/cryptainer_storage_management.py:304
 msgid "Container decryption confirmation"
 msgstr "Confirmation de déchiffrement de conteneur"
 
-#: src/wacomponents/screens/cryptainer_storage_management.py:345
+#: src/wacomponents/screens/cryptainer_storage_management.py:353
 msgid "Please select containers to decrypt"
 msgstr "Veuillez sélectionner les conteneurs à déchiffrer"
 
@@ -1244,11 +1248,11 @@ msgstr "Enregistreur"
 msgid "Reset background service"
 msgstr "Réinitialiser le service en fond"
 
-#: src/wacomponents/screens/recorder_homepage.kv:20
+#: src/wacomponents/screens/recorder_homepage.kv:21
 msgid "Start Recording"
 msgstr "Lancer Enregistrement"
 
-#: src/wacomponents/screens/recorder_homepage.kv:20
+#: src/wacomponents/screens/recorder_homepage.kv:21
 msgid "Stop Recording"
 msgstr "Arrêter Enregistrement"
 
@@ -1268,15 +1272,15 @@ msgstr " : "
 
 #: src/wacomponents/utilities.py:129
 msgid "(private key present)"
-msgstr "(Clé privée présente)"
+msgstr "(clé privée présente)"
 
 #: src/wacomponents/utilities.py:132
 msgid "(missing private key)"
-msgstr "(Clé privée manquante)"
+msgstr "(clé privée manquante)"
 
 #: src/wacomponents/utilities.py:134
 msgid "(private key not present)"
-msgstr "(Clé privée non présente)"
+msgstr "(clé privée non présente)"
 
 #: src/wacomponents/utilities.py:167
 #, python-brace-format

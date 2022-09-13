@@ -14,7 +14,8 @@ from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
 from wacomponents.logging.handlers import safe_catch_unhandled_exception
 from wacomponents.screens.base import WAScreenName, WAScreenBase
-from wacomponents.utilities import format_cryptainer_label, format_authenticator_label, SPACE, COLON, LINEBREAK
+from wacomponents.utilities import format_cryptainer_label, format_authenticator_label, SPACE, COLON, LINEBREAK, \
+    convert_bytes_to_human_representation
 from wacomponents.widgets.layout_components import build_fallback_information_box
 from wacomponents.widgets.popups import close_current_dialog, dialog_with_close_button, display_info_toast, \
     safe_catch_unhandled_exception_and_display_popup
@@ -99,15 +100,22 @@ class CryptainerStorageManagementScreen(WAScreenBase):
     def _load_next_scheduled_cryptainer(self, *args):
         if self.cryptainer_names_to_be_loaded:
             cryptainer_idx, cryptainer_name = self.cryptainer_names_to_be_loaded.pop()
-
             self._load_cryptainer(index=cryptainer_idx, cryptainer_name=cryptainer_name)
         else:
             self.cryptainer_loading_schedule.cancel()
 
     def _load_cryptainer(self, index, cryptainer_name):
         cryptainer_label = format_cryptainer_label(cryptainer_name=cryptainer_name)
+        try:
+            cryptainer_size_bytes = self.filesystem_cryptainer_storage._get_cryptainer_size(cryptainer_name)
+        except FileNotFoundError:
+            cryptainer_size_bytes = None  # Probably deleted concurrently
 
         cryptainer_entry_label = tr._("N°") + SPACE + str(index) + COLON() + cryptainer_label
+        if cryptainer_size_bytes is not None:
+            cryptainer_entry_label += " (%s)" % convert_bytes_to_human_representation(cryptainer_size_bytes)
+        else:
+            cryptainer_entry_label += " (%s)" % tr._("missing")
 
         cryptainer_entry = Factory.WASelectableListItemEntry(text=cryptainer_entry_label)  # FIXME RENAME THIS
         cryptainer_entry.unique_identifier = cryptainer_name
