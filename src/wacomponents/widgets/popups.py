@@ -9,13 +9,18 @@ from kivymd.uix.dialog import MDDialog
 from kivymd.uix.filemanager import MDFileManager
 from kivymd.uix.snackbar import Snackbar
 
+from wacomponents.default_settings import IS_ANDROID
 from wacomponents.i18n import tr
 from wacomponents.logging.handlers import safe_catch_unhandled_exception
 
 
 def display_info_toast(msg):
     """Small temporary popup"""
-    toast(msg)  # Exact signature is different on Android and Desktop!!
+    toast_options = {"duration": 1.5}
+    if IS_ANDROID:
+        toast_options = {"length_long": False}
+    # Exact signature is different on Android and Desktop!
+    toast(msg, **toast_options)
 
 
 def display_info_snackbar(message, duration=3.5):
