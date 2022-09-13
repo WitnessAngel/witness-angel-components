@@ -17,6 +17,7 @@
 
         ToggleButton:
             id: recording_button
+            disabled: True   # Initial state
             text: tr._('Start Recording') if self.state == 'normal' else tr._('Stop Recording')
             pos_hint: {'center_x': 0.5}
             size_hint: (0.7, 0.2)
