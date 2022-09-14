@@ -77,17 +77,23 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
                 remote_keystore = FilesystemKeystore(remote_keystore_dir)
                 keystore_tree = remote_keystore.export_to_keystore_tree(
                     include_private_keys=include_private_keys)
-                keystore_tree_copy = keystore_tree.copy()
-                del keystore_tree_copy['keypairs']
-                keystore_metadata = keystore_tree_copy
-                # pprint.pprint(keystore_metadata)
+
+                # Special operation: we remove optional sensitive data from this "foreign" keystore...
+                for sensitive_key in ["keystore_secret", "keystore_passphrase_hint"]:
+                    if sensitive_key in keystore_tree:
+                        del keystore_tree[sensitive_key]
+
             except SchemaValidationError as exc:
                 logger.warning("Corrupted keystore encountered: %r", exc)
                 corrupted_keystore_count += 1
                 continue
 
             try:
+
                 updated = self.filesystem_keystore_pool.import_foreign_keystore_from_keystore_tree(keystore_tree)
+
+                keystore_metadata = keystore_tree.copy()
+                del keystore_metadata['keypairs']
 
                 if updated:
                     already_existing_keystore_metadata.append(keystore_metadata)
@@ -356,6 +362,9 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
             "keystore_uid": public_authenticator["keystore_uid"],
             "keypairs": keypairs
         }
+        if public_authenticator["keystore_creation_datetime"]:  # NULLABLE
+            keystore_tree["keystore_creation_datetime"] = public_authenticator["keystore_creation_datetime"]
+        # No confidential fields, like passphrase hint or keystore secret, are present in public authenticator!
         validate_keystore_tree(keystore_tree)  # SAFETY
         return keystore_tree
 
