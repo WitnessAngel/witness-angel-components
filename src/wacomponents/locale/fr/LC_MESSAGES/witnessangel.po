@@ -1014,7 +1014,7 @@ msgstr "Phrase secrète reconnue"
 #: src/wacomponents/screens/cryptainer_decryption_process.py:252
 #, python-format
 msgid "Validation result: %s"
-msgstr "Erreur de validation : %s"
+msgstr "Résultat de validation : %s"
 
 #: src/wacomponents/screens/cryptainer_decryption_process.py:259
 msgid "Add passphrase"

@@ -22,24 +22,23 @@ class ClaimantRevelationRequestManagementScreen(WAScreenBase):
         self.manager.current = WAScreenName.cryptainer_storage_management
 
     @staticmethod
-    def _list_revelation_request_reformatted(
-            list_decryption_request):  # FIXME both have wrong named, and restructured better than reformatted (which means strings)
-        decryption_request_per_cryptainer = {}
+    def _list_revelation_requests_per_cryptainer_uid(decryption_requests):
+        decryption_requests_per_cryptainer_uid = {}
 
-        for decryption_request in list_decryption_request:
-
-            # FIXME wrong name
-            decryption_request_per_symkey = {key: value for key, value in decryption_request.items() if
-                                             key != 'symkey_decryption_requests'}
+        for decryption_request in decryption_requests:
 
             for symkey_decryption_request in decryption_request["symkey_decryption_requests"]:
-                decryption_request_per_symkey["symkey_decryption_request"] = symkey_decryption_request  # FIXME wrong, written multiple times
+
+                decryption_request_copy = {key: value for key, value in decryption_request.items()
+                                           if key != 'symkey_decryption_requests'}
+
+                decryption_request_copy["symkey_decryption_request"] = symkey_decryption_request  # SINGLE entry here
 
                 cryptainer_uid = symkey_decryption_request["cryptainer_uid"]
-                _decryption_request_per_cryptainer = decryption_request_per_cryptainer.setdefault(cryptainer_uid, [])
-                _decryption_request_per_cryptainer.append(decryption_request_per_symkey)
+                _decryption_request_for_cryptainer = decryption_requests_per_cryptainer_uid.setdefault(cryptainer_uid, [])
+                _decryption_request_for_cryptainer.append(decryption_request_copy)
 
-        return decryption_request_per_cryptainer
+        return decryption_requests_per_cryptainer_uid
 
     def list_requestor_revelation_requests(self):
         revelation_requestor_uid = self._app.get_wa_device_uid()
@@ -65,49 +64,51 @@ class ClaimantRevelationRequestManagementScreen(WAScreenBase):
                 self.ids.list_decryption_request_scrollview.add_widget(fallback_info_box)
                 return
 
-            revelation_requests_per_cryptainer = self._list_revelation_request_reformatted(requestor_revelation_requests)
+            revelation_requests_per_cryptainer_uid = self._list_revelation_requests_per_cryptainer_uid(requestor_revelation_requests)
 
             display_layout = GrowingAccordion(orientation='vertical', size_hint=(1, None))
 
-            # Sorting kinda works because UUID0 are built by datetime!
-            for revelation_request_per_cryptainer in sorted(revelation_requests_per_cryptainer.items(), reverse=True):
+            # Sorting kinda works, because UUID0 of cryptainers are built by datetime!
+            for cryptainer_uid, revelation_requests_with_single_symkey in sorted(revelation_requests_per_cryptainer_uid.items(), reverse=True):
 
-                cryptainer_name = revelation_request_per_cryptainer[1][0]["symkey_decryption_request"]["cryptainer_name"]
-                cryptainer_uid = revelation_request_per_cryptainer[1][0]["symkey_decryption_request"]["cryptainer_uid"]
-                assert cryptainer_uid == revelation_request_per_cryptainer[0]
+                # Fetch cryptainer name from FIRST entry (which MUST exist)
+                cryptainer_name = revelation_requests_with_single_symkey[0]["symkey_decryption_request"]["cryptainer_name"]
+
                 cryptainer_label = format_cryptainer_label(cryptainer_name=cryptainer_name,
                                                            cryptainer_uid=cryptainer_uid)
 
                 container_item = Factory.ContainerItem(title=tr._("Container") + " " + cryptainer_label)
 
-                for revelation_request in revelation_request_per_cryptainer[1]:
+                for revelation_request_with_single_symkey in revelation_requests_with_single_symkey:
+
+                    assert cryptainer_uid == revelation_request_with_single_symkey["symkey_decryption_request"]["cryptainer_uid"]
 
                     revelation_request_label1 = format_revelation_request_label(
-                        revelation_request_uid=revelation_request["revelation_request_uid"],
-                        revelation_request_creation_datetime=revelation_request["created_at"],
-                        keystore_owner=revelation_request["target_public_authenticator"]["keystore_owner"])
+                        revelation_request_uid=revelation_request_with_single_symkey["revelation_request_uid"],
+                        revelation_request_creation_datetime=revelation_request_with_single_symkey["created_at"],
+                        keystore_owner=revelation_request_with_single_symkey["target_public_authenticator"]["keystore_owner"])
 
-                    revelation_request_label2 = tr._("Status") + COLON() + revelation_request["revelation_request_status"]
+                    revelation_request_label2 = tr._("Status") + COLON() + revelation_request_with_single_symkey["revelation_request_status"]
 
                     target_public_authenticator_label = format_authenticator_label(
-                        authenticator_owner=revelation_request["target_public_authenticator"]["keystore_owner"],
-                        keystore_uid=revelation_request["target_public_authenticator"]["keystore_uid"])
+                        authenticator_owner=revelation_request_with_single_symkey["target_public_authenticator"]["keystore_owner"],
+                        keystore_uid=revelation_request_with_single_symkey["target_public_authenticator"]["keystore_uid"])
 
-                    authenticator_key_algo = revelation_request["symkey_decryption_request"]["target_public_authenticator_key"]["key_algo"]
-                    authenticator_keychain_uid = revelation_request["symkey_decryption_request"]["target_public_authenticator_key"]["keychain_uid"]
+                    authenticator_key_algo = revelation_request_with_single_symkey["symkey_decryption_request"]["target_public_authenticator_key"]["key_algo"]
+                    authenticator_keychain_uid = revelation_request_with_single_symkey["symkey_decryption_request"]["target_public_authenticator_key"]["keychain_uid"]
 
                     authenticator_key_label = format_keypair_label(keychain_uid=authenticator_keychain_uid,
                                                                    key_algo=authenticator_key_algo)
 
                     response_key_label = format_keypair_label(
-                        keychain_uid=revelation_request["revelation_response_keychain_uid"],
-                        key_algo=revelation_request["revelation_response_key_algo"])
+                        keychain_uid=revelation_request_with_single_symkey["revelation_response_keychain_uid"],
+                        key_algo=revelation_request_with_single_symkey["revelation_response_key_algo"])
 
                     _displayed_values = dict(  # FIXME remove that
-                        revelation_request_description=revelation_request["revelation_request_description"],
+                        revelation_request_description=revelation_request_with_single_symkey["revelation_request_description"],
                         target_public_authenticator_label=target_public_authenticator_label,
                         response_key_label=response_key_label,
-                        symkey_decryption_status=revelation_request["symkey_decryption_request"][
+                        symkey_decryption_status=revelation_request_with_single_symkey["symkey_decryption_request"][
                             "symkey_decryption_status"],
                         authenticator_key_label=authenticator_key_label,
                     )

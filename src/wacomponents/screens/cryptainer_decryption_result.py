@@ -79,7 +79,7 @@ class CryptainerDecryptionResultScreen(WAScreenBase):
 
                 else:
                     error_report_text = tr._("No errors/warnings when decrypting the container")
-                error_box = Factory.WASelectableLabel(text=error_report_text + LINEBREAK*6, size_hint_y=None, full_height=False)
+                error_box = Factory.WASelectableLabel(text=error_report_text + LINEBREAK, size_hint_y=None, full_height=False)
                 layout.add_widget(error_box)
 
 
