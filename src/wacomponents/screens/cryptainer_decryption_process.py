@@ -28,7 +28,7 @@ from kivy.logger import Logger as logger
 class CryptainerDecryptionProcessScreen(WAScreenBase):
     selected_cryptainer_names = ObjectProperty(None, allownone=True)
     trustee_data = ObjectProperty(None,
-                                  allownone=True)  # FIXME name not clea, i.e. "trustee_dependencies_for_encryption" ?
+                                  allownone=True)  # FIXME name not clear, i.e. "trustee_dependencies_for_encryption" ?
     filesystem_cryptainer_storage = ObjectProperty(None, allownone=True)
     filesystem_keystore_pool = ObjectProperty(None)
     ##found_trustees_lacking_passphrase = BooleanProperty(0)
@@ -126,9 +126,12 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
 
             trustee_dependencies = gather_trustee_dependencies(cryptainers)
 
-            self.trustee_data = list(trustee_dependencies["encryption"].values())
+            trustee_data = list(trustee_dependencies["encryption"].values())
+            trustee_data.sort(key=lambda x: x[0]["keystore_owner"])
 
-            for trustee_info, trustee_keypair_identifiers in self.trustee_data:
+            self.trustee_data = trustee_data  # For launching of decryption
+
+            for trustee_info, trustee_keypair_identifiers in trustee_data:
                 trustee_id = get_trustee_id(trustee_info)
                 trustee_type = trustee_info["trustee_type"]
                 keystore_uid = trustee_info["keystore_uid"]
@@ -151,7 +154,7 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
 
         trustee_present = tr._("Status") + COLON() + status["trustee_status"].upper()
 
-        trustee_private_keys_status_text = tr._("Private key(s) needed for decryption: present")
+        trustee_private_keys_status_text = tr._("Private keys needed for decryption are present")
 
         passphrase = tr._("passphrase") + COLON() + status["passphrase_status"].upper()
 
@@ -179,7 +182,7 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
                                                  private_key_present=False if keypair_identifier in status[
                                                      "trustee_private_keys_missing"] else True,
                                                  error_on_missing_key=False)
-            message += tr._("Key n°") + SPACE + str(index) + COLON() + keypair_label + LINEBREAK
+            message += tr._("Keypair n°") + SPACE + str(index) + COLON() + keypair_label + LINEBREAK
 
         def information_callback(widget, message=message):
             self.show_trustee_keypair_identifiers(message=message)

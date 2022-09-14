@@ -156,7 +156,7 @@ class CryptainerStorageManagementScreen(WAScreenBase):
             cryptainer = self.filesystem_cryptainer_storage.load_cryptainer_from_storage(cryptainer_name)
             all_dependencies = gather_trustee_dependencies([cryptainer])
             interesting_dependencies = [d[0] for d in list(all_dependencies["encryption"].values())]
-
+            interesting_dependencies.sort(key=lambda x: x["keystore_owner"].lower())  # Sort by pretty name
         except Exception as exc:
             message = repr(exc)[:800]
 
