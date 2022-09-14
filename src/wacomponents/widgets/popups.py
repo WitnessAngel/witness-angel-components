@@ -124,7 +124,7 @@ Builder.load_string("""
 
 """)
 
-@decorator
+@decorator  # FIXME REPLACE THIS WITH GUIAPP._offload_task_with_spinner()
 def process_method_with_gui_spinner(func, self, *args, **kwargs):
     """
     Handle a time-consuming operation with the display of a GUI spinner,
