@@ -84,7 +84,8 @@ class ClaimantRevelationRequestManagementScreen(WAScreenBase):
 
                     revelation_request_label1 = format_revelation_request_label(
                         revelation_request_uid=revelation_request["revelation_request_uid"],
-                        revelation_request_creation_datetime=revelation_request["created_at"])
+                        revelation_request_creation_datetime=revelation_request["created_at"],
+                        keystore_owner=revelation_request["target_public_authenticator"]["keystore_owner"])
 
                     revelation_request_label2 = tr._("Status") + COLON() + revelation_request["revelation_request_status"]
 

@@ -84,8 +84,6 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
 
             if self.passphrase_mapper.get(trustee_id):
                 passphrase_status = tr._("set")
-            else:
-                pass
 
             for keypair_identifier in trustee_keypair_identifiers:
                 try:

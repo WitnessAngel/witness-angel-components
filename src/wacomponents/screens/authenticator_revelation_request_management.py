@@ -333,7 +333,7 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
 
     def display_help_popup(self):
         authenticator_revelation_request_management_help_text = \
-            tr._("""This page summarizes the authorization requests that have been sent to remote Key Guardians, in order to decrypt some local containers.""") + LINEBREAK * 2 + \
+            tr._("""This page summarizes the authorization requests that have been sent to your authenticator, in order to decrypt some remote containers.""") + LINEBREAK * 2 + \
             tr._("""Requests can be freely rejected. Else, to accept them, you must input your passphrase, which will be used to load your private keys and generate authorization tokens for the requester.""") + LINEBREAK * 2 + \
             tr._("""For now, it is not possible to change the status of a request which has been accepted or rejected.""")
 

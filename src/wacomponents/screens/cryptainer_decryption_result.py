@@ -9,7 +9,7 @@ from wacryptolib.utilities import get_utc_now_date
 from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
 from wacomponents.screens.base import WAScreenName, WAScreenBase
-from wacomponents.utilities import format_revelation_request_error
+from wacomponents.utilities import format_revelation_request_error, LINEBREAK
 from wacomponents.widgets.layout_components import build_fallback_information_box
 
 Builder.load_file(str(Path(__file__).parent / 'cryptainer_decryption_result.kv'))
@@ -79,7 +79,7 @@ class CryptainerDecryptionResultScreen(WAScreenBase):
 
                 else:
                     error_report_text = tr._("No errors/warnings when decrypting the container")
-                error_box = Factory.WASelectableLabel(text=tr._(error_report_text), size_hint_y=None, full_height=False)
+                error_box = Factory.WASelectableLabel(text=error_report_text + LINEBREAK*6, size_hint_y=None, full_height=False)
                 layout.add_widget(error_box)
 
 

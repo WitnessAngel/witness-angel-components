@@ -154,8 +154,9 @@ def format_authenticator_label(authenticator_owner: str, keystore_uid: uuid.UUID
 
 def format_revelation_request_label(revelation_request_creation_datetime: datetime,
                                     revelation_request_uid: uuid.UUID,
-                                    revelation_request_status: Optional[str] = None, short_uid=True):
-    # Revelation request id: ... 1abfb5411 (Created on: 2022/05/22)
+                                    keystore_owner=None,
+                                    short_uid=True):
+    # Request ... 1abfb5411 (2022/05/22)
 
     if short_uid:
         revelation_request_uid = shorten_uid(revelation_request_uid)
@@ -168,8 +169,8 @@ def format_revelation_request_label(revelation_request_creation_datetime: dateti
         revelation_request_uid=revelation_request_uid,
         reformatted_revelation_request_creation_date=reformatted_revelation_request_creation_date)
 
-    if revelation_request_status:
-        revelation_request_label += ", " + tr._("Status") + COLON() + revelation_request_status
+    if keystore_owner:
+        revelation_request_label += tr._(" for {keystore_owner}").format(keystore_owner=keystore_owner)
 
     return revelation_request_label
 
