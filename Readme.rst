@@ -1,2 +1,4 @@
-# witness-angel-guilib
+Witness Angel Components
+##################################
+
 GUI widgets and utilities for Witness Angel projects
