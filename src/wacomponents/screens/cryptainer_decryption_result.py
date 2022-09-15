@@ -84,11 +84,11 @@ class CryptainerDecryptionResultScreen(WAScreenBase):
 
 
 def dump_to_text_file(filepath, data):  # TODO To move in wacryptolib utilities
-    with open(filepath, "w") as text_file:
+    with open(filepath, "w", encoding="utf8") as text_file:
         text_file.write(data)
 
 
 def load_from_text_file(filepath):  # TODO To move in wacryptolib utilities
-    with open(filepath, "r") as text_file:
+    with open(filepath, "r", encoding="utf8") as text_file:
         text = text_file.read()
     return text
