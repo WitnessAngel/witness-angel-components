@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-14 12:12+0200\n"
-"PO-Revision-Date: 2022-09-14 12:12+0200\n"
+"POT-Creation-Date: 2022-09-19 12:23+0200\n"
+"PO-Revision-Date: 2022-09-19 12:26+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
@@ -24,7 +24,7 @@ msgstr ""
 "Certains changements de configuration pourraient ne s'appliquer qu'au "
 "redémarrage de l'enregistrement"
 
-#: src/wacomponents/application/recorder_gui.py:105
+#: src/wacomponents/application/recorder_gui.py:104
 msgid "Configuration errors prevent recording"
 msgstr "Des erreurs de configuration empêchent l'enregistrement"
 
@@ -679,17 +679,17 @@ msgstr "Rejeté"
 
 #: src/wacomponents/screens/authenticator_revelation_request_management.py:86
 #: src/wacomponents/screens/claimant_revelation_request_creation_form.py:64
-#: src/wacomponents/screens/claimant_revelation_request_management.py:116
+#: src/wacomponents/screens/claimant_revelation_request_management.py:117
 msgid "Authenticator"
 msgstr "Authentifieur"
 
 #: src/wacomponents/screens/authenticator_revelation_request_management.py:88
-#: src/wacomponents/screens/claimant_revelation_request_management.py:115
+#: src/wacomponents/screens/claimant_revelation_request_management.py:116
 msgid "Description"
 msgstr "Description"
 
 #: src/wacomponents/screens/authenticator_revelation_request_management.py:90
-#: src/wacomponents/screens/claimant_revelation_request_management.py:118
+#: src/wacomponents/screens/claimant_revelation_request_management.py:119
 msgid "Local response key"
 msgstr "Clé locale de réponse"
 
@@ -712,7 +712,7 @@ msgstr "Statut de déchiffrement"
 
 #: src/wacomponents/screens/authenticator_revelation_request_management.py:148
 #: src/wacomponents/screens/claimant_revelation_request_creation_form.py:168
-#: src/wacomponents/screens/claimant_revelation_request_management.py:142
+#: src/wacomponents/screens/claimant_revelation_request_management.py:143
 #: src/wacomponents/screens/cryptainer_decryption_process.py:195
 #: src/wacomponents/screens/cryptainer_storage_management.py:183
 #: src/wacomponents/screens/foreign_keystore_management.py:310
@@ -879,32 +879,32 @@ msgstr "Rapport d'Opération"
 msgid "View all submitted authorization requests"
 msgstr "Voir toutes les demandes de déchiffrement distantes"
 
-#: src/wacomponents/screens/claimant_revelation_request_management.py:60
+#: src/wacomponents/screens/claimant_revelation_request_management.py:59
 msgid "Network error, please check the gateway url"
 msgstr "Erreur de réseau, veuillez vérifier l'url de la passerelle"
 
-#: src/wacomponents/screens/claimant_revelation_request_management.py:64
+#: src/wacomponents/screens/claimant_revelation_request_management.py:63
 msgid "No authorization requests found"
 msgstr "Pas de requêtes d'autorisation trouvées"
 
-#: src/wacomponents/screens/claimant_revelation_request_management.py:81
+#: src/wacomponents/screens/claimant_revelation_request_management.py:80
 msgid "Container"
 msgstr "Conteneur"
 
-#: src/wacomponents/screens/claimant_revelation_request_management.py:90
+#: src/wacomponents/screens/claimant_revelation_request_management.py:91
 #: src/wacomponents/screens/cryptainer_decryption_process.py:153
 msgid "Status"
 msgstr "Statut"
 
-#: src/wacomponents/screens/claimant_revelation_request_management.py:117
+#: src/wacomponents/screens/claimant_revelation_request_management.py:118
 msgid "Authenticator key"
 msgstr "Clé de l'authentifieur"
 
-#: src/wacomponents/screens/claimant_revelation_request_management.py:119
+#: src/wacomponents/screens/claimant_revelation_request_management.py:120
 msgid "Symkey decryption status"
 msgstr "Statut de déchiffrement de la Symkey"
 
-#: src/wacomponents/screens/claimant_revelation_request_management.py:143
+#: src/wacomponents/screens/claimant_revelation_request_management.py:144
 msgid "Authorization request summary"
 msgstr "Résumé de la demande d'autorisation"
 
@@ -1108,9 +1108,18 @@ msgstr "Gardiens de Clés utilisés"
 msgid "Please select containers to delete"
 msgstr "Veuillez sélectionner les conteneurs à supprimer"
 
+#: src/wacomponents/screens/cryptainer_storage_management.py:205
+#, python-format
+msgid "Are you sure you want to delete %s container(s)?"
+msgstr "Êtes-vous sûr de vouloir supprimer %s conteneur(s) ?"
+
 #: src/wacomponents/screens/cryptainer_storage_management.py:223
 msgid "Container deletion confirmation"
 msgstr "Confirmation de suppression de conteneur"
+
+#: src/wacomponents/screens/cryptainer_storage_management.py:227
+msgid "Confirm deletion"
+msgstr "Confirmer suppression"
 
 #: src/wacomponents/screens/cryptainer_storage_management.py:304
 msgid "Container decryption confirmation"

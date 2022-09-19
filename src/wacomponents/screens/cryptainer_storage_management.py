@@ -202,7 +202,7 @@ class CryptainerStorageManagementScreen(WAScreenBase):
             display_info_toast(msg)
             return
 
-        message = "Are you sure you want to delete %s container(s)?" % len(cryptainer_names)
+        message = tr._("Are you sure you want to delete %s container(s)?") % len(cryptainer_names)
         """
         self.list_chbx_active = []
         for chbx in self.check_box_cryptainer_uuid_dict:
@@ -224,7 +224,7 @@ class CryptainerStorageManagementScreen(WAScreenBase):
             text=message,
             buttons=[
                 MDFlatButton(
-                    text="Confirm deletion", on_release=lambda *args: (
+                    text=tr._("Confirm deletion"), on_release=lambda *args: (
                         close_current_dialog(), self.delete_cryptainers(cryptainer_names=cryptainer_names))
                 ), ]
         )
@@ -235,7 +235,7 @@ class CryptainerStorageManagementScreen(WAScreenBase):
             try:
                 self.filesystem_cryptainer_storage.delete_cryptainer(cryptainer_name)
             except FileNotFoundError:
-                pass  # File has probably been puregd already
+                pass  # File has probably been purged already
 
         self.get_detected_cryptainer()  # FIXME rename
 
