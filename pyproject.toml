@@ -13,7 +13,7 @@ homepage = "https://witnessangel.com/"
 repository = "https://github.com/WitnessAngel/witness-angel-components"
 #documentation = "https://witness-angel-components.readthedocs.io/"
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Intended Audience :: Information Technology",
     "License :: OSI Approved :: MIT License",
