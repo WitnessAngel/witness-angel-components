@@ -95,6 +95,8 @@ class WASelectableLabel(TextInput):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.keyboard_mode = 'managed'  # Do not auto-show the keyboard (e.g. for mobile devices)
+
         # EVEN IF READONLY, we need this to prevent selection bugs on mobile platform
         def fix_focusability(x):
             self.is_focusable = True
