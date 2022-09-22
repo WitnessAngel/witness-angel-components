@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-19 12:23+0200\n"
-"PO-Revision-Date: 2022-09-19 12:26+0200\n"
+"POT-Creation-Date: 2022-09-22 22:41+0200\n"
+"PO-Revision-Date: 2022-09-22 22:41+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
@@ -28,17 +28,17 @@ msgstr ""
 msgid "Configuration errors prevent recording"
 msgstr "Des erreurs de configuration empêchent l'enregistrement"
 
-#: src/wacomponents/application/_common_runtime_support.py:95
+#: src/wacomponents/application/_common_runtime_support.py:104
 #, python-brace-format
 msgid "Container storage: {cryptainer_dir}"
 msgstr "Stockage des conteneurs : {cryptainer_dir}"
 
-#: src/wacomponents/application/_common_runtime_support.py:97
+#: src/wacomponents/application/_common_runtime_support.py:106
 #, python-brace-format
 msgid "Invalid container storage: \"{cryptainer_dir}\""
 msgstr "Stockage des conteneurs invalide : {cryptainer_dir}"
 
-#: src/wacomponents/application/_common_runtime_support.py:102
+#: src/wacomponents/application/_common_runtime_support.py:111
 #, python-brace-format
 msgid ""
 "{keyguardian_count} key guardian(s) configured, {keyguardian_threshold} of "
@@ -47,44 +47,44 @@ msgstr ""
 "{keyguardian_count} gardien(s) de clés configuré(s), dont "
 "{keyguardian_threshold} nécessaire(s) pour le déchiffrement"
 
-#: src/wacomponents/application/_common_runtime_support.py:113
+#: src/wacomponents/application/_common_runtime_support.py:122
 #, python-brace-format
 msgid "Camera url: {camera_url}"
 msgstr "Url de la caméra : {camera_url}"
 
-#: src/wacomponents/application/_common_runtime_support.py:116
+#: src/wacomponents/application/_common_runtime_support.py:125
 #, python-brace-format
 msgid "Wrong camera url: \"{camera_url}\""
 msgstr "Mauvaise url de caméra : \"{camera_url}\""
 
-#: src/wacomponents/application/_common_runtime_support.py:124
+#: src/wacomponents/application/_common_runtime_support.py:133
 #, python-brace-format
 msgid "Gateway url: {wagateway_url}"
 msgstr "Url de la passerelle : {wagateway_url}"
 
-#: src/wacomponents/application/_common_runtime_support.py:127
+#: src/wacomponents/application/_common_runtime_support.py:136
 #, python-brace-format
 msgid "Wrong gateway url: '{wagateway_url}'"
 msgstr "Mauvaise url de passerelle : '{wagateway_url}'"
 
-#: src/wacomponents/application/_common_runtime_support.py:131
+#: src/wacomponents/application/_common_runtime_support.py:140
 #, python-brace-format
 msgid "Each container stores {video_recording_duration_mn} mn(s) of video"
 msgstr "Chaque conteneur stocke {video_recording_duration_mn} mn(s) de vidéo"
 
-#: src/wacomponents/application/_common_runtime_support.py:138
+#: src/wacomponents/application/_common_runtime_support.py:147
 #, python-brace-format
 msgid "Containers are kept for {max_cryptainer_age_day} day(s)"
 msgstr "Les conteneurs sont gardés {max_cryptainer_age_day} jour(s)"
 
-#: src/wacomponents/application/_common_runtime_support.py:150
+#: src/wacomponents/application/_common_runtime_support.py:159
 #, python-brace-format
 msgid ""
 "Ffmpeg module is installed with a compatible {ffmpeg_version:.1f} version"
 msgstr ""
 "Module ffmpeg installé avec une version {ffmpeg_version:.1f} compatible"
 
-#: src/wacomponents/application/_common_runtime_support.py:152
+#: src/wacomponents/application/_common_runtime_support.py:161
 #, python-brace-format
 msgid ""
 "Ffmpeg module is installed but this {ffmpeg_version:.1f} version is below "
@@ -530,15 +530,13 @@ msgstr ""
 
 #: src/wacomponents/screens/authenticator_management.py:476
 msgid ""
-"Note that if you destroy an authenticator and all its exported ZIP archives, "
-"the WitnessAngel recordings which used it as a trusted third party might not "
-"be decryptable anymore (unless they used a shared secret with other trusted "
-"third parties)."
+"Note that if you entirely destroy an authenticator, the WitnessAngel "
+"recordings which used it as a trusted third party might not be decryptable "
+"anymore."
 msgstr ""
-"Notez que si vous détruisez un authentifieur et toutes ses archives ZIP "
-"exportées, les enregistrements WitnessAngel qui l'utilisaient en tant que "
-"tiers de confiance risquent de ne plus pouvoir être déchiffrés (à moins "
-"qu'ils n'aient utilisé un secret partagé avec d'autres tiers de confiance)."
+"Notez que si vous détruisez entièrement un authentifieur, les "
+"enregistrements WitnessAngel qui l'utilisaient en tant que tiers de "
+"confiance risquent de ne plus pouvoir être déchiffrés."
 
 #: src/wacomponents/screens/authenticator_management.py:479
 msgid "Authenticator management page"
@@ -1020,11 +1018,11 @@ msgstr "Résultat de validation : %s"
 msgid "Add passphrase"
 msgstr "Ajouter une phrase secrète"
 
-#: src/wacomponents/screens/cryptainer_decryption_process.py:314
+#: src/wacomponents/screens/cryptainer_decryption_process.py:313
 msgid "See exports folder for results"
 msgstr "Voir le dossier d'export pour les résultats"
 
-#: src/wacomponents/screens/cryptainer_decryption_process.py:316
+#: src/wacomponents/screens/cryptainer_decryption_process.py:315
 msgid "All decryptions failed, see reports"
 msgstr "Tous les déchiffrements ont échoué, voir les rapports"
 

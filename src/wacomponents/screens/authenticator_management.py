@@ -465,15 +465,15 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
 
         authenticator_management_help_text = \
             tr._(
-            """On this page, you can manage your authenticators, which are actually digital keychains identified by unique IDs.""") + LINEBREAK * 2 + \
+            """On this page, you can manage your authenticators, which are actually digital keychains identified by unique IDs.""") + LINEBREAK + \
             tr._(
                  """These keychains contain both public keys, which can be freely shared, and their corresponding private keys, protected by passphrases, which must be kept hidden.""") + LINEBREAK * 2 + \
             tr._(
-                 """Authenticators can be stored in your user profile or in a custom folder, especially at the root of removable devices.""") + LINEBREAK * 2 + \
+                 """Authenticators can be stored in your user profile or in a custom folder, especially at the root of removable devices.""") + LINEBREAK + \
             tr._(
                  """You can initialize new authenticators from scratch, import/export them from/to ZIP archives, or check their integrity by providing their passphrases.""") + LINEBREAK * 2 + \
-            tr._(
-                 """Note that if you destroy an authenticator and all its exported ZIP archives, the WitnessAngel recordings which used it as a trusted third party might not be decryptable anymore (unless they used a shared secret with other trusted third parties).""")
+            tr._(  #  Note: "unless they used a shared secret with other trusted third parties"...
+                 """Note that if you entirely destroy an authenticator, the WitnessAngel recordings which used it as a trusted third party might not be decryptable anymore.""")
 
         help_text_popup(
             title=tr._("Authenticator management page"),
