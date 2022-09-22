@@ -1,4 +1,4 @@
-import functools
+import functools, os
 import inspect
 from functools import partial
 from pathlib import Path
@@ -60,13 +60,22 @@ class WaRuntimeSupportMixin:
         """For all app logs"""
         return str(INTERNAL_LOGS_DIR)
 
+    _home_path = os.path.expanduser('~/')
+
     def format_path_for_display(self, path):
+
         if not path:
             return ""
         path = str(path)  # Convert from Path if needed
+
         if EXTERNAL_APP_ROOT_PREFIX and path.startswith(EXTERNAL_APP_ROOT_PREFIX):
             path = path[len(EXTERNAL_APP_ROOT_PREFIX):]
             path = "<sdcard>" + path  # e.g. sdcard/subfolder/...
+
+        if self._home_path and path.startswith(self._home_path):
+            path = path[len(self._home_path):]
+            path = "~/" + path  # e.g. /private/var/mobile/... under iOS
+
         return path
 
     def _get_status_checkers(self) -> list:
