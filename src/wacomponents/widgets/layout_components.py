@@ -3,6 +3,7 @@ from pathlib import Path
 
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty, Clock
+from kivy.uix.behaviors import FocusBehavior
 from kivy.uix.settings import SettingItem, SettingString
 from kivy.uix.textinput import TextInput
 from kivymd.app import MDApp
@@ -101,6 +102,16 @@ class WASelectableLabel(TextInput):
         def fix_focusability(x):
             self.is_focusable = True
         Clock.schedule_once(fix_focusability)
+
+    def _on_textinput_focused(self, instance, value, *largs):
+        res = super()._on_textinput_focused(instance, value, *largs)
+
+        if value:
+            # HORRIBLE hack so that FocusBehaviour._handle_post_on_touch_up() unfocuses
+            # this widget when user touches outside it
+            FocusBehavior._keyboards[None] = self
+
+        return res
 
 
 class GrowingAccordion(Accordion):
