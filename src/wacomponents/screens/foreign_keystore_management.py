@@ -287,7 +287,7 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
 
     def display_keystore_details(self, keystore_uid, keystore_owner):
 
-        foreign_metadata = self.filesystem_keystore_pool.get_keystore_metadata(keystore_uid=keystore_uid)
+        foreign_metadata = self.filesystem_keystore_pool.get_foreign_keystore_metadata(keystore_uid=keystore_uid)
 
         foreign_keystore = self.filesystem_keystore_pool.get_foreign_keystore(keystore_uid=keystore_uid)
         keypair_identifiers = foreign_keystore.list_keypair_identifiers()
@@ -393,7 +393,7 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
         else:
             self.filesystem_keystore_pool.import_foreign_keystore_from_keystore_tree(keystore_tree)
 
-            msg = "An authentication device(s) updated"
+            msg = "An authentication device(s) updated"  # FIXME CHANGE THIS
 
             # Autoselect freshly imported keys
 

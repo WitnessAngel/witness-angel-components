@@ -277,10 +277,9 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
                 result, errors = self.filesystem_cryptainer_storage.decrypt_cryptainer_from_storage(cryptainer_name,
                                                                                                     passphrase_mapper=self.passphrase_mapper,
                                                                                                     revelation_requestor_uid=self.revelation_requestor_uid,
-                                                                                                    gateway_url_list=[self.jsonrpc_url])
-                # FIXME add here real management of teh error report, and treat the case where result is None
-                # assert not errors, errors
-                assert result
+                                                                                                    gateway_urls=[self.jsonrpc_url])
+
+                assert result is not None, result  # Could be an empty bytestring though  # FIXME THIS IS ALL BUGGY
                 target_path = EXTERNAL_EXPORTS_DIR / (Path(cryptainer_name).with_suffix(""))
                 target_path.write_bytes(result)
                 decryption_status = True
@@ -310,16 +309,15 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
 
             self.launch_remote_decryption_request_error_page(decryption_info)
 
-            if decrypted_cryptainer_number:
-                message = tr._("See exports folder for results")
-            else:
+            if not decrypted_cryptainer_number:
+
                 message = tr._("All decryptions failed, see reports")
 
-            Snackbar(
-                text=message,
-                font_size="12sp",
-                duration=5,
-            ).open()
+                Snackbar(
+                    text=message,
+                    font_size="12sp",
+                    duration=5,
+                ).open()
 
         self._app._offload_task_with_spinner(self.decrypt_cryptainers_from_storage, resultat_callable)
 
