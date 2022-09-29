@@ -33,9 +33,9 @@ def get_ffmpeg_version() -> tuple:
         logger.warning("Error while calling ffmpeg", exc_info=True)
         return None, tr.f(tr._("Ffmpeg module not found, please ensure it is in your PATH"))
 
-    output = output.decode("ascii", "ignore")
+    output = output.decode("ascii", "ignore").lower()
 
-    regex = r'ffmpeg version (\d\.\d)'
+    regex = r'ffmpeg version .?(\d\.\d)'  # Ffmpeg SNAPs contain a "n" before version number
     match = re.search(regex, output)
 
     if match is None:
