@@ -266,38 +266,44 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
         )
 
     def decrypt_cryptainers_from_storage(self):
-        errors = []
+
+        decrypted_cryptainer_count = 0
         decryption_results = []
-        decrypted_cryptainer_number = 0
+
         for cryptainer_name in self.selected_cryptainer_names:
+
+            errors = []
             decryption_status = False
+
             try:
+
                 EXTERNAL_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
                 # FIXME make this asynchronous, to avoid stalling the app!
-                result, errors = self.filesystem_cryptainer_storage.decrypt_cryptainer_from_storage(cryptainer_name,
-                                                                                                    passphrase_mapper=self.passphrase_mapper,
-                                                                                                    revelation_requestor_uid=self.revelation_requestor_uid,
-                                                                                                    gateway_urls=[self.jsonrpc_url])
+                result, errors = self.filesystem_cryptainer_storage.decrypt_cryptainer_from_storage(
+                    cryptainer_name,
+                    passphrase_mapper=self.passphrase_mapper,
+                    revelation_requestor_uid=self.revelation_requestor_uid,
+                    gateway_urls=[self.jsonrpc_url])
 
-                assert result is not None, result  # Could be an empty bytestring though  # FIXME THIS IS ALL BUGGY
-                target_path = EXTERNAL_EXPORTS_DIR / (Path(cryptainer_name).with_suffix(""))
-                target_path.write_bytes(result)
-                decryption_status = True
-                decrypted_cryptainer_number += 1
-                # print(">> Successfully exported data file to %s" % target_path)
+                if result is not None:  # Could be an empty bytestring though, after successful decryption of empty container
+                    target_path = EXTERNAL_EXPORTS_DIR / (Path(cryptainer_name).with_suffix(""))
+                    target_path.write_bytes(result)
+                    decryption_status = True
+                    decrypted_cryptainer_count += 1
+                    # print(">> Successfully exported data file to %s" % target_path)
+
             except Exception as exc:
-                # print(">>>>> close_dialog_decipher_cryptainer() exception thrown:", exc)  # TEMPORARY
-                assert errors
-                logger.warning("Error decrypting container %s: %r" % (cryptainer_name, exc))
-                # print("Decryption errors encountered:", errors)
+                # FIXME add this exc, somehow, to errors list?
+                logger.critical("Unexpected error when decrypting container %s: %r" % (cryptainer_name, exc))
 
-            decryption_result_per_cryptainer = dict(
+            decryption_result_for_single_cryptainer = dict(
                 cryptainer_name=cryptainer_name,
                 decryption_status=decryption_status,
-                decryption_error=errors
+                decryption_error=errors  # Might be empty if exception was raised, too...
             )
-            decryption_results.append(decryption_result_per_cryptainer)
-        decryption_info = (decrypted_cryptainer_number, decryption_results)
+            decryption_results.append(decryption_result_for_single_cryptainer)
+
+        decryption_info = (decrypted_cryptainer_count, decryption_results)
         return decryption_info
 
     @safe_catch_unhandled_exception_and_display_popup
@@ -305,11 +311,11 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
         assert self.filesystem_cryptainer_storage, self.filesystem_cryptainer_storage  # By construction...
 
         def resultat_callable(decryption_info, *args, **kwargs):  # FIXME CHANGE THIS NAME
-            decrypted_cryptainer_number, decryption_results = decryption_info
+            decrypted_cryptainer_count, decryption_results = decryption_info
 
             self.launch_remote_decryption_request_error_page(decryption_info)
 
-            if not decrypted_cryptainer_number:
+            if not decrypted_cryptainer_count:
 
                 message = tr._("All decryptions failed, see reports")
 
