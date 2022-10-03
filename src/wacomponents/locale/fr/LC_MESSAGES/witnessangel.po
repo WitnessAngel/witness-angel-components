@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-22 22:41+0200\n"
+"POT-Creation-Date: 2022-10-03 10:15+0200\n"
 "PO-Revision-Date: 2022-09-22 22:41+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
@@ -1018,11 +1018,7 @@ msgstr "Résultat de validation : %s"
 msgid "Add passphrase"
 msgstr "Ajouter une phrase secrète"
 
-#: src/wacomponents/screens/cryptainer_decryption_process.py:313
-msgid "See exports folder for results"
-msgstr "Voir le dossier d'export pour les résultats"
-
-#: src/wacomponents/screens/cryptainer_decryption_process.py:315
+#: src/wacomponents/screens/cryptainer_decryption_process.py:320
 msgid "All decryptions failed, see reports"
 msgstr "Tous les déchiffrements ont échoué, voir les rapports"
 
@@ -1313,6 +1309,9 @@ msgstr "à"
 #, python-format
 msgid "Abnormal error caught: %s"
 msgstr "Erreur anormale détectée : %s"
+
+#~ msgid "See exports folder for results"
+#~ msgstr "Voir le dossier d'export pour les résultats"
 
 #~ msgid "No revelation requests found"
 #~ msgstr "Aucune demande de déchiffrement trouvée"
