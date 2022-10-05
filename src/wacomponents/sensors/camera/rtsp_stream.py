@@ -9,15 +9,11 @@ from wacomponents.i18n import tr
 from kivy.logger import Logger as logger
 
 from wacryptolib.cryptainer import CRYPTAINER_DATETIME_FORMAT
+from wacryptolib.sensor import PeriodicSubprocessStreamRecorder
 from wacryptolib.utilities import PeriodicTaskHandler, synchronized
 
 logger = logging.getLogger(__name__)
 
-# How much data to push to encryption stream at the same time
-DATA_CHUNK_SIZE =  2 * 1024**2
-
-# This buffer must be big enough to avoid any overflow while encrypting+dumping data
-SUPROCESS_BUFFER_SIZE = DATA_CHUNK_SIZE * 6
 
 
 def get_utc_now_date():  # FIXME remove this
@@ -35,7 +31,7 @@ def get_ffmpeg_version() -> tuple:
 
     output = output.decode("ascii", "ignore").lower()
 
-    regex = r'ffmpeg version .?(\d\.\d)'  # Ffmpeg SNAPs contain a "n" before version number
+    regex = r'ffmpeg version .?(\d\.\d)'  # E.g. FFMPEG SNAPs contain a "n" before version number
     match = re.search(regex, output)
 
     if match is None:
@@ -45,192 +41,7 @@ def get_ffmpeg_version() -> tuple:
     return float(ffmpeg_version), None
 
 
-'''
-# FIXME move this to wacryptolib!
-class PeriodicStreamPusher__old(PeriodicTaskHandler):
-    """
-    This class launches an external sensor, and periodically pushes the collected data
-    to a tarfile aggregator.
-    """
-
-    _current_start_time = None
-
-    # Fields to be overridden
-    sensor_name = None
-    record_extension = None
-
-    def __init__(self,
-                 interval_s: float,
-                 tarfile_aggregator: TarfileRecordAggregator):
-        super().__init__(interval_s=interval_s, runonstart=False)
-        self._tarfile_aggregator = tarfile_aggregator
-        assert self.sensor_name, self.sensor_name
-        assert not hasattr(self, "_lock")
-        self._lock = threading.Lock()
-
-    @synchronized
-    def start(self):
-        """
-        FR : Methode qui permet de ne pas redémarrer une deuxième fois l'enregistrement'
-
-        """
-        super().start()
-
-        logger.info(">>> Starting sensor %s" % self)
-
-        self._current_start_time = get_utc_now_date()
-
-        self._do_start_recording()
-
-        logger.info(">>> Started sensor %s" % self)
-
-    def _do_start_recording(self):
-        raise NotImplementedError("%s -> _do_start_recording" % self.sensor_name)
-
-    @synchronized
-    def stop(self):
-        super().stop()
-
-        logger.info(">>> Stopping sensor %s" % self)
-
-        from_datetime = self._current_start_time
-        to_datetime = get_utc_now_date()
-
-        data = self._do_stop_recording()
-
-        self._do_push_buffer_file_to_aggregator(data=data, from_datetime=from_datetime, to_datetime=to_datetime)
-
-        logger.info(">>> Stopped sensor %s" % self)
-
-    def _do_stop_recording(self):
-        raise NotImplementedError("%s -> _do_stop_recording" % self.sensor_name)
-
-    def _do_push_buffer_file_to_aggregator(self, data, from_datetime, to_datetime):
-
-        fn = "abcde_%s.ismv" % from_datetime.strftime("%H%M%S")
-
-
-        assert from_datetime and to_datetime, (from_datetime, to_datetime)
-
-        self._tarfile_aggregator.add_record(
-            sensor_name=self.sensor_name,
-            from_datetime=from_datetime,
-            to_datetime=to_datetime,
-            extension=self.record_extension,
-            data=data,
-        )
-
-    @synchronized
-    def _offloaded_run_task(self):
-
-        if not self.is_running:
-            return
-
-        from_datetime = self._current_start_time
-        to_datetime = datetime.now(tz=timezone.utc)
-
-        data = self._do_stop_recording() # Renames target files
-
-        self._current_start_time = get_utc_now_date()  # RESET
-        self._do_start_recording()  # Must be restarded imediately
-
-        if data:
-            self._do_push_buffer_file_to_aggregator(data=data, from_datetime=from_datetime, to_datetime=to_datetime)
-
-'''
-
-
-
-
-
-
-
-# FIXME move this to wacryptolib!
-class PeriodicStreamPusher(PeriodicTaskHandler):
-
-    _current_start_time = None
-
-    # Fields to be overridden
-    sensor_name = None
-    record_extension = None
-
-    def __init__(self,
-                 interval_s: float,):
-        super().__init__(interval_s=interval_s, runonstart=False)
-        assert self.sensor_name, self.sensor_name
-        assert not hasattr(self, "_lock")
-        self._lock = threading.Lock()
-
-    def _build_filename_base(self, from_datetime):
-        extension = self.record_extension
-        assert extension.startswith("."), extension
-        from_ts = from_datetime.strftime(CRYPTAINER_DATETIME_FORMAT)
-        filename = "{from_ts}_cryptainer{extension}".format(**locals())
-        assert " " not in filename, repr(filename)
-        return filename
-
-    @synchronized
-    def start(self):
-        """
-        FR : Methode qui permet de ne pas redémarrer une deuxième fois l'enregistrement'
-        """
-        super().start()
-
-        logger.info(">>> Starting sensor %s" % self)
-
-        self._current_start_time = get_utc_now_date()
-
-        self._do_start_recording()
-
-        logger.info(">>> Started sensor %s" % self)
-
-    def _do_start_recording(self):
-        raise NotImplementedError("%s -> _do_start_recording" % self.sensor_name)
-
-    @synchronized
-    def stop(self):
-        super().stop()
-
-        logger.info(">>> Stopping sensor %s" % self)
-
-        from_datetime = self._current_start_time
-        to_datetime = get_utc_now_date()
-
-        payload = self._do_stop_recording()
-
-        if payload is not None:
-            self._handle_post_stop_data(payload=payload, from_datetime=from_datetime, to_datetime=to_datetime)
-
-        logger.info(">>> Stopped sensor %s" % self)
-
-    def _do_stop_recording(self):
-        raise NotImplementedError("%s -> _do_stop_recording" % self.sensor_name)
-
-    def _handle_post_stop_data(self, payload, from_datetime, to_datetime):
-        raise NotImplementedError("%s -> _handle_post_stop_data" % self.sensor_name)
-
-    @synchronized
-    def _offloaded_run_task(self):
-
-        if not self.is_running:
-            return
-
-        from_datetime = self._current_start_time
-        to_datetime = datetime.now(tz=timezone.utc)
-
-        payload = self._do_stop_recording() # Renames target files
-
-        self._current_start_time = get_utc_now_date()  # RESET
-        self._do_start_recording()  # Must be restarded imediately
-
-        if payload is not None:
-            self._handle_post_stop_data(payload=payload, from_datetime=from_datetime, to_datetime=to_datetime)
-
-
-
-
-
-class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
+class RtspCameraSensor(PeriodicSubprocessStreamRecorder):  # FIXME rename all and normalize
 
     sensor_name = "rtsp_camera"
     record_extension = ".mp4"
@@ -242,14 +53,12 @@ class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
                  cryptainer_storage,
                  video_stream_url: str,
                  preview_image_path: Path):
-        super().__init__(interval_s=interval_s)
+        super().__init__(interval_s=interval_s, cryptainer_storage=cryptainer_storage)
         assert video_stream_url and preview_image_path, (video_stream_url, preview_image_path)
-        self._cryptainer_storage = cryptainer_storage
-        self._cryptainer_encryption_stream = None
         self._video_stream_url = video_stream_url
         self._preview_image_path = preview_image_path
 
-    def _launch_and_wait_ffmpeg_process(self):
+    def _build_subprocess_command_line(self):
         ffmpeg_version, _error_msg = get_ffmpeg_version()
 
         additional_input_args = []
@@ -262,7 +71,7 @@ class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
             else:
                 additional_input_args = ["-stimeout", timeout_microseconds]
 
-        exec = [
+        executable = [
             "ffmpeg",
             "-y",  # Always say yes to questions
             "-hide_banner",  # Hide useless "library configuration mismatch" stuffs
@@ -300,7 +109,10 @@ class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
         preview_image_output = [
             "-frames:v",  "1", "-filter:v", "scale=140:-1,hue=s=0", str(self._preview_image_path),  # FIXME parametrize DIMENSIONS
         ]
-        pipeline = exec + input + codec + logs + video_output + preview_image_output
+        subprocess_command_line = executable + input + codec + logs + video_output + preview_image_output
+        return subprocess_command_line
+
+    def _launch_and_consume_subprocess(self, *args, **kwargs):
 
         # Cleanup dangling preview image
         try:
@@ -308,91 +120,4 @@ class RtspCameraSensor(PeriodicStreamPusher):  # FIXME rename all and normalize
         except FileNotFoundError:
             pass
 
-        logger.warning("Calling RtspCameraSensor subprocess command: {}".format(" ".join(pipeline)))
-        self._subprocess = subprocess.Popen(
-            pipeline,
-            bufsize=SUPROCESS_BUFFER_SIZE,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE)  # Stderr is left floating for now
-
-        def _stdoutreaderthread(fh):
-            # Backported from Popen._readerthread of Python3.8
-            while True:
-                chunk = fh.read(DATA_CHUNK_SIZE)
-                assert chunk is not None  # We're NOT in non-blocking mode!
-                if chunk:
-                    print(">>>> ENCRYPTING CHUNK OF LENGTH", len(chunk))
-                    self._cryptainer_encryption_stream.encrypt_chunk(chunk)
-                else:
-                    break
-            print(">>>> FINALIZING CONTAINER ENCRYPTION STREAM")
-            self._cryptainer_encryption_stream.finalize()
-            fh.close()
-
-        self._stdout_thread = threading.Thread(target=_stdoutreaderthread,
-                                                args=(self._subprocess.stdout,))
-        self._stdout_thread.start()
-
-        def _sytderrreaderthread(fh):
-            for line in fh:
-                ##print(b">>>>", repr(line).encode("ascii"))
-                line_str = repr(line)  #  line.decode("ascii", "ignore")
-                logger.warning("SUBPROCESS: %s" % line_str.rstrip("\n"))
-            fh.close()
-        self._stderr_thread = threading.Thread(target=_sytderrreaderthread,
-                                                args=(self._subprocess.stderr,))
-        self._stderr_thread.start()
-
-        #returncode = self.process.wait()
-        #if returncode:
-        #    logger.warning("recorder process exited with abnormal code %s", returncode)
-
-    def _do_start_recording(self):
-        self._cryptainer_encryption_stream = self._cryptainer_storage.create_cryptainer_encryption_stream(
-            self._build_filename_base(self._current_start_time), cryptainer_metadata=None, dump_initial_cryptainer=True)
-        self._launch_and_wait_ffmpeg_process()
-
-    def _do_stop_recording(self):
-        if self._subprocess is None:
-            logger.error("No subprocess to be terminated in RtspCameraSensor stop-recording")
-            return  # Init failed previously
-        retcode = self._subprocess.poll()
-        if retcode is not None:
-            logger.error("Subprocess was already terminated with code %s in RtspCameraSensor stop-recording" % retcode)
-            return  # Stream must have crashed
-        try:
-            self._subprocess.stdin.write(b"q")  # FFMPEG command to quit
-            self._subprocess.stdin.close()
-            self._stdout_thread.join(timeout=10)
-        except Exception as exc:
-            logger.warning("Failed normal termination of ffmpeg subprocess: {}".format(exc))
-            if self._subprocess.poll() is None:  # It could be that Ffmpeg is just slow to quit, though...
-                logger.warning("Force-terminating dangling ffmpeg subprocess")
-                self._subprocess.terminate()
-
-    @staticmethod
-    def __BROKEN_extract_preview_image(buffer):  #FIXME -seems broken, only for jpeg stream
-        #stream = urllib.request.urlopen('http://192.168.0.51/video.cgi?resolution=1920x1080')
-        a = buffer.find(b'\xff\xd8')
-        b = buffer.find(b'\xff\xd9')
-        if a != -1 and b != -1 and b > a:
-            jpg = buffer[a:b+2]
-            filename = 'capture.jpeg'
-            import cv2, np
-            i = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8), cv2.IMREAD_COLOR)
-            cv2.imwrite(filename, i)
-            return filename
-        else:
-            print(">>>>>>>>", a, b, buffer)
-            logger.warning("Couldn't find a preview frame in RTSP buffer of length %s" % len(buffer))
-
-        """ SEE:
-        command = ["ffmpeg", "-i", str(path), "-r", "1", "-vframes", "1", str(preview_image_path), "-y"]  # "-f",  str(preview_image_path.parent) To rescale: -s WxH
-        logger.info("Calling preview extraction command: %s", str(command))
-        try:
-            res = subprocess.run(command, timeout=10)  # Process is killed brutally if timeout
-            logger.info("Preview extraction command exited with code %s", res.returncode)
-        except subprocess.TimeoutExpired:
-            logger.warning("Preview extraction failed with timeout")
-            """
+        return super()._launch_and_consume_subprocess( *args, **kwargs)
