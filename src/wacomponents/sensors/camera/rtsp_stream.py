@@ -1,6 +1,5 @@
 
 import logging
-import threading
 from datetime import timezone, datetime
 import re
 import subprocess
@@ -8,9 +7,7 @@ from pathlib import Path
 from wacomponents.i18n import tr
 from kivy.logger import Logger as logger
 
-from wacryptolib.cryptainer import CRYPTAINER_DATETIME_FORMAT
 from wacryptolib.sensor import PeriodicSubprocessStreamRecorder
-from wacryptolib.utilities import PeriodicTaskHandler, synchronized
 
 logger = logging.getLogger(__name__)
 
@@ -41,19 +38,21 @@ def get_ffmpeg_version() -> tuple:
     return float(ffmpeg_version), None
 
 
-class RtspCameraSensor(PeriodicSubprocessStreamRecorder):  # FIXME rename all and normalize
+class RtspCameraSensor(PeriodicSubprocessStreamRecorder):
+    """
+    Records an RTSP stream, for now WITHOUT AUDIO.
+
+    Automatically extracts a screenshot of the beginning of each recording.
+    """
 
     sensor_name = "rtsp_camera"
     record_extension = ".mp4"
 
-    _subprocess = None
-
     def __init__(self,
-                 interval_s,
-                 cryptainer_storage,
                  video_stream_url: str,
-                 preview_image_path: Path):
-        super().__init__(interval_s=interval_s, cryptainer_storage=cryptainer_storage)
+                 preview_image_path: Path,
+                 **kwargs):
+        super().__init__(**kwargs)
         assert video_stream_url and preview_image_path, (video_stream_url, preview_image_path)
         self._video_stream_url = video_stream_url
         self._preview_image_path = preview_image_path
