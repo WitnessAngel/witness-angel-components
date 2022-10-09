@@ -10,7 +10,7 @@ from wacryptolib.sensor import PeriodicSubprocessStreamRecorder
 logger = logging.getLogger(__name__)
 
 
-def list_pulseaudio_microphones():
+def list_pulseaudio_microphone_names():
     import pulsectl
     pulse = pulsectl.Pulse('witness-angel-device')
     results = pulse.source_list()
@@ -32,6 +32,7 @@ class RaspberryLibcameraSensor(PeriodicSubprocessStreamRecorder):
 
     sensor_name = "rpi_camera"
 
+    @property
     def record_extension(self):
         return ".mpegts" if self._alsa_device_name else ".h264"
 
@@ -81,7 +82,7 @@ class RaspberryLibcameraSensor(PeriodicSubprocessStreamRecorder):
             # SPECIAL STEP - launch a subprocess just to capture screenshot
             try:
                 screenshot_width_px = 140
-                screenshot_height_px = screenshot_width_px / (4/3)
+                screenshot_height_px = int(screenshot_width_px / (4/3))
                 subprocess.check_call([
                     "libcamera-jpeg",
                     "--nopreview",  # No GUI display

@@ -24,7 +24,7 @@ def _is_raspberry_pi(raise_on_errors=False):
     if platform != "linux":
         return False
     try:
-        with io.open('/proc/cpuinfo', 'r') as cpuinfo:
+        with open('/proc/cpuinfo', 'r') as cpuinfo:
             found = False
             for line in cpuinfo:
                 if line.startswith('Hardware'):

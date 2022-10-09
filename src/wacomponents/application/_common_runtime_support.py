@@ -119,10 +119,10 @@ class WaRuntimeSupportMixin:
             try:
                 parsed = urlparse(camera_url)
                 if parsed.scheme:
-                    return True, tr.f(tr._("Camera url: {camera_url}"))
+                    return True, tr.f(tr._("IP camera url: {camera_url}"))
             except ValueError:
                 pass
-        return False, tr.f(tr._("Wrong camera url: \"{camera_url}\""))
+        return False, tr.f(tr._("Wrong IP camera url: \"{camera_url}\""))
 
     @staticmethod
     def check_witness_angel_gateway_url(wagateway_url):
