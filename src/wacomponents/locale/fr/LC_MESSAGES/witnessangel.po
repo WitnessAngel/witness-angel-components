@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-03 10:15+0200\n"
-"PO-Revision-Date: 2022-09-22 22:41+0200\n"
+"POT-Creation-Date: 2022-10-09 21:10+0200\n"
+"PO-Revision-Date: 2022-10-09 21:16+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
 "Language: fr\n"
@@ -49,13 +49,13 @@ msgstr ""
 
 #: src/wacomponents/application/_common_runtime_support.py:122
 #, python-brace-format
-msgid "Camera url: {camera_url}"
-msgstr "Url de la caméra : {camera_url}"
+msgid "IP camera url: {camera_url}"
+msgstr "Url de la caméra IP : {camera_url}"
 
 #: src/wacomponents/application/_common_runtime_support.py:125
 #, python-brace-format
-msgid "Wrong camera url: \"{camera_url}\""
-msgstr "Mauvaise url de caméra : \"{camera_url}\""
+msgid "Wrong IP camera url: \"{camera_url}\""
+msgstr "Mauvaise url de caméra IP : \"{camera_url}\""
 
 #: src/wacomponents/application/_common_runtime_support.py:133
 #, python-brace-format
@@ -601,7 +601,7 @@ msgid "Remote status"
 msgstr "Statut distant"
 
 #: src/wacomponents/screens/authenticator_publication_form.py:158
-#: src/wacomponents/utilities.py:220
+#: src/wacomponents/utilities/__init__.py:220
 msgid "Message"
 msgstr "Message"
 
@@ -1261,33 +1261,33 @@ msgstr "Lancer Enregistrement"
 msgid "Stop Recording"
 msgstr "Arrêter Enregistrement"
 
-#: src/wacomponents/sensors/camera/rtsp_stream.py:34
+#: src/wacomponents/sensors/camera/rtsp_stream.py:27
 msgid "Ffmpeg module not found, please ensure it is in your PATH"
 msgstr "Module ffmpeg non trouvé, veuillez vérifier qu'il est dans votre PATH"
 
-#: src/wacomponents/sensors/camera/rtsp_stream.py:42
+#: src/wacomponents/sensors/camera/rtsp_stream.py:35
 msgid ""
 "Ffmpeg module is installed, but beware its version couldn't be determined"
 msgstr ""
 "Module ffmpeg installé, mais attention sa version n'a pas pu être déterminée"
 
-#: src/wacomponents/utilities.py:15
+#: src/wacomponents/utilities/__init__.py:15
 msgid ": "
 msgstr " : "
 
-#: src/wacomponents/utilities.py:129
+#: src/wacomponents/utilities/__init__.py:129
 msgid "(private key present)"
 msgstr "(clé privée présente)"
 
-#: src/wacomponents/utilities.py:132
+#: src/wacomponents/utilities/__init__.py:132
 msgid "(missing private key)"
 msgstr "(clé privée manquante)"
 
-#: src/wacomponents/utilities.py:134
+#: src/wacomponents/utilities/__init__.py:134
 msgid "(private key not present)"
 msgstr "(clé privée non présente)"
 
-#: src/wacomponents/utilities.py:168
+#: src/wacomponents/utilities/__init__.py:168
 #, python-brace-format
 msgid ""
 "Request {revelation_request_uid} "
@@ -1296,12 +1296,12 @@ msgstr ""
 "Demande {revelation_request_uid} "
 "({reformatted_revelation_request_creation_date})"
 
-#: src/wacomponents/utilities.py:173
+#: src/wacomponents/utilities/__init__.py:173
 #, python-brace-format
 msgid " for {keystore_owner}"
 msgstr " pour {keystore_owner}"
 
-#: src/wacomponents/utilities.py:187
+#: src/wacomponents/utilities/__init__.py:187
 msgid "at"
 msgstr "à"
 
