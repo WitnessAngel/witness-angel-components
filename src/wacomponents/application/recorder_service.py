@@ -14,7 +14,7 @@ from wacomponents.utilities import InterruptableEvent, MONOTHREAD_POOL_EXECUTOR
 
 # os.environ["KIVY_NO_CONSOLELOG"] = "1"  # IMPORTANT
 
-osc, osc_starter_callback = get_osc_server(is_master=False)
+osc, osc_starter_callback = get_osc_server(is_application=False)
 
 # FIXME what happens if exception on remote OSC endpoint ? CRASH!!
 # TODO add custom "local trustee resolver"

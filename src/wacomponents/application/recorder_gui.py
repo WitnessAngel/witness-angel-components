@@ -17,7 +17,7 @@ from wacomponents.service_control import get_osc_server
 from wacomponents.i18n import tr
 
 
-osc, osc_starter_callback = get_osc_server(is_master=True)
+osc, osc_starter_callback = get_osc_server(is_application=True)
 
 
 @ServerClass

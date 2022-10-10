@@ -1,4 +1,5 @@
 import socket
+from functools import partial
 from pathlib import Path
 
 from kivy.logger import Logger as logger
@@ -22,9 +23,10 @@ class RobustOSCThreadServer(_OSCThreadServer):
                 )
 
 
-def _osc_default_handler(address, *values):
+def _osc_default_handler(address, *values, socket_name=None):
     print(
-        "Unknown OSC address %s called (arguments %s)", address, list(values)
+        "Unknown OSC address %s called (arguments %s) on listener %s" % (
+            address, list(values), socket_name)
     )
 
 
@@ -39,17 +41,17 @@ def _get_osc_socket_options(socket_index):
     return socket_options
 
 
-def get_osc_server(is_master=True):
+def get_osc_server(is_application=True):
     """
-    Get the OSC server for the app (master) or service (slave)
+    Get the OSC server for the application (GUI) or service (background task)
     """
-    server = RobustOSCThreadServer(
-        encoding="utf8", default_handler=_osc_default_handler
-    )  # This launches a DAEMON thread!
-
-    socket_index = 0 if is_master else 1
-    socket_name = "application" if is_master else "service"
+    socket_name = "application" if is_application else "service"
+    socket_index = 0 if is_application else 1
     socket_options = _get_osc_socket_options(socket_index=socket_index)
+
+    server = RobustOSCThreadServer(
+        encoding="utf8", default_handler=partial(_osc_default_handler, socket_name=socket_name)
+    )  # This launches a DAEMON thread!
 
     def starter_callback():
         logger.info(
