@@ -98,7 +98,7 @@ class RtspCameraSensor(PeriodicSubprocessStreamRecorder):
         ]
         logs = [
             "-loglevel",
-            "info"  # Else, info, debug or trace
+            "info"  # Values: error, warning, info, debug or trace
         ]
         video_output = [
             "pipe:1",  # Pipe to stdout

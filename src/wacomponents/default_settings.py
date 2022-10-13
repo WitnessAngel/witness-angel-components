@@ -7,7 +7,7 @@ import os
 from kivy import platform
 from plyer import storagepath
 
-ACTIVITY_CLASS = "org.kivy.android.PythonActivity"
+ANDROID_ACTIVITY_CLASS = "org.kivy.android.PythonActivity"
 SERVICE_START_ARGUMENT = ""
 
 IS_ANDROID = (platform == "android")

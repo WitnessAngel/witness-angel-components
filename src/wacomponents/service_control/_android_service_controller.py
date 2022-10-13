@@ -1,4 +1,4 @@
-from wacomponents.default_settings import SERVICE_CLASS, ACTIVITY_CLASS, SERVICE_START_ARGUMENT
+from wacomponents.default_settings import SERVICE_CLASS, ANDROID_ACTIVITY_CLASS, SERVICE_START_ARGUMENT
 from ._base_service_controller import ServiceControllerBase
 
 
@@ -7,7 +7,7 @@ class ServiceController(ServiceControllerBase):
         from jnius import autoclass
 
         self._service = autoclass(SERVICE_CLASS)
-        self._activity = autoclass(ACTIVITY_CLASS).mActivity
+        self._activity = autoclass(ANDROID_ACTIVITY_CLASS).mActivity
         self._service.start(self._activity, SERVICE_START_ARGUMENT)
 
     def stop_service(self):
