@@ -15,7 +15,7 @@ class DfrobotEpaperStatusDisplay(EpaperStatusDisplayBase):
 
     epaper = dfrobot_epaper.DFRobot_Epaper_SPI(RASPBERRY_SPI_BUS, RASPBERRY_SPI_DEV, RASPBERRY_PIN_CS, RASPBERRY_PIN_CD, RASPBERRY_PIN_BUSY) # create epaper object
 
-    PAPER_WIDTH = 128
+    PAPER_WIDTH = 122
     PAPER_HEIGHT = 250
 
     TEXT_OFFSET_X = 125
