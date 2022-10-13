@@ -11,13 +11,15 @@ logger = logging.getLogger(__name__)
 
 
 def list_pulseaudio_microphone_names():
+    """Equivalent to command:  pactl list | grep -A2 'Source #' | grep 'Name:' 
+    """
     import pulsectl
     pulse = pulsectl.Pulse('witness-angel-device')
     results = pulse.source_list()
     source_names = [res.name for res in results]
     # We ignore "sink monitors" (e.g. HDMI output monitor) useless for us
     microphone_names = [name for name in source_names if "input" in name.lower()]
-    print(">>>>>>>>PULSECTL microphone_names IS", microphone_names)
+    #print(">>>>>>>>PULSECTL microphone_names IS", microphone_names)
     return microphone_names
 
 
@@ -52,19 +54,22 @@ class RaspberryLibcameraSensor(PeriodicSubprocessStreamRecorder):
             "--timeout", "0",  # NO timeout
             "--nopreview",  # No realtime GUI preview of video
             "--flush",  # Push data ASAP
+            "--framerate", "30",
             # Discrepancy, see https://github.com/raspberrypi/libcamera-apps/issues/378#issuecomment-1269461087:
             "--output", "pipe:" if alsa_device_name else "-",
-            #FIXME ADD DIMENSIOSN AND FPS HERE!!!!!
+            #FIXME ADD DIMENSIONS/COLORS (=MODE) HERE!!!!!
         ]
 
         if alsa_device_name:
             libcamera_command_line += [
                 "--codec", "libav",
                 "--libav-format", "mpegts",
+                "-q", "95",
                 "--libav-audio",   # Enabled audio layer
                 "--audio-codec", "aac",
-                "--audio-bitrate", "16384",  # LOW bitrate
-                "--audio-device", alsa_device_name,  # E.g. "alsa_input.usb-C-Media_Electronics_Inc._USB_Audio_Device-00.mono-fallback"
+                "--audio-bitrate", "16000",  # LOW bitrate
+                # E.g. device: "alsa_input.usb-C-Media_Electronics_Inc._USB_Audio_Device-00.mono-fallback"
+                "--audio-device", alsa_device_name,
             ]
 
         return libcamera_command_line
@@ -81,17 +86,18 @@ class RaspberryLibcameraSensor(PeriodicSubprocessStreamRecorder):
 
             # SPECIAL STEP - launch a subprocess just to capture screenshot
             try:
-                screenshot_width_px = 140
-                screenshot_height_px = int(screenshot_width_px / (4/3))
-                subprocess.check_call([
-                    "libcamera-jpeg",
-                    "--nopreview",  # No GUI display
-                    "--output", self._preview_image_path,
-                    "--width", str(screenshot_width_px),
-                    "--height", str(screenshot_height_px),
-                    "--immediate",  # No preview phase when taking picture
-                ],
-                timeout=5)
+                snapshot_width_px = 140
+                snapshot_height_px = 104  # Even number for 4/3 format
+                snapshot_command_line = [
+                                    "libcamera-jpeg",
+                                    "--nopreview",  # No GUI display
+                                    "--output", str(self._preview_image_path),
+                                    "--width", str(snapshot_width_px),
+                                    "--height", str(snapshot_height_px),
+                                    "--immediate",  # No preview phase when taking picture
+                                ]
+                logger.info("Taking camera snapshot with command: %s", " ".join(snapshot_command_line))
+                subprocess.check_call(snapshot_command_line, timeout=20)
             except (CalledProcessError, TimeoutExpired) as exc:
                 logger.warning("Couldn't get screenshot in %s sensor: %s", self.sensor_name, exc)
 
@@ -106,6 +112,8 @@ class RaspberryAlsaMicrophoneSensor(PeriodicSubprocessStreamRecorder):
     sensor_name = "rpi_microphone"
     record_extension = ".mp3"
 
+    subprocess_data_chunk_size = int(0.2 * 1024**2)  # MP3 has smaller size than video
+
     def _build_subprocess_command_line(self):
         return [
             "ffmpeg",
@@ -115,6 +123,7 @@ class RaspberryAlsaMicrophoneSensor(PeriodicSubprocessStreamRecorder):
             "-acodec", "libmp3lame",
             "-ab", "128k",
             "-f", "mp3",
+            "-loglevel", "error",
             "pipe:1"
         ]
 
