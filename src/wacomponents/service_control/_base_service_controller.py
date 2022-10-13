@@ -9,9 +9,9 @@ class ServiceControllerBase:
         self._osc_client = get_osc_client(to_app=False)
 
     def _send_message(self, address, *values):
-        #print("Message sent from app to service: %s %s" % (address, values))
+        #print("@@Message sent from app to service: %s %s" % (address, values))
         try:
-            return self._osc_client.send_message(address, values=values)
+            return self._osc_client.send_message(address, values=values, safer=True)
         except ConnectionError:
             pass  # Normal at start of app...
         except Exception as exc:

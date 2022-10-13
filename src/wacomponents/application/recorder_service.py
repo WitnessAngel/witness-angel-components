@@ -1,4 +1,5 @@
 import logging
+import sys
 from concurrent.futures.thread import ThreadPoolExecutor
 from configparser import ConfigParser, Error as ConfigParserError
 
@@ -105,11 +106,12 @@ class WaRecorderService(WaRuntimeSupportMixin):
         return self._send_message("/log_output", "Service: " + msg)
 
     def _send_message(self, address, *values):
-        #print("Message sent from service to app: %s %s" % (address, values))
+        #print("@@ Message sent from service to app: %s %s" % (address, values))
         try:
-            return self._osc_client.send_message(address, values=values)
+            return self._osc_client.send_message(address, values=values, safer=True)
         except OSError as exc:
-            # NO LOGGING HERE, else it would loop due to custom logging handler
+            #sys.__stdout__.write("FATAL eror when sending OSC message: %r\n" % exc)
+            # NO PRINT/LOGGING HERE, else it would loop due to custom logging handler in Kivy
             ##print(
             ##    "{SERVICE} Could not send osc message %s%s to app: %r"
             ##    % (address, values, exc)
@@ -146,14 +148,14 @@ class WaRecorderService(WaRuntimeSupportMixin):
             if self.is_recording:
                 #logger.debug("Ignoring redundant call to service.start_recording()")
                 return
-            logger.info("Starting offloaded recording")
+            logger.info("Starting offloaded recording in service")
 
             if not self._recording_toolchain:
                 self._recording_toolchain = self._build_recording_toolchain()  # FIXME handle exceptions instead of None!
 
             assert self._recording_toolchain
             start_recording_toolchain(self._recording_toolchain)
-            logger.info("Offloaded recording started")
+            logger.info("Offloaded recording started in service")
 
             if IS_ANDROID:
                 from wacomponents.default_settings import ANDROID_CONTEXT
@@ -174,7 +176,11 @@ class WaRecorderService(WaRuntimeSupportMixin):
     @osc.address_method("/start_recording")
     @safe_catch_unhandled_exception
     def start_recording(self, env=None):
+        #print("@@ IMPORTANT - RECEIVED (auto-?)ORDER TO START RECORDING IN SERVICE")
         # Fixme - remove "env" parameter if unused?
+        if self._status_change_in_progress:
+            #print("@@ ORDER TO START RECORDING WAS IGNORED by service because other status change is already in progress")
+            return
         self._status_change_in_progress = True
         WIP_RECORDING_MARKER.touch(exist_ok=True)
         self.reload_config()  # Important
@@ -210,9 +216,9 @@ class WaRecorderService(WaRuntimeSupportMixin):
             if not self.is_recording:
                 #logger.debug("Ignoring redundant call to service.stop_recording()")
                 return
-            logger.info("Stopping recording")
+            logger.info("Stopping recording in service")
             stop_recording_toolchain(self._recording_toolchain)
-            logger.info("Recording stopped")
+            logger.info("Recording stopped in service")
 
             if IS_ANDROID:
                 from wacomponents.default_settings import ANDROID_CONTEXT
@@ -228,6 +234,10 @@ class WaRecorderService(WaRuntimeSupportMixin):
     @osc.address_method("/stop_recording")
     @safe_catch_unhandled_exception
     def stop_recording(self):
+        #print("@@ IMPORTANT - RECEIVED ORDER TO STOP RECORDING IN SERVICE")
+        if self._status_change_in_progress:
+            #print("@@ ORDER TO STOP RECORDING WAS IGNORED by service because other status change is already in progress")
+            return
         self._status_change_in_progress = True
         try:
             WIP_RECORDING_MARKER.unlink()  # TODO use "missing_ok" asap
@@ -244,7 +254,9 @@ class WaRecorderService(WaRuntimeSupportMixin):
             logger.info(
                 "Recording is in progress, we stop it as part of service shutdown"
             )
-            self.stop_recording().result(timeout=30)   # SYNCHRONOUS CALL (but through threadpool still)
+            future = self.stop_recording()  # Could be None if unexpected exception was caught!
+            if future:
+                future.result(timeout=30)   # SYNCHRONOUS CALL (but through threadpool still)
 
         osc.stop_all()
         self._termination_event.set()

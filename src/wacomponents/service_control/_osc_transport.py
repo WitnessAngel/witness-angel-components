@@ -19,7 +19,7 @@ class RobustOSCThreadServer(_OSCThreadServer):
                 super()._listen()
             except Exception as exc:
                 print(
-                    "Unhandled exception intercepted in RobustOSCThreadServer._listen(): %r" % exc
+                    "!!! Unhandled exception intercepted in RobustOSCThreadServer._listen(): %r" % exc
                 )
 
 
