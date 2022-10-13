@@ -23,8 +23,19 @@ def _presetup_app_environment(setup_kivy):
         if IS_ANDROID:
             patch_ctypes_module_for_android()  # Necessary for wacryptolib
 
+            from jnius import autoclass
+            from android.runnable import Runnable
+
+            def config_real():
+                python_activity_class = autoclass("org.kivy.android.PythonActivity")
+                python_activity_instance = python_activity_class.mActivity
+                android_window = python_activity_instance.getWindow()
+                android_window.addFlags(2)  # Constant LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER
+                print(">>>>>>>> Called android_window.addFlags(2) !")
+            Runnable(config_real)()
+
     except Exception as exc:
-        print(">>>>>>>> FAILED CTYPES PATCHING ON ANDROID: %r" % exc)
+        print(">>>>>>>> FAILED ANDROID PRESETUP: %r" % exc)
 
     try:
 
