@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-09 21:10+0200\n"
+"POT-Creation-Date: 2022-10-18 13:05+0200\n"
 "PO-Revision-Date: 2022-10-09 21:16+0200\n"
 "Last-Translator: Pascal <pythoniks@gmail.com>\n"
 "Language-Team: Nothing\n"
@@ -24,7 +24,7 @@ msgstr ""
 "Certains changements de configuration pourraient ne s'appliquer qu'au "
 "redémarrage de l'enregistrement"
 
-#: src/wacomponents/application/recorder_gui.py:104
+#: src/wacomponents/application/recorder_gui.py:105
 msgid "Configuration errors prevent recording"
 msgstr "Des erreurs de configuration empêchent l'enregistrement"
 
