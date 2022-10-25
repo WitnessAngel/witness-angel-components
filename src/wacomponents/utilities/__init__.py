@@ -80,7 +80,6 @@ def get_system_information(disk_storage_path: Path):
         "wifi_status": "ON" if wifi_status else "OFF",
         "ethernet_status": "ON" if ethernet_status else "OFF",
         "now_datetime": now_datetime,
-        # "containers": "76",
     }
 
 

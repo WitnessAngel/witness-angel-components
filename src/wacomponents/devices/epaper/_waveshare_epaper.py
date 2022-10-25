@@ -10,6 +10,8 @@ FONT_PATH = str(Path(__file__).parent.joinpath('Font.ttc'))  # FIXME put assets 
 
 class WaveshareEpaperStatusDisplay(EpaperStatusDisplayBase):
 
+    # COMMON PARAMETERS #
+
     # INVERTED, since we want landscape orientation!
     PAPER_WIDTH = epd2in7.EPD_HEIGHT
     PAPER_HEIGHT = epd2in7.EPD_WIDTH
