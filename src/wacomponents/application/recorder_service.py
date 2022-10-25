@@ -106,11 +106,11 @@ class WaRecorderService(WaRuntimeSupportMixin):
         return self._send_message("/log_output", "Service: " + msg)
 
     def _send_message(self, address, *values):
-        #print("@@ Message sent from service to app: %s %s" % (address, values))
+        print("@@ Message sent from service to app: %s %s" % (address, values))
         try:
             return self._osc_client.send_message(address, values=values, safer=True)
         except OSError as exc:
-            #sys.__stdout__.write("FATAL eror when sending OSC message: %r\n" % exc)
+            ##sys.__stdout__.write("FATAL eror when sending OSC message: %r\n" % exc)
             # NO PRINT/LOGGING HERE, else it would loop due to custom logging handler in Kivy
             ##print(
             ##    "{SERVICE} Could not send osc message %s%s to app: %r"
@@ -176,10 +176,10 @@ class WaRecorderService(WaRuntimeSupportMixin):
     @osc.address_method("/start_recording")
     @safe_catch_unhandled_exception
     def start_recording(self, env=None):
-        #print("@@ IMPORTANT - RECEIVED (auto-?)ORDER TO START RECORDING IN SERVICE")
+        print("@@ IMPORTANT - RECEIVED (auto-?)ORDER TO START RECORDING IN SERVICE")
         # Fixme - remove "env" parameter if unused?
         if self._status_change_in_progress:
-            #print("@@ ORDER TO START RECORDING WAS IGNORED by service because other status change is already in progress")
+            print("@@ ORDER TO START RECORDING WAS IGNORED by service because other status change is already in progress")
             return
         self._status_change_in_progress = True
         WIP_RECORDING_MARKER.touch(exist_ok=True)
@@ -233,10 +233,10 @@ class WaRecorderService(WaRuntimeSupportMixin):
 
     @osc.address_method("/stop_recording")
     @safe_catch_unhandled_exception
-    def stop_recording(self):
-        #print("@@ IMPORTANT - RECEIVED ORDER TO STOP RECORDING IN SERVICE")
-        if self._status_change_in_progress:
-            #print("@@ ORDER TO STOP RECORDING WAS IGNORED by service because other status change is already in progress")
+    def stop_recording(self, force=False):
+        print("@@ IMPORTANT - RECEIVED ORDER TO STOP RECORDING IN SERVICE")
+        if self._status_change_in_progress and not force:
+            print("@@ ORDER TO STOP RECORDING WAS IGNORED by service because other status change is already in progress")
             return
         self._status_change_in_progress = True
         try:
@@ -254,7 +254,7 @@ class WaRecorderService(WaRuntimeSupportMixin):
             logger.info(
                 "Recording is in progress, we stop it as part of service shutdown"
             )
-            future = self.stop_recording()  # Could be None if unexpected exception was caught!
+            future = self.stop_recording(force=True)  # Could be None if unexpected exception was caught!
             if future:
                 future.result(timeout=30)   # SYNCHRONOUS CALL (but through threadpool still)
 
