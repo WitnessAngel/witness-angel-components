@@ -46,8 +46,8 @@ def detect_default_language():
     else:
         # VERY rough detection of user language, will often not work under Windows but it's OK
         # See https://stackoverflow.com/a/25691701 and win32.GetUserDefaultUILanguage()
-        lang_code, _charset = locale.getlocale()
-        #print("######### DEFAULT LOCALE DETECTED: %s %s #########" % (lang_code, _charset))
+        lang_code, _charset = locale.getdefaultlocale()
+        print("######### DEFAULT LOCALE DETECTED: %s %s #########" % (lang_code, _charset))
 
     lang_code = lang_code or ""  # lang_code might be None if undetected
     return "fr" if _normalize(lang_code).startswith("fr") else "en"
