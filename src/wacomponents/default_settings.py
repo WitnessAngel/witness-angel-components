@@ -60,7 +60,7 @@ def _is_raspberry_pi(raise_on_errors=False):
     return True
 
 IS_RASPBERRY_PI = _is_raspberry_pi()
-print(">>>>>>> IS_RASPBERRY_PI value is", IS_RASPBERRY_PI)
+##print(">>>>>>> IS_RASPBERRY_PI value is", IS_RASPBERRY_PI)
 
 
 # Everything is slow on a raspberry pi, so we take our time

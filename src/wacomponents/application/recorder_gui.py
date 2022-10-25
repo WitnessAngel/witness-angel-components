@@ -27,7 +27,7 @@ class WaRecorderGui(WaGenericGui):  # FIXME WaGui instead?
     Main GUI app, which controls the recording service (via OSC protocol), and
     exposes settings as well as existing containers.
     """
-    service_querying_interval = 1 * WAIT_TIME_MULTIPLIER  # To check when service is ready, at app start
+    service_querying_interval = 2 * WAIT_TIME_MULTIPLIER  # To check when service is ready, at app start
 
     # Overridden as property to allow event dispatching in GUI
     assert hasattr(WaGenericGui, "checkup_status_text")
@@ -98,7 +98,7 @@ class WaRecorderGui(WaGenericGui):  # FIXME WaGui instead?
         Might also be called as a reaction to the service broadcasting a changed state.
          Let it propagate anyway in this case, the service will just ignore the duplicated command.
         """
-        #print("@@ GUI calling switch_to_recording_state %r" % is_recording)
+        print("@@ GUI calling switch_to_recording_state %r" % is_recording)
         self.set_recording_btn_state(disabled=True)
         if is_recording:
 
@@ -112,7 +112,7 @@ class WaRecorderGui(WaGenericGui):  # FIXME WaGui instead?
 
     def _request_recording_state(self, *args, **kwargs):
         """Ask the service for an update on its recording state."""
-        #print("@@@ App requesting recording state")
+        print("@@@ App requesting recording state")
         self._unanswered_service_state_requests += 1
         if self._unanswered_service_state_requests > 2:
             logger.info("Launching recorder service from main app (unanswered requests = %s)",
@@ -123,7 +123,7 @@ class WaRecorderGui(WaGenericGui):  # FIXME WaGui instead?
             self.service_controller.broadcast_recording_state()
 
     def _receive_recording_state(self, is_recording, *args, **kwargs):
-        #print("@@@ App received recording state %r" % is_recording)
+        print("@@@ App received recording state %r" % is_recording)
         self._unanswered_service_state_requests = 0  # RESET
         if is_recording == "":  # Special case (ternary value, since None is not supported by OSC)
             self.set_recording_btn_state(disabled=True)
