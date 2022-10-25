@@ -6,6 +6,7 @@ import sys
 from kivy.logger import Logger as logger
 
 from ._base_service_controller import ServiceControllerBase
+from ..default_settings import WAIT_TIME_MULTIPLIER
 
 WA_SERVICE_SCRIPT = os.getenv("WA_SERVICE_SCRIPT")
 
@@ -31,7 +32,7 @@ class ServiceController(ServiceControllerBase):
         self._send_message("/stop_server")
         if self._subprocess:  # Else, service already existed at App launch... give up
             try:
-                self._subprocess.wait(timeout=40)
+                self._subprocess.wait(timeout=10*WAIT_TIME_MULTIPLIER)
             except subprocess.TimeoutExpired:
                 logger.error("Service subprocess didn't exit gracefully, we kill it now")
                 self._subprocess.kill()

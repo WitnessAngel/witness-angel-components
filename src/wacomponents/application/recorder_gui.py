@@ -4,6 +4,7 @@ import logging
 import os
 
 from wacomponents.application.generic_gui import WaGenericGui
+from wacomponents.default_settings import WAIT_TIME_MULTIPLIER
 from wacomponents.widgets.popups import display_info_snackbar, display_info_toast
 
 from kivy.clock import Clock
@@ -26,7 +27,7 @@ class WaRecorderGui(WaGenericGui):  # FIXME WaGui instead?
     Main GUI app, which controls the recording service (via OSC protocol), and
     exposes settings as well as existing containers.
     """
-    service_querying_interval = 2  # To check when service is ready, at app start
+    service_querying_interval = 1 * WAIT_TIME_MULTIPLIER  # To check when service is ready, at app start
 
     # Overridden as property to allow event dispatching in GUI
     assert hasattr(WaGenericGui, "checkup_status_text")
@@ -116,7 +117,7 @@ class WaRecorderGui(WaGenericGui):  # FIXME WaGui instead?
         if self._unanswered_service_state_requests > 2:
             logger.info("Launching recorder service from main app (unanswered requests = %s)",
                         self._unanswered_service_state_requests)
-            self._unanswered_service_state_requests = -20  # Leave some time for the service to go online
+            self._unanswered_service_state_requests = -8  # Leave some time for the service to go online
             self.service_controller.start_service()
         else:
             self.service_controller.broadcast_recording_state()

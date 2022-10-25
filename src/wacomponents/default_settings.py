@@ -63,6 +63,10 @@ IS_RASPBERRY_PI = _is_raspberry_pi()
 print(">>>>>>> IS_RASPBERRY_PI value is", IS_RASPBERRY_PI)
 
 
+# Everything is slow on a raspberry pi, so we take our time
+WAIT_TIME_MULTIPLIER = 4 if IS_RASPBERRY_PI else 1
+
+
 def _strip_filepath_scheme(filepath):
     # MacOSX returns file:// URLs (do not use str.removeprefix() else python retrocompatibility issues)
     if filepath.startswith("file://"):
