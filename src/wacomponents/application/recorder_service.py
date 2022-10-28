@@ -183,12 +183,12 @@ class WaRecorderService(WaRuntimeSupportMixin):
         if self._status_change_in_progress:
             print("@@ ORDER TO START RECORDING WAS IGNORED by service because other status change is already in progress")
             return
-        self._status_change_in_progress = True
         WIP_RECORDING_MARKER.touch(exist_ok=True)
         self.reload_config()  # Important
         if not self.refresh_checkup_status():
             logger.error("Service failed to start recording because of configuration issues")
             return
+        self._status_change_in_progress = True  # We do it LAST MINUTE!
         return self._offload_task(self._offloaded_start_recording, env=env)
 
     @property
@@ -240,11 +240,11 @@ class WaRecorderService(WaRuntimeSupportMixin):
         if self._status_change_in_progress and not force:
             print("@@ ORDER TO STOP RECORDING WAS IGNORED by service because other status change is already in progress")
             return
-        self._status_change_in_progress = True
         try:
             WIP_RECORDING_MARKER.unlink()  # TODO use "missing_ok" asap
         except FileNotFoundError:
             pass
+        self._status_change_in_progress = True  # Do it last minute!
         return self._offload_task(self._offloaded_stop_recording)
 
     @osc.address_method("/stop_server")

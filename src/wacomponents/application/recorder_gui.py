@@ -91,7 +91,8 @@ class WaRecorderGui(WaGenericGui):  # FIXME WaGui instead?
             self.service_controller.stop_service()  # Will wait for termination, then kill it
 
     def force_stop_service(self):
-        self.service_controller.stop_service()
+        self.service_controller.stop_service()  # Does wait for subprocess death
+        self.set_recording_btn_state(disabled=True)
 
     def switch_to_recording_state(self, is_recording):
         """
