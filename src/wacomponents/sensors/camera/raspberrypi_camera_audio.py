@@ -55,6 +55,7 @@ class RaspberryLibcameraSensor(PeriodicSubprocessStreamRecorder):
             "--nopreview",  # No realtime GUI preview of video
             "--flush",  # Push data ASAP
             "--framerate", "30",
+            "--autofocus",  # Only used at startup actually, unless we use "–-keypress" trick
             # Discrepancy, see https://github.com/raspberrypi/libcamera-apps/issues/378#issuecomment-1269461087:
             "--output", "pipe:" if alsa_device_name else "-",
             #FIXME ADD DIMENSIONS/COLORS (=MODE) HERE!!!!!
@@ -95,6 +96,7 @@ class RaspberryLibcameraSensor(PeriodicSubprocessStreamRecorder):
                                     "--width", str(snapshot_width_px),
                                     "--height", str(snapshot_height_px),
                                     "--immediate",  # No preview phase when taking picture
+                                    "--autofocus",  # Might be limited by "immediate" mode...
                                 ]
                 logger.info("Taking camera snapshot with command: %s", " ".join(snapshot_command_line))
                 subprocess.check_call(snapshot_command_line, timeout=20)
