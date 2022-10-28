@@ -78,6 +78,8 @@ class WaRecorderService(WaRuntimeSupportMixin):
 
     def reload_config(self, filename=None):  # FIXME move to generic app ?
 
+        # FIXME always parse default values too, in case service gets restarted alone after upgrade of python packages??
+
         if not filename:
             filename = self.config_file_path
 
