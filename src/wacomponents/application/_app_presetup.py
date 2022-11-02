@@ -46,34 +46,36 @@ def _presetup_app_environment(setup_kivy):
     except Exception as exc:
         print(">>>>>>>> FAILED REGISTERING COMMON RESOURCES: %r" % exc)
 
+    import logging
+
+    if setup_kivy:
+
+        try:
+
+            # WORKAROUND FOR LOGGING AND GRAPHICS WEIRDNESS IN KIVY SETUP #
+
+            import sys
+            custom_kivy_stream_handler = logging.StreamHandler()
+            sys._kivy_logging_handler = custom_kivy_stream_handler
+            from kivy.logger import Logger as logger  # Trigger init of Kivy logging
+            del logger
+
+            # Finish ugly monkey-patching by Kivy
+            assert logging.getLogger("kivy") is logging.root
+            logging.Logger.root = logging.root
+            logging.Logger.manager.root = logging.root
+
+        except Exception as exc:
+            print(">>>>>>>> FAILED INITIALIZATION OF KIVY LOGGING: %r" % exc)
+
+    # COMMON LOGGING TWEAKS
+    # For now, we allow EVERYTHING
+    logging.root.setLevel(logging.INFO)
+    logging.disable(0)
+    #import logging_tree ; logging_tree.printout()
+
     if not setup_kivy:
         return  # Cancel the rest of setups
-
-    try:
-
-        # WORKAROUND FOR LOGGING AND GRAPHICS WEIRDNESS IN KIVY SETUP #
-
-        import logging
-        import sys
-        custom_kivy_stream_handler = logging.StreamHandler()
-        sys._kivy_logging_handler = custom_kivy_stream_handler
-        from kivy.logger import Logger as logger  # Trigger init of Kivy logging
-        del logger
-
-        # Finish ugly monkey-patching by Kivy
-        assert logging.getLogger("kivy") is logging.root
-        logging.Logger.root = logging.root
-        logging.Logger.manager.root = logging.root
-
-        # For now allow EVERYTHING
-        logging.root.setLevel(logging.INFO)
-        logging.disable(0)
-
-        # import logging_tree
-        # logging_tree.printout()
-
-    except Exception as exc:
-        print(">>>>>>>> FAILED INITIALIZATION OF KIVY LOGGING: %r" % exc)
 
     try:
 
