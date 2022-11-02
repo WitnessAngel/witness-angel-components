@@ -116,18 +116,40 @@ class RaspberryAlsaMicrophoneSensor(PeriodicSubprocessStreamRecorder):
 
     subprocess_data_chunk_size = int(0.2 * 1024**2)  # MP3 has smaller size than video
 
-    def _build_subprocess_command_line(self):
-        return [
-            "ffmpeg",
-            "-f", "alsa",
-            "-ac", "1",  # TODO make it selectable for 2-mic sources?
-            "-i", "default",  # TODO allow selection of source, later?
-            "-acodec", "libmp3lame",
-            "-ab", "128k",
-            "-f", "mp3",
-            "-loglevel", "error",
-            "pipe:1"
-        ]
+    def __init__(self,
+                 compress_recording: bool = False,
+                 **kwargs):
+        super().__init__(**kwargs)
+        self._compress_recording = compress_recording
 
-    #FIXME  arecord -c 1 -r 22050 -f S16_LE -t wav -d 20 mon4.wav
+    @property
+    def record_extension(self):
+        return ".mp3" if self._compress_recording else ".wav"
+
+    def _build_subprocess_command_line(self):
+        if self._compress_recording:
+
+            command = [
+                "ffmpeg",
+                "-f", "alsa",
+                "-ac", "1",  # TODO make it selectable for 2-mic sources?
+                "-i", "default",  # TODO allow selection of source, later?
+                "-acodec", "libmp3lame",
+                "-ab", "128k",
+                "-f", "mp3",
+                "-loglevel", "error",
+                "pipe:1"
+            ]
+
+        else:
+
+            command = [
+                "arecord",
+                "-c", "1",
+                "-r", "22005",
+                "-f", "S16_LE",
+                "-t", "wav"
+            ]  # If filename is not specified, the standard output is used.
+
+        return command
 
