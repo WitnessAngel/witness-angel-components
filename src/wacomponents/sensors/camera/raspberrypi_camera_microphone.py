@@ -1,6 +1,5 @@
 import logging
 import subprocess
-from pathlib import Path
 from subprocess import CalledProcessError, TimeoutExpired
 from typing import Optional
 
@@ -23,16 +22,90 @@ def list_pulseaudio_microphone_names():
     return microphone_names
 
 
+def is_legacy_rpi_camera_enabled():
+    try:
+        output = subprocess.check_output(["vcgencmd", "get_camera"], text=True)
+        return ("supported=1 " in output)
+    except CalledProcessError:
+        return False
+
+
+class RaspberryRaspividSensor(PeriodicSubprocessStreamRecorder):
+    """
+    Records a raw h264 file using legacy (GPU-based) raspivid interface of the Raspberry Pi.
+
+    No audio can be recorded through this sensor.
+
+    Records a screenshot before each video clip, if requested (this can be slow).
+    """
+
+    sensor_name = "rpi_raspivid_camera"
+    record_extension = ".h264"
+
+    def __init__(self,
+                 preview_image_path: Optional[str] = None,
+                 **kwargs):
+        super().__init__(**kwargs)
+        self._preview_image_path = preview_image_path  # FIXME deduplicate this thingy with camera mixin?
+
+    def _build_subprocess_command_line(self):
+
+        raspivid_command_line = [
+           "raspivid",
+            "--timeout", "0",  # NO timeout
+            "--nopreview",
+            "--framerate", "30",
+            "-pf", "baseline",  # H264 profile tweaking, lots of other options exist
+            # Set most common medium mode for V1 (OV5647) and V2 (IMX219) cameras
+            # See https://www.waveshare.com/wiki/RPi_Camera
+            "--width", "1296",
+            "--height", "730",
+            "--output", "-",
+            "-v",
+        ]
+        return raspivid_command_line
+
+    def _launch_and_consume_subprocess(self, *args, **kwargs):
+
+        if self._preview_image_path:
+
+            # Cleanup dangling preview image
+            try:
+                self._preview_image_path.unlink()  # FIXME use "missing_ok" soon
+            except FileNotFoundError:
+                pass
+
+            # SPECIAL STEP - launch a subprocess just to capture screenshot
+            try:
+                snapshot_width_px = 140
+                snapshot_height_px = 104  # Even number for 4/3 format
+                snapshot_command_line = [
+                    "raspistill",
+                    "--nopreview",  # No GUI display
+                    "--output", str(self._preview_image_path),
+                    "--width", str(snapshot_width_px),
+                    "--height", str(snapshot_height_px),
+                    "--quality", "90",
+                    "-v",
+                ]
+                logger.info("Taking camera legacy snapshot with command: %s", " ".join(snapshot_command_line))  # Fixme deduplicate this
+                subprocess.check_call(snapshot_command_line, timeout=20)
+            except (CalledProcessError, TimeoutExpired) as exc:
+                logger.warning("Couldn't get legacy screenshot in %s sensor: %s", self.sensor_name, exc)
+
+        return super()._launch_and_consume_subprocess( *args, **kwargs)
+
+
 class RaspberryLibcameraSensor(PeriodicSubprocessStreamRecorder):
     """
     Records a video file using local camera/audio devices plugged to the Raspberry Pi.
 
     Capture video is stored either as MPEGTS if audio is embedded in it, else as raw H264 stream (without container).
 
-    Records a screenshot BETWEEN each video recording, if requested (this can be slow).
+    Records a screenshot before each video clip, if requested (this can be slow).
     """
 
-    sensor_name = "rpi_camera"
+    sensor_name = "rpi_libcamera"
 
     @property
     def record_extension(self):
@@ -57,8 +130,8 @@ class RaspberryLibcameraSensor(PeriodicSubprocessStreamRecorder):
             "--framerate", "30",
             # FOR LATER "--autofocus",  # Only used at startup actually, unless we use "–-keypress" trick
             # Discrepancy, see https://github.com/raspberrypi/libcamera-apps/issues/378#issuecomment-1269461087:
-            "--output", "pipe:" if alsa_device_name else "-",
-            #FIXME ADD DIMENSIONS/COLORS (=MODE) HERE!!!!!
+            "--output", "pipe:" if alsa_device_name else "-",  # FIXME soon fixed in lincamera-apps, becomes "-o - " instead
+            #FIXME ADD DIMENSIONS/COLORS (=MODE) HERE!!!!! See --mode !
         ]
 
         if alsa_device_name:
