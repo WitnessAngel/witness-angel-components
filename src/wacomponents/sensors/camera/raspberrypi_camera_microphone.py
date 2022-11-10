@@ -212,7 +212,7 @@ class RaspberryAlsaMicrophoneSensor(PeriodicSubprocessStreamRecorder):
                  ffmpeg_alsa_output_format: str,
                  **kwargs):
         super().__init__(**kwargs)
-        self._arecord_parameters = arecord_parameters,
+        self._arecord_parameters = arecord_parameters
         self._arecord_output_format = arecord_output_format
         self._ffmpeg_alsa_parameters = ffmpeg_alsa_parameters
         self._ffmpeg_alsa_output_format = ffmpeg_alsa_output_format
