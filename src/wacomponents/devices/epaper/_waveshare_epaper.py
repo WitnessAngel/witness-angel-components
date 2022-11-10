@@ -1,14 +1,14 @@
 
 from pathlib import Path
 
-from waveshare_epd import epd2in7
+from waveshare_epd import epd2in7, epd2in13_V3
 
 from wacomponents.devices.epaper._epaper_base import EpaperStatusDisplayBase
 
 FONT_PATH = str(Path(__file__).parent.joinpath('Font.ttc'))  # FIXME put assets elsewhere
 
 
-class WaveshareEpaperStatusDisplay(EpaperStatusDisplayBase):
+class WaveshareEpaperStatusDisplay2in7(EpaperStatusDisplayBase):
 
     # COMMON PARAMETERS #
 
@@ -33,12 +33,39 @@ class WaveshareEpaperStatusDisplay(EpaperStatusDisplayBase):
 
     def _initialize_display(self):
         self.epd.Init_4Gray()
-        #self.epd.Clear(0xFF)  # clear the display
 
     def _display_image(self, pil_image):
         self.epd.display_4Gray(self.epd.getbuffer_4Gray(pil_image))
 
+    def _clear_display(self):
+        self.epd.Clear(0xFF)
+
     def _release_display(self):
-        self.epd.sleep()
+        self.epd.sleep()  # IMPORTANT, else the display can be damaged by long power-on
 
 
+class WaveshareEpaperStatusDisplay2in13V3(WaveshareEpaperStatusDisplay2in7):
+
+    PAPER_WIDTH = epd2in13_V3.EPD_HEIGHT
+    PAPER_HEIGHT = epd2in13_V3.EPD_WIDTH
+
+    TEXT_OFFSET_X = 122
+    TEXT_OFFSET_Y = 70
+
+    PREVIEW_IMAGE_WIDTH = 120
+    PREVIEW_IMAGE_HEIGHT = int(PREVIEW_IMAGE_WIDTH / (16/9))
+
+    BUTTON_PIN_1 = None
+    BUTTON_PIN_2 = None
+    BUTTON_PIN_3 = None
+    BUTTON_PIN_4 = None
+
+    SMALL_DISPLAY = True
+
+    def _initialize_display(self):
+        self.epd.init()
+
+    def _display_image(self, pil_image):
+        self._clear_display()
+        pil_image.convert('1')
+        self.epd.display(self.epd.getbuffer(pil_image))

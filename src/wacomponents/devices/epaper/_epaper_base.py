@@ -51,6 +51,9 @@ class EpaperStatusDisplayBase:
     def release_display(self):
         self._release_display()
 
+    def clear_display(self):
+        self._clear_display()
+
     def _initialize_display(self):
         """Prepare e-parer for display"""
         raise NotImplementedError("_initialize_display() not implemented")
@@ -58,6 +61,10 @@ class EpaperStatusDisplayBase:
     def _release_display(self):
         """Shutdown display, e.g. to avoid harming it by too long power-ON"""
         raise NotImplementedError("_release_display() not implemented")
+
+    def _clear_display(self):
+        """Clear display, e.g. for long conservation of powered-off e-paper"""
+        raise NotImplementedError("_clear_display() not implemented")
 
     def _display_image(self, screen_image):
         """Directly output image to device"""

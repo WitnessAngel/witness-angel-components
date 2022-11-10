@@ -1,9 +1,9 @@
-from devices import dfrobot_epaper
+from devices import dfrobot_epaper  # Must come from DFRobot_RPi_Display_v2 repository
 
 from wacomponents.devices.epaper._epaper_base import EpaperStatusDisplayBase
 
 
-class DfrobotEpaperStatusDisplay(EpaperStatusDisplayBase):
+class DfrobotEpaperStatusDisplay2in13v2(EpaperStatusDisplayBase):
 
     # SPECIFIC PARAMETERS #
 
@@ -12,9 +12,6 @@ class DfrobotEpaperStatusDisplay(EpaperStatusDisplayBase):
     _RASPBERRY_PIN_CS = 27
     _RASPBERRY_PIN_CD = 17
     _RASPBERRY_PIN_BUSY = 4
-
-    epaper = dfrobot_epaper.DFRobot_Epaper_SPI(
-        _RASPBERRY_SPI_BUS, _RASPBERRY_SPI_DEV, _RASPBERRY_PIN_CS, _RASPBERRY_PIN_CD, _RASPBERRY_PIN_BUSY)
 
     # COMMON PARAMETERS #
 
@@ -34,17 +31,25 @@ class DfrobotEpaperStatusDisplay(EpaperStatusDisplayBase):
 
     SMALL_DISPLAY = True
 
+    def __init__(self):
+        self.epaper = dfrobot_epaper.DFRobot_Epaper_SPI(
+            self._RASPBERRY_SPI_BUS, self._RASPBERRY_SPI_DEV, self._RASPBERRY_PIN_CS,
+            self._RASPBERRY_PIN_CD, self._RASPBERRY_PIN_BUSY)
+
     def _initialize_display(self):
+        # Weirdly, no need for _powerOn/_poweroff on this e-paper screen
         self.epaper.begin()
 
-    def _clear_screen(self):
-        self.epaper.clearScreen()
-        #self.epaper.readID()
-
     def _display_image(self, pil_image):
-        self._clear_screen()
+        self._clear_display()
         pil_image.convert('1').save("tempimage.bmp")
         self.epaper.bitmapFile(0, 0, "tempimage.bmp")
 
+    def _clear_display(self):
+        self.epaper.clearScreen()
+        #self.epaper.readID()
+
     def _release_display(self):
-        pass  # Nothing to do, since DFRobot_Epaper_SPI calls RPIGPIO.cleanup() on __del__()
+        # Nothing to do after an update, it seems
+        # And at program termination, DFRobot_Epaper_SPI calls RPIGPIO.cleanup() via __del__()
+        pass
