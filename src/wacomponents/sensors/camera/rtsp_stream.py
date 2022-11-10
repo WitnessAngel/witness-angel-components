@@ -7,10 +7,10 @@ from pathlib import Path
 from wacomponents.i18n import tr
 from kivy.logger import Logger as logger
 
+from wacomponents.sensors.camera._camera_base import PreviewImageMixin
 from wacryptolib.sensor import PeriodicSubprocessStreamRecorder
 
 logger = logging.getLogger(__name__)
-
 
 
 def get_utc_now_date():  # FIXME remove this
@@ -38,7 +38,7 @@ def get_ffmpeg_version() -> tuple:
     return float(ffmpeg_version), None
 
 
-class RtspCameraSensor(PeriodicSubprocessStreamRecorder):
+class RtspCameraSensor(PreviewImageMixin, PeriodicSubprocessStreamRecorder):
     """
     Records an RTSP stream, for now WITHOUT AUDIO.
 
@@ -50,12 +50,10 @@ class RtspCameraSensor(PeriodicSubprocessStreamRecorder):
 
     def __init__(self,
                  video_stream_url: str,
-                 preview_image_path: Path,
                  **kwargs):
         super().__init__(**kwargs)
-        assert video_stream_url and preview_image_path, (video_stream_url, preview_image_path)
+        assert video_stream_url, video_stream_url
         self._video_stream_url = video_stream_url
-        self._preview_image_path = preview_image_path
 
     def _build_subprocess_command_line(self):
         ffmpeg_version, _error_msg = get_ffmpeg_version()
@@ -106,17 +104,9 @@ class RtspCameraSensor(PeriodicSubprocessStreamRecorder):
             #"-vf", "fps=1/60", "img%03d.jpg"
         ]
         preview_image_output = [
-            "-frames:v",  "1", "-filter:v", "scale=140:-1,hue=s=0", str(self._preview_image_path),  # FIXME parametrize DIMENSIONS
+            "-frames:v",  "1",
+            "-filter:v", "scale=%d:-1,hue=s=0" % self.PREVIEW_IMAGE_WIDTH_PX,  # Keep image ratio!
+            str(self._preview_image_path),  # FIXME parametrize DIMENSIONS
         ]
         subprocess_command_line = executable + input + codec + logs + video_output + preview_image_output
         return subprocess_command_line
-
-    def _launch_and_consume_subprocess(self, *args, **kwargs):
-
-        # Cleanup dangling preview image
-        try:
-            self._preview_image_path.unlink()  # FIXME use "missing_ok" soon
-        except FileNotFoundError:
-            pass
-
-        return super()._launch_and_consume_subprocess( *args, **kwargs)

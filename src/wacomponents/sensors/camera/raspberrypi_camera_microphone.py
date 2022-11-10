@@ -3,6 +3,7 @@ import subprocess
 from subprocess import CalledProcessError, TimeoutExpired
 from typing import Optional
 
+from wacomponents.sensors.camera._camera_base import PreviewImageMixin
 from wacryptolib.sensor import PeriodicSubprocessStreamRecorder
 
 
@@ -30,7 +31,7 @@ def is_legacy_rpi_camera_enabled():
         return False
 
 
-class RaspberryRaspividSensor(PeriodicSubprocessStreamRecorder):
+class RaspberryRaspividSensor(PreviewImageMixin, PeriodicSubprocessStreamRecorder):
     """
     Records a raw h264 file using legacy (GPU-based) raspivid interface of the Raspberry Pi.
 
@@ -41,12 +42,6 @@ class RaspberryRaspividSensor(PeriodicSubprocessStreamRecorder):
 
     sensor_name = "rpi_raspivid_camera"
     record_extension = ".h264"
-
-    def __init__(self,
-                 preview_image_path: Optional[str] = None,
-                 **kwargs):
-        super().__init__(**kwargs)
-        self._preview_image_path = preview_image_path  # FIXME deduplicate this thingy with camera mixin?
 
     def _build_subprocess_command_line(self):
 
@@ -69,22 +64,14 @@ class RaspberryRaspividSensor(PeriodicSubprocessStreamRecorder):
 
         if self._preview_image_path:
 
-            # Cleanup dangling preview image
-            try:
-                self._preview_image_path.unlink()  # FIXME use "missing_ok" soon
-            except FileNotFoundError:
-                pass
-
             # SPECIAL STEP - launch a subprocess just to capture screenshot
             try:
-                snapshot_width_px = 140
-                snapshot_height_px = 104  # Even number for 4/3 format
                 snapshot_command_line = [
                     "raspistill",
                     "--nopreview",  # No GUI display
                     "--output", str(self._preview_image_path),
-                    "--width", str(snapshot_width_px),
-                    "--height", str(snapshot_height_px),
+                    "--width", str(self.PREVIEW_IMAGE_WIDTH_PX),
+                    "--height", str(self.PREVIEW_IMAGE_HEIGHT_PX),
                     "--quality", "90",
                     "-v",
                 ]
@@ -96,7 +83,7 @@ class RaspberryRaspividSensor(PeriodicSubprocessStreamRecorder):
         return super()._launch_and_consume_subprocess( *args, **kwargs)
 
 
-class RaspberryLibcameraSensor(PeriodicSubprocessStreamRecorder):
+class RaspberryLibcameraSensor(PreviewImageMixin, PeriodicSubprocessStreamRecorder):
     """
     Records a video file using local camera/audio devices plugged to the Raspberry Pi.
 
@@ -112,11 +99,9 @@ class RaspberryLibcameraSensor(PeriodicSubprocessStreamRecorder):
         return ".mpegts" if self._alsa_device_name else ".h264"
 
     def __init__(self,
-                 preview_image_path: Optional[str] = None,
                  alsa_device_name: Optional[str]= None,
                  **kwargs):
         super().__init__(**kwargs)
-        self._preview_image_path = preview_image_path
         self._alsa_device_name = alsa_device_name
 
     def _build_subprocess_command_line(self):
@@ -130,7 +115,7 @@ class RaspberryLibcameraSensor(PeriodicSubprocessStreamRecorder):
             "--framerate", "30",
             # FOR LATER "--autofocus",  # Only used at startup actually, unless we use "–-keypress" trick
             # Discrepancy, see https://github.com/raspberrypi/libcamera-apps/issues/378#issuecomment-1269461087:
-            "--output", "pipe:" if alsa_device_name else "-",  # FIXME soon fixed in lincamera-apps, becomes "-o - " instead
+            "--output", "pipe:" if alsa_device_name else "-",  # FIXME soon fixed in libcamera-apps, becomes "-o - " instead
             #FIXME ADD DIMENSIONS/COLORS (=MODE) HERE!!!!! See --mode !
         ]
 
@@ -152,22 +137,14 @@ class RaspberryLibcameraSensor(PeriodicSubprocessStreamRecorder):
 
         if self._preview_image_path:
 
-            # Cleanup dangling preview image
-            try:
-                self._preview_image_path.unlink()  # FIXME use "missing_ok" soon
-            except FileNotFoundError:
-                pass
-
             # SPECIAL STEP - launch a subprocess just to capture screenshot
             try:
-                snapshot_width_px = 140
-                snapshot_height_px = 104  # Even number for 4/3 format
                 snapshot_command_line = [
                                     "libcamera-jpeg",
                                     "--nopreview",  # No GUI display
                                     "--output", str(self._preview_image_path),
-                                    "--width", str(snapshot_width_px),
-                                    "--height", str(snapshot_height_px),
+                                    "--width", str(self.PREVIEW_IMAGE_WIDTH_PX),
+                                    "--height", str(self.PREVIEW_IMAGE_HEIGHT_PX),
                                     "--immediate",  # No preview phase when taking picture
                                     # FOR LATER "--autofocus",  # Might be limited by "immediate" mode...
                                 ]
