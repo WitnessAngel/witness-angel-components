@@ -48,7 +48,7 @@ def _presetup_app_environment(setup_kivy):
 
     import logging
 
-    if setup_kivy:
+    if True:  # ALWAYS FIX LOGGING ACTUALLY - "if setup_kivy:"
 
         try:
 

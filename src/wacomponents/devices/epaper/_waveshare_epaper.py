@@ -62,6 +62,9 @@ class WaveshareEpaperStatusDisplay2in13V3(WaveshareEpaperStatusDisplay2in7):
 
     SMALL_DISPLAY = True
 
+    def __init__(self):
+        self.epd = epd2in13_V3.EPD()
+
     def _initialize_display(self):
         self.epd.init()
 
