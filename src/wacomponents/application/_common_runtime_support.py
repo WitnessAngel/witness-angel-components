@@ -108,7 +108,7 @@ class WaRuntimeSupportMixin:
     @staticmethod
     def check_keyguardian_counts(keyguardian_threshold, keyguardian_count):
         message = tr.f(tr._(
-            "{keyguardian_count} key guardian(s) configured, {keyguardian_threshold} of which necessary for decryption"))
+            "{keyguardian_count} key guardian(s) selected, {keyguardian_threshold} of which necessary for decryption"))
         if 0 < keyguardian_threshold <= keyguardian_count:
             return True, message
         return False, message
@@ -136,9 +136,9 @@ class WaRuntimeSupportMixin:
         return False, tr.f(tr._("Wrong gateway url: '{wagateway_url}'"))
 
     @staticmethod
-    def check_video_recording_duration_mn(video_recording_duration_mn):
-        message = tr.f(tr._("Each container stores {video_recording_duration_mn} mn(s) of video"))
-        if video_recording_duration_mn > 0:
+    def check_recording_duration_mn(recording_duration_mn):
+        message = tr.f(tr._("Each container stores {recording_duration_mn} mn(s) of video"))
+        if recording_duration_mn > 0:
             return True, message
         return False, message
 
