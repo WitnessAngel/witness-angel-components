@@ -43,21 +43,36 @@ class RaspberryRaspividSensor(PreviewImageMixin, PeriodicSubprocessStreamRecorde
     sensor_name = "rpi_raspivid_camera"
     record_extension = ".h264"
 
+
+    def __init__(self,
+                 raspivid_parameters: list,
+                 **kwargs):
+        super().__init__(**kwargs)
+        self._raspivid_parameters = raspivid_parameters
+
     def _build_subprocess_command_line(self):
 
-        raspivid_command_line = [
+        raspivid_command_line_base = [
            "raspivid",
             "--timeout", "0",  # NO timeout
             "--nopreview",
-            "--framerate", "30",
-            "-pf", "baseline",  # H264 profile tweaking, lots of other options exist
-            # Set most common medium mode for V1 (OV5647) and V2 (IMX219) cameras
-            # See https://www.waveshare.com/wiki/RPi_Camera
-            "--width", "1296",
-            "--height", "730",
-            "--output", "-",
             "-v",
         ]
+
+        if self._raspivid_parameters:
+            raspivid_parameters = self._raspivid_parameters
+        else:
+            raspivid_parameters = [
+                "--framerate", "30",
+                "-pf", "baseline",  # H264 profile tweaking, lots of other options exist
+                # Set most common medium mode for V1 (OV5647) and V2 (IMX219) cameras
+                # See https://www.waveshare.com/wiki/RPi_Camera
+                "--width", "1296",
+                "--height", "730",
+                "--output", "-",
+            ]
+
+        raspivid_command_line = raspivid_command_line_base + raspivid_parameters
         return raspivid_command_line
 
     def _launch_and_consume_subprocess(self, *args, **kwargs):
@@ -99,28 +114,42 @@ class RaspberryLibcameraSensor(PreviewImageMixin, PeriodicSubprocessStreamRecord
         return ".mpegts" if self._alsa_device_name else ".h264"
 
     def __init__(self,
-                 alsa_device_name: Optional[str]= None,
+                 alsa_device_name: Optional[str],
+                 libcameravid_video_parameters: list,
+                 libcameravid_audio_parameters: list,
                  **kwargs):
         super().__init__(**kwargs)
         self._alsa_device_name = alsa_device_name
+        self._libcameravid_video_parameters = libcameravid_video_parameters,
+        self._libcameravid_audio_parameters = libcameravid_audio_parameters,
 
     def _build_subprocess_command_line(self):
         alsa_device_name = self._alsa_device_name
 
-        libcamera_command_line = [
+        libcameravid_video_base = [
            "libcamera-vid",
             "--timeout", "0",  # NO timeout
             "--nopreview",  # No realtime GUI preview of video
-            "--flush",  # Push data ASAP
-            "--framerate", "30",
-            # FOR LATER "--autofocus",  # Only used at startup actually, unless we use "–-keypress" trick
             # Discrepancy, see https://github.com/raspberrypi/libcamera-apps/issues/378#issuecomment-1269461087:
             "--output", "pipe:" if alsa_device_name else "-",  # FIXME soon fixed in libcamera-apps, becomes "-o - " instead
             #FIXME ADD DIMENSIONS/COLORS (=MODE) HERE!!!!! See --mode !
         ]
 
+        if self._libcameravid_video_parameters:
+            libcameravid_video_parameters = self._libcameravid_video_parameters
+        else:
+            libcameravid_video_parameters = [
+                "--flush",  # Push data ASAP
+                "--framerate", "30",
+                # FOR LATER "--autofocus",  # Only used at startup actually, unless we use "–-keypress" trick
+            ]
+
+        libcameravid_audio_base = []
+        libcameravid_audio_parameters = []
+
         if alsa_device_name:
-            libcamera_command_line += [
+
+            libcameravid_audio_base = [
                 "--codec", "libav",
                 "--libav-format", "mpegts",
                 "-q", "95",
@@ -131,7 +160,17 @@ class RaspberryLibcameraSensor(PreviewImageMixin, PeriodicSubprocessStreamRecord
                 "--audio-device", alsa_device_name,
             ]
 
-        return libcamera_command_line
+            if self._libcameravid_audio_parameters:
+                libcameravid_audio_parameters = self._libcameravid_audio_parameters
+            else:
+                libcameravid_audio_parameters = [
+                    "--flush",  # Push data ASAP
+                    "--framerate", "30",
+                    # FOR LATER "--autofocus", but only used at startup actually, unless we use "–-keypress" trick
+                ]
+
+        command = libcameravid_video_base + libcameravid_video_parameters + libcameravid_audio_base + libcameravid_audio_parameters
+        return command
 
     def _launch_and_consume_subprocess(self, *args, **kwargs):
 
@@ -162,44 +201,72 @@ class RaspberryAlsaMicrophoneSensor(PeriodicSubprocessStreamRecorder):
     """
 
     sensor_name = "rpi_microphone"
-    record_extension = ".mp3"
 
     subprocess_data_chunk_size = int(0.2 * 1024**2)  # MP3 has smaller size than video
 
     def __init__(self,
-                 compress_recording: bool = False,
+                 compress_recording: bool,
+                 arecord_parameters: list,
+                 arecord_output_format: str,
+                 ffmpeg_alsa_parameters: list,
+                 ffmpeg_alsa_output_format: str,
                  **kwargs):
         super().__init__(**kwargs)
+        self._arecord_parameters = arecord_parameters,
+        self._arecord_output_format = arecord_output_format
+        self._ffmpeg_alsa_parameters = ffmpeg_alsa_parameters
+        self._ffmpeg_alsa_output_format = ffmpeg_alsa_output_format
         self._compress_recording = compress_recording
+
+    def _get_actual_ouput_format(self):
+        if self._compress_recording:
+            return self._ffmpeg_alsa_output_format if self._ffmpeg_alsa_output_format else "mp3"
+        else:
+            return self._arecord_output_format if self._arecord_output_format else "wav"
 
     @property
     def record_extension(self):
-        return ".mp3" if self._compress_recording else ".wav"
+        return "." + self._get_actual_ouput_format()
 
     def _build_subprocess_command_line(self):
         if self._compress_recording:
 
-            command = [
+            ffmpeg_alsa_base = [
                 "ffmpeg",
                 "-f", "alsa",
-                "-ac", "1",  # TODO make it selectable for 2-mic sources?
-                "-i", "default",  # TODO allow selection of source, later?
-                "-acodec", "libmp3lame",
-                "-ab", "128k",
-                "-f", "mp3",
                 "-loglevel", "error",
-                "pipe:1"
             ]
+
+            if self._ffmpeg_alsa_parameters:
+                ffmpeg_alsa_parameters = self._ffmpeg_alsa_parameters
+            else:
+                ffmpeg_alsa_parameters = [
+                    "-i", "default",
+                    "-ac", "1",
+                    "-acodec", "libmp3lame",
+                    "-ab", "128k",
+                ]
+
+            ffmpeg_alsa_final_params = ["-f", self._get_actual_ouput_format(), "pipe:1"]
+
+            command = ffmpeg_alsa_base + ffmpeg_alsa_parameters + ffmpeg_alsa_final_params
 
         else:
 
-            command = [
+            arecord_base = [
                 "arecord",
-                "-c", "1",
-                "-r", "22005",
-                "-f", "S16_LE",
-                "-t", "wav"
-            ]  # If filename is not specified, the standard output is used.
+                "-t", self._get_actual_ouput_format(),
+            ]
+            if self._arecord_parameters:
+                arecord_parameters = self._arecord_parameters
+            else:
+                arecord_parameters = [
+                    "-c", "1",
+                    "-r", "22005",
+                    "-f", "S16_LE",
+                ]  # If filename is not specified, the standard output is used.
+
+            command = arecord_base + arecord_parameters
 
         return command
 
