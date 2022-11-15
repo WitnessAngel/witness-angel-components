@@ -7,7 +7,7 @@ from pathlib import Path
 from wacomponents.i18n import tr
 from kivy.logger import Logger as logger
 
-from wacomponents.sensors.camera._camera_base import PreviewImageMixin
+from wacomponents.sensors.camera._camera_base import PreviewImageMixin, ActivityNotificationMixin
 from wacryptolib.sensor import PeriodicSubprocessStreamRecorder
 
 logger = logging.getLogger(__name__)
@@ -38,7 +38,7 @@ def get_ffmpeg_version() -> tuple:
     return float(ffmpeg_version), None
 
 
-class RtspCameraSensor(PreviewImageMixin, PeriodicSubprocessStreamRecorder):
+class RtspCameraSensor(PreviewImageMixin, ActivityNotificationMixin, PeriodicSubprocessStreamRecorder):
     """
     Records an RTSP stream, for now WITHOUT AUDIO.
 
@@ -46,6 +46,7 @@ class RtspCameraSensor(PreviewImageMixin, PeriodicSubprocessStreamRecorder):
     """
 
     sensor_name = "rtsp_camera"
+    activity_notification_color = (10, 10, 200)
 
     def __init__(self,
                  video_stream_url: str,
