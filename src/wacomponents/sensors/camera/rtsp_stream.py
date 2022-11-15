@@ -40,13 +40,13 @@ def get_ffmpeg_version() -> tuple:
 
 class RtspCameraSensor(PreviewImageMixin, ActivityNotificationMixin, PeriodicSubprocessStreamRecorder):
     """
-    Records an RTSP stream, for now WITHOUT AUDIO.
+    Records an RTSP stream, by default WITHOUT AUDIO (unless ffmpeg_rtsp_parameters override that=.
 
-    Automatically extracts a screenshot of the beginning of each recording.
+    Automatically extracts a screenshot at the beginning of each recording.
     """
 
     sensor_name = "rtsp_camera"
-    activity_notification_color = (10, 10, 200)
+    activity_notification_color = (0, 150, 0)
 
     def __init__(self,
                  video_stream_url: str,

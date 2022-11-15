@@ -3,7 +3,7 @@ import subprocess
 from subprocess import CalledProcessError, TimeoutExpired
 from typing import Optional
 
-from wacomponents.sensors.camera._camera_base import PreviewImageMixin
+from wacomponents.sensors.camera._camera_base import PreviewImageMixin, ActivityNotificationMixin
 from wacryptolib.sensor import PeriodicSubprocessStreamRecorder
 
 
@@ -31,7 +31,7 @@ def is_legacy_rpi_camera_enabled():
         return False
 
 
-class RaspberryRaspividSensor(PreviewImageMixin, PeriodicSubprocessStreamRecorder):
+class RaspberryRaspividSensor(PreviewImageMixin, ActivityNotificationMixin, PeriodicSubprocessStreamRecorder):
     """
     Records a raw h264 file using legacy (GPU-based) raspivid interface of the Raspberry Pi.
 
@@ -41,8 +41,8 @@ class RaspberryRaspividSensor(PreviewImageMixin, PeriodicSubprocessStreamRecorde
     """
 
     sensor_name = "rpi_raspivid_camera"
+    activity_notification_color = (0, 0, 150)
     record_extension = ".h264"
-
 
     def __init__(self,
                  raspivid_parameters: list,
@@ -195,12 +195,13 @@ class RaspberryLibcameraSensor(PreviewImageMixin, PeriodicSubprocessStreamRecord
         return super()._launch_and_consume_subprocess( *args, **kwargs)
 
 
-class RaspberryAlsaMicrophoneSensor(PeriodicSubprocessStreamRecorder):
+class RaspberryAlsaMicrophoneSensor(ActivityNotificationMixin, PeriodicSubprocessStreamRecorder):
     """
     Records an MP3 audio file using ALSA-compatible microphone (USB or HAT) plugged to the Raspberry Pi.
     """
 
     sensor_name = "rpi_microphone"
+    activity_notification_color = (150, 30, 130)
 
     subprocess_data_chunk_size = int(0.2 * 1024**2)  # MP3 has smaller size than video
 
