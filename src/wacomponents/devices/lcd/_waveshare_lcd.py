@@ -1,5 +1,5 @@
 import spidev as SPI
-import ST7789
+from . import ST7789
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -11,7 +11,23 @@ bus = 0
 device = 0
 
 
-class WaveshareImageDisplay1in3:
+KEY_UP_PIN     = 6
+KEY_DOWN_PIN   = 19
+KEY_LEFT_PIN   = 5
+KEY_RIGHT_PIN  = 26
+KEY_PRESS_PIN  = 13
+
+KEY1_PIN       = 21
+KEY2_PIN       = 20
+KEY3_PIN       = 16
+
+
+class WaveshareLcdDisplay1in3:
+
+    BUTTON_PIN_1 = KEY1_PIN
+    BUTTON_PIN_2 = KEY2_PIN
+    BUTTON_PIN_3 = KEY3_PIN
+    BUTTON_PIN_4 = None
 
     def __init__(self):
         lcd_display = ST7789.ST7789(SPI.SpiDev(bus, device),RST, DC, BL)
