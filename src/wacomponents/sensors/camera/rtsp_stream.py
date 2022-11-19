@@ -66,7 +66,7 @@ class RtspCameraSensor(PreviewImageMixin, ActivityNotificationMixin, PeriodicSub
     def record_extension(self):
         return "." + self._get_actual_ouput_format()
 
-    def _generate_preview_image(self, output_path, width_px, height_px):
+    def _do_generate_preview_image(self, output_path, width_px, height_px):
         pass  # Skipped, since preview image is automatically generated during RTSP capture
 
     def _build_subprocess_command_line(self):

@@ -51,7 +51,7 @@ class RaspberryRaspividSensor(PreviewImageMixin, ActivityNotificationMixin, Peri
         super().__init__(**kwargs)
         self._raspivid_parameters = raspivid_parameters
 
-    def _generate_preview_image(self, output_path, width_px, height_px):
+    def _do_generate_preview_image(self, output_path, width_px, height_px):
 
         try:
             snapshot_command_line = [
@@ -169,7 +169,7 @@ class RaspberryLibcameraSensor(PreviewImageMixin, PeriodicSubprocessStreamRecord
         command = libcameravid_video_base + libcameravid_video_parameters + libcameravid_audio_base + libcameravid_audio_parameters
         return command
 
-    def _generate_preview_image(self, output_path, width_px, height_px):
+    def _do_generate_preview_image(self, output_path, width_px, height_px):
 
         # Launch a subprocess just to capture screenshot
         try:
@@ -271,7 +271,8 @@ class CustomPicameraOutputWithEncryptionStream(object):
         self._encryption_stream = encryption_stream
 
     def write(self, chunk):
-        print("---------> IN EncryptionStreamCustomPicameraOutput write() of %d bytes" % len(chunk))
+        print(".", end=" ")
+        #print("---------> IN EncryptionStreamCustomPicameraOutput write() of %d bytes" % len(chunk))
         try:
             self._encryption_stream.encrypt_chunk(chunk)
         except Exception as exc:
@@ -285,7 +286,7 @@ class CustomPicameraOutputWithEncryptionStream(object):
             print("<>>>>>>>>>>>>>>>>>>>>>>>2", exc)
 
 
-class RaspberryPicameraSensor(PeriodicEncryptionStreamMixin, PeriodicSensorRestarter):
+class RaspberryPicameraSensor(PreviewImageMixin, PeriodicEncryptionStreamMixin, PeriodicSensorRestarter):
 
     sensor_name = "picamera"
     record_extension = ".h264"
@@ -297,6 +298,11 @@ class RaspberryPicameraSensor(PeriodicEncryptionStreamMixin, PeriodicSensorResta
 
     _current_start_time = None
 
+    def _do_generate_preview_image(self, output_path, width_px, height_px):
+        assert self._picamera  # We generate previews WHILE recording
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>> PICAMERA _do_generate_preview_image()", output_path)
+        self._picamera.capture(str(output_path), use_video_port=True, resize=(width_px, height_px))
+
     def _create_custom_output(self):
         encryption_stream = self._build_cryptainer_encryption_stream()
         return CustomPicameraOutputWithEncryptionStream(encryption_stream)
@@ -306,6 +312,7 @@ class RaspberryPicameraSensor(PeriodicEncryptionStreamMixin, PeriodicSensorResta
         self._current_buffer = self._create_custom_output()
         self._picamera = picamera.PiCamera(resolution=self._resolution, framerate=self._framerate)
         self._picamera.start_recording(self._current_buffer, format='h264', quality=25)
+        self._conditionally_regenerate_preview_image()
 
     def _do_stop_recording(self):  # pragma: no cover
         print("stopping picamera")
