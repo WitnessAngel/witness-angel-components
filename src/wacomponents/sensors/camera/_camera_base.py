@@ -31,7 +31,7 @@ class PreviewImageMixin:
                                          width_px=self.PREVIEW_IMAGE_WIDTH_PX,
                                          height_px=self.PREVIEW_IMAGE_HEIGHT_PX)
 
-        return super()._launch_and_consume_subprocess( *args, **kwargs)
+        return super()._launch_and_consume_subprocess(*args, **kwargs)
 
 
 class CryptainerEncryptionPipelineWithActivityNotification(CryptainerEncryptionPipeline):

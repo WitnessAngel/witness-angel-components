@@ -3,9 +3,10 @@ import subprocess
 from subprocess import CalledProcessError, TimeoutExpired
 from typing import Optional
 
+import picamera
 from wacomponents.sensors.camera._camera_base import PreviewImageMixin, ActivityNotificationMixin
-from wacryptolib.sensor import PeriodicSubprocessStreamRecorder
-
+from wacryptolib.cryptainer import CryptainerEncryptionPipeline
+from wacryptolib.sensor import PeriodicSubprocessStreamRecorder, PeriodicEncryptionStreamMixin, PeriodicSensorRestarter
 
 logger = logging.getLogger(__name__)
 
@@ -263,3 +264,71 @@ class RaspberryAlsaMicrophoneSensor(ActivityNotificationMixin, PeriodicSubproces
 
         return command
 
+
+class CustomPicameraOutputWithEncryptionStream(object):
+    """File-like object which pushes data to encryption stream"""
+    def __init__(self, encryption_stream: CryptainerEncryptionPipeline):
+        self._encryption_stream = encryption_stream
+
+    def write(self, chunk):
+        print("---------> IN EncryptionStreamCustomPicameraOutput write() of %d bytes" % len(chunk))
+        try:
+            self._encryption_stream.encrypt_chunk(chunk)
+        except Exception as exc:
+            print("<>>>>>>>>>>>>>>>>>>>>>>>1", exc)
+
+    def flush(self):
+        print("---------> IN EncryptionStreamCustomPicameraOutput flush()")
+        try:
+            self._encryption_stream.finalize()
+        except Exception as exc:
+            print("<>>>>>>>>>>>>>>>>>>>>>>>2", exc)
+
+
+class RaspberryPicameraSensor(PeriodicEncryptionStreamMixin, PeriodicSensorRestarter):
+
+    sensor_name = "picamera"
+    record_extension = ".h264"
+
+    _picamera = None
+
+    _resolution = (1280, 720)
+    _framerate = 30
+
+    _current_start_time = None
+
+    def _create_custom_output(self):
+        encryption_stream = self._build_cryptainer_encryption_stream()
+        return CustomPicameraOutputWithEncryptionStream(encryption_stream)
+
+    def _do_start_recording(self):  # pragma: no cover
+        print("starting picamera")
+        self._current_buffer = self._create_custom_output()
+        self._picamera = picamera.PiCamera(resolution=self._resolution, framerate=self._framerate)
+        self._picamera.start_recording(self._current_buffer, format='h264', quality=25)
+
+    def _do_stop_recording(self):  # pragma: no cover
+        print("stopping picamera")
+        self._picamera.stop_recording()
+        self._picamera.close()  # IMPORTANT
+        self._picamera = None
+        return None
+        #self._current_buffer.seek(0)
+        #final_recording_bytes = self._current_buffer.read()
+        #self._current_buffer = None
+        #return final_recording_bytes
+
+    # LET IT NOT IMPLEMENTED def _handle_post_stop_data(self, payload, from_datetime, to_datetime):
+    #    assert isinstance(payload, bytes)  # Might be empty bytes though
+
+    def _do_restart_recording(self):
+
+        #new_buffer = io.BytesIO()
+        new_buffer = self._create_custom_output()
+        self._picamera.split_recording(new_buffer)
+        ###assert self._current_buffer._encryption_pipeline
+        self._current_buffer = new_buffer
+
+        #self._current_buffer.seek(0)
+        #previous_recording_bytes = self._current_buffer.read()
+        #return previous_recording_bytes
