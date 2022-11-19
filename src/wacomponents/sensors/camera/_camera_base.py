@@ -14,14 +14,22 @@ class PreviewImageMixin:
          super().__init__(**kwargs)
          self._preview_image_path = preview_image_path  # Can be empty
 
+    def _generate_preview_image(self, output_path, width_px, height_px):
+        raise NotImplementedError("_generate_preview_image() not implemented")
+
     def _launch_and_consume_subprocess(self, *args, **kwargs):
 
         if self._preview_image_path:
+
             # Cleanup potential previous preview image
             try:
                 self._preview_image_path.unlink()  # FIXME use "missing_ok" soon
             except FileNotFoundError:
                 pass
+
+            self._generate_preview_image(self._preview_image_path,
+                                         width_px=self.PREVIEW_IMAGE_WIDTH_PX,
+                                         height_px=self.PREVIEW_IMAGE_HEIGHT_PX)
 
         return super()._launch_and_consume_subprocess( *args, **kwargs)
 

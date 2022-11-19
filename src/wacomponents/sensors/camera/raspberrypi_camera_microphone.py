@@ -50,6 +50,23 @@ class RaspberryRaspividSensor(PreviewImageMixin, ActivityNotificationMixin, Peri
         super().__init__(**kwargs)
         self._raspivid_parameters = raspivid_parameters
 
+    def _generate_preview_image(self, output_path, width_px, height_px):
+
+        try:
+            snapshot_command_line = [
+                "raspistill",
+                "--nopreview",  # No GUI display
+                "--output", str(self._preview_image_path),
+                "--width", str(width_px),
+                "--height", str(height_px),
+                "--quality", "90",
+                "-v",
+            ]
+            logger.info("Taking camera legacy snapshot with command: %s", " ".join(snapshot_command_line))  # Fixme deduplicate this
+            subprocess.check_call(snapshot_command_line, timeout=20)
+        except (CalledProcessError, TimeoutExpired) as exc:
+            logger.warning("Couldn't generate legacy screenshot in %s sensor: %s", self.sensor_name, exc)
+
     def _build_subprocess_command_line(self):
 
         raspivid_command_line_base = [
@@ -75,27 +92,6 @@ class RaspberryRaspividSensor(PreviewImageMixin, ActivityNotificationMixin, Peri
         raspivid_command_line = raspivid_command_line_base + raspivid_parameters
         return raspivid_command_line
 
-    def _launch_and_consume_subprocess(self, *args, **kwargs):
-
-        if self._preview_image_path:
-
-            # SPECIAL STEP - launch a subprocess just to capture screenshot
-            try:
-                snapshot_command_line = [
-                    "raspistill",
-                    "--nopreview",  # No GUI display
-                    "--output", str(self._preview_image_path),
-                    "--width", str(self.PREVIEW_IMAGE_WIDTH_PX),
-                    "--height", str(self.PREVIEW_IMAGE_HEIGHT_PX),
-                    "--quality", "90",
-                    "-v",
-                ]
-                logger.info("Taking camera legacy snapshot with command: %s", " ".join(snapshot_command_line))  # Fixme deduplicate this
-                subprocess.check_call(snapshot_command_line, timeout=20)
-            except (CalledProcessError, TimeoutExpired) as exc:
-                logger.warning("Couldn't get legacy screenshot in %s sensor: %s", self.sensor_name, exc)
-
-        return super()._launch_and_consume_subprocess( *args, **kwargs)
 
 
 class RaspberryLibcameraSensor(PreviewImageMixin, PeriodicSubprocessStreamRecorder):
@@ -172,27 +168,23 @@ class RaspberryLibcameraSensor(PreviewImageMixin, PeriodicSubprocessStreamRecord
         command = libcameravid_video_base + libcameravid_video_parameters + libcameravid_audio_base + libcameravid_audio_parameters
         return command
 
-    def _launch_and_consume_subprocess(self, *args, **kwargs):
+    def _generate_preview_image(self, output_path, width_px, height_px):
 
-        if self._preview_image_path:
-
-            # SPECIAL STEP - launch a subprocess just to capture screenshot
-            try:
-                snapshot_command_line = [
-                                    "libcamera-jpeg",
-                                    "--nopreview",  # No GUI display
-                                    "--output", str(self._preview_image_path),
-                                    "--width", str(self.PREVIEW_IMAGE_WIDTH_PX),
-                                    "--height", str(self.PREVIEW_IMAGE_HEIGHT_PX),
-                                    "--immediate",  # No preview phase when taking picture
-                                    # FOR LATER "--autofocus",  # Might be limited by "immediate" mode...
-                                ]
-                logger.info("Taking camera snapshot with command: %s", " ".join(snapshot_command_line))
-                subprocess.check_call(snapshot_command_line, timeout=20)
-            except (CalledProcessError, TimeoutExpired) as exc:
-                logger.warning("Couldn't get screenshot in %s sensor: %s", self.sensor_name, exc)
-
-        return super()._launch_and_consume_subprocess( *args, **kwargs)
+        # Launch a subprocess just to capture screenshot
+        try:
+            snapshot_command_line = [
+                                "libcamera-jpeg",
+                                "--nopreview",  # No GUI display
+                                "--output", str(self._preview_image_path),
+                                "--width", str(width_px),
+                                "--height", str(height_px),
+                                "--immediate",  # No preview phase when taking picture
+                                # FOR LATER "--autofocus",  # Might be limited by "immediate" mode...
+                            ]
+            logger.info("Taking camera snapshot with command: %s", " ".join(snapshot_command_line))
+            subprocess.check_call(snapshot_command_line, timeout=20)
+        except (CalledProcessError, TimeoutExpired) as exc:
+            logger.warning("Couldn't get screenshot in %s sensor: %s", self.sensor_name, exc)
 
 
 class RaspberryAlsaMicrophoneSensor(ActivityNotificationMixin, PeriodicSubprocessStreamRecorder):
