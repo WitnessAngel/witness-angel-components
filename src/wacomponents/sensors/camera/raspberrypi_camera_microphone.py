@@ -5,7 +5,6 @@ from subprocess import CalledProcessError, TimeoutExpired
 from typing import Optional
 
 import multitimer
-import picamera
 from PIL import Image
 
 from wacomponents.application.recorder_service import ActivityNotificationType
@@ -372,6 +371,7 @@ class RaspberryPicameraSensor(PreviewImageMixin, ActivityNotificationMixin, Peri
         picamera_init_parameters = {k: v for (k, v) in _picamera_parameters.items() if k in init_parameter_names}
         picamera_start_parameters = {k: v for (k, v) in _picamera_parameters.items() if k not in init_parameter_names}
 
+        import picamera
         self._picamera = picamera.PiCamera(**picamera_init_parameters)
         self._picamera.rotation = self._local_camera_rotation
         self._picamera.start_recording(self._current_buffer, **picamera_start_parameters)
