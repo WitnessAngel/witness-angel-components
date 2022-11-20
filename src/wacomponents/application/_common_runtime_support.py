@@ -14,7 +14,6 @@ from wacomponents.default_settings import INTERNAL_APP_ROOT, INTERNAL_CRYPTAINER
     INTERNAL_LOGS_DIR, EXTERNAL_APP_ROOT_PREFIX
 from wacomponents.i18n import tr
 
-from wacomponents.sensors.camera.rtsp_stream import get_ffmpeg_version
 
 
 class WaRuntimeSupportMixin:
@@ -151,6 +150,7 @@ class WaRuntimeSupportMixin:
 
     @staticmethod
     def check_ffmpeg(min_ffmpeg_version: float):
+        from wacomponents.sensors.camera.rtsp_stream import get_ffmpeg_version
         ffmpeg_version, error_msg = get_ffmpeg_version()
         if ffmpeg_version is None:
             return False, error_msg
