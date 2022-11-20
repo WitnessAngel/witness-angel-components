@@ -317,8 +317,11 @@ class RaspberryPicameraSensor(PreviewImageMixin, ActivityNotificationMixin, Peri
     def __init__(self,
                  picamera_parameters: Optional[dict],
                  live_preview_interval_s,
+                 local_camera_rotation,
                  **kwargs):
         super().__init__(**kwargs)
+        assert isinstance(local_camera_rotation, int), local_camera_rotation
+        self._local_camera_rotation = local_camera_rotation
         self._picamera_parameters = picamera_parameters or self.default_parameters
 
         print("@@@@@@@@# live_preview_interval_s is", repr(live_preview_interval_s))
@@ -370,6 +373,7 @@ class RaspberryPicameraSensor(PreviewImageMixin, ActivityNotificationMixin, Peri
         picamera_start_parameters = {k: v for (k, v) in _picamera_parameters.items() if k not in init_parameter_names}
 
         self._picamera = picamera.PiCamera(**picamera_init_parameters)
+        self._picamera.rotation = self._local_camera_rotation
         self._picamera.start_recording(self._current_buffer, **picamera_start_parameters)
         self._conditionally_regenerate_preview_image()
         if self._live_image_preview_pusher:
