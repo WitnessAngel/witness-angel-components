@@ -70,8 +70,7 @@ class WaRecorderService(WaRuntimeSupportMixin):
         self.switch_daemonize_service(daemonize_service)
 
         #import traceback; traceback.print_stack()
-        if WIP_RECORDING_MARKER.exists():
-            self.start_recording()  # Autorecord e.g. after a restart due to closing of main android Activity
+
 
     def _get_cryptoconf(self):
         """Return a wacryptolib-compatible encryption configuration"""

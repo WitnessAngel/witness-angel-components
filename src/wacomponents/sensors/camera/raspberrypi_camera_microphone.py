@@ -312,18 +312,20 @@ class RaspberryPicameraSensor(PreviewImageMixin, ActivityNotificationMixin, Peri
 
     _current_start_time = None
 
-    LIVE_PREVIEW_IMAGE_INTERVAL_S = 0.5
     _live_image_preview_pusher = None
 
     def __init__(self,
                  picamera_parameters: Optional[dict],
+                 live_preview_interval_s,
                  **kwargs):
         super().__init__(**kwargs)
         self._picamera_parameters = picamera_parameters or self.default_parameters
 
-        self._live_image_preview_pusher = multitimer.MultiTimer(
-            interval=self.LIVE_PREVIEW_IMAGE_INTERVAL_S, function=self._push_live_preview_image, runonstart=True
-        )
+        print("@@@@@@@@# live_preview_interval_s is", repr(live_preview_interval_s))
+        if live_preview_interval_s:
+            self._live_image_preview_pusher = multitimer.MultiTimer(
+                interval=live_preview_interval_s, function=self._push_live_preview_image, runonstart=True
+            )
 
         #import logging_tree
         #logging_tree.printout()
@@ -370,11 +372,13 @@ class RaspberryPicameraSensor(PreviewImageMixin, ActivityNotificationMixin, Peri
         self._picamera = picamera.PiCamera(**picamera_init_parameters)
         self._picamera.start_recording(self._current_buffer, **picamera_start_parameters)
         self._conditionally_regenerate_preview_image()
-        self._live_image_preview_pusher.start()
+        if self._live_image_preview_pusher:
+            self._live_image_preview_pusher.start()
 
     def _do_stop_recording(self):  # pragma: no cover
         print(">> stopping picamera")
-        self._live_image_preview_pusher.stop()
+        if self._live_image_preview_pusher:
+            self._live_image_preview_pusher.stop()
         self._picamera.stop_recording()
         self._picamera.close()  # IMPORTANT
         self._picamera = None
