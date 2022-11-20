@@ -30,6 +30,11 @@ if IS_ANDROID:
     preload_java_classes()
 
 
+class ActivityNotificationType:
+    RECORDING_PROGRESS = "RECORDING_PROGRESS"  # Sent with "notification_color" argument
+    IMAGE_PREVIEW = "IMAGE_PREVIEW"  # Sent with "notification_image" arguments
+
+
 @ServerClass
 class WaRecorderService(WaRuntimeSupportMixin):
     """
@@ -108,7 +113,7 @@ class WaRecorderService(WaRuntimeSupportMixin):
         return self._send_message("/log_output", "Service: " + msg)
 
     def _send_message(self, address, *values):
-        print("@@ Message sent from service to app: %s %s" % (address, values))
+        ###print("@@ Message sent from service to app: %s %s" % (address, values))
         try:
             return self._osc_client.send_message(address, values=values, safer=True)
         except OSError as exc:
@@ -170,7 +175,7 @@ class WaRecorderService(WaRuntimeSupportMixin):
                 ANDROID_CONTEXT.startForeground(notification_uid, notification)
 
         except Exception as exc:
-            logger.error("Could not build recording toolchain: %r" % exc)
+            logger.error("Could not build recording toolchain: %r" % exc, exc_info=True)
         finally:
             self._status_change_in_progress = False
             self.broadcast_recording_state()  # Even on error
@@ -236,7 +241,7 @@ class WaRecorderService(WaRuntimeSupportMixin):
     @osc.address_method("/stop_recording")
     @safe_catch_unhandled_exception
     def stop_recording(self, force=False):
-        print("@@ IMPORTANT - RECEIVED ORDER TO STOP RECORDING IN SERVICE")
+        #print("@@ IMPORTANT - RECEIVED ORDER TO STOP RECORDING IN SERVICE")
         if self._status_change_in_progress and not force:
             print("@@ ORDER TO STOP RECORDING WAS IGNORED by service because other status change is already in progress")
             return
