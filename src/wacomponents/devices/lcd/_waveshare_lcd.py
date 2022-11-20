@@ -1,4 +1,6 @@
 import spidev as SPI
+from PIL.Image import Image
+
 from . import ST7789
 
 from PIL import Image, ImageDraw, ImageFont
@@ -35,7 +37,7 @@ class WaveshareLcdDisplay1in3:
         self.lcd_display = lcd_display
         self.clear()
 
-    def display_image(self, image):
+    def display_image(self, image: Image):
         thumbnail_size = (self.lcd_display.width, self.lcd_display.height)
         image.thumbnail(thumbnail_size, Image.ANTIALIAS)  # Modifies IN PLACE
         thumbnail_image = Image.new('RGB', thumbnail_size, (0, 0, 0))

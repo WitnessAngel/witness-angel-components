@@ -6,6 +6,9 @@ from typing import Optional
 
 import multitimer
 import picamera
+from PIL import Image
+
+from wacomponents.application.recorder_service import ActivityNotificationType
 from wacomponents.sensors.camera._camera_base import PreviewImageMixin, ActivityNotificationMixin
 from wacryptolib.cryptainer import CryptainerEncryptionPipeline
 from wacryptolib.sensor import PeriodicSubprocessStreamRecorder, PeriodicEncryptionStreamMixin, PeriodicSensorRestarter
@@ -54,14 +57,14 @@ class RaspberryRaspividSensor(PreviewImageMixin, ActivityNotificationMixin, Peri
         super().__init__(**kwargs)
         self._raspivid_parameters = raspivid_parameters
 
-    def _do_generate_preview_image(self, output_path, width_px, height_px):
-        assert isinstance(output_path, str), output_path
+    def _do_generate_preview_image(self, output, width_px, height_px):
+        assert isinstance(output, str), output
 
         try:
             snapshot_command_line = [
                 "raspistill",
                 "--nopreview",  # No GUI display
-                "--output", output_path,
+                "--output", output,
                 "--width", str(width_px),
                 "--height", str(height_px),
                 "--quality", "90",
@@ -173,15 +176,15 @@ class RaspberryLibcameraSensor(PreviewImageMixin, PeriodicSubprocessStreamRecord
         command = libcameravid_video_base + libcameravid_video_parameters + libcameravid_audio_base + libcameravid_audio_parameters
         return command
 
-    def _do_generate_preview_image(self, output_path, width_px, height_px):
-        assert isinstance(output_path, str), output_path
+    def _do_generate_preview_image(self, output, width_px, height_px):
+        assert isinstance(output, str), output
 
         # Launch a subprocess just to capture screenshot
         try:
             snapshot_command_line = [
                                 "libcamera-jpeg",
                                 "--nopreview",  # No GUI display
-                                "--output", output_path,
+                                "--output", output,
                                 "--width", str(width_px),
                                 "--height", str(height_px),
                                 "--immediate",  # No preview phase when taking picture
@@ -309,7 +312,7 @@ class RaspberryPicameraSensor(PreviewImageMixin, ActivityNotificationMixin, Peri
 
     _current_start_time = None
 
-    LIVE_PREVIEW_IMAGE_INTERVAL_S = 2
+    LIVE_PREVIEW_IMAGE_INTERVAL_S = 0.5
     _live_image_preview_pusher = None
 
     def __init__(self,
@@ -322,23 +325,31 @@ class RaspberryPicameraSensor(PreviewImageMixin, ActivityNotificationMixin, Peri
             interval=self.LIVE_PREVIEW_IMAGE_INTERVAL_S, function=self._push_live_preview_image, runonstart=True
         )
 
+        #import logging_tree
+        #logging_tree.printout()
+
     @property
     def record_extension(self):
         return "." + self._picamera_parameters.get("format", "h264")
 
-    def _do_generate_preview_image(self, output_path, width_px, height_px):
+    def _do_generate_preview_image(self, output, width_px, height_px):
         assert self._picamera  # We generate previews WHILE recording
-        assert isinstance(output_path, str) or hasattr(output_path, "write"), repr(output_path)
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>> PICAMERA _do_generate_preview_image()", output_path)
-        self._picamera.capture(output_path, use_video_port=True, format="jpeg", resize=(width_px, height_px))
+        assert isinstance(output, str) or hasattr(output, "write"), repr(output)
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>> PICAMERA _do_generate_preview_image()", output)
+        self._picamera.capture(output, use_video_port=True, format="jpeg", resize=(width_px, height_px))
 
     @synchronized
     def _push_live_preview_image(self):
         print(">>>>>> _push_live_preview_image called")
         try:
             assert self.is_running
-            output_path = io.BytesIO()
-            self._do_generate_preview_image(output_path, width_px=480, height_px=480)  # Double the resolution of mini LCD
+            output = io.BytesIO()
+            self._do_generate_preview_image(output, width_px=480, height_px=480)  # Double the resolution of mini LCD
+            output.seek(0)
+            notification_image = Image.open(output, formats=["JPEG"])
+            self._activity_notification_callback(
+                notification_type=ActivityNotificationType.IMAGE_PREVIEW,
+                notification_image=notification_image)
         except Exception as exc:
             # Exception must not be let go and break the multitimer
             print(">>>>> ABNORMAL ERROR in _push_live_preview_image(): %r" % exc)

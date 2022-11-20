@@ -15,7 +15,7 @@ class PreviewImageMixin:
          super().__init__(**kwargs)
          self._preview_image_path = preview_image_path  # Can be empty
 
-    def _do_generate_preview_image(self, output_path, width_px, height_px):
+    def _do_generate_preview_image(self, output, width_px, height_px):
         raise NotImplementedError("_generate_preview_image() not implemented")
 
     def _conditionally_regenerate_preview_image(self):
