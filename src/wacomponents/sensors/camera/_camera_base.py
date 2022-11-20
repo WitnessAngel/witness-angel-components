@@ -39,6 +39,9 @@ class PreviewImageMixin:
 
 class CryptainerEncryptionPipelineWithRecordingProgressNotification(CryptainerEncryptionPipeline):
 
+    # We send notifications only when a certain amount of bytes was recorded
+    PROGRESS_BYTE_THRESHOLD = 100 * 1024
+
     def __init__(self,
                  *args,
                  recording_progress_notification_callback=None,
@@ -46,11 +49,16 @@ class CryptainerEncryptionPipelineWithRecordingProgressNotification(CryptainerEn
         super().__init__(*args, **kwargs)
         assert recording_progress_notification_callback is None or callable(recording_progress_notification_callback), recording_progress_notification_callback
         self._recording_progress_notification_callback = recording_progress_notification_callback
+        self._pending_byte_count = 0
 
-    def encrypt_chunk(self, *args, **kwargs):
+    def encrypt_chunk(self, chunk: bytes, *args, **kwargs):
         if self._recording_progress_notification_callback:
-            self._recording_progress_notification_callback()
-        return super().encrypt_chunk(*args, **kwargs)
+            self._pending_byte_count += len(chunk)
+            if self._pending_byte_count > self.PROGRESS_BYTE_THRESHOLD:
+                self._recording_progress_notification_callback()
+                self._pending_byte_count = 0
+
+        return super().encrypt_chunk(chunk, *args, **kwargs)
 
 
 class ActivityNotificationMixin:
