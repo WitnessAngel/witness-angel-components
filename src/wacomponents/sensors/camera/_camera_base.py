@@ -27,7 +27,7 @@ class PreviewImageMixin:
             except FileNotFoundError:
                 pass
 
-            self._do_generate_preview_image(self._preview_image_path,
+            self._do_generate_preview_image(str(self._preview_image_path),
                                          width_px=self.PREVIEW_IMAGE_WIDTH_PX,
                                          height_px=self.PREVIEW_IMAGE_HEIGHT_PX)
 
@@ -73,10 +73,12 @@ class ActivityNotificationMixin:
         super().__init__(*args, **kwargs)
         assert self.activity_notification_color, "missing activity_notification_color"
         print(">>>>>>>>>>>>>>> SETTING UP _activity_notification_callback", activity_notification_callback)
-        self._recording_progress_notification_callback = lambda: activity_notification_callback(
-            notification_type=ActivityNotificationType.RECORDING_PROGRESS,
-            notification_color=self.activity_notification_color)
+        self._activity_notification_callback = activity_notification_callback
 
     def _get_cryptainer_encryption_stream_creation_kwargs(self) -> dict:
+        recording_progress_notification_callback = lambda: self._activity_notification_callback(
+                    notification_type=ActivityNotificationType.RECORDING_PROGRESS,
+                    notification_color=self.activity_notification_color)
         return {"cryptainer_encryption_stream_class": CryptainerEncryptionPipelineWithRecordingProgressNotification,
-                "cryptainer_encryption_stream_extra_kwargs": {"recording_progress_notification_callback": self._recording_progress_notification_callback}}
+                "cryptainer_encryption_stream_extra_kwargs": {
+                    "recording_progress_notification_callback": recording_progress_notification_callback}}

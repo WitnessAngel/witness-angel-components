@@ -1,12 +1,15 @@
+import io
 import logging
 import subprocess
 from subprocess import CalledProcessError, TimeoutExpired
 from typing import Optional
 
+import multitimer
 import picamera
 from wacomponents.sensors.camera._camera_base import PreviewImageMixin, ActivityNotificationMixin
 from wacryptolib.cryptainer import CryptainerEncryptionPipeline
 from wacryptolib.sensor import PeriodicSubprocessStreamRecorder, PeriodicEncryptionStreamMixin, PeriodicSensorRestarter
+from wacryptolib.utilities import synchronized
 
 logger = logging.getLogger(__name__)
 
@@ -52,12 +55,13 @@ class RaspberryRaspividSensor(PreviewImageMixin, ActivityNotificationMixin, Peri
         self._raspivid_parameters = raspivid_parameters
 
     def _do_generate_preview_image(self, output_path, width_px, height_px):
+        assert isinstance(output_path, str), output_path
 
         try:
             snapshot_command_line = [
                 "raspistill",
                 "--nopreview",  # No GUI display
-                "--output", str(self._preview_image_path),
+                "--output", output_path,
                 "--width", str(width_px),
                 "--height", str(height_px),
                 "--quality", "90",
@@ -170,13 +174,14 @@ class RaspberryLibcameraSensor(PreviewImageMixin, PeriodicSubprocessStreamRecord
         return command
 
     def _do_generate_preview_image(self, output_path, width_px, height_px):
+        assert isinstance(output_path, str), output_path
 
         # Launch a subprocess just to capture screenshot
         try:
             snapshot_command_line = [
                                 "libcamera-jpeg",
                                 "--nopreview",  # No GUI display
-                                "--output", str(self._preview_image_path),
+                                "--output", output_path,
                                 "--width", str(width_px),
                                 "--height", str(height_px),
                                 "--immediate",  # No preview phase when taking picture
@@ -304,11 +309,18 @@ class RaspberryPicameraSensor(PreviewImageMixin, ActivityNotificationMixin, Peri
 
     _current_start_time = None
 
+    LIVE_PREVIEW_IMAGE_INTERVAL_S = 2
+    _live_image_preview_pusher = None
+
     def __init__(self,
                  picamera_parameters: Optional[dict],
                  **kwargs):
         super().__init__(**kwargs)
         self._picamera_parameters = picamera_parameters or self.default_parameters
+
+        self._live_image_preview_pusher = multitimer.MultiTimer(
+            interval=self.LIVE_PREVIEW_IMAGE_INTERVAL_S, function=self._push_live_preview_image, runonstart=True
+        )
 
     @property
     def record_extension(self):
@@ -316,8 +328,20 @@ class RaspberryPicameraSensor(PreviewImageMixin, ActivityNotificationMixin, Peri
 
     def _do_generate_preview_image(self, output_path, width_px, height_px):
         assert self._picamera  # We generate previews WHILE recording
+        assert isinstance(output_path, str) or hasattr(output_path, "write"), repr(output_path)
         print(">>>>>>>>>>>>>>>>>>>>>>>>>>>> PICAMERA _do_generate_preview_image()", output_path)
-        self._picamera.capture(str(output_path), use_video_port=True, resize=(width_px, height_px))
+        self._picamera.capture(output_path, use_video_port=True, format="jpeg", resize=(width_px, height_px))
+
+    @synchronized
+    def _push_live_preview_image(self):
+        print(">>>>>> _push_live_preview_image called")
+        try:
+            assert self.is_running
+            output_path = io.BytesIO()
+            self._do_generate_preview_image(output_path, width_px=480, height_px=480)  # Double the resolution of mini LCD
+        except Exception as exc:
+            # Exception must not be let go and break the multitimer
+            print(">>>>> ABNORMAL ERROR in _push_live_preview_image(): %r" % exc)
 
     def _create_custom_output(self):
         encryption_stream = self._build_cryptainer_encryption_stream()
@@ -335,9 +359,11 @@ class RaspberryPicameraSensor(PreviewImageMixin, ActivityNotificationMixin, Peri
         self._picamera = picamera.PiCamera(**picamera_init_parameters)
         self._picamera.start_recording(self._current_buffer, **picamera_start_parameters)
         self._conditionally_regenerate_preview_image()
+        self._live_image_preview_pusher.start()
 
     def _do_stop_recording(self):  # pragma: no cover
-        print("stopping picamera")
+        print(">> stopping picamera")
+        self._live_image_preview_pusher.stop()
         self._picamera.stop_recording()
         self._picamera.close()  # IMPORTANT
         self._picamera = None
