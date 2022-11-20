@@ -54,7 +54,7 @@ class CryptainerEncryptionPipelineWithRecordingProgressNotification(CryptainerEn
 
 
 class ActivityNotificationMixin:
-    """To be used with subclass of PeriodicEncryptionStreamMixin"""
+    """To be used mainly with subclass of PeriodicEncryptionStreamMixin"""
 
     activity_notification_color = None  # RGB tuple, to be overridden in subclass
 
@@ -63,7 +63,7 @@ class ActivityNotificationMixin:
                  activity_notification_callback,
                  **kwargs):
         super().__init__(*args, **kwargs)
-        assert self.activity_notification_color
+        assert self.activity_notification_color, "missing activity_notification_color"
         print(">>>>>>>>>>>>>>> SETTING UP _activity_notification_callback", activity_notification_callback)
         self._recording_progress_notification_callback = lambda: activity_notification_callback(
             notification_type=ActivityNotificationType.RECORDING_PROGRESS,

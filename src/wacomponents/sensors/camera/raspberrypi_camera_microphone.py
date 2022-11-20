@@ -265,7 +265,7 @@ class RaspberryAlsaMicrophoneSensor(ActivityNotificationMixin, PeriodicSubproces
         return command
 
 
-class CustomPicameraOutputWithEncryptionStream(object):
+class _CustomPicameraOutputWithEncryptionStream(object):
     """File-like object which pushes data to encryption stream"""
     def __init__(self, encryption_stream: CryptainerEncryptionPipeline):
         self._encryption_stream = encryption_stream
@@ -286,17 +286,33 @@ class CustomPicameraOutputWithEncryptionStream(object):
             print("<>>>>>>>>>>>>>>>>>>>>>>>2", exc)
 
 
-class RaspberryPicameraSensor(PreviewImageMixin, PeriodicEncryptionStreamMixin, PeriodicSensorRestarter):
+class RaspberryPicameraSensor(PreviewImageMixin, ActivityNotificationMixin, PeriodicEncryptionStreamMixin, PeriodicSensorRestarter):
 
     sensor_name = "picamera"
-    record_extension = ".h264"
+    activity_notification_color = (0, 0, 180)
 
     _picamera = None
 
-    _resolution = (1280, 720)
-    _framerate = 30
+    default_parameters = dict(
+        # INIT args
+        resolution = (1280, 720),
+        framerate = 30,
+        # START args
+        format='h264',
+        quality=25,
+    )
 
     _current_start_time = None
+
+    def __init__(self,
+                 picamera_parameters: Optional[dict],
+                 **kwargs):
+        super().__init__(**kwargs)
+        self._picamera_parameters = picamera_parameters or self.default_parameters
+
+    @property
+    def record_extension(self):
+        return "." + self._picamera_parameters.get("format", "h264")
 
     def _do_generate_preview_image(self, output_path, width_px, height_px):
         assert self._picamera  # We generate previews WHILE recording
@@ -305,13 +321,19 @@ class RaspberryPicameraSensor(PreviewImageMixin, PeriodicEncryptionStreamMixin, 
 
     def _create_custom_output(self):
         encryption_stream = self._build_cryptainer_encryption_stream()
-        return CustomPicameraOutputWithEncryptionStream(encryption_stream)
+        return _CustomPicameraOutputWithEncryptionStream(encryption_stream)
 
     def _do_start_recording(self):  # pragma: no cover
-        print("starting picamera")
+        print(">> starting picamera")
         self._current_buffer = self._create_custom_output()
-        self._picamera = picamera.PiCamera(resolution=self._resolution, framerate=self._framerate)
-        self._picamera.start_recording(self._current_buffer, format='h264', quality=25)
+
+        init_parameter_names = ["resolution", "framerate"]
+        _picamera_parameters = self._picamera_parameters
+        picamera_init_parameters = {k: v for (k, v) in _picamera_parameters.items() if k in init_parameter_names}
+        picamera_start_parameters = {k: v for (k, v) in _picamera_parameters.items() if k not in init_parameter_names}
+
+        self._picamera = picamera.PiCamera(**picamera_init_parameters)
+        self._picamera.start_recording(self._current_buffer, **picamera_start_parameters)
         self._conditionally_regenerate_preview_image()
 
     def _do_stop_recording(self):  # pragma: no cover
