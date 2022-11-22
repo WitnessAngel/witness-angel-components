@@ -1,7 +1,11 @@
+import logging
 from pathlib import Path
 
 from wacomponents.application.recorder_service import ActivityNotificationType
 from wacryptolib.cryptainer import CryptainerEncryptionPipeline
+
+
+logger = logging.getLogger(__name__)
 
 
 class PreviewImageMixin:
@@ -20,6 +24,7 @@ class PreviewImageMixin:
 
     def _conditionally_regenerate_preview_image(self):
         if self._preview_image_path:
+            logger.debug("Requesting generation of new preview image to %s", self._preview_image_path)
 
             # Cleanup potential previous preview image
             try:
