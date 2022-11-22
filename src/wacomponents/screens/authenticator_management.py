@@ -7,7 +7,6 @@ from functools import partial
 from kivy.clock import Clock
 from kivy.factory import Factory
 from kivy.lang import Builder
-from kivy.logger import Logger as logger
 from kivy.properties import ObjectProperty, StringProperty
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.filemanager import MDFileManager

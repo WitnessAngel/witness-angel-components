@@ -3,7 +3,6 @@ import socket
 from pathlib import Path
 
 from functools import partial
-from kivy.logger import Logger as logger
 from kivy.utils import platform
 # TODO factorize and use unix socks when possible
 from oscpy.client import OSCClient

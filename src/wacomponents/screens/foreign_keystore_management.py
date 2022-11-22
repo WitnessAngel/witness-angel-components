@@ -5,7 +5,6 @@ from pathlib import Path
 import shutil
 from kivy.factory import Factory
 from kivy.lang import Builder
-from kivy.logger import Logger as logger
 from kivy.properties import ObjectProperty
 from kivymd.uix.button import MDFlatButton
 

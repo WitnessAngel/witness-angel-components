@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import atexit
+import logging
 
 from kivy.clock import Clock
-from kivy.logger import Logger as logger
 from kivy.properties import StringProperty
 from oscpy.server import ServerClass
 
@@ -15,6 +15,8 @@ from wacomponents.service_control import get_osc_server
 from wacomponents.widgets.popups import display_info_snackbar, display_info_toast
 
 osc, osc_starter_callback = get_osc_server(is_application=True)
+
+logger = logging.getLogger(__name__)
 
 
 @ServerClass

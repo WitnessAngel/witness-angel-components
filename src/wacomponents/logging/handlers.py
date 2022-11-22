@@ -1,7 +1,9 @@
+import logging
 from logging import Handler
 
 from decorator import decorator
-from kivy.logger import Logger as logger
+
+logger = logging.getLogger(__name__)
 
 
 class CallbackLoggingHandler(Handler):

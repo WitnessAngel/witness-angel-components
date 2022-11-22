@@ -1,9 +1,12 @@
+import logging
 from typing import List
 
 import random
 import time
 
 from wacomponents.default_settings import IS_ANDROID, EXTERNAL_EXPORTS_DIR
+
+logger = logging.getLogger(__name__)
 
 
 def request_multiple_permissions(permissions: List[str]) -> List[bool]:
@@ -25,7 +28,6 @@ def request_single_permission(permission: str) -> bool:
 
 def has_single_permission(permission: str) -> bool:
     """Returns True iff permission was granted."""
-    #from kivy.logger import Logger as logger  # Delayed import
     if IS_ANDROID:
         # THIS ONLY WORKS FOR ACTIVITIES: "from android.permissions import check_permission, Permission"
         from android.permissions import Permission
@@ -39,7 +41,6 @@ def has_single_permission(permission: str) -> bool:
 
 def warn_if_permission_missing(permission: str) -> bool:
     """Returns True iff a warning was emitted and permission is missing."""
-    from kivy.logger import Logger as logger  # Delayed import
     if IS_ANDROID:
         if not has_single_permission(permission=permission):
             logger.warning("Missing permission %s, cancelling use of corresponding sensor" % permission)
@@ -50,7 +51,6 @@ def warn_if_permission_missing(permission: str) -> bool:
 def request_external_storage_dirs_access():  # FIXME rename to request_external_storage_dir_access()?
     """Ask for write permission and create missing directories."""
     if IS_ANDROID:
-        from kivy.logger import Logger as logger  # Delayed import
         permission = "WRITE_EXTERNAL_STORAGE"
         request_single_permission(permission)
         # FIXME remove this ugly sleep() hack and move this to Service

@@ -1,7 +1,8 @@
 
-from kivy.logger import Logger as logger
 
 # from oscpy.server import OSCThreadServer
+import logging
+
 from wacryptolib.cryptainer import CryptainerStorage
 from wacryptolib.keystore import get_free_keypair_generator_worker
 from wacryptolib.sensor import (
@@ -11,8 +12,7 @@ from wacryptolib.sensor import (
 )
 
 
-#osc = OSCThreadServer(encoding="utf8")
-
+logger = logging.getLogger(__name__)
 
 
 # EXAMPLE IMPLEMENTATION - TO DELETE??

@@ -1,9 +1,9 @@
+import logging
 from pathlib import Path
 
 from jsonrpc_requests import JSONRPCError
 from kivy.factory import Factory
 from kivy.lang import Builder
-from kivy.logger import Logger as logger
 from kivy.properties import ObjectProperty
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.floatlayout import MDFloatLayout
@@ -26,6 +26,8 @@ from wacryptolib.utilities import load_from_json_bytes, dump_to_json_bytes
 
 Builder.load_file(str(Path(__file__).parent / 'authenticator_revelation_request_management.kv'))
 
+
+logger = logging.getLogger(__name__)
 
 # FIXME RENAME THIS FILE AND KV FILE to authenticator_decryption_request_management.py
 

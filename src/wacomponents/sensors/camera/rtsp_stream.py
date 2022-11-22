@@ -4,7 +4,6 @@ import subprocess
 from datetime import timezone, datetime
 
 import re
-from kivy.logger import Logger as logger
 
 from wacomponents.i18n import tr
 from wacomponents.sensors.camera._camera_base import PreviewImageMixin, ActivityNotificationMixin

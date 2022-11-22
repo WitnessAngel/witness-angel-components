@@ -3,7 +3,6 @@ import subprocess
 
 import os
 import sys
-from kivy.logger import Logger as logger
 
 from ._base_service_controller import ServiceControllerBase
 from ..default_settings import WAIT_TIME_MULTIPLIER

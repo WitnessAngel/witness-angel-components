@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 from kivy.factory import Factory
@@ -22,7 +23,7 @@ from wacryptolib.keystore import load_keystore_metadata
 
 Builder.load_file(str(Path(__file__).parent / 'cryptainer_decryption_process.kv'))
 
-from kivy.logger import Logger as logger
+logger = logging.getLogger(__name__)
 
 
 class CryptainerDecryptionProcessScreen(WAScreenBase):

@@ -1,10 +1,10 @@
+import logging
 from copy import deepcopy
 from pathlib import Path
 from uuid import UUID
 
 from jsonrpc_requests import JSONRPCError
 from kivy.lang import Builder
-from kivy.logger import Logger as logger
 from kivy.properties import ObjectProperty, BooleanProperty
 
 from wacomponents.i18n import tr
@@ -17,6 +17,8 @@ from wacryptolib.exceptions import ExistenceError
 from wacryptolib.keystore import load_keystore_metadata, ReadonlyFilesystemKeystore
 
 Builder.load_file(str(Path(__file__).parent / 'authenticator_publication_form.kv'))
+
+logger = logging.getLogger(__name__)
 
 
 class AuthenticatorPublicationFormScreen(WAScreenBase):
