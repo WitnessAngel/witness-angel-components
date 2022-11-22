@@ -2,7 +2,10 @@ import logging
 
 
 def _presetup_app_environment(setup_kivy_gui: bool):
-    """Setup for both gui and console apps."""
+    """Setup for both gui and console apps.
+
+    this module uses print() instead of logging because the state of app is not clear at this moment.
+    """
     import os
 
     os.environ["KIVY_NO_ARGS"] = "1"  # Important to bypass Kivy CLI system

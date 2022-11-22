@@ -4,7 +4,9 @@ from decorator import decorator
 from kivy.logger import Logger as logger
 
 
-class CallbackHandler(Handler):
+class CallbackLoggingHandler(Handler):
+    """Logging handler to forward the message somewhere else (ex. OSC stream)"""
+
     def __init__(self, gui_console_callback):
         super().__init__()
         self._gui_console_callback = gui_console_callback
@@ -15,7 +17,7 @@ class CallbackHandler(Handler):
             self._gui_console_callback(msg)
         except Exception as exc:
             print(
-                "Warning: exception in CallbackHandler when emitting record",
+                "Warning: exception in CallbackLoggingHandler when emitting record",
                 record,
                 "->",
                 exc,

@@ -8,7 +8,7 @@ from oscpy.server import ServerClass
 
 from wacomponents.application._common_runtime_support import WaRuntimeSupportMixin
 from wacomponents.default_settings import IS_ANDROID, WIP_RECORDING_MARKER
-from wacomponents.logging.handlers import CallbackHandler, safe_catch_unhandled_exception
+from wacomponents.logging.handlers import CallbackLoggingHandler, safe_catch_unhandled_exception
 from wacomponents.recording_toolchain import start_recording_toolchain, stop_recording_toolchain
 from wacomponents.service_control import get_osc_server, get_osc_client
 from wacomponents.utilities import InterruptableEvent, MONOTHREAD_POOL_EXECUTOR
@@ -54,9 +54,10 @@ class WaRecorderService(WaRuntimeSupportMixin):
         logger.info("Starting service")  # Will not be sent to App (too early)
         osc_starter_callback()  # Opens server port
         self._osc_client = get_osc_client(to_app=True)
-        logging.getLogger(None).addHandler(
-            CallbackHandler(self._remote_logging_callback)
-        )
+
+        # Redirect root logger traffic to GUI console widget if wanted
+        #logging.getLogger(None).addHandler(CallbackLoggingHandler(self._remote_logging_callback))
+
         self._termination_event = InterruptableEvent()
         logger.info("Service started")
 

@@ -13,7 +13,7 @@ from kivy.properties import StringProperty
 
 from oscpy.server import ServerClass
 from wacomponents.service_control import ServiceController
-from wacomponents.logging.handlers import CallbackHandler, safe_catch_unhandled_exception
+from wacomponents.logging.handlers import CallbackLoggingHandler, safe_catch_unhandled_exception
 from wacomponents.service_control import get_osc_server
 from wacomponents.i18n import tr
 
@@ -66,8 +66,8 @@ class WaRecorderGui(WaGenericGui):  # FIXME WaGui instead?
         """
         self.service_controller = ServiceController()
 
-        # Redirect root logger traffic to GUI console
-        logging.getLogger(None).addHandler(CallbackHandler(self.log_output))
+        # Redirect root logger traffic to GUI console widget if wanted
+        #logging.getLogger(None).addHandler(CallbackLoggingHandler(self.log_output))
 
         # Constantly check the state of background service
         Clock.schedule_interval(
