@@ -13,7 +13,7 @@ from wacomponents.utilities import format_keypair_label, format_cryptainer_label
     format_authenticator_label, SPACE, COLON, LINEBREAK
 from wacomponents.widgets.layout_components import build_fallback_information_box
 from wacomponents.widgets.popups import dialog_with_close_button, close_current_dialog, \
-    safe_catch_unhandled_exception_and_display_popup, display_info_toast
+    safe_catch_unhandled_exception_and_display_popup, display_info_toast, display_info_snackbar
 from wacryptolib.cryptainer import gather_trustee_dependencies, get_trustee_id, \
     CRYPTAINER_TRUSTEE_TYPES
 from wacryptolib.exceptions import KeystoreDoesNotExist, KeyDoesNotExist, KeyLoadingError
@@ -272,14 +272,14 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
 
         for cryptainer_name in self.selected_cryptainer_names:
 
-            errors = []
+            error_report = []
             decryption_status = False
 
             try:
 
                 EXTERNAL_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
                 # FIXME make this asynchronous, to avoid stalling the app!
-                result, errors = self.filesystem_cryptainer_storage.decrypt_cryptainer_from_storage(
+                result, error_report = self.filesystem_cryptainer_storage.decrypt_cryptainer_from_storage(
                     cryptainer_name,
                     passphrase_mapper=self.passphrase_mapper,
                     revelation_requestor_uid=self.revelation_requestor_uid,
@@ -293,13 +293,14 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
                     # print(">> Successfully exported data file to %s" % target_path)
 
             except Exception as exc:
-                # FIXME add this exc, somehow, to errors list?
-                logger.critical("Unexpected error when decrypting container %s: %r" % (cryptainer_name, exc))
+                message = "Abnormal error when decrypting container %s: %r" % (cryptainer_name, exc)
+                logger.critical(message)
+                display_info_snackbar(message)
 
             decryption_result_for_single_cryptainer = dict(
                 cryptainer_name=cryptainer_name,
                 decryption_status=decryption_status,
-                decryption_error=errors  # Might be empty if exception was raised, too...
+                decryption_error=error_report  # Might be empty if exception was raised, too...
             )
             decryption_results.append(decryption_result_for_single_cryptainer)
 
