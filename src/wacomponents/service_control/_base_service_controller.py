@@ -1,5 +1,8 @@
+import logging
+
 from wacomponents.service_control import get_osc_client
 
+logger = logging.getLogger(__name__)
 
 class ServiceControllerBase:
 
@@ -9,13 +12,14 @@ class ServiceControllerBase:
         self._osc_client = get_osc_client(to_app=False)
 
     def _send_message(self, address, *values):
-        #print("@@Message sent from app to service: %s %s" % (address, values))
+        logger.debug("Message sent from app to service: %s %s" % (address, values))
         try:
             return self._osc_client.send_message(address, values=values, safer=True)
         except ConnectionError:
             pass  # Normal at start of app...
         except Exception as exc:
-            print("Could not send osc message %s%s to service: %r" % (address, values, exc))
+            # Normal if service has just been restarted for example
+            logger.warning("Could not send osc message %s%s to service: %r" % (address, values, exc))
             return
 
     def ping(self):
@@ -34,5 +38,6 @@ class ServiceControllerBase:
     def broadcast_recording_state(self):
         self._send_message("/broadcast_recording_state")
 
-    def attempt_cryptainer_decryption(self, cryptainer_filepath):  # FIXME unused, pb with transfer of passphrases for now...
+    def __attempt_cryptainer_decryption(self, cryptainer_filepath):
+        # FIXME unused, pb with transfer of passphrases for now...
         self._send_message("/attempt_cryptainer_decryption", cryptainer_filepath)
