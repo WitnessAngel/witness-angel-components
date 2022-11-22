@@ -23,7 +23,7 @@ class ServiceController(ServiceControllerBase):
         # self._subprocess might already exist but have crashed
         command = [sys.executable] + params
         cwd = os.path.dirname(params[0] if params else sys.executable) or None
-        logger.info("GUI is launching service via Popen command %r, in cwd %r" % (command, cwd))
+        logger.info("GUI is launching service via Popen command %r, in cwd %r", command, cwd)
         self._subprocess = subprocess.Popen(
             command,
             shell=False,

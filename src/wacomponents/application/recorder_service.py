@@ -183,7 +183,7 @@ class WaRecorderService(WaRuntimeSupportMixin):
     def start_recording(self, env=None):
         # Fixme - remove "env" parameter if unused?
         if self._status_change_in_progress:
-            logger.info("Service recording start ignored, because because other status change is already in progress")
+            logger.info("Service recording start ignored, because other status change is already in progress")
             return
         logger.info("Service got command to START the recording")
 
@@ -242,7 +242,7 @@ class WaRecorderService(WaRuntimeSupportMixin):
     def stop_recording(self, force=False):
         #print("@@ IMPORTANT - RECEIVED ORDER TO STOP RECORDING IN SERVICE")
         if self._status_change_in_progress and not force:
-            logger.info("Service recording stop ignored, because because other status change is already in progress")
+            logger.info("Service recording stop ignored, because other status change is already in progress")
             return
         logger.info("Service got command to STOP the recording")
         try:
@@ -255,7 +255,7 @@ class WaRecorderService(WaRuntimeSupportMixin):
     @osc.address_method("/stop_server")
     @safe_catch_unhandled_exception
     def stop_server(self):
-        logger.warning("Service got command to shutdown entirely")
+        logger.warning("Service got command to SHUTDOWN entirely")
 
         if self.is_recording:
             logger.info(

@@ -31,6 +31,9 @@ from wacryptolib.keystore import FilesystemKeystore, load_keystore_metadata
 Builder.load_file(str(Path(__file__).parent / 'authenticator_management.kv'))
 
 
+logger = logging.getLogger(__name__)
+
+
 @unique
 class AuthenticatorType(Enum):
     USER_PROFILE = 1

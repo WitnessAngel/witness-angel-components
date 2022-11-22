@@ -69,10 +69,10 @@ class RaspberryRaspividSensor(PreviewImageMixin, ActivityNotificationMixin, Peri
                 "--quality", "90",
                 "-v",
             ]
-            logger.info("Taking camera legacy snapshot with command: %s", " ".join(snapshot_command_line))  # Fixme deduplicate this
+            logger.debug("Taking camera snapshot with command: %s", " ".join(snapshot_command_line))  # Fixme standardize this
             subprocess.check_call(snapshot_command_line, timeout=20)
         except (CalledProcessError, TimeoutExpired) as exc:
-            logger.warning("Couldn't generate legacy screenshot in %s sensor: %s", self.sensor_name, exc)
+            logger.warning("Couldn't generate screenshot in %s sensor: %s", self.sensor_name, exc)
 
     def _build_subprocess_command_line(self):
 
@@ -189,10 +189,10 @@ class RaspberryLibcameraSensor(PreviewImageMixin, PeriodicSubprocessStreamRecord
                                 "--immediate",  # No preview phase when taking picture
                                 # FOR LATER "--autofocus",  # Might be limited by "immediate" mode...
                             ]
-            logger.info("Taking camera snapshot with command: %s", " ".join(snapshot_command_line))
+            logger.info("Taking snapshot with command: %s", " ".join(snapshot_command_line))
             subprocess.check_call(snapshot_command_line, timeout=20)
         except (CalledProcessError, TimeoutExpired) as exc:
-            logger.warning("Couldn't get screenshot in %s sensor: %s", self.sensor_name, exc)
+            logger.warning("Couldn't generate screenshot in %s sensor: %s", self.sensor_name, exc)
 
 
 class RaspberryAlsaMicrophoneSensor(ActivityNotificationMixin, PeriodicSubprocessStreamRecorder):

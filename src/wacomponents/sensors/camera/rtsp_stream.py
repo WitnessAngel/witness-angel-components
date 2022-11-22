@@ -22,7 +22,7 @@ def get_ffmpeg_version() -> tuple:
     try:
         output = subprocess.check_output(["ffmpeg", "-version"], stderr=subprocess.STDOUT)
     except OSError:
-        logger.warning("Error while calling ffmpeg", exc_info=True)
+        logger.warning("Error while calling ffmpeg to retrieve version", exc_info=True)
         return None, tr.f(tr._("Ffmpeg module not found, please ensure it is in your PATH"))
 
     output = output.decode("ascii", "ignore").lower()
