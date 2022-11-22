@@ -1,4 +1,3 @@
-import os
 from datetime import datetime
 from enum import Enum, unique
 from pathlib import Path
@@ -18,8 +17,8 @@ from wacomponents.default_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_A
 from wacomponents.i18n import tr
 from wacomponents.screens.base import WAScreenName, WAScreenBase
 from wacomponents.system_permissions import request_external_storage_dirs_access, is_folder_readable, is_folder_writable
-from wacomponents.utilities import convert_bytes_to_human_representation, shorten_uid, format_authenticator_label, \
-    format_keypair_label, format_utc_datetime_label, COLON, LINEBREAK, indent_text
+from wacomponents.utilities import convert_bytes_to_human_representation, shorten_uid, format_keypair_label, \
+    format_utc_datetime_label, COLON, LINEBREAK, indent_text
 from wacomponents.widgets.layout_components import LanguageSwitcherScreenMixin
 from wacomponents.widgets.popups import dialog_with_close_button, register_current_dialog, close_current_dialog, \
     help_text_popup, display_info_toast
@@ -28,7 +27,7 @@ from wacryptolib.authdevice import list_available_authdevices
 from wacryptolib.authenticator import is_authenticator_initialized
 from wacryptolib.exceptions import KeyLoadingError, SchemaValidationError, KeyDoesNotExist
 from wacryptolib.keygen import load_asymmetric_key_from_pem_bytestring
-from wacryptolib.keystore import FilesystemKeystore, load_keystore_metadata, _get_keystore_metadata_file_path
+from wacryptolib.keystore import FilesystemKeystore, load_keystore_metadata
 
 Builder.load_file(str(Path(__file__).parent / 'authenticator_management.kv'))
 

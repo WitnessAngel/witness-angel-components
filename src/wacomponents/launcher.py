@@ -1,10 +1,10 @@
+import socket
 from datetime import datetime
 from pathlib import Path
-import socket
+
 import importlib
 import os
 import sys
-
 
 APP_IS_FROZEN = getattr(sys, 'frozen', False)
 

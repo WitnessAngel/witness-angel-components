@@ -1,17 +1,21 @@
 from pathlib import Path
 
-from kivy.lang import Builder
-from kivy.properties import ObjectProperty
-
 from jsonrpc_requests import JSONRPCError
 from kivy.factory import Factory
+from kivy.lang import Builder
+from kivy.logger import Logger as logger
+from kivy.properties import ObjectProperty
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.tab import MDTabsBase
-from kivy.logger import Logger as logger
 
+from wacomponents.i18n import tr
 from wacomponents.screens.base import WAScreenName, WAScreenBase
+from wacomponents.utilities import format_revelation_request_label, format_keypair_label, \
+    format_authenticator_label, COLON, LINEBREAK, format_cryptainer_label, shorten_uid
 from wacomponents.widgets.layout_components import GrowingAccordion, build_fallback_information_box
+from wacomponents.widgets.popups import dialog_with_close_button, close_current_dialog, display_info_snackbar, \
+    help_text_popup, safe_catch_unhandled_exception_and_display_popup, display_info_toast
 from wacryptolib.cipher import encrypt_bytestring
 from wacryptolib.exceptions import KeyLoadingError, KeyDoesNotExist, KeystoreDoesNotExist, \
     AuthenticationError
@@ -19,12 +23,6 @@ from wacryptolib.keygen import load_asymmetric_key_from_pem_bytestring
 from wacryptolib.keystore import load_keystore_metadata, FilesystemKeystore
 from wacryptolib.trustee import TrusteeApi
 from wacryptolib.utilities import load_from_json_bytes, dump_to_json_bytes
-
-from wacomponents.i18n import tr
-from wacomponents.utilities import format_revelation_request_label, format_keypair_label, \
-    format_authenticator_label, COLON, LINEBREAK, format_cryptainer_label, shorten_uid
-from wacomponents.widgets.popups import dialog_with_close_button, close_current_dialog, display_info_snackbar, \
-    help_text_popup, safe_catch_unhandled_exception_and_display_popup, display_info_toast
 
 Builder.load_file(str(Path(__file__).parent / 'authenticator_revelation_request_management.kv'))
 

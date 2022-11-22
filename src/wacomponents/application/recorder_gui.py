@@ -1,22 +1,18 @@
 # -*- coding: utf-8 -*-
 import atexit
-import logging
-import os
-
-from wacomponents.application.generic_gui import WaGenericGui
-from wacomponents.default_settings import WAIT_TIME_MULTIPLIER
-from wacomponents.widgets.popups import display_info_snackbar, display_info_toast
 
 from kivy.clock import Clock
 from kivy.logger import Logger as logger
 from kivy.properties import StringProperty
-
 from oscpy.server import ServerClass
-from wacomponents.service_control import ServiceController
-from wacomponents.logging.handlers import CallbackLoggingHandler, safe_catch_unhandled_exception
-from wacomponents.service_control import get_osc_server
-from wacomponents.i18n import tr
 
+from wacomponents.application.generic_gui import WaGenericGui
+from wacomponents.default_settings import WAIT_TIME_MULTIPLIER
+from wacomponents.i18n import tr
+from wacomponents.logging.handlers import safe_catch_unhandled_exception
+from wacomponents.service_control import ServiceController
+from wacomponents.service_control import get_osc_server
+from wacomponents.widgets.popups import display_info_snackbar, display_info_toast
 
 osc, osc_starter_callback = get_osc_server(is_application=True)
 

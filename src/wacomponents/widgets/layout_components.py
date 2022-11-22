@@ -1,16 +1,18 @@
 import textwrap
 from pathlib import Path
 
+from kivy.factory import Factory
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty, Clock
+from kivy.uix.accordion import Accordion
 from kivy.uix.behaviors import FocusBehavior
 from kivy.uix.settings import SettingItem, SettingString
 from kivy.uix.textinput import TextInput
 from kivymd.app import MDApp
 from kivymd.uix.menu import MDDropdownMenu
-from kivy.uix.accordion import Accordion
-from kivy.factory import Factory
+
 from wacomponents.i18n import tr
+
 
 # FIXME RENAME THIS MODULE AS MISC_WIDGETS??
 

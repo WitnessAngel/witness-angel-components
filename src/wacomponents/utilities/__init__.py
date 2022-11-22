@@ -1,10 +1,10 @@
 import threading
 import uuid
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime, date
+from datetime import datetime
 from pathlib import Path
-from typing import Optional
 from textwrap import indent
+from typing import Optional
 
 from kivy.uix.filechooser import filesize_units
 

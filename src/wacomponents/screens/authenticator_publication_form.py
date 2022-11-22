@@ -10,7 +10,7 @@ from kivy.properties import ObjectProperty, BooleanProperty
 from wacomponents.i18n import tr
 from wacomponents.screens.authenticator_management import shorten_uid
 from wacomponents.screens.base import WAScreenName, WAScreenBase
-from wacomponents.utilities import format_authenticator_label, COLON, LINEBREAK, indent_text
+from wacomponents.utilities import COLON, LINEBREAK, indent_text
 from wacomponents.widgets.popups import help_text_popup, display_info_toast, \
     safe_catch_unhandled_exception_and_display_popup, display_info_snackbar
 from wacryptolib.exceptions import ExistenceError

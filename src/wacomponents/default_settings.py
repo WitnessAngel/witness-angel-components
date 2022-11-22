@@ -3,7 +3,6 @@ These settings should preferably be star-imported by setting files of actual pro
 """
 from pathlib import Path
 
-import os
 from kivy import platform
 from plyer import storagepath
 

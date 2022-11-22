@@ -14,14 +14,17 @@ from wacomponents.screens.base import WAScreenBase
 from wacomponents.utilities import shorten_uid, format_authenticator_label, format_keypair_label, COLON, LINEBREAK, \
     SPACE
 from wacomponents.widgets.layout_components import build_fallback_information_box
-from wacomponents.widgets.popups import display_info_toast, close_current_dialog, dialog_with_close_button, safe_catch_unhandled_exception_and_display_popup
+from wacomponents.widgets.popups import display_info_toast, close_current_dialog, dialog_with_close_button, \
+    safe_catch_unhandled_exception_and_display_popup
 from wacryptolib.authdevice import list_available_authdevices
 from wacryptolib.authenticator import is_authenticator_initialized
-from wacryptolib.exceptions import SchemaValidationError, ExistenceError, KeyAlreadyExists, ValidationError
-from wacryptolib.jsonrpc_client import JsonRpcProxy, status_slugs_response_error_handler
+from wacryptolib.exceptions import SchemaValidationError, ExistenceError, ValidationError
 from wacryptolib.keystore import FilesystemKeystore, KEYSTORE_FORMAT, validate_keystore_tree
 
 Builder.load_file(str(Path(__file__).parent / 'foreign_keystore_management.kv'))
+
+
+logger = logging.getLogger(__name__)
 
 
 class ForeignKeystoreManagementScreen(WAScreenBase):
@@ -151,7 +154,7 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
             try:
                 shutil.rmtree(path)
             except OSError as exc:
-                logging.error("Failed deletion of imported authentication device %s: %r", keystore_uid, exc)
+                logger.error("Failed deletion of imported authentication device %s: %r", keystore_uid, exc)
 
         self._change_authenticator_selection_status(keystore_uids=keystore_uids,
                                                     is_selected=False)  # Update selection list

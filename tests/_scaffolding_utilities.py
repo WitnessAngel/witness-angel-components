@@ -4,9 +4,9 @@ import tempfile
 import time
 from ffprobe import FFProbe
 
+from wacomponents.sensors.camera.rtsp_stream import PeriodicStreamPusher
 from wacryptolib.cryptainer import CryptainerStorage
 from wacryptolib.sensor import TarfileRecordAggregator
-from wacomponents.sensors.camera.rtsp_stream import PeriodicStreamPusher
 
 
 # FIXME REMOVE THIS USELESS

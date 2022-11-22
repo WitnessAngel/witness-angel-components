@@ -1,9 +1,9 @@
-import io
 import logging
 import subprocess
 from subprocess import CalledProcessError, TimeoutExpired
 from typing import Optional
 
+import io
 import multitimer
 from PIL import Image
 
@@ -328,9 +328,6 @@ class RaspberryPicameraSensor(PreviewImageMixin, ActivityNotificationMixin, Peri
             self._live_image_preview_pusher = multitimer.MultiTimer(
                 interval=live_preview_interval_s, function=self._push_live_preview_image, runonstart=True
             )
-
-        #import logging_tree
-        #logging_tree.printout()
 
     @property
     def record_extension(self):

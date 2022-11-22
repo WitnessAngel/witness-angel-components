@@ -4,11 +4,11 @@ from jsonrpc_requests import JSONRPCError
 from kivy.factory import Factory
 from kivy.lang import Builder
 
-from wacomponents.screens.base import WAScreenName, WAScreenBase
-from wacomponents.widgets.layout_components import GrowingAccordion, build_fallback_information_box
 from wacomponents.i18n import tr
+from wacomponents.screens.base import WAScreenName, WAScreenBase
 from wacomponents.utilities import format_revelation_request_label, format_authenticator_label, \
     format_keypair_label, COLON, LINEBREAK, format_cryptainer_label
+from wacomponents.widgets.layout_components import GrowingAccordion, build_fallback_information_box
 from wacomponents.widgets.popups import dialog_with_close_button, display_info_snackbar
 
 Builder.load_file(str(Path(__file__).parent / 'claimant_revelation_request_management.kv'))

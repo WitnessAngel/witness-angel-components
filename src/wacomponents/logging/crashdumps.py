@@ -2,7 +2,6 @@
 
 def generate_and_send_crashdump(exc_info, target_url, client_type):
 
-    import os
     import traceback
     import requests
 

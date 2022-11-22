@@ -1,12 +1,12 @@
 
 import logging
-from datetime import timezone, datetime
-import re
 import subprocess
-from pathlib import Path
-from wacomponents.i18n import tr
+from datetime import timezone, datetime
+
+import re
 from kivy.logger import Logger as logger
 
+from wacomponents.i18n import tr
 from wacomponents.sensors.camera._camera_base import PreviewImageMixin, ActivityNotificationMixin
 from wacryptolib.sensor import PeriodicSubprocessStreamRecorder
 

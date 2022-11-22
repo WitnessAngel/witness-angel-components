@@ -2,16 +2,17 @@ from pathlib import Path
 
 from kivy.factory import Factory
 from kivy.lang import Builder
-from kivy.properties import ObjectProperty, BooleanProperty
-from wacryptolib.cryptainer import gather_decryptable_symkeys
-from wacryptolib.keystore import generate_keypair_for_storage
-from wacryptolib.utilities import generate_uuid0
-from wacryptolib.exceptions import KeyDoesNotExist, KeystoreDoesNotExist
+from kivy.properties import ObjectProperty
 
 from wacomponents.i18n import tr
 from wacomponents.screens.base import WAScreenName, WAScreenBase
 from wacomponents.utilities import shorten_uid, format_authenticator_label, LINEBREAK, COLON, indent_text, SPACE
-from wacomponents.widgets.popups import display_info_toast, dialog_with_close_button, safe_catch_unhandled_exception_and_display_popup
+from wacomponents.widgets.popups import display_info_toast, dialog_with_close_button, \
+    safe_catch_unhandled_exception_and_display_popup
+from wacryptolib.cryptainer import gather_decryptable_symkeys
+from wacryptolib.exceptions import KeyDoesNotExist, KeystoreDoesNotExist
+from wacryptolib.keystore import generate_keypair_for_storage
+from wacryptolib.utilities import generate_uuid0
 
 Builder.load_file(str(Path(__file__).parent / 'claimant_revelation_request_creation_form.kv'))
 
