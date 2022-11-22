@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import gettext
+import logging
 from gettext import NullTranslations
 
 import locale
@@ -8,6 +9,10 @@ import os
 from kivy.lang import Observable
 
 from wacomponents.default_settings import IS_ANDROID, IS_IOS
+from wacryptolib.utilities import catch_and_log_exception
+
+
+logger = logging.getLogger(__name__)
 
 
 def detect_default_language():
@@ -26,23 +31,19 @@ def detect_default_language():
         return forced_lang_code
 
     if IS_ANDROID:
-        try:
+        with catch_and_log_exception("detect_default_language() under Android"):
             from jnius import autoclass
             JavaUtilLocale = autoclass('java.util.Locale')
             java_locale = JavaUtilLocale.getDefault()
             lang_code = java_locale.language
             #print("######### JAVA LOCALE DETECTED: %s %s #########" % (java_locale.language, java_locale.country ))
-        except Exception as exc:
-            print("######### JavaUtilLocale exception %r" % exc)  # FIXME use logging
     elif IS_IOS:
-        try:
+        with catch_and_log_exception("detect_default_language() under iOS"):
             import pyobjus
             NSLocale = pyobjus.autoclass("NSLocale")
             languages = NSLocale.preferredLanguages()
             lang_code = languages.objectAtIndex_(0).UTF8String().decode("utf-8")  # Might include region code too
             #print("######### APPLE LOCALE DETECTED: %s #########" % lang_code)
-        except Exception as exc:
-            print("######### NSLocale exception %r" % exc)  # FIXME use logging
     else:
         # VERY rough detection of user language, will often not work under Windows but it's OK
         # See https://stackoverflow.com/a/25691701 and win32.GetUserDefaultUILanguage()
@@ -50,7 +51,10 @@ def detect_default_language():
         #print("######### DEFAULT LOCALE DETECTED: %s %s #########" % (lang_code, _charset))
 
     lang_code = lang_code or ""  # lang_code might be None if undetected
-    return "fr" if _normalize(lang_code).startswith("fr") else "en"
+    language = "fr" if _normalize(lang_code).startswith("fr") else "en"
+    logger.debug("Default language detected for application: %s", language)
+    return language
+
 
 DEFAULT_LANGUAGE = detect_default_language()
 

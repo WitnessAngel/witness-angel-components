@@ -62,7 +62,7 @@ class WaGenericGui(WaRuntimeSupportMixin, MDApp):
         assert self.config_defaults_path.exists(), self.config_defaults_path
         #print(">>>>>>>>>>>>>>READING config_template_path"),
         config.read(str(self.config_defaults_path))
-        '''
+        '''# If we want to immediately transfer default settings to local file?
         config.filename = self.get_application_config()
         if not os.path.exists(config.filename):
             config.write()  # Initial user preferences file

@@ -95,7 +95,7 @@ class WaRecorderGui(WaGenericGui):  # FIXME WaGui instead?
         Might also be called as a reaction to the service broadcasting a changed state.
          Let it propagate anyway in this case, the service will just ignore the duplicated command.
         """
-        print("@@ GUI calling switch_to_recording_state %r" % is_recording)
+        logger.debug("GUI calling switch_to_recording_state %r" % is_recording)
         self.set_recording_btn_state(disabled=True)
         if is_recording:
 
@@ -109,7 +109,7 @@ class WaRecorderGui(WaGenericGui):  # FIXME WaGui instead?
 
     def _request_recording_state(self, *args, **kwargs):
         """Ask the service for an update on its recording state."""
-        print("@@@ App requesting recording state")
+        logger.debug("GUI requesting recording state")
         self._unanswered_service_state_requests += 1
         if self._unanswered_service_state_requests > 2:
             logger.info("Launching recorder service from main app (unanswered requests = %s)",
@@ -120,7 +120,7 @@ class WaRecorderGui(WaGenericGui):  # FIXME WaGui instead?
             self.service_controller.broadcast_recording_state()
 
     def _receive_recording_state(self, is_recording, *args, **kwargs):
-        print("@@@ App received recording state %r" % is_recording)
+        logger.debug("GUI received recording state %r" % is_recording)
         self._unanswered_service_state_requests = 0  # RESET
         if is_recording == "":  # Special case (ternary value, since None is not supported by OSC)
             self.set_recording_btn_state(disabled=True)

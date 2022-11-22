@@ -35,7 +35,7 @@ def _presetup_app_environment(setup_kivy_gui: bool):
                 python_activity_instance = python_activity_class.mActivity
                 android_window = python_activity_instance.getWindow()
                 android_window.addFlags(2)  # Constant LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER
-                print(">>>>>>>> Called android_window.addFlags(LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER) !")
+                #print(">>>>>>>> Called android_window.addFlags(LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER) !")
             Runnable(config_real)()
 
     except Exception as exc:

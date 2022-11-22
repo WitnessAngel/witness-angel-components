@@ -25,7 +25,7 @@ def generate_and_send_crashdump(exc_info, target_url, client_type):
     except ImportError:
         pass  # We're surely not on Android
     except Exception as exc:
-        print("Could not gather android system info: %r" % exc)
+        print("Could not gather android system info: %r" % exc)  # Do not use logging or stderr here
 
     system_info_str = "\n".join(
         "%s: %s" % (k, v) for (k, v) in sorted(system_info.items())

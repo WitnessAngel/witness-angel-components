@@ -1,15 +1,17 @@
 
 import atexit
+import logging
 
 import RPi.GPIO as GPIO
 
-# We have to disable this remote GPIO.cleanup function, since some E-Paper screens calls it wrongly on sleep #
+logger = logging.getLogger(__name__)
 
+# We have to disable this remote GPIO.cleanup function, since some E-Paper screens call it wrongly on sleep
 _real_gpio_cleanup = GPIO.cleanup
 atexit.register(_real_gpio_cleanup)  # We cleanup before we leave
 
 def fake_gpio_cleanup(*args, **kwargs):
-    print("# SKIPPING WRONG GPIO CLEANUP #")
+    logger.debug("Skipping excessive GPIO cleanup request")
 GPIO.cleanup = fake_gpio_cleanup
 
 

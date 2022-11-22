@@ -1,3 +1,4 @@
+import logging
 import socket
 from pathlib import Path
 
@@ -9,24 +10,23 @@ from oscpy.client import OSCClient
 from oscpy.server import OSCThreadServer as _OSCThreadServer
 
 from wacomponents.default_settings import INTERNAL_APP_ROOT
+from wacryptolib.utilities import catch_and_log_exception
+
+
+logger = logging.getLogger(__name__)
 
 
 class RobustOSCThreadServer(_OSCThreadServer):
 
     def _listen(self):
         while True:  # This server listens forever
-            try:
+            with catch_and_log_exception("RobustOSCThreadServer._listen"):  # Prevent crash of server loop...
                 super()._listen()
-            except Exception as exc:
-                print(
-                    "!!! Unhandled exception intercepted in RobustOSCThreadServer._listen(): %r" % exc
-                )
-
 
 def _osc_default_handler(address, *values, socket_name=None):
-    print(
-        "Unknown OSC address %s called (arguments %s) on listener %s" % (
-            address, list(values), socket_name)
+    logger.error(
+        "Unknown OSC address %s called on listener %s, with arguments" % (
+            address, socket_name, list(values))
     )
 
 

@@ -153,14 +153,14 @@ class WaRecorderService(WaRuntimeSupportMixin):
             if self.is_recording:
                 #logger.debug("Ignoring redundant call to service.start_recording()")
                 return
-            logger.info("Starting offloaded recording in service")
+            logger.info("Service starting offloaded recording")
 
             if not self._recording_toolchain:
                 self._recording_toolchain = self._build_recording_toolchain()  # FIXME handle exceptions instead of None!
 
             assert self._recording_toolchain
             start_recording_toolchain(self._recording_toolchain)
-            logger.info("Offloaded recording started in service")
+            logger.info("Service successfully started offloaded recording")
 
             if IS_ANDROID:
                 from wacomponents.default_settings import ANDROID_CONTEXT
@@ -181,11 +181,12 @@ class WaRecorderService(WaRuntimeSupportMixin):
     @osc.address_method("/start_recording")
     @safe_catch_unhandled_exception
     def start_recording(self, env=None):
-        print("@@ IMPORTANT - RECEIVED (auto-?)ORDER TO START RECORDING IN SERVICE")
         # Fixme - remove "env" parameter if unused?
         if self._status_change_in_progress:
-            print("@@ ORDER TO START RECORDING WAS IGNORED by service because other status change is already in progress")
+            logger.info("Service recording start ignored, because because other status change is already in progress")
             return
+        logger.info("Service got command to START the recording")
+
         WIP_RECORDING_MARKER.touch(exist_ok=True)
         self.reload_config()  # Important
         if not self.refresh_checkup_status():
@@ -221,9 +222,9 @@ class WaRecorderService(WaRuntimeSupportMixin):
             if not self.is_recording:
                 #logger.debug("Ignoring redundant call to service.stop_recording()")
                 return
-            logger.info("Stopping recording in service")
+            logger.info("Service stopping offloaded recording")
             stop_recording_toolchain(self._recording_toolchain)
-            logger.info("Recording stopped in service")
+            logger.info("Service successfully stopped offloaded recording")
 
             if IS_ANDROID:
                 from wacomponents.default_settings import ANDROID_CONTEXT
@@ -241,8 +242,9 @@ class WaRecorderService(WaRuntimeSupportMixin):
     def stop_recording(self, force=False):
         #print("@@ IMPORTANT - RECEIVED ORDER TO STOP RECORDING IN SERVICE")
         if self._status_change_in_progress and not force:
-            print("@@ ORDER TO STOP RECORDING WAS IGNORED by service because other status change is already in progress")
+            logger.info("Service recording stop ignored, because because other status change is already in progress")
             return
+        logger.info("Service got command to STOP the recording")
         try:
             WIP_RECORDING_MARKER.unlink()  # TODO use "missing_ok" asap
         except FileNotFoundError:
@@ -253,11 +255,11 @@ class WaRecorderService(WaRuntimeSupportMixin):
     @osc.address_method("/stop_server")
     @safe_catch_unhandled_exception
     def stop_server(self):
-        logger.info("Stopping service")
+        logger.warning("Service got command to shutdown entirely")
 
         if self.is_recording:
             logger.info(
-                "Recording is in progress, we stop it as part of service shutdown"
+                "Recording is currently in progress, we stop it as part of service shutdown"
             )
             future = self.stop_recording(force=True)  # Could be None if unexpected exception was caught!
             if future:
@@ -265,7 +267,7 @@ class WaRecorderService(WaRuntimeSupportMixin):
 
         osc.stop_all()
         self._termination_event.set()
-        logger.info("Service stopped")
+        logger.info("Service shutdown is now complete")
 
     @safe_catch_unhandled_exception
     def join(self):

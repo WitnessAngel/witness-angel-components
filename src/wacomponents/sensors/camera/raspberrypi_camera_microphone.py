@@ -11,7 +11,7 @@ from wacomponents.application.recorder_service import ActivityNotificationType
 from wacomponents.sensors.camera._camera_base import PreviewImageMixin, ActivityNotificationMixin
 from wacryptolib.cryptainer import CryptainerEncryptionPipeline
 from wacryptolib.sensor import PeriodicSubprocessStreamRecorder, PeriodicEncryptionStreamMixin, PeriodicSensorRestarter
-from wacryptolib.utilities import synchronized
+from wacryptolib.utilities import synchronized, catch_and_log_exception
 
 logger = logging.getLogger(__name__)
 
@@ -278,19 +278,14 @@ class _CustomPicameraOutputWithEncryptionStream(object):
         self._encryption_stream = encryption_stream
 
     def write(self, chunk):
-        print(".", end=" ")
         #print("---------> IN EncryptionStreamCustomPicameraOutput write() of %d bytes" % len(chunk))
-        try:
+        with catch_and_log_exception("CustomPicameraOutputWithEncryptionStream.write"):
             self._encryption_stream.encrypt_chunk(chunk)
-        except Exception as exc:
-            print("<>>>>>>>>>>>>>>>>>>>>>>>1", exc)
 
     def flush(self):
-        print("---------> IN EncryptionStreamCustomPicameraOutput flush()")
-        try:
+        #print("---------> IN EncryptionStreamCustomPicameraOutput flush()")
+        with catch_and_log_exception("CustomPicameraOutputWithEncryptionStream.flush"):
             self._encryption_stream.finalize()
-        except Exception as exc:
-            print("<>>>>>>>>>>>>>>>>>>>>>>>2", exc)
 
 
 class RaspberryPicameraSensor(PreviewImageMixin, ActivityNotificationMixin, PeriodicEncryptionStreamMixin, PeriodicSensorRestarter):
@@ -323,7 +318,6 @@ class RaspberryPicameraSensor(PreviewImageMixin, ActivityNotificationMixin, Peri
         self._local_camera_rotation = local_camera_rotation
         self._picamera_parameters = picamera_parameters or self.default_parameters
 
-        print("@@@@@@@@# live_preview_interval_s is", repr(live_preview_interval_s))
         if live_preview_interval_s:
             self._live_image_preview_pusher = multitimer.MultiTimer(
                 interval=live_preview_interval_s, function=self._push_live_preview_image, runonstart=True
@@ -336,13 +330,12 @@ class RaspberryPicameraSensor(PreviewImageMixin, ActivityNotificationMixin, Peri
     def _do_generate_preview_image(self, output, width_px, height_px):
         assert self._picamera  # We generate previews WHILE recording
         assert isinstance(output, str) or hasattr(output, "write"), repr(output)
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>> PICAMERA _do_generate_preview_image()", output)
         self._picamera.capture(output, use_video_port=True, format="jpeg", resize=(width_px, height_px))
 
     @synchronized
     def _push_live_preview_image(self):
-        print(">>>>>> _push_live_preview_image called")
-        try:
+        #print(">>>>>> _push_live_preview_image called")
+        with catch_and_log_exception("RaspberryPicameraSensor._push_live_preview_image"):
             assert self.is_running
             output = io.BytesIO()
             self._do_generate_preview_image(output, width_px=480, height_px=480)  # Double the resolution of mini LCD
@@ -351,16 +344,12 @@ class RaspberryPicameraSensor(PreviewImageMixin, ActivityNotificationMixin, Peri
             self._activity_notification_callback(
                 notification_type=ActivityNotificationType.IMAGE_PREVIEW,
                 notification_image=notification_image)
-        except Exception as exc:
-            # Exception must not be let go and break the multitimer
-            print(">>>>> ABNORMAL ERROR in _push_live_preview_image(): %r" % exc)
 
     def _create_custom_output(self):
         encryption_stream = self._build_cryptainer_encryption_stream()
         return _CustomPicameraOutputWithEncryptionStream(encryption_stream)
 
     def _do_start_recording(self):  # pragma: no cover
-        print(">> starting picamera")
         self._current_buffer = self._create_custom_output()
 
         init_parameter_names = ["resolution", "framerate"]
@@ -368,7 +357,7 @@ class RaspberryPicameraSensor(PreviewImageMixin, ActivityNotificationMixin, Peri
         picamera_init_parameters = {k: v for (k, v) in _picamera_parameters.items() if k in init_parameter_names}
         picamera_start_parameters = {k: v for (k, v) in _picamera_parameters.items() if k not in init_parameter_names}
 
-        import picamera
+        import picamera  # LAZY loaded
         self._picamera = picamera.PiCamera(**picamera_init_parameters)
         self._picamera.rotation = self._local_camera_rotation
         self._picamera.start_recording(self._current_buffer, **picamera_start_parameters)
@@ -377,29 +366,14 @@ class RaspberryPicameraSensor(PreviewImageMixin, ActivityNotificationMixin, Peri
             self._live_image_preview_pusher.start()
 
     def _do_stop_recording(self):  # pragma: no cover
-        print(">> stopping picamera")
         if self._live_image_preview_pusher:
             self._live_image_preview_pusher.stop()
         self._picamera.stop_recording()
         self._picamera.close()  # IMPORTANT
         self._picamera = None
         return None
-        #self._current_buffer.seek(0)
-        #final_recording_bytes = self._current_buffer.read()
-        #self._current_buffer = None
-        #return final_recording_bytes
-
-    # LET IT NOT IMPLEMENTED def _handle_post_stop_data(self, payload, from_datetime, to_datetime):
-    #    assert isinstance(payload, bytes)  # Might be empty bytes though
 
     def _do_restart_recording(self):
-
-        #new_buffer = io.BytesIO()
         new_buffer = self._create_custom_output()
         self._picamera.split_recording(new_buffer)
-        ###assert self._current_buffer._encryption_pipeline
         self._current_buffer = new_buffer
-
-        #self._current_buffer.seek(0)
-        #previous_recording_bytes = self._current_buffer.read()
-        #return previous_recording_bytes

@@ -1,4 +1,4 @@
-
+import logging
 import subprocess
 
 import os
@@ -11,6 +11,9 @@ from ..default_settings import WAIT_TIME_MULTIPLIER
 WA_SERVICE_SCRIPT = os.getenv("WA_SERVICE_SCRIPT")
 
 
+logger = logging.getLogger(__name__)
+
+
 class ServiceController(ServiceControllerBase):
 
     _subprocess = None
@@ -21,7 +24,7 @@ class ServiceController(ServiceControllerBase):
         # self._subprocess might already exist but have crashed
         command = [sys.executable] + params
         cwd = os.path.dirname(params[0] if params else sys.executable) or None
-        print(">> Starting service via Popen command %r, in cwd %r" % (command, cwd))
+        logger.info("GUI is launching service via Popen command %r, in cwd %r" % (command, cwd))
         self._subprocess = subprocess.Popen(
             command,
             shell=False,

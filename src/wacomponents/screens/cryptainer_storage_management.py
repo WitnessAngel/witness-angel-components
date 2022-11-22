@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 from functools import partial
@@ -22,6 +23,9 @@ from wacomponents.widgets.popups import close_current_dialog, dialog_with_close_
 from wacryptolib.cryptainer import gather_trustee_dependencies
 
 Builder.load_file(str(Path(__file__).parent / 'cryptainer_storage_management.kv'))
+
+
+logger = logging.getLogger(__name__)
 
 
 class PassphrasesDialogContent(BoxLayout):
@@ -128,7 +132,7 @@ class CryptainerStorageManagementScreen(WAScreenBase):
         information_icon.bind(on_press=information_callback)
 
         self.ids.cryptainer_table.add_widget(cryptainer_entry)
-        print("ADDED CRYPTAINER", cryptainer_name)
+        logger.debug("Loaded widget of cryptainer %s in storage management screen", cryptainer_name)
 
     def get_selected_cryptainer_names(self):
 
@@ -391,11 +395,11 @@ class CryptainerStorageManagementScreen(WAScreenBase):
                                   cryptainer_filepath=cryptainer_filepath)
 
         """
-        print("The written sentence is passphrase : %s" % input)
+        print ("The written sentence is passphrase : %s" % input)
         containers = []
         for chbx in self.check_box_cryptainer_uuid_dict:
             if chbx.active:
-                print(
+                print (
                     "Decipher container | with ID_cryptainer %s",
                     self.check_box_cryptainer_uuid_dict[chbx],
                 )

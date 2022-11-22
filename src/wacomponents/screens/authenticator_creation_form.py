@@ -15,7 +15,7 @@ from wacomponents.widgets.popups import dialog_with_close_button, process_method
 from wacryptolib.authenticator import initialize_authenticator
 from wacryptolib.keygen import generate_keypair
 from wacryptolib.keystore import FilesystemKeystore
-from wacryptolib.utilities import generate_uuid0
+from wacryptolib.utilities import generate_uuid0, catch_and_log_exception
 
 Builder.load_file(str(Path(__file__).parent / 'authenticator_creation_form.kv'))
 
@@ -88,7 +88,7 @@ class AuthenticatorCreationFormScreen(WAScreenBase):
     def _offloaded_initialize_authenticator(self, form_values, authenticator_dir):
         success = False
 
-        try:
+        with catch_and_log_exception("AuthenticatorCreationFormScreen._offloaded_initialize_authenticator"):
 
             Clock.schedule_once(partial(self._do_update_progress_bar, 10))
 
@@ -114,9 +114,6 @@ class AuthenticatorCreationFormScreen(WAScreenBase):
                 Clock.schedule_once(partial(self._do_update_progress_bar, 10 + int(i * 90 / GENERATED_KEYS_COUNT)))
 
             success = True
-
-        except Exception as exc:
-            print(">> ERROR IN _offloaded_initialize_authenticator THREAD:", exc)  # FIXME add logging AND snackbar
 
         Clock.schedule_once(partial(self.finish_initialization, success=success))
 

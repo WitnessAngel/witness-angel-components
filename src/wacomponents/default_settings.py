@@ -114,7 +114,8 @@ else:
     EXTERNAL_APP_ROOT_PREFIX = None
     EXTERNAL_APP_ROOT = INTERNAL_APP_ROOT / "external"
 
-print(">> DETECTED INTERNAL_APP_ROOT is ", INTERNAL_APP_ROOT)
+
+#print(">> DETECTED INTERNAL_APP_ROOT is ", INTERNAL_APP_ROOT)
 INTERNAL_APP_ROOT.mkdir(exist_ok=True, parents=True)  # Creates base directory too!
 INTERNAL_CACHE_DIR.mkdir(exist_ok=True)
 

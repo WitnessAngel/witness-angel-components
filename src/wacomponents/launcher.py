@@ -58,12 +58,12 @@ def launch_main_module_with_crash_handler(main_module: str, client_type: str):
     except Exception:
         if 'ANDROID_ARGUMENT' not in os.environ:  # FIXME setup IOS crash handler too
             raise  # Desktop should not be impacted by crash handler
-        print(">> FATAL ERROR IN %s LAUNCHER ON MOBILE PLATFORM, SENDING CRASH REPORT <<" % client_type)
+        print(">>> FATAL ERROR IN %s LAUNCHER ON MOBILE PLATFORM, SENDING CRASH REPORT <<" % client_type)
         exc_info = sys.exc_info()
         target_url = "https://api.witnessangel.com/support/crashdumps/"  # HARDCODED - Can't access common config safely here
         from wacomponents.logging.crashdumps import generate_and_send_crashdump  # Should be mostly safe to import
         report = generate_and_send_crashdump(exc_info=exc_info, target_url=target_url, client_type=client_type)
-        print(report)  # Not to stderr for now, since it is hooked by Kivy logging
+        print(report)  # Not sent to stderr for now, since it is hooked by Kivy logging
         raise
 
 

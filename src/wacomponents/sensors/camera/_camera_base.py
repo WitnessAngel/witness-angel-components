@@ -72,7 +72,6 @@ class ActivityNotificationMixin:
                  **kwargs):
         super().__init__(*args, **kwargs)
         assert self.activity_notification_color, "missing activity_notification_color"
-        print(">>>>>>>>>>>>>>> SETTING UP _activity_notification_callback", activity_notification_callback)
         self._activity_notification_callback = activity_notification_callback
 
     def _get_cryptainer_encryption_stream_creation_kwargs(self) -> dict:
