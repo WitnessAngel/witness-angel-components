@@ -1,6 +1,7 @@
+import logging
 
 
-def _presetup_app_environment(setup_kivy):
+def _presetup_app_environment(setup_kivy_gui: bool):
     """Setup for both gui and console apps."""
     import os
 
@@ -44,37 +45,33 @@ def _presetup_app_environment(setup_kivy):
         register_common_resources()
 
     except Exception as exc:
-        print(">>>>>>>> FAILED REGISTERING COMMON RESOURCES: %r" % exc)
+        print(">>>>>>>> FAILED REGISTRATION OF COMMON RESOURCES: %r" % exc)
 
-    import logging
+    try:
 
-    if True:  # ALWAYS FIX LOGGING ACTUALLY - "if setup_kivy:"
+        # WORKAROUND FOR LOGGING AND GRAPHICS WEIRDNESS IN KIVY SETUP #
 
-        try:
+        import sys
+        custom_kivy_stream_handler = logging.StreamHandler()
+        sys._kivy_logging_handler = custom_kivy_stream_handler
+        from kivy.logger import Logger as logger  # Trigger init of Kivy logging
+        del logger
 
-            # WORKAROUND FOR LOGGING AND GRAPHICS WEIRDNESS IN KIVY SETUP #
+        # Finish ugly monkey-patching by Kivy
+        assert logging.getLogger("kivy") is logging.root
+        logging.Logger.root = logging.root
+        logging.Logger.manager.root = logging.root
 
-            import sys
-            custom_kivy_stream_handler = logging.StreamHandler()
-            sys._kivy_logging_handler = custom_kivy_stream_handler
-            from kivy.logger import Logger as logger  # Trigger init of Kivy logging
-            del logger
-
-            # Finish ugly monkey-patching by Kivy
-            assert logging.getLogger("kivy") is logging.root
-            logging.Logger.root = logging.root
-            logging.Logger.manager.root = logging.root
-
-        except Exception as exc:
-            print(">>>>>>>> FAILED INITIALIZATION OF KIVY LOGGING: %r" % exc)
+    except Exception as exc:
+        print(">>>>>>>> FAILED REPAIR OF KIVY LOGGING: %r" % exc)
 
     # COMMON LOGGING TWEAKS
-    # For now, we allow EVERYTHING
-    logging.root.setLevel(logging.INFO)
+    logging_level_str = os.getenv("LOGGING_LEVEL", default="INFO")
+    logging.root.setLevel(getattr(logging, logging_level_str))
     logging.disable(0)
-    #import logging_tree ; logging_tree.printout()
+    #import logging_tree ; logging_tree.printout()  # To display the actual logging setup
 
-    if not setup_kivy:
+    if setup_kivy_gui:
         return  # Cancel the rest of setups
 
     try:
@@ -84,14 +81,13 @@ def _presetup_app_environment(setup_kivy):
         from wacomponents.default_settings import IS_MOBILE
 
         from kivy.config import Config
-        '''
+        ''' # In case:
         Config.set('graphics', 'top', '50')
         Config.set('graphics', 'left', '50')
         Config.set('graphics', 'position', 'custom')
+        Config.set("graphics", "fullscreen", "0")
+        Config.set("graphics", "show_cursor", "1")
         '''
-        # FIXME this happens too late it seems
-        #Config.set("graphics", "fullscreen", "0")
-        #Config.set("graphics", "show_cursor", "1")
 
         from kivy.core.window import Window
         ##Window.minimum_width, Window.minimum_height = Window.size = (600, 600)
@@ -100,17 +96,17 @@ def _presetup_app_environment(setup_kivy):
             # Disable multitouch emulation red dots on Desktop, on right/middle clicks
             Config.set('input', 'mouse', 'mouse,disable_multitouch,disable_on_activity')
 
-        # HACK TO TEMPORARILY EMULATE TOUCHSCREEN ON DESKTOP:
+        # HACK TO TEMPORARILY EMULATE TOUCHSCREEN ON DESKTOP WHEN NEEDED:
         #Config.set('kivy', 'desktop', 0)
 
-        # HACK to ensure that we don't need to click TWICE to gain focus on Kivy Window and then on widget!
+        # HACK to ensure that we don't need to click TWICE to gain focus on Kivy Window and then on widget:
         # https://stackoverflow.com/questions/53337630/kivy-on-windows10-how-to-click-a-button-when-kivy-application-does-not-in-focu
         def force_window_focus(*args, **kwargs):
             Window.raise_window()
         Window.bind(on_cursor_enter=force_window_focus)
 
         from wacomponents.widgets.layout_components import load_layout_helper_widgets
-        load_layout_helper_widgets()
+        load_layout_helper_widgets()  # Widgets useful a bit everywhere
 
     except Exception as exc:
         print(">>>>>>>> FAILED INITIALIZATION OF KIVY WINDOW AND ASSETS: %r" % exc)
