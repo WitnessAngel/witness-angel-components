@@ -1,6 +1,4 @@
 import logging
-import sys
-from concurrent.futures.thread import ThreadPoolExecutor
 from configparser import ConfigParser, Error as ConfigParserError
 
 import os
@@ -8,7 +6,7 @@ from oscpy.server import ServerClass
 
 from wacomponents.application._common_runtime_support import WaRuntimeSupportMixin
 from wacomponents.default_settings import IS_ANDROID, WIP_RECORDING_MARKER
-from wacomponents.logging.handlers import CallbackLoggingHandler, safe_catch_unhandled_exception
+from wacomponents.logging.handlers import safe_catch_unhandled_exception
 from wacomponents.recording_toolchain import start_recording_toolchain, stop_recording_toolchain
 from wacomponents.service_control import get_osc_server, get_osc_client
 from wacomponents.utilities import InterruptableEvent, MONOTHREAD_POOL_EXECUTOR
@@ -19,10 +17,10 @@ osc, osc_starter_callback = get_osc_server(is_application=False)
 
 # FIXME what happens if exception on remote OSC endpoint ? CRASH!!
 # TODO add custom "local trustee resolver"
-# TODO add exception swallowers, and logging pushed to frontend app (if present)
+# TODO add exception swallowers
 
 
-logger = logging.getLogger()  # FIXME take a particular logger here!!
+logger = logging.getLogger(__name__)
 
 
 if IS_ANDROID:
@@ -106,7 +104,7 @@ class WaRecorderService(WaRuntimeSupportMixin):
         # logger.info(f"Config file {filename} loaded")
         self.config = config
 
-    def _remote_logging_callback(self, msg):
+    def __DISABLED_remote_logging_callback(self, msg):
         max_length = 64000  # Beware OSCP server expects max 65535 in input, prevent overflow here
         if len(msg) > max_length:
             msg = msg[:max_length] + "<truncated...>"
@@ -118,7 +116,7 @@ class WaRecorderService(WaRuntimeSupportMixin):
             return self._osc_client.send_message(address, values=values, safer=True)
         except OSError as exc:
             ##sys.__stdout__.write("FATAL eror when sending OSC message: %r\n" % exc)
-            # NO PRINT/LOGGING HERE, else it would loop due to custom logging handler in Kivy
+            # NO PRINT/LOGGING HERE, else it would loop due to weird stdout logging handler in Kivy
             ##print(
             ##    "{SERVICE} Could not send osc message %s%s to app: %r"
             ##    % (address, values, exc)
