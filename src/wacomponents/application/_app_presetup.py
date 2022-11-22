@@ -74,7 +74,7 @@ def _presetup_app_environment(setup_kivy_gui: bool):
     logging.disable(0)
     #import logging_tree ; logging_tree.printout()  # To display the actual logging setup
 
-    if setup_kivy_gui:
+    if not setup_kivy_gui:
         return  # Cancel the rest of setups
 
     try:
