@@ -3,6 +3,9 @@ import sys
 import time
 
 
+DEFAULT_UTC_LOG_FORMAT = "%(asctime)sZ - %(levelname)s - %(message)s"
+
+
 class SafeUtcFormatter(logging.Formatter):
 
     """
@@ -27,7 +30,7 @@ class SafeUtcFormatter(logging.Formatter):
                     # might happen if some magic stuffs in args can't be repr()ed
                     message = repr(record.msg) + "-- <NOREPR>"
 
-                alert = "!!! CRITICAL ERROR IN CUSTOM LOGGING RECORD FORMATTING: %r" % message
+                alert = "!!! CRITICAL ERROR DURING LOGGING RECORD FORMATTING: %r" % message
                 print(alert, file=sys.stderr)
 
             # we replace previous values

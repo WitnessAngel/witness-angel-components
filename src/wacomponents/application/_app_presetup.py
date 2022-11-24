@@ -1,7 +1,8 @@
+import io
 import logging
 from logging import StreamHandler
 
-from wacomponents.logging.formatters import SafeUtcFormatter
+from wacomponents.logging.formatters import SafeUtcFormatter, DEFAULT_UTC_LOG_FORMAT
 
 
 def _presetup_app_environment(setup_kivy_gui: bool):
@@ -32,6 +33,7 @@ def _presetup_app_environment(setup_kivy_gui: bool):
         assert "kivy.logger" not in sys.modules, "problem, kivy logger is already loaded!"  # Not loaded yet!
         real_logging_root = logging.root
         real_stderr = sys.stderr
+        assert isinstance(real_stderr, io.TextIOWrapper), real_stderr
 
         from kivy.logger import Logger as kivy_logger  # Trigger init of Kivy logging
         del kivy_logger
@@ -47,7 +49,7 @@ def _presetup_app_environment(setup_kivy_gui: bool):
 
     # Setup basic logging to stderr
     stream_handler = StreamHandler(sys.stderr)
-    stream_formatter = SafeUtcFormatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    stream_formatter = SafeUtcFormatter(DEFAULT_UTC_LOG_FORMAT)
     stream_handler.setFormatter(stream_formatter)
     logging.root.addHandler(stream_handler)
 
