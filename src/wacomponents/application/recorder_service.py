@@ -49,7 +49,7 @@ class WaRecorderService(WaRuntimeSupportMixin):
 
     def __init__(self):
 
-        logger.info("Starting service")  # Will not be sent to App (too early)
+        logger.info("Service is starting")  # Will not be sent to App (too early)
         osc_starter_callback()  # Opens server port
         self._osc_client = get_osc_client(to_app=True)
 
@@ -57,7 +57,7 @@ class WaRecorderService(WaRuntimeSupportMixin):
         #logging.getLogger(None).addHandler(CallbackLoggingHandler(self._remote_logging_callback))
 
         self._termination_event = InterruptableEvent()
-        logger.info("Service started")
+        logger.info("Service is started")
 
         self.reload_config()
 
@@ -86,7 +86,7 @@ class WaRecorderService(WaRuntimeSupportMixin):
         if not filename:
             filename = self.config_file_path
 
-        logger.info(f"Reloading config file {filename}")
+        logger.info(f"Service reloading config file {filename}")
 
         # No NAME here, since named parsers must be Singletons in process!
         config = ConfigParser()
@@ -95,10 +95,10 @@ class WaRecorderService(WaRuntimeSupportMixin):
         try:
             if not os.path.exists(filename):
                 raise FileNotFoundError(filename)
-            config.read(str(filename))  # Fails silently if file not found
+            config.read(str(filename))  # Actually fails silently if file not found
         except (ConfigParserError, FileNotFoundError) as exc:
             logger.error(
-                f"Service: Ignored missing or corrupted config file {filename} ({exc!r})"
+                f"Service ignored missing or corrupted config file {filename} ({exc!r})"
             )
 
         # logger.info(f"Config file {filename} loaded")
@@ -111,16 +111,14 @@ class WaRecorderService(WaRuntimeSupportMixin):
         return self._send_message("/log_output", "Service: " + msg)
 
     def _send_message(self, address, *values):
-        ###print("@@ Message sent from service to app: %s %s" % (address, values))
+        logger.debug("Message sent from service to app: %s %s", address, values)
         try:
             return self._osc_client.send_message(address, values=values, safer=True)
         except OSError as exc:
-            ##sys.__stdout__.write("FATAL eror when sending OSC message: %r\n" % exc)
-            # NO PRINT/LOGGING HERE, else it would loop due to weird stdout logging handler in Kivy
-            ##print(
-            ##    "{SERVICE} Could not send osc message %s%s to app: %r"
-            ##    % (address, values, exc)
-            ##)
+            ##print("FATAL eror when sending OSC message: %r\n" % exc)
+            ## NO PRINT/LOGGING HERE, in case logs get forwarded via OSC too...
+            ##print("{SERVICE} Could not send osc message %s%s to app: %r"
+            ##       % (address, values, exc))
             return
 
     def _offload_task(self, method, *args, **kwargs):  # FIXME move to common runtime
@@ -153,14 +151,14 @@ class WaRecorderService(WaRuntimeSupportMixin):
             if self.is_recording:
                 #logger.debug("Ignoring redundant call to service.start_recording()")
                 return
-            logger.info("Service starting offloaded recording")
+            logger.info("Service offloaded-starting recording")
 
             if not self._recording_toolchain:
                 self._recording_toolchain = self._build_recording_toolchain()  # FIXME handle exceptions instead of None!
 
             assert self._recording_toolchain
             start_recording_toolchain(self._recording_toolchain)
-            logger.info("Service successfully started offloaded recording")
+            logger.info("Service successfully offloaded-started recording")
 
             if IS_ANDROID:
                 from wacomponents.default_settings import ANDROID_CONTEXT
@@ -192,6 +190,7 @@ class WaRecorderService(WaRuntimeSupportMixin):
         if not self.refresh_checkup_status():
             logger.error("Service failed to start recording because of configuration issues")
             return
+
         self._status_change_in_progress = True  # We do it LAST MINUTE!
         return self._offload_task(self._offloaded_start_recording, env=env)
 
@@ -213,7 +212,7 @@ class WaRecorderService(WaRuntimeSupportMixin):
             is_recording = ""  # For ternary value, since None is not supported by OSC
         else:
             is_recording = self.is_recording
-        #logger.debug("Broadcasting service state (is_recording=%r)", is_recording)
+        logger.debug("Broadcasting service state is_recording=%r", is_recording)
         self._send_message("/receive_recording_state", is_recording)
 
     @safe_catch_unhandled_exception
@@ -222,9 +221,9 @@ class WaRecorderService(WaRuntimeSupportMixin):
             if not self.is_recording:
                 #logger.debug("Ignoring redundant call to service.stop_recording()")
                 return
-            logger.info("Service stopping offloaded recording")
+            logger.info("Service offloaded-stopping recording")
             stop_recording_toolchain(self._recording_toolchain)
-            logger.info("Service successfully stopped offloaded recording")
+            logger.info("Service successfully offloaded-stopped recording")
 
             if IS_ANDROID:
                 from wacomponents.default_settings import ANDROID_CONTEXT
@@ -255,7 +254,7 @@ class WaRecorderService(WaRuntimeSupportMixin):
     @osc.address_method("/stop_server")
     @safe_catch_unhandled_exception
     def stop_server(self):
-        logger.warning("Service got command to SHUTDOWN entirely")
+        logger.info("Service got command to SHUTDOWN entirely")
 
         if self.is_recording:
             logger.info(

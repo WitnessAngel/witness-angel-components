@@ -85,10 +85,11 @@ class WaRecorderGui(WaGenericGui):  # FIXME WaGui instead?
         closed).
         """
         atexit.unregister(self.on_stop)  # Not needed anymore
-        if not self.get_daemonize_service():
+        if not self.should_daemonize_service():
             self.service_controller.stop_service()  # Will wait for termination, then kill it
 
     def force_stop_service(self):
+        logger.info("GUI forcing shutdown of service")
         self.service_controller.stop_service()  # Does wait for subprocess death
         self.set_recording_btn_state(disabled=True)
 
@@ -137,7 +138,8 @@ class WaRecorderGui(WaGenericGui):  # FIXME WaGui instead?
 
     # SERVICE FEEDBACKS AND DAEMONIZATION #
 
-    def get_daemonize_service(self):  # OVERRIDE THIS TO FETCH USER SETTINGS
+    def should_daemonize_service(self):  # OVERRIDE THIS TO FETCH USER SETTINGS
+        """Return True to let recorder service survive when GUI application gets closed"""
         return False
 
     def switch_daemonize_service(self, value):

@@ -1,4 +1,5 @@
 import json
+import logging
 
 import functools
 from functools import partial
@@ -10,6 +11,9 @@ from wacomponents.application._common_runtime_support import WaRuntimeSupportMix
 from wacomponents.utilities import MONOTHREAD_POOL_EXECUTOR
 from wacomponents.widgets.layout_components import SettingStringTruncated
 from wacomponents.widgets.popups import safe_catch_unhandled_exception_and_display_popup
+
+
+logger = logging.getLogger(__name__)
 
 
 class ImprovedSettingsWithSpinner(SettingsWithSpinner):
@@ -53,14 +57,14 @@ class WaGenericGui(WaRuntimeSupportMixin, MDApp):
 
     def load_config(self):
         # Hook here if needed
-        ##Path(self.get_application_config()).touch(exist_ok=True)  # For initial creation
+        logger.debug("Loading current settings (theoretically from file %s)", self.get_application_config())
         config = super().load_config()
         return config  # Might have unsaved new DEFAULTS in it, which will be saved on any setting update
 
     def build_config(self, config):
         """Populate config with default values, before the loading of user preferences."""
         assert self.config_defaults_path.exists(), self.config_defaults_path
-        #print(">>>>>>>>>>>>>>READING config_template_path"),
+        logger.debug("Loading default settings from file %s", self.config_defaults_path)
         config.read(str(self.config_defaults_path))
         '''# If we want to immediately transfer default settings to local file?
         config.filename = self.get_application_config()
@@ -82,13 +86,12 @@ class WaGenericGui(WaRuntimeSupportMixin, MDApp):
     def save_config(self):
         """Dump current config to local INI file."""
         assert self.config.filename, self.config.filename
-        #print(">>>>>>>>>>>>>>WRITING save_config", self.config_file_path),
+        logger.info("Saving current settings to file %s", self.config_file_path)
         self.config.filename = self.config_file_path
         self.config.write()
 
     def get_application_config(self, *args, **kwargs):
         # IMPORTANT override of Kivy method #
-        #print(">>>>>>>>>>>>>>READING get_application_config"),
         return str(self.config_file_path)
 
     def on_language_change(self, lang_code):
@@ -104,6 +107,7 @@ class WaGenericGui(WaRuntimeSupportMixin, MDApp):
     ## HANDLING OF OFFLOADED TASKS ##
 
     def _offload_task_with_spinner(self, task_callable, result_callback):
+        logger.debug("Launching offloaded task with spinner: %s", task_callable)
         @safe_catch_unhandled_exception_and_display_popup
         def execute_task_callable_and_schedule_result():
             Clock.schedule_once(partial(self._activate_or_disable_spinner, True))
@@ -111,7 +115,6 @@ class WaGenericGui(WaRuntimeSupportMixin, MDApp):
                 result = task_callable()
                 result_callback_bound = functools.partial(result_callback, result)
                 Clock.schedule_once(result_callback_bound)
-
             finally:
                 Clock.schedule_once(partial(self._activate_or_disable_spinner, False))
         MONOTHREAD_POOL_EXECUTOR.submit(execute_task_callable_and_schedule_result)
