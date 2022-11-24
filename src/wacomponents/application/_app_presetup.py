@@ -1,8 +1,3 @@
-import io
-import logging
-from logging import StreamHandler
-
-from wacomponents.logging.formatters import SafeUtcFormatter, DEFAULT_UTC_LOG_FORMAT
 
 
 def _presetup_app_environment(setup_kivy_gui: bool):
@@ -10,7 +5,9 @@ def _presetup_app_environment(setup_kivy_gui: bool):
 
     this module uses print() instead of logging because the state of app is not clear at this moment.
     """
-    import os, sys, logging
+    import os, sys, logging, io
+    from logging import StreamHandler
+    from wacomponents.logging.formatters import SafeUtcFormatter, DEFAULT_UTC_LOG_FORMAT
 
     os.environ["KIVY_NO_ARGS"] = "1"  # Important to bypass Kivy CLI system
     os.environ["KIVY_NO_FILELOG"] = "1"
