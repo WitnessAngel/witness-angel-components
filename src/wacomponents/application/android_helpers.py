@@ -1,7 +1,7 @@
 
 import os
 
-PACKAGE_NAME = os.getenv("WA_PACKAGE_NAME")  # Java package name here
+PACKAGE_NAME = os.getenv("WA_PACKAGE_NAME")  # Java package name here  FIXME BROKEN
 CHANNEL_ID = PACKAGE_NAME
 
 

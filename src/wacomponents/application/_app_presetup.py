@@ -12,7 +12,7 @@ def _presetup_app_environment(setup_kivy_gui: bool):
 
     try:
 
-        protected_app_package = os.getenv("ENABLE_TYPEGUARD")
+        protected_app_package = os.getenv("WA_ENABLE_TYPEGUARD")
         if protected_app_package:
             from typeguard.importhook import install_import_hook
             install_import_hook(protected_app_package)
@@ -69,10 +69,10 @@ def _presetup_app_environment(setup_kivy_gui: bool):
         print(">>>>>>>> FAILED REPAIR OF KIVY LOGGING: %r" % exc)
 
     # COMMON LOGGING TWEAKS
-    logging_level_str = os.getenv("LOGGING_LEVEL", default="INFO").upper()
+    logging_level_str = os.getenv("WA_LOG_LEVEL", default="INFO").upper()
     logging.root.setLevel(getattr(logging, logging_level_str))
     logging.disable(0)
-    logging.info("Default logging level set to %s, use LOGGING_LEVEL environment variable to change it", logging_level_str)
+    logging.info("Default logging level set to %s, use WA_LOG_LEVEL environment variable to change it", logging_level_str)
     #import logging_tree ; logging_tree.printout()  # To display the actual logging setup
 
     if not setup_kivy_gui:

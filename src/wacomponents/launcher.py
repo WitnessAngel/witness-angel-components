@@ -74,11 +74,12 @@ def launch_app_or_resurrect_service_with_crash_handler(app_module, service_modul
 
     else:
 
-        if APP_IS_FROZEN:
-            WA_SERVICE_SCRIPT = SERVICE_MARKER_CLI_PARAM  # sys.executable is sufficient for script itself
-        else:
-            WA_SERVICE_SCRIPT = str(Path(main_file).resolve()) + "|" + SERVICE_MARKER_CLI_PARAM
-        os.environ["WA_SERVICE_SCRIPT"] = WA_SERVICE_SCRIPT
+        if not os.getenv("WA_SERVICE_SCRIPT"):
+            if APP_IS_FROZEN:
+                wa_service_script = SERVICE_MARKER_CLI_PARAM  # sys.executable is sufficient for script itself
+            else:
+                wa_service_script = str(Path(main_file).resolve()) + "|" + SERVICE_MARKER_CLI_PARAM
+            os.environ["WA_SERVICE_SCRIPT"] = wa_service_script
 
         launch_main_module_with_crash_handler(main_module=app_module, client_type="APPLICATION")
 
