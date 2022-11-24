@@ -109,6 +109,9 @@ class CryptainerStorageManagementScreen(WAScreenBase):
             self.cryptainer_loading_schedule.cancel()
 
     def _load_cryptainer(self, index, cryptainer_name):
+
+        logger.debug("Loading cryptainer %s", cryptainer_name)
+
         cryptainer_label = format_cryptainer_label(cryptainer_name=cryptainer_name)
         try:
             cryptainer_size_bytes = self.filesystem_cryptainer_storage._get_cryptainer_size(cryptainer_name)
@@ -153,6 +156,9 @@ class CryptainerStorageManagementScreen(WAScreenBase):
         """
         Display the contents of container
         """
+
+        logger.debug("Showing details for cryptainer %s", cryptainer_name)
+
         assert self.filesystem_cryptainer_storage, self.filesystem_cryptainer_storage  # By construction...
         cryptainer_label = ""
 
@@ -234,6 +240,8 @@ class CryptainerStorageManagementScreen(WAScreenBase):
         )
 
     def delete_cryptainers(self, cryptainer_names):
+        logger.info("Deleting cryptainers %s", cryptainer_names)
+
         assert self.filesystem_cryptainer_storage, self.filesystem_cryptainer_storage  # By construction...
         for cryptainer_name in cryptainer_names:
             try:
@@ -351,7 +359,7 @@ class CryptainerStorageManagementScreen(WAScreenBase):
             duration=5,
         ).open()
 
-    def launch_cryptainer_decryption(self):
+    def launch_cryptainer_decryption(self):  # FIXME rename
         selected_cryptainer_names = self._get_selected_cryptainer_names()
         if not selected_cryptainer_names:
             msg = tr._("Please select containers to decrypt")

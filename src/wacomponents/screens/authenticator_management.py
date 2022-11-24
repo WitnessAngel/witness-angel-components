@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 from enum import Enum, unique
 from pathlib import Path
@@ -96,6 +97,8 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
     @safe_catch_unhandled_exception_and_display_popup
     def refresh_authenticator_list(self):
 
+        logger.debug("Refreshing authenticator list")
+
         try:
             authdevice_list = list_available_authdevices()
         except ModuleNotFoundError:  # probably on android, so no UDEV system
@@ -165,6 +168,7 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
         authenticator_widget._onrelease_callback(authenticator_widget)
 
     def folder_chooser_open(self, widget, *args):
+        logger.debug("Opening folder chooser for the location of current authenticator")
         if not request_external_storage_dirs_access():
             return
         file_manager_path = EXTERNAL_APP_ROOT
@@ -176,6 +180,7 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
         register_current_dialog(self._folder_chooser)
 
     def reselect_previously_selected_authenticator(self):
+        logger.debug("Reselecting previously selected authenticator")
         previouslyselected_authenticator_dir = self.selected_authenticator_dir
         if previouslyselected_authenticator_dir:
             result = self._select_matching_authenticator_entry(previouslyselected_authenticator_dir)
@@ -208,7 +213,10 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
             return tr._("Authenticator initialized")
 
     @safe_catch_unhandled_exception_and_display_popup
+
     def display_authenticator_info(self, authenticator_widget, authenticator_metadata):
+
+        logger.debug("Displaying current authenticator information")
 
         authenticator_list_widget = self.ids.authenticator_list
 
@@ -298,6 +306,7 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
         self.authenticator_status_message = self._get_authenticator_status_message(authenticator_status)
 
     def archive_chooser_open(self, *args):
+        logger.debug("Opening folder chooser for the location of archive to import")
         if not request_external_storage_dirs_access():
             return
         file_manager_path = EXTERNAL_EXPORTS_DIR
@@ -306,6 +315,8 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
 
     @safe_catch_unhandled_exception_and_display_popup
     def _import_authenticator_from_archive(self, archive_path):
+
+        logger.debug("Importing authenticator from archive %s", archive_path)
 
         archive_path = Path(archive_path)
         authenticator_dir = self.selected_authenticator_dir
@@ -333,6 +344,7 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
 
     @safe_catch_unhandled_exception_and_display_popup
     def _export_authenticator_to_archive(self):
+
         authenticator_dir = self.selected_authenticator_dir
 
         timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
@@ -346,6 +358,8 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
         keystore_uid_shortened = shorten_uid(authenticator_metadata["keystore_uid"])
         EXTERNAL_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
         archive_path_base = EXTERNAL_EXPORTS_DIR.joinpath("authenticator_%s_%s" % (keystore_uid_shortened, timestamp))
+
+        logger.debug("Exporting authenticator to archive %s", archive_path_base)
         archive_path = shutil.make_archive(base_name=archive_path_base, format=self.AUTHENTICATOR_ARCHIVE_FORMAT,
                                            root_dir=authenticator_dir)
 
@@ -369,6 +383,7 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
     def _delete_authenticator_data(self, authenticator_dir):
         # FIXME protect against any OSERROR here!!
         # FIXME Move this operation to WACRYPTOLIB?
+        logger.debug("Deleting authenticator %s", authenticator_dir)
 
         try:
             shutil.rmtree(authenticator_dir)
@@ -382,6 +397,8 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
         self.refresh_authenticator_list()
 
     def show_checkup_dialog(self):
+        logger.debug("Showing authenticator checkup dialog")
+
         authenticator_dir = self.selected_authenticator_dir
         dialog = dialog_with_close_button(
             auto_open_and_register=False,  # Important, we customize before
@@ -404,6 +421,9 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
 
     @safe_catch_unhandled_exception_and_display_popup
     def _check_authenticator_integrity(self, dialog, authenticator_dir):
+
+        logger.debug("Checking integrity of authenticator %s", authenticator_dir)
+
         keystore_passphrase = dialog.content_cls.ids.tester_passphrase.text
         result_dict = self._test_authenticator_passphrase(authenticator_dir=authenticator_dir,
                                                           keystore_passphrase=keystore_passphrase)

@@ -1,4 +1,4 @@
-
+import logging
 from pathlib import Path
 
 from functools import partial
@@ -18,6 +18,9 @@ from wacryptolib.keystore import FilesystemKeystore
 from wacryptolib.utilities import generate_uuid0, catch_and_log_exception
 
 Builder.load_file(str(Path(__file__).parent / 'authenticator_creation_form.kv'))
+
+
+logger = logging.getLogger(__name__)
 
 
 GENERATED_KEYS_COUNT = 3  # Not too high, since mobile devices have trouble with that!
@@ -86,6 +89,9 @@ class AuthenticatorCreationFormScreen(WAScreenBase):
     # No safe_catch_unhandled_exception_and_display_popup() here, we handle finalization in any case
     @process_method_with_gui_spinner
     def _offloaded_initialize_authenticator(self, form_values, authenticator_dir):
+
+        logger.debug("Starting offloaded initialization of authenticator")
+
         success = False
 
         with catch_and_log_exception("AuthenticatorCreationFormScreen._offloaded_initialize_authenticator"):
@@ -117,6 +123,8 @@ class AuthenticatorCreationFormScreen(WAScreenBase):
 
         Clock.schedule_once(partial(self.finish_initialization, success=success))
 
+        logger.debug("Finished offloaded initialization of authenticator")
+
     def set_form_fields_status(self, enabled):
 
         form_ids = self.ids
@@ -142,6 +150,9 @@ class AuthenticatorCreationFormScreen(WAScreenBase):
 
     @safe_catch_unhandled_exception_and_display_popup
     def _launch_authenticator_initialization(self, form_values):
+
+        logger.debug("Requesting initialization of authenticator")
+
         authenticator_dir = self.selected_authenticator_dir
         assert authenticator_dir, authenticator_dir  # Should have been transmitted to this Screen
 

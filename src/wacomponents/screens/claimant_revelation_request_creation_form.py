@@ -18,6 +18,8 @@ Builder.load_file(str(Path(__file__).parent / 'claimant_revelation_request_creat
 
 DESCRIPTION_MIN_LENGTH = 10
 
+logger = logging.getLogger(__name__)
+
 # FIXME RENAME THIS FILE AND KV FILE to decryption_request_creation_form.py (and later revelation_request_creation_form.py)
 
 class ClaimantRevelationRequestCreationFormScreen(WAScreenBase):
@@ -39,6 +41,9 @@ class ClaimantRevelationRequestCreationFormScreen(WAScreenBase):
         return cryptainers
 
     def display_claimant_revelation_request_creation_form(self):
+
+        logger.debug("Displaying claimant revelation request form")
+
         self.ids.authenticator_checklist.clear_widgets()
 
         # Display summary
@@ -85,6 +90,9 @@ class ClaimantRevelationRequestCreationFormScreen(WAScreenBase):
         return selected_authenticator
 
     def submit_revelation_request(self):
+
+        logger.info("Submitting revelation request")
+
         authenticator_selected = self._get_selected_authenticator()
         revelation_requestor_uid = self._app.get_wa_device_uid()
         request_description = self.ids.request_description.text.strip()

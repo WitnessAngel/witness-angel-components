@@ -95,6 +95,7 @@ class WaGenericGui(WaRuntimeSupportMixin, MDApp):
         return str(self.config_file_path)
 
     def on_language_change(self, lang_code):
+        logger.info("Language change detected: %s", lang_code)
         self.destroy_settings()  # Thus they will be regenerated with proper wordings on next display
 
     # MISC UTILITIES #

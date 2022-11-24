@@ -46,6 +46,9 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
         self.manager.current = WAScreenName.cryptainer_storage_management
 
     def get_container_summary(self):
+
+        logger.debug("Refreshing the summary of concerned cryptainers")
+
         self.ids.selected_cryptainer_table.clear_widgets()
 
         if not self.selected_cryptainer_names:
@@ -117,6 +120,9 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
 
     @safe_catch_unhandled_exception_and_display_popup
     def get_cryptainer_trustee_dependency_status(self):
+
+        logger.debug("Refreshing the summary of trustee dependencies for cryptainers")
+
         self.ids.information_text.clear_widgets()
 
         if self.selected_cryptainer_names:
@@ -201,6 +207,8 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
     @safe_catch_unhandled_exception_and_display_popup
     def check_passphrase(self, passphrase):
 
+        logger.info("Checking validity of submitted passphrase")  # DO NOT log the passphrase of course
+
         if [passphrase] in self.passphrase_mapper.values():
             result = tr._("Failure")
             details = tr._("Already existing passphrase") + SPACE + passphrase
@@ -255,6 +263,7 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
         )
 
     def open_dialog_check_passphrase(self):  # FIXME RENAME
+
         dialog = dialog_with_close_button(
             close_btn_label=tr._("Cancel"),
             title=tr._("Add passphrase"),
@@ -267,6 +276,8 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
         )
 
     def decrypt_cryptainers_from_storage(self):
+
+        logger.info("Attempting decryption of cryptainers")
 
         decrypted_cryptainer_count = 0
         decryption_results = []

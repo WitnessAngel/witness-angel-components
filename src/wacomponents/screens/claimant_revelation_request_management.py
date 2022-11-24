@@ -13,6 +13,7 @@ from wacomponents.widgets.popups import dialog_with_close_button, display_info_s
 
 Builder.load_file(str(Path(__file__).parent / 'claimant_revelation_request_management.kv'))
 
+logger = logging.getLogger(__name__)
 
 # FIXME RENAME THIS FILE AND KV FILE to decryption_request_visualization.py (and later revelation_request_visualization.py)
 
@@ -52,6 +53,9 @@ class ClaimantRevelationRequestManagementScreen(WAScreenBase):
         return requestor_revelation_requests
 
     def display_decryption_request_list(self):
+
+        logger.debug("Displaying decryption request list")
+
         self.ids.list_decryption_request_scrollview.clear_widgets()
 
         def resultat_callable(requestor_revelation_requests, *args, **kwargs):  # FIXME CHANGE THIS NAME
@@ -139,6 +143,9 @@ class ClaimantRevelationRequestManagementScreen(WAScreenBase):
         self._app._offload_task_with_spinner(self.list_requestor_revelation_requests, resultat_callable)
 
     def show_revelation_request_info(self, revelation_request_info):
+
+        logger.debug("Displaying single decryption request info")  # FIXME normalize decryption/revelation/aithorization wordings everywhere...
+
         dialog_with_close_button(
             close_btn_label=tr._("Close"),
             title=tr._("Authorization request summary"),

@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 from kivy.lang import Builder
@@ -6,6 +7,8 @@ from wacomponents.screens.base import WAScreenBase
 from wacomponents.widgets.layout_components import LanguageSwitcherScreenMixin
 
 Builder.load_file(str(Path(__file__).parent / 'recorder_homepage.kv'))
+
+logger = logging.getLogger(__name__)
 
 
 class RecorderHomepageScreen(LanguageSwitcherScreenMixin, WAScreenBase):

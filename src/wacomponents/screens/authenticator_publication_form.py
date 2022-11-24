@@ -30,7 +30,7 @@ class AuthenticatorPublicationFormScreen(WAScreenBase):
         self.manager.current = WAScreenName.authenticator_management
 
     def _query_remote_authenticator_status(self, keystore_uid: UUID):  # Fixme rename?
-
+        logger.debug("Querying remote authenticator status for %s", keystore_uid)
         gateway_proxy = self._app.get_gateway_proxy()
 
         try:
@@ -42,6 +42,8 @@ class AuthenticatorPublicationFormScreen(WAScreenBase):
 
     def _query_local_authenticator_status(self):
         authenticator_path = self.selected_authenticator_dir
+
+        logger.debug("Querying local authenticator status for %s", authenticator_path)
 
         # FIXME use export_keystore_tree() asap!
         authenticator_metadata = load_keystore_metadata(authenticator_path)
@@ -177,10 +179,13 @@ class AuthenticatorPublicationFormScreen(WAScreenBase):
 
         self._app._offload_task_with_spinner(self.get_remote_public_authenticator_status, resultat_callable)
 
-    def set_public_authenticator(self):
+    def _publish_authenticator(self):
+
         local_metadata = self._query_local_authenticator_status()
 
         authenticator_path = self.selected_authenticator_dir
+        logger.debug("Publishing local authenticator %s to remote registry", authenticator_path)
+
         readonly_filesystem_keystorage = ReadonlyFilesystemKeystore(authenticator_path)
         public_keys = []
 
@@ -203,7 +208,7 @@ class AuthenticatorPublicationFormScreen(WAScreenBase):
         def resultat_callable(result, *args, **kwargs):  # FIXME CHANGE THIS NAME
             self.refresh_synchronization_status()
 
-        self._app._offload_task_with_spinner(self.set_public_authenticator, resultat_callable)
+        self._app._offload_task_with_spinner(self._publish_authenticator, resultat_callable)
 
     def display_help_popup(self):
         authenticator_publication_help_text = \

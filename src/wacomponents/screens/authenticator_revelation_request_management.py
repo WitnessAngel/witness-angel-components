@@ -125,7 +125,9 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
 
         return revelationRequestEntry
 
-    def show_symkey_decryption_details(self, symkey_decryption):
+    def show_symkey_decryption_details(self, symkey_decryption):  # FIXME rename method
+
+        logger.debug("Showing details of single symkey decryption request")
 
         authenticator_key_algo = symkey_decryption["target_public_authenticator_key"]["key_algo"]
         authenticator_keychain_uid = symkey_decryption["target_public_authenticator_key"]["keychain_uid"]
@@ -151,6 +153,9 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
         )
 
     def open_dialog_accept_request(self, revelation_request):
+
+        logger.debug("Opening dialog to accept decryption request")
+
         dialog = dialog_with_close_button(
             close_btn_label=tr._("Cancel"),
             title=tr._("Enter your authenticator passphrase"),
@@ -164,6 +169,9 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
         )
 
     def open_dialog_reject_request(self, revelation_request):
+
+        logger.debug("Opening dialog to reject decryption request")
+
         dialog_with_close_button(
             close_btn_label=tr._("Cancel"),
             title=tr._("Do you want to reject this request?"),
@@ -174,7 +182,9 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
                                  revelation_request=revelation_request)))],
         )
 
-    def display_remote_revelation_request(self, revelation_requests_per_status_list):
+    def display_remote_revelation_request(self, revelation_requests_per_status_list):  # FIXME rename
+
+        logger.debug("Displaying remote decryption requests")
 
         tab_per_status = dict(PENDING=self.ids.pending_revelation_request,
                               REJECTED=self.ids.rejected_revelation_request,
@@ -259,6 +269,10 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
     def accept_revelation_request(self, passphrase, revelation_request):
         # USE THIS FORM BEFORE :                text=tr._("Confirm removal"), on_release=lambda *args: (
         #                         close_current_dialog(), self.delete_keystores(keystore_uids=keystore_uids))
+
+        revelation_request_uid = revelation_request["revelation_request_uid"]
+        logger.info("Accepting decryption request %s", revelation_request_uid)
+
         authenticator_metadata = load_keystore_metadata(keystore_dir=self.selected_authenticator_dir)
         filesystem_keystore = FilesystemKeystore(self.selected_authenticator_dir)
         trustee_api = TrusteeApi(keystore=filesystem_keystore)
@@ -303,8 +317,6 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
 
             symkey_decryption_results.append(symkey_decryption_result)
 
-        revelation_request_uid = revelation_request["revelation_request_uid"]
-
         gateway_proxy = self._app.get_gateway_proxy()
         gateway_proxy.accept_revelation_request(
             authenticator_keystore_secret=authenticator_metadata["keystore_secret"],
@@ -319,8 +331,11 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
     @safe_catch_unhandled_exception_and_display_popup
     def reject_revelation_request(self, revelation_request):
 
-        authenticator_metadata = load_keystore_metadata(keystore_dir=self.selected_authenticator_dir)
         revelation_request_uid = revelation_request["revelation_request_uid"]
+
+        logger.info("Accepting decryption request %s", revelation_request_uid)
+
+        authenticator_metadata = load_keystore_metadata(keystore_dir=self.selected_authenticator_dir)
 
         gateway_proxy = self._app.get_gateway_proxy()
         gateway_proxy.reject_revelation_request(

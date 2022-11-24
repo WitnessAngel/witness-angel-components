@@ -67,6 +67,8 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
         their content in a <KEYS_ROOT> / <keystore_uid> / folder (taking the keystore_uid from metadata.json)
         """
 
+        logger.info("Importing foreign keystores from USB devices (include_private_keys=%s)", include_private_keys)
+
         foreign_keystore_metadata = []
         already_existing_keystore_metadata = []
         corrupted_keystore_count = 0
@@ -145,6 +147,9 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
 
     @safe_catch_unhandled_exception_and_display_popup
     def delete_keystores(self, keystore_uids):
+
+        logger.info("Deleting foreign keystores %s", keystore_uids)
+
         assert keystore_uids  # By construction
 
         # TODO move this to WACRYPTOLIB!
@@ -171,6 +176,8 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
 
         KEYS_ROOT = “~/.keys_storage_ward/”
         """
+        logger.debug("Listing foreign keystores")
+
         # print(">> we refresh auth devices panel")
         Keys_page_ids = self.ids  # FIXME rename this
 
@@ -344,7 +351,7 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
             )
 
     @staticmethod
-    def _convert_public_authenticator_to_keystore_tree(public_authenticator):
+    def _convert_public_authenticator_to_keystore_tree(public_authenticator):  # FIXME move that to wacryptolib?
         keypairs = []
 
         for public_key in public_authenticator["public_keys"]:
@@ -372,6 +379,8 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
 
     @safe_catch_unhandled_exception_and_display_popup
     def import_key_storage_from_web_gateway(self, keystore_uid_str):  # FIXME bad name
+
+        logger.debug("Importing foreign keystore %s from web gateway", keystore_uid_str)
 
         keystore_uid_str = keystore_uid_str.strip().lower()
 

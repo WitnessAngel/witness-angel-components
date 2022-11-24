@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 from kivy.factory import Factory
@@ -14,6 +15,8 @@ from wacryptolib.utilities import get_utc_now_date
 
 Builder.load_file(str(Path(__file__).parent / 'cryptainer_decryption_result.kv'))
 
+logger = logging.getLogger(__name__)
+
 
 class DecryptionStatus:
     SUCCESS = tr._("SUCCESS")
@@ -26,7 +29,10 @@ class CryptainerDecryptionResultScreen(WAScreenBase):
     def go_to_previous_screen(self):
         self.manager.current = WAScreenName.cryptainer_decryption_process
 
-    def display_revelation_request_error(self):
+    def display_revelation_request_error(self):  # FIXME rename
+
+        logger.info("Displaying decryption attempt errors")
+
         self.ids.decryption_info_list.clear_widgets()
 
         if self.last_decryption_info is None:
