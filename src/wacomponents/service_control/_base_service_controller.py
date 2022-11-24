@@ -12,7 +12,7 @@ class ServiceControllerBase:
         self._osc_client = get_osc_client(to_app=False)
 
     def _send_message(self, address, *values):
-        logger.debug("Message sent from app to service: %s %s" % (address, values))
+        logger.debug("Message sent from app to service: %s %s", address, values)
         try:
             return self._osc_client.send_message(address, values=values, safer=True)
         except ConnectionError:

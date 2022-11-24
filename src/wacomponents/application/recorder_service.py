@@ -173,7 +173,7 @@ class WaRecorderService(WaRuntimeSupportMixin):
                 ANDROID_CONTEXT.startForeground(notification_uid, notification)
 
         except Exception as exc:
-            logger.error("Could not build recording toolchain: %r" % exc, exc_info=True)
+            logger.error("Could not build recording toolchain: %r", exc, exc_info=True)
         finally:
             self._status_change_in_progress = False
             self.broadcast_recording_state()  # Even on error
@@ -213,7 +213,7 @@ class WaRecorderService(WaRuntimeSupportMixin):
             is_recording = ""  # For ternary value, since None is not supported by OSC
         else:
             is_recording = self.is_recording
-        #logger.debug("Broadcasting service state (is_recording=%r)" % is_recording)
+        #logger.debug("Broadcasting service state (is_recording=%r)", is_recording)
         self._send_message("/receive_recording_state", is_recording)
 
     @safe_catch_unhandled_exception

@@ -30,8 +30,8 @@ class SafeUtcFormatter(logging.Formatter):
                     # might happen if some magic stuffs in args can't be repr()ed
                     message = repr(record.msg) + "-- <NOREPR>"
 
-                alert = "!!! CRITICAL ERROR DURING LOGGING RECORD FORMATTING: %r" % message
-                print(alert, file=sys.stderr)
+                alert_msg = "!!! CRITICAL ERROR DURING LOG RECORD FORMATTING: %r" % message
+                print(alert_msg, file=sys.stderr)
 
             # we replace previous values
             record.msg = message

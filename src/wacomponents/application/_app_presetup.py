@@ -127,5 +127,3 @@ def _presetup_app_environment(setup_kivy_gui: bool):
 
     except Exception as exc:
         print(">>>>>>>> FAILED INITIALIZATION OF KIVY WINDOW AND ASSETS: %r" % exc)
-        raise
-

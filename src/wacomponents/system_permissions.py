@@ -34,7 +34,7 @@ def has_single_permission(permission: str) -> bool:
         from wacomponents.default_settings import ANDROID_CONTEXT, AndroidPackageManager
         permission_qualified_name = getattr(Permission, permission)  # e.g. android.permission.ACCESS_FINE_LOCATION
         res = ANDROID_CONTEXT.checkSelfPermission(permission_qualified_name)
-        #logger.info("checkSelfPermission returned %r (vs %s) for %s" % (res, PackageManager.PERMISSION_GRANTED, permission))
+        #logger.info("checkSelfPermission returned %r (vs %s) for %s", res, PackageManager.PERMISSION_GRANTED, permission)
         return (res == AndroidPackageManager.PERMISSION_GRANTED)
     return True  # For desktop OS
 
@@ -43,7 +43,7 @@ def warn_if_permission_missing(permission: str) -> bool:
     """Returns True iff a warning was emitted and permission is missing."""
     if IS_ANDROID:
         if not has_single_permission(permission=permission):
-            logger.warning("Missing permission %s, cancelling use of corresponding sensor" % permission)
+            logger.warning("Missing permission %s, cancelling use of corresponding sensor", permission)
             return True
     return False
 
@@ -56,7 +56,7 @@ def request_external_storage_dirs_access():  # FIXME rename to request_external_
         # FIXME remove this ugly sleep() hack and move this to Service
         time.sleep(3)  # Let the callback permission request be processed
         res = has_single_permission(permission)
-        #logger.info("Has single permission %r is %s" % (permission, res))
+        #logger.info("Has single permission %r is %s", permission, res)
         if not res:
             return False
     try:
