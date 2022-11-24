@@ -1,4 +1,7 @@
 import logging
+from logging import StreamHandler
+
+from wacomponents.logging.formatters import SafeUtcFormatter
 
 
 def _presetup_app_environment(setup_kivy_gui: bool):
@@ -6,9 +9,11 @@ def _presetup_app_environment(setup_kivy_gui: bool):
 
     this module uses print() instead of logging because the state of app is not clear at this moment.
     """
-    import os
+    import os, sys, logging
 
     os.environ["KIVY_NO_ARGS"] = "1"  # Important to bypass Kivy CLI system
+    os.environ["KIVY_NO_FILELOG"] = "1"
+    os.environ["KIVY_NO_CONSOLELOG"] = "1"
 
     try:
 
@@ -19,6 +24,40 @@ def _presetup_app_environment(setup_kivy_gui: bool):
 
     except Exception as exc:
         print(">>>>>>>> FAILED INITIALIZATION OF TYPEGUARD: %r" % exc)
+
+    try:
+
+        # WORKAROUND FOR LOGGING AND GRAPHICS WEIRDNESS IN KIVY SETUP #
+
+        assert "kivy.logger" not in sys.modules, "problem, kivy logger is already loaded!"  # Not loaded yet!
+        real_logging_root = logging.root
+        real_stderr = sys.stderr
+
+        from kivy.logger import Logger as kivy_logger  # Trigger init of Kivy logging
+        del kivy_logger
+        assert "kivy.logger" in sys.modules, "kivy logger should now be loaded!"
+
+        # Revert ugly monkey-patching by Kivy
+        assert logging.getLogger("kivy") is logging.root
+        logging.root = real_logging_root
+        sys.stderr = real_stderr
+
+    except Exception as exc:
+        print(">>>>>>>> FAILED REPAIR OF KIVY LOGGING: %r" % exc)
+
+    # Setup basic logging to stderr
+    stream_handler = StreamHandler(sys.stderr)
+    stream_formatter = SafeUtcFormatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    stream_handler.setFormatter(stream_formatter)
+    logging.root.addHandler(stream_handler)
+
+    # Tweak root loggging level
+    logging_level_str = os.getenv("WA_LOG_LEVEL", default="INFO").upper()
+    logging.root.setLevel(getattr(logging, logging_level_str))
+    logging.disable(0)
+    logging.info("Default logging level set to %s, use WA_LOG_LEVEL environment variable to change it", logging_level_str)
+
+    #import logging_tree ; logging_tree.printout()  # To display the actual logging setup
 
     try:
 
@@ -49,31 +88,6 @@ def _presetup_app_environment(setup_kivy_gui: bool):
 
     except Exception as exc:
         print(">>>>>>>> FAILED REGISTRATION OF COMMON RESOURCES: %r" % exc)
-
-    try:
-
-        # WORKAROUND FOR LOGGING AND GRAPHICS WEIRDNESS IN KIVY SETUP #
-
-        import sys
-        custom_kivy_stream_handler = logging.StreamHandler()
-        sys._kivy_logging_handler = custom_kivy_stream_handler
-        from kivy.logger import Logger as logger  # Trigger init of Kivy logging
-        del logger
-
-        # Finish ugly monkey-patching by Kivy
-        assert logging.getLogger("kivy") is logging.root
-        logging.Logger.root = logging.root
-        logging.Logger.manager.root = logging.root
-
-    except Exception as exc:
-        print(">>>>>>>> FAILED REPAIR OF KIVY LOGGING: %r" % exc)
-
-    # COMMON LOGGING TWEAKS
-    logging_level_str = os.getenv("WA_LOG_LEVEL", default="INFO").upper()
-    logging.root.setLevel(getattr(logging, logging_level_str))
-    logging.disable(0)
-    logging.info("Default logging level set to %s, use WA_LOG_LEVEL environment variable to change it", logging_level_str)
-    #import logging_tree ; logging_tree.printout()  # To display the actual logging setup
 
     if not setup_kivy_gui:
         return  # Cancel the rest of setups

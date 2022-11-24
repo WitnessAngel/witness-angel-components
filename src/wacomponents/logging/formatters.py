@@ -1,6 +1,6 @@
 import logging
 import sys
-from datetime import time
+import time
 
 
 class SafeUtcFormatter(logging.Formatter):
@@ -36,3 +36,5 @@ class SafeUtcFormatter(logging.Formatter):
 
         return logging.Formatter.format(self, record)
 
+    def __repr__(self):
+        return "%s fm=%s" % (self.__class__.__name__, self._fmt)
