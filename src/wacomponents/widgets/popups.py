@@ -1,3 +1,5 @@
+import logging
+
 from decorator import decorator
 from kivy.clock import Clock
 from kivy.lang import Builder
@@ -14,17 +16,22 @@ from wacomponents.i18n import tr
 from wacomponents.logging.handlers import safe_catch_unhandled_exception
 
 
-def display_info_toast(msg):
+logger = logging.getLogger(__name__)
+
+
+def display_info_toast(message):
     """Small temporary popup"""
     toast_options = {"duration": 1.5}
     if IS_ANDROID:
         toast_options = {"length_long": False}
     # Exact signature is different on Android and Desktop!
-    toast(msg, **toast_options)
+    logger.debug("Displaying Toast with message %r", message)
+    toast(message, **toast_options)
 
 
 def display_info_snackbar(message, duration=3.5):
     """Full-width temporary bottom message bar"""
+    logger.debug("Displaying Snackbar with message %r", message)
     Snackbar(
         text=message,
         font_size="12sp",
@@ -53,6 +60,7 @@ def dialog_with_close_button(buttons=None, close_btn_label=None, full_width=Fals
                              close_btn_callback=None, auto_open_and_register=True, **kwargs):
     """A dialog which can close itself and works on smartphone too"""
     close_btn_label = close_btn_label or tr._("Close")
+    logger.debug("Displaying dialog with close button %r", close_btn_label)
     dialog = None
     def default_on_close(*args):
         dialog.dismiss()
@@ -124,7 +132,7 @@ Builder.load_string("""
 
 """)
 
-@decorator  # FIXME REPLACE THIS WITH GUIAPP._offload_task_with_spinner()
+@decorator  # FIXME OBSOLETE - REPLACE THIS WITH GUIAPP._offload_task_with_spinner()
 def process_method_with_gui_spinner(func, self, *args, **kwargs):
     """
     Handle a time-consuming operation with the display of a GUI spinner,

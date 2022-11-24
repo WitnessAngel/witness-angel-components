@@ -50,6 +50,7 @@ def warn_if_permission_missing(permission: str) -> bool:
 
 def request_external_storage_dirs_access():  # FIXME rename to request_external_storage_dir_access()?
     """Ask for write permission and create missing directories."""
+    logger.debug("Requesting access to external storage dirs")
     if IS_ANDROID:
         permission = "WRITE_EXTERNAL_STORAGE"
         request_single_permission(permission)
