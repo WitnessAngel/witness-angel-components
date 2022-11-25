@@ -7,19 +7,25 @@ from kivy.lang import Builder
 
 from wacomponents.i18n import tr
 from wacomponents.screens.base import WAScreenName, WAScreenBase
-from wacomponents.utilities import format_revelation_request_label, format_authenticator_label, \
-    format_keypair_label, COLON, LINEBREAK, format_cryptainer_label
+from wacomponents.utilities import (
+    format_revelation_request_label,
+    format_authenticator_label,
+    format_keypair_label,
+    COLON,
+    LINEBREAK,
+    format_cryptainer_label,
+)
 from wacomponents.widgets.layout_components import GrowingAccordion, build_fallback_information_box
 from wacomponents.widgets.popups import dialog_with_close_button, display_info_snackbar
 
-Builder.load_file(str(Path(__file__).parent / 'claimant_revelation_request_management.kv'))
+Builder.load_file(str(Path(__file__).parent / "claimant_revelation_request_management.kv"))
 
 logger = logging.getLogger(__name__)
 
 # FIXME RENAME THIS FILE AND KV FILE to decryption_request_visualization.py (and later revelation_request_visualization.py)
 
-class ClaimantRevelationRequestManagementScreen(WAScreenBase):
 
+class ClaimantRevelationRequestManagementScreen(WAScreenBase):
     def go_to_previous_screen(self):
         self.manager.current = WAScreenName.cryptainer_storage_management
 
@@ -31,13 +37,16 @@ class ClaimantRevelationRequestManagementScreen(WAScreenBase):
 
             for symkey_decryption_request in decryption_request["symkey_decryption_requests"]:
 
-                decryption_request_copy = {key: value for key, value in decryption_request.items()
-                                           if key != 'symkey_decryption_requests'}
+                decryption_request_copy = {
+                    key: value for key, value in decryption_request.items() if key != "symkey_decryption_requests"
+                }
 
                 decryption_request_copy["symkey_decryption_request"] = symkey_decryption_request  # SINGLE entry here
 
                 cryptainer_uid = symkey_decryption_request["cryptainer_uid"]
-                _decryption_request_for_cryptainer = decryption_requests_per_cryptainer_uid.setdefault(cryptainer_uid, [])
+                _decryption_request_for_cryptainer = decryption_requests_per_cryptainer_uid.setdefault(
+                    cryptainer_uid, []
+                )
                 _decryption_request_for_cryptainer.append(decryption_request_copy)
 
         return decryption_requests_per_cryptainer_uid
@@ -47,8 +56,9 @@ class ClaimantRevelationRequestManagementScreen(WAScreenBase):
         gateway_proxy = self._app.get_gateway_proxy()
         try:
             requestor_revelation_requests = gateway_proxy.list_requestor_revelation_requests(
-                revelation_requestor_uid=revelation_requestor_uid)  # FIXME RENAME list_decryption_requests
-        except(JSONRPCError, OSError):  # FIXME factorize code with snackbar here?
+                revelation_requestor_uid=revelation_requestor_uid
+            )  # FIXME RENAME list_decryption_requests
+        except (JSONRPCError, OSError):  # FIXME factorize code with snackbar here?
             requestor_revelation_requests = None
 
         return requestor_revelation_requests
@@ -69,63 +79,109 @@ class ClaimantRevelationRequestManagementScreen(WAScreenBase):
                 self.ids.list_decryption_request_scrollview.add_widget(fallback_info_box)
                 return
 
-            revelation_requests_per_cryptainer_uid = self._list_revelation_requests_per_cryptainer_uid(requestor_revelation_requests)
+            revelation_requests_per_cryptainer_uid = self._list_revelation_requests_per_cryptainer_uid(
+                requestor_revelation_requests
+            )
 
-            display_layout = GrowingAccordion(orientation='vertical', size_hint=(1, None))
+            display_layout = GrowingAccordion(orientation="vertical", size_hint=(1, None))
 
             # Sorting kinda works, because UUID0 of cryptainers are built by datetime!
-            for cryptainer_uid, revelation_requests_with_single_symkey in sorted(revelation_requests_per_cryptainer_uid.items(), reverse=True):
+            for cryptainer_uid, revelation_requests_with_single_symkey in sorted(
+                revelation_requests_per_cryptainer_uid.items(), reverse=True
+            ):
 
                 # Fetch cryptainer name from FIRST entry (which MUST exist)
-                cryptainer_name = revelation_requests_with_single_symkey[0]["symkey_decryption_request"]["cryptainer_name"]
+                cryptainer_name = revelation_requests_with_single_symkey[0]["symkey_decryption_request"][
+                    "cryptainer_name"
+                ]
 
-                cryptainer_label = format_cryptainer_label(cryptainer_name=cryptainer_name,
-                                                           cryptainer_uid=cryptainer_uid)
+                cryptainer_label = format_cryptainer_label(
+                    cryptainer_name=cryptainer_name, cryptainer_uid=cryptainer_uid
+                )
 
                 container_item = Factory.ContainerItem(title=tr._("Container") + " " + cryptainer_label)
 
                 for revelation_request_with_single_symkey in revelation_requests_with_single_symkey:
 
-                    assert cryptainer_uid == revelation_request_with_single_symkey["symkey_decryption_request"]["cryptainer_uid"]
+                    assert (
+                        cryptainer_uid
+                        == revelation_request_with_single_symkey["symkey_decryption_request"]["cryptainer_uid"]
+                    )
 
                     revelation_request_label1 = format_revelation_request_label(
                         revelation_request_uid=revelation_request_with_single_symkey["revelation_request_uid"],
                         revelation_request_creation_datetime=revelation_request_with_single_symkey["created_at"],
-                        keystore_owner=revelation_request_with_single_symkey["target_public_authenticator"]["keystore_owner"])
+                        keystore_owner=revelation_request_with_single_symkey["target_public_authenticator"][
+                            "keystore_owner"
+                        ],
+                    )
 
-                    revelation_request_label2 = tr._("Status") + COLON() + revelation_request_with_single_symkey["revelation_request_status"]
+                    revelation_request_label2 = (
+                        tr._("Status") + COLON() + revelation_request_with_single_symkey["revelation_request_status"]
+                    )
 
                     target_public_authenticator_label = format_authenticator_label(
-                        authenticator_owner=revelation_request_with_single_symkey["target_public_authenticator"]["keystore_owner"],
-                        keystore_uid=revelation_request_with_single_symkey["target_public_authenticator"]["keystore_uid"])
+                        authenticator_owner=revelation_request_with_single_symkey["target_public_authenticator"][
+                            "keystore_owner"
+                        ],
+                        keystore_uid=revelation_request_with_single_symkey["target_public_authenticator"][
+                            "keystore_uid"
+                        ],
+                    )
 
-                    authenticator_key_algo = revelation_request_with_single_symkey["symkey_decryption_request"]["target_public_authenticator_key"]["key_algo"]
-                    authenticator_keychain_uid = revelation_request_with_single_symkey["symkey_decryption_request"]["target_public_authenticator_key"]["keychain_uid"]
+                    authenticator_key_algo = revelation_request_with_single_symkey["symkey_decryption_request"][
+                        "target_public_authenticator_key"
+                    ]["key_algo"]
+                    authenticator_keychain_uid = revelation_request_with_single_symkey["symkey_decryption_request"][
+                        "target_public_authenticator_key"
+                    ]["keychain_uid"]
 
-                    authenticator_key_label = format_keypair_label(keychain_uid=authenticator_keychain_uid,
-                                                                   key_algo=authenticator_key_algo)
+                    authenticator_key_label = format_keypair_label(
+                        keychain_uid=authenticator_keychain_uid, key_algo=authenticator_key_algo
+                    )
 
                     response_key_label = format_keypair_label(
                         keychain_uid=revelation_request_with_single_symkey["revelation_response_keychain_uid"],
-                        key_algo=revelation_request_with_single_symkey["revelation_response_key_algo"])
+                        key_algo=revelation_request_with_single_symkey["revelation_response_key_algo"],
+                    )
 
                     _displayed_values = dict(  # FIXME remove that
-                        revelation_request_description=revelation_request_with_single_symkey["revelation_request_description"],
+                        revelation_request_description=revelation_request_with_single_symkey[
+                            "revelation_request_description"
+                        ],
                         target_public_authenticator_label=target_public_authenticator_label,
                         response_key_label=response_key_label,
                         symkey_decryption_status=revelation_request_with_single_symkey["symkey_decryption_request"][
-                            "symkey_decryption_status"],
+                            "symkey_decryption_status"
+                        ],
                         authenticator_key_label=authenticator_key_label,
                     )
 
-                    revelation_request_summary_text = tr._("Description") + COLON() + _displayed_values["revelation_request_description"] + 2*LINEBREAK + \
-                                                      tr._("Authenticator") + COLON() + _displayed_values["target_public_authenticator_label"] + LINEBREAK + \
-                                                      tr._("Authenticator key") + COLON() + _displayed_values["authenticator_key_label"] + LINEBREAK + \
-                                                      tr._("Local response key") + COLON() + _displayed_values["response_key_label"] + 2*LINEBREAK + \
-                                                      tr._("Symkey decryption status") + COLON() + _displayed_values["symkey_decryption_status"]
+                    revelation_request_summary_text = (
+                        tr._("Description")
+                        + COLON()
+                        + _displayed_values["revelation_request_description"]
+                        + 2 * LINEBREAK
+                        + tr._("Authenticator")
+                        + COLON()
+                        + _displayed_values["target_public_authenticator_label"]
+                        + LINEBREAK
+                        + tr._("Authenticator key")
+                        + COLON()
+                        + _displayed_values["authenticator_key_label"]
+                        + LINEBREAK
+                        + tr._("Local response key")
+                        + COLON()
+                        + _displayed_values["response_key_label"]
+                        + 2 * LINEBREAK
+                        + tr._("Symkey decryption status")
+                        + COLON()
+                        + _displayed_values["symkey_decryption_status"]
+                    )
 
                     revelation_request_entry = Factory.WAIconListItemEntry(
-                        text=revelation_request_label1, secondary_text=revelation_request_label2)
+                        text=revelation_request_label1, secondary_text=revelation_request_label2
+                    )
 
                     def information_callback(widget, revelation_request_info=revelation_request_summary_text):
                         # We MUST use this "revelation_request_info" parameter to freeze the "variable revelation_request_summary_text"
@@ -145,10 +201,10 @@ class ClaimantRevelationRequestManagementScreen(WAScreenBase):
 
     def show_revelation_request_info(self, revelation_request_info):
 
-        logger.debug("Displaying single decryption request info")  # FIXME normalize decryption/revelation/aithorization wordings everywhere...
+        logger.debug(
+            "Displaying single decryption request info"
+        )  # FIXME normalize decryption/revelation/aithorization wordings everywhere...
 
         dialog_with_close_button(
-            close_btn_label=tr._("Close"),
-            title=tr._("Authorization request summary"),
-            text=revelation_request_info,
+            close_btn_label=tr._("Close"), title=tr._("Authorization request summary"), text=revelation_request_info
         )

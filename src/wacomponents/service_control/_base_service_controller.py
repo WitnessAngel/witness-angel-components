@@ -4,6 +4,7 @@ from wacomponents.service_control import get_osc_client
 
 logger = logging.getLogger(__name__)
 
+
 class ServiceControllerBase:
 
     _osc_client = None

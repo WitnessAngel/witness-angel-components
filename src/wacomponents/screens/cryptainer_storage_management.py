@@ -15,14 +15,24 @@ from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
 from wacomponents.logging.handlers import safe_catch_unhandled_exception
 from wacomponents.screens.base import WAScreenName, WAScreenBase
-from wacomponents.utilities import format_cryptainer_label, format_authenticator_label, SPACE, COLON, LINEBREAK, \
-    convert_bytes_to_human_representation
+from wacomponents.utilities import (
+    format_cryptainer_label,
+    format_authenticator_label,
+    SPACE,
+    COLON,
+    LINEBREAK,
+    convert_bytes_to_human_representation,
+)
 from wacomponents.widgets.layout_components import build_fallback_information_box
-from wacomponents.widgets.popups import close_current_dialog, dialog_with_close_button, display_info_toast, \
-    safe_catch_unhandled_exception_and_display_popup
+from wacomponents.widgets.popups import (
+    close_current_dialog,
+    dialog_with_close_button,
+    display_info_toast,
+    safe_catch_unhandled_exception_and_display_popup,
+)
 from wacryptolib.cryptainer import gather_trustee_dependencies
 
-Builder.load_file(str(Path(__file__).parent / 'cryptainer_storage_management.kv'))
+Builder.load_file(str(Path(__file__).parent / "cryptainer_storage_management.kv"))
 
 
 logger = logging.getLogger(__name__)
@@ -84,7 +94,8 @@ class CryptainerStorageManagementScreen(WAScreenBase):
             return
 
         sorted_cryptainers = list(
-            enumerate(self.filesystem_cryptainer_storage.list_cryptainer_names(as_sorted_list=True), start=1))
+            enumerate(self.filesystem_cryptainer_storage.list_cryptainer_names(as_sorted_list=True), start=1)
+        )
         self.cryptainer_names_to_be_loaded = sorted_cryptainers  # They'll be loaded from the end, that's what we want
 
         if not self.cryptainer_names_to_be_loaded:
@@ -98,8 +109,9 @@ class CryptainerStorageManagementScreen(WAScreenBase):
         self.cryptainer_checkboxes = []
 
         assert not self.cryptainer_loading_schedule
-        self.cryptainer_loading_schedule = Clock.schedule_interval(partial(self._load_next_scheduled_cryptainer),
-                                                                   self.CRYPTAINER_LOADING_INTERVAL)
+        self.cryptainer_loading_schedule = Clock.schedule_interval(
+            partial(self._load_next_scheduled_cryptainer), self.CRYPTAINER_LOADING_INTERVAL
+        )
 
     def _load_next_scheduled_cryptainer(self, *args):
         if self.cryptainer_names_to_be_loaded:
@@ -127,8 +139,9 @@ class CryptainerStorageManagementScreen(WAScreenBase):
         cryptainer_entry = Factory.WASelectableListItemEntry(text=cryptainer_entry_label)  # FIXME RENAME THIS
         cryptainer_entry.unique_identifier = cryptainer_name
 
-        def information_callback(widget,
-                                 cryptainer_name=cryptainer_name):  # Force keystore_uid save here, else scope bug
+        def information_callback(
+            widget, cryptainer_name=cryptainer_name
+        ):  # Force keystore_uid save here, else scope bug
             self.show_cryptainer_details(cryptainer_name=cryptainer_name)
 
         information_icon = cryptainer_entry.ids.information_icon
@@ -172,14 +185,15 @@ class CryptainerStorageManagementScreen(WAScreenBase):
 
         else:
 
-            message = tr._("Container ID") + COLON() + str(cryptainer["cryptainer_uid"]) + 2*LINEBREAK
+            message = tr._("Container ID") + COLON() + str(cryptainer["cryptainer_uid"]) + 2 * LINEBREAK
 
             message += tr._("Key Guardians used") + COLON() + LINEBREAK * 2
             for index, key_guardian_used in enumerate(interesting_dependencies, start=1):
                 key_guardian_label = format_authenticator_label(
                     authenticator_owner=key_guardian_used["keystore_owner"],
                     keystore_uid=key_guardian_used["keystore_uid"],
-                    trustee_type=key_guardian_used["trustee_type"])
+                    trustee_type=key_guardian_used["trustee_type"],
+                )
 
                 message += tr._("N°") + SPACE + str(index) + COLON() + key_guardian_label + LINEBREAK
 
@@ -189,12 +203,8 @@ class CryptainerStorageManagementScreen(WAScreenBase):
 
     def open_cryptainer_details_dialog(self, message, cryptainer_label):
 
-        dialog_with_close_button(
-            close_btn_label=tr._("Close"),
-            title=cryptainer_label,
-            text=message,
-        )
-        '''
+        dialog_with_close_button(close_btn_label=tr._("Close"), title=cryptainer_label, text=message)
+        """
         self.dialog = MDDialog(
             title=str(info_cryptainer),
             text=message,
@@ -202,7 +212,7 @@ class CryptainerStorageManagementScreen(WAScreenBase):
             buttons=[MDFlatButton(text=tr._("Close"), on_release=lambda *args: close_current_dialog())],
         )
         self.dialog.open()
-        '''
+        """
 
     def open_cryptainer_deletion_dialog(self):
 
@@ -234,9 +244,13 @@ class CryptainerStorageManagementScreen(WAScreenBase):
             text=message,
             buttons=[
                 MDFlatButton(
-                    text=tr._("Confirm deletion"), on_release=lambda *args: (
-                        close_current_dialog(), self.delete_cryptainers(cryptainer_names=cryptainer_names))
-                ), ]
+                    text=tr._("Confirm deletion"),
+                    on_release=lambda *args: (
+                        close_current_dialog(),
+                        self.delete_cryptainers(cryptainer_names=cryptainer_names),
+                    ),
+                )
+            ],
         )
 
     def delete_cryptainers(self, cryptainer_names):
@@ -287,8 +301,10 @@ class CryptainerStorageManagementScreen(WAScreenBase):
         # TODO make this more generic with support for remote trustee!
         relevant_keystore_uids = [trustee[0]["keystore_uid"] for trustee in dependencies["encryption"].values()]
 
-        relevant_keystore_metadata = sorted([y for (x, y) in keystore_metadata.items()
-                                             if x in relevant_keystore_uids], key=lambda d: d["keystore_owner"])
+        relevant_keystore_metadata = sorted(
+            [y for (x, y) in keystore_metadata.items() if x in relevant_keystore_uids],
+            key=lambda d: d["keystore_owner"],
+        )
 
         # print("--------------")
         # pprint.pprint(relevant_keystore_metadata)
@@ -298,17 +314,19 @@ class CryptainerStorageManagementScreen(WAScreenBase):
         # print(">>>>>>relevant_keystore_metadata", relevant_keystore_metadata)
         for metadata in relevant_keystore_metadata:
             hint_text = "Passphrase for user %s (hint: %s)" % (
-                metadata["keystore_owner"], metadata["keystore_passphrase_hint"])
+                metadata["keystore_owner"],
+                metadata["keystore_passphrase_hint"],
+            )
             _widget = TextInput(hint_text=hint_text)
 
-            '''MDTextField(hint_text="S SSSSSSSS z z",
+            """MDTextField(hint_text="S SSSSSSSS z z",
                               helper_text="Passphrase for user %s (hint: %s)" % (metadata["keystore_owner"], metadata["keystore_passphrase_hint"]),
                               helper_text_mode="on_focus",
                               **{                    "color_mode": 'custom',
                                                   "line_color_focus": (0.4, 0.5, 1, 1),
                                                   "mode": "fill",
                                                   "fill_color": (0.3, 0.3, 0.3, 0.4),
-                                                  "current_hint_text_color": (0.1, 1, 0.2, 1)})'''
+                                                  "current_hint_text_color": (0.1, 1, 0.2, 1)})"""
             content_cls.add_widget(_widget)
 
         dialog_with_close_button(
@@ -319,10 +337,12 @@ class CryptainerStorageManagementScreen(WAScreenBase):
             buttons=[
                 MDFlatButton(
                     text="Launch decryption",
-                    on_release=lambda *args: (close_current_dialog(),
-                                              self.decipher_cryptainers(cryptainer_names=cryptainer_names,
-                                                                        input_content_cls=content_cls)),
-                ), ]
+                    on_release=lambda *args: (
+                        close_current_dialog(),
+                        self.decipher_cryptainers(cryptainer_names=cryptainer_names, input_content_cls=content_cls),
+                    ),
+                )
+            ],
         )
 
     @safe_catch_unhandled_exception_and_display_popup
@@ -339,8 +359,9 @@ class CryptainerStorageManagementScreen(WAScreenBase):
             try:
                 EXTERNAL_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
                 # FIXME make this asynchronous, to avoid stalling the app!
-                result = self.filesystem_cryptainer_storage.decrypt_cryptainer_from_storage(cryptainer_name,
-                                                                                            passphrase_mapper=passphrase_mapper)
+                result = self.filesystem_cryptainer_storage.decrypt_cryptainer_from_storage(
+                    cryptainer_name, passphrase_mapper=passphrase_mapper
+                )
                 target_path = EXTERNAL_EXPORTS_DIR / (Path(cryptainer_name).with_suffix(""))
                 target_path.write_bytes(result)
                 # print(">> Successfully exported data file to %s" % target_path)
@@ -353,11 +374,7 @@ class CryptainerStorageManagementScreen(WAScreenBase):
         else:
             message = "Decryption successful, see export folder for results"
 
-        Snackbar(
-            text=message,
-            font_size="12sp",
-            duration=5,
-        ).open()
+        Snackbar(text=message, font_size="12sp", duration=5).open()
 
     def launch_cryptainer_decryption(self):  # FIXME rename
         selected_cryptainer_names = self._get_selected_cryptainer_names()
@@ -368,39 +385,31 @@ class CryptainerStorageManagementScreen(WAScreenBase):
         # print(">>>>>> selected_cryptainer_names in _launch_cryptainer_decryption()", selected_cryptainer_names)
         cryptainer_decryption_screen_name = WAScreenName.cryptainer_decryption_process
         cryptainer_decryption_screen = self.manager.get_screen(cryptainer_decryption_screen_name)
-        cryptainer_decryption_screen.selected_cryptainer_names = selected_cryptainer_names  # FIXME change the system of propagation of this ?
+        cryptainer_decryption_screen.selected_cryptainer_names = (
+            selected_cryptainer_names
+        )  # FIXME change the system of propagation of this ?
         self.manager.current = cryptainer_decryption_screen_name
 
     @safe_catch_unhandled_exception
     def __UNUSED_offloaded_attempt_cryptainer_decryption(self, cryptainer_filepath):  # FIXME move out of here
         logger.info("Decryption requested for container %s", cryptainer_filepath)
-        target_directory = EXTERNAL_EXPORTS_DIR.joinpath(
-            os.path.basename(cryptainer_filepath)
-        )
-        target_directory.mkdir(
-            exist_ok=True
-        )  # Double exports would replace colliding files
+        target_directory = EXTERNAL_EXPORTS_DIR.joinpath(os.path.basename(cryptainer_filepath))
+        target_directory.mkdir(exist_ok=True)  # Double exports would replace colliding files
         cryptainer = load_cryptainer_from_filesystem(cryptainer_filepath, include_payload_ciphertext=True)
-        tarfile_bytes = decrypt_payload_from_cryptainer(
-            cryptainer, keystore_pool=self._keystore_pool
-        )
+        tarfile_bytes = decrypt_payload_from_cryptainer(cryptainer, keystore_pool=self._keystore_pool)
         tarfile_bytesio = io.BytesIO(tarfile_bytes)
-        tarfile_obj = tarfile.open(
-            mode="r", fileobj=tarfile_bytesio  # TODO add gzip support here one day
-        )
+        tarfile_obj = tarfile.open(mode="r", fileobj=tarfile_bytesio)  # TODO add gzip support here one day
         # Beware, as root on unix systems it would apply chown/chmod
         tarfile_obj.extractall(target_directory)
-        logger.info(
-            "Container content was successfully decrypted into folder %s",
-            target_directory,
-        )
+        logger.info("Container content was successfully decrypted into folder %s", target_directory)
 
     ##@osc.address_method("/attempt_cryptainer_decryption")
     @safe_catch_unhandled_exception
     def __UNUSED_attempt_cryptainer_decryption(self, cryptainer_filepath: str):  # FIXME move out of here
         cryptainer_filepath = Path(cryptainer_filepath)
-        return self._offload_task(self._offloaded_attempt_cryptainer_decryption,
-                                  cryptainer_filepath=cryptainer_filepath)
+        return self._offload_task(
+            self._offloaded_attempt_cryptainer_decryption, cryptainer_filepath=cryptainer_filepath
+        )
 
         """
         print ("The written sentence is passphrase : %s" % input)

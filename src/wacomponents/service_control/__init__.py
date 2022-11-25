@@ -6,5 +6,3 @@ if platform == "android":
     from ._android_service_controller import ServiceController
 else:
     from ._subprocess_service_controller import ServiceController
-
-

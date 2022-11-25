@@ -25,7 +25,7 @@ class SafeUtcFormatter(logging.Formatter):
             except Exception:
                 try:
                     _message = repr(record.msg) + " -- " + repr(record.args)
-                    message = _message.replace("%", "$") # make it safe regarding string interpolation
+                    message = _message.replace("%", "$")  # make it safe regarding string interpolation
                 except Exception:
                     # might happen if some magic stuffs in args can't be repr()ed
                     message = repr(record.msg) + "-- <NOREPR>"

@@ -22,13 +22,15 @@ MONOTHREAD_POOL_EXECUTOR = ThreadPoolExecutor(
     max_workers=1, thread_name_prefix="authenticator_keygen_worker"  # SINGLE worker for now, to avoid concurrency
 )
 
+
 class InterruptableEvent(threading.Event):
     """An Event which handles ctrl-C on Windows too"""
 
     def wait(self, timeout=None):
         wait = super().wait  # get once, use often
         if timeout is None:
-            while not wait(0.1):  pass
+            while not wait(0.1):
+                pass
         else:
             wait(timeout)
 
@@ -85,7 +87,7 @@ def get_system_information(disk_storage_path: Path):
 
 def convert_bytes_to_human_representation(size):
     """Select the best representation for data size"""
-    for x in ['bytes', 'KB', 'MB', 'GB', 'TB']:
+    for x in ["bytes", "KB", "MB", "GB", "TB"]:
         if size < 1024.0:
             return "%i%s" % (int(size), x)
         size /= 1024.0
@@ -106,19 +108,20 @@ def get_nice_size(size):
 
 # Utilities for formatted text
 
+
 def indent_text(string, indent_value=TEXT_INDENT):
     string_indented = indent(string, indent_value)
     return string_indented
 
-def format_keypair_label(key_algo: str, keychain_uid: uuid.UUID, private_key_present=None, error_on_missing_key=True,
-                         short_uid=True) -> str:
+
+def format_keypair_label(
+    key_algo: str, keychain_uid: uuid.UUID, private_key_present=None, error_on_missing_key=True, short_uid=True
+) -> str:
 
     if short_uid:
         keychain_uid = shorten_uid(keychain_uid)
 
-    keypair_label = "{key_algo} {keychain_uid}".format(
-        key_algo=key_algo.replace("_", "-"),
-        keychain_uid=keychain_uid)
+    keypair_label = "{key_algo} {keychain_uid}".format(key_algo=key_algo.replace("_", "-"), keychain_uid=keychain_uid)
 
     if private_key_present is not None:
         if private_key_present:
@@ -137,13 +140,15 @@ def format_keypair_label(key_algo: str, keychain_uid: uuid.UUID, private_key_pre
     return keypair_label
 
 
-def format_authenticator_label(authenticator_owner: str, keystore_uid: uuid.UUID, trustee_type: Optional[str] = None,
-                               short_uid=True):
+def format_authenticator_label(
+    authenticator_owner: str, keystore_uid: uuid.UUID, trustee_type: Optional[str] = None, short_uid=True
+):
     # Paul Duport (ID … 1abfb5411)"
     if short_uid:
         keystore_uid = shorten_uid(keystore_uid)
-    authenticator_label = "{authenticator_owner} (ID {keystore_uid}".format(authenticator_owner=authenticator_owner,
-                                                                            keystore_uid=keystore_uid)
+    authenticator_label = "{authenticator_owner} (ID {keystore_uid}".format(
+        authenticator_owner=authenticator_owner, keystore_uid=keystore_uid
+    )
     if trustee_type:
         authenticator_label += ", type {trustee_type}".format(trustee_type=trustee_type)
 
@@ -151,10 +156,12 @@ def format_authenticator_label(authenticator_owner: str, keystore_uid: uuid.UUID
     return authenticator_label
 
 
-def format_revelation_request_label(revelation_request_creation_datetime: datetime,
-                                    revelation_request_uid: uuid.UUID,
-                                    keystore_owner=None,
-                                    short_uid=True):
+def format_revelation_request_label(
+    revelation_request_creation_datetime: datetime,
+    revelation_request_uid: uuid.UUID,
+    keystore_owner=None,
+    short_uid=True,
+):
     # Request ... 1abfb5411 (2022/05/22)
 
     if short_uid:
@@ -162,11 +169,15 @@ def format_revelation_request_label(revelation_request_creation_datetime: dateti
 
     # Date into isoformat
     reformatted_revelation_request_creation_date = format_utc_datetime_label(
-        field_datetime=revelation_request_creation_datetime, show_time=False)
+        field_datetime=revelation_request_creation_datetime, show_time=False
+    )
 
-    revelation_request_label = tr._("Request {revelation_request_uid} ({reformatted_revelation_request_creation_date})").format(
+    revelation_request_label = tr._(
+        "Request {revelation_request_uid} ({reformatted_revelation_request_creation_date})"
+    ).format(
         revelation_request_uid=revelation_request_uid,
-        reformatted_revelation_request_creation_date=reformatted_revelation_request_creation_date)
+        reformatted_revelation_request_creation_date=reformatted_revelation_request_creation_date,
+    )
 
     if keystore_owner:
         revelation_request_label += tr._(" for {keystore_owner}").format(keystore_owner=keystore_owner)
@@ -176,7 +187,9 @@ def format_revelation_request_label(revelation_request_creation_datetime: dateti
 
 def format_utc_datetime_label(field_datetime: datetime, show_time=False):
     # Displays "Created on: 2022-08-03"
-    assert field_datetime.utcoffset().total_seconds() == 0, field_datetime.utcoffset()  # We want only UTC datetimes here
+    assert (
+        field_datetime.utcoffset().total_seconds() == 0
+    ), field_datetime.utcoffset()  # We want only UTC datetimes here
 
     # Extract et convert to string date
     datetime_label = field_datetime.date().isoformat()
@@ -188,8 +201,9 @@ def format_utc_datetime_label(field_datetime: datetime, show_time=False):
     return datetime_label
 
 
-def format_cryptainer_label(cryptainer_name: str, cryptainer_uid: Optional[uuid.UUID] = None,
-                            cryptainer_size_bytes=None, short_uid=True):
+def format_cryptainer_label(
+    cryptainer_name: str, cryptainer_uid: Optional[uuid.UUID] = None, cryptainer_size_bytes=None, short_uid=True
+):
 
     # (format de la MDList des cryptainers)
     # 20220109_202157_cryptainer.mp4.crypt (ID ... 1abfb5411) [6528 Ko]
@@ -215,6 +229,14 @@ def format_revelation_request_error(error_criticity: str, error_type: str, error
     if error_exception:
         error_exception_suffix = " (%s)" % error_exception.__class__.__name__
 
-    error_label = error_criticity + COLON() + error_type.replace("_", " ").title() + error_exception_suffix + LINEBREAK +\
-                  tr._("Message") + COLON() + error_message
+    error_label = (
+        error_criticity
+        + COLON()
+        + error_type.replace("_", " ").title()
+        + error_exception_suffix
+        + LINEBREAK
+        + tr._("Message")
+        + COLON()
+        + error_message
+    )
     return error_label

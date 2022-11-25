@@ -24,17 +24,13 @@ class ServiceController(ServiceControllerBase):
         command = [sys.executable] + params
         cwd = os.path.dirname(params[0] if params else sys.executable) or None
         logger.info("GUI is launching service via Popen command %r, in cwd %r", command, cwd)
-        self._subprocess = subprocess.Popen(
-            command,
-            shell=False,
-            cwd=cwd,
-        )
+        self._subprocess = subprocess.Popen(command, shell=False, cwd=cwd)
 
     def stop_service(self):
         self._send_message("/stop_server")
         if self._subprocess:  # Else, service already existed at App launch... give up
             try:
-                self._subprocess.wait(timeout=10*WAIT_TIME_MULTIPLIER)
+                self._subprocess.wait(timeout=10 * WAIT_TIME_MULTIPLIER)
             except subprocess.TimeoutExpired:
                 logger.error("Service subprocess didn't exit gracefully, we kill it now")
                 self._subprocess.kill()

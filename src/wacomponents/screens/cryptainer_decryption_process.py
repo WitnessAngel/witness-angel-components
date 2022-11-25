@@ -10,26 +10,37 @@ from kivymd.uix.snackbar import Snackbar
 from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
 from wacomponents.screens.base import WAScreenName, WAScreenBase
-from wacomponents.utilities import format_keypair_label, format_cryptainer_label, \
-    format_authenticator_label, SPACE, COLON, LINEBREAK
+from wacomponents.utilities import (
+    format_keypair_label,
+    format_cryptainer_label,
+    format_authenticator_label,
+    SPACE,
+    COLON,
+    LINEBREAK,
+)
 from wacomponents.widgets.layout_components import build_fallback_information_box
-from wacomponents.widgets.popups import dialog_with_close_button, close_current_dialog, \
-    safe_catch_unhandled_exception_and_display_popup, display_info_toast, display_info_snackbar
-from wacryptolib.cryptainer import gather_trustee_dependencies, get_trustee_id, \
-    CRYPTAINER_TRUSTEE_TYPES
+from wacomponents.widgets.popups import (
+    dialog_with_close_button,
+    close_current_dialog,
+    safe_catch_unhandled_exception_and_display_popup,
+    display_info_toast,
+    display_info_snackbar,
+)
+from wacryptolib.cryptainer import gather_trustee_dependencies, get_trustee_id, CRYPTAINER_TRUSTEE_TYPES
 from wacryptolib.exceptions import KeystoreDoesNotExist, KeyDoesNotExist, KeyLoadingError
 from wacryptolib.keygen import load_asymmetric_key_from_pem_bytestring
 from wacryptolib.keystore import load_keystore_metadata
 
-Builder.load_file(str(Path(__file__).parent / 'cryptainer_decryption_process.kv'))
+Builder.load_file(str(Path(__file__).parent / "cryptainer_decryption_process.kv"))
 
 logger = logging.getLogger(__name__)
 
 
 class CryptainerDecryptionProcessScreen(WAScreenBase):
     selected_cryptainer_names = ObjectProperty(None, allownone=True)
-    trustee_data = ObjectProperty(None,
-                                  allownone=True)  # FIXME name not clear, i.e. "trustee_dependencies_for_encryption" ?
+    trustee_data = ObjectProperty(
+        None, allownone=True
+    )  # FIXME name not clear, i.e. "trustee_dependencies_for_encryption" ?
     filesystem_cryptainer_storage = ObjectProperty(None, allownone=True)
     filesystem_keystore_pool = ObjectProperty(None)
     ##found_trustees_lacking_passphrase = BooleanProperty(0)
@@ -57,7 +68,9 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
             return
 
         for index, cryptainer_name in enumerate(reversed(self.selected_cryptainer_names), start=1):
-            cryptainer_label = format_cryptainer_label(cryptainer_name=cryptainer_name)  # No need for Cryptainer ID here...
+            cryptainer_label = format_cryptainer_label(
+                cryptainer_name=cryptainer_name
+            )  # No need for Cryptainer ID here...
             cryptainer_entry_label = tr._("N°") + SPACE + str(index) + COLON() + cryptainer_label
 
             cryptainer_entry = Factory.WAListItemEntry(text=cryptainer_entry_label)  # FIXME RENAME THIS
@@ -67,8 +80,9 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
 
         display_info_toast(tr._("Refreshed concerned containers"))
 
-    def _get_cryptainer_trustee_dependency_status(self, keystore_uid, trustee_type, trustee_id,
-                                                  trustee_keypair_identifiers):
+    def _get_cryptainer_trustee_dependency_status(
+        self, keystore_uid, trustee_type, trustee_id, trustee_keypair_identifiers
+    ):
 
         trustee_is_present = False
         trustee_status = tr._("not found")
@@ -110,8 +124,9 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
 
         return status
 
-    def _get_cryptainers_with_cryptainer_names(self,
-                                               cryptainer_names):  # FIXME duplicated and not neeed as METHOD but FUNCTION
+    def _get_cryptainers_with_cryptainer_names(
+        self, cryptainer_names
+    ):  # FIXME duplicated and not neeed as METHOD but FUNCTION
         cryptainers = []
         for cryptainer_name in cryptainer_names:
             cryptainer = self.filesystem_cryptainer_storage.load_cryptainer_from_storage(cryptainer_name)
@@ -142,18 +157,23 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
                 keystore_uid = trustee_info["keystore_uid"]
 
                 if trustee_type == CRYPTAINER_TRUSTEE_TYPES.AUTHENTICATOR_TRUSTEE:
-                    status = self._get_cryptainer_trustee_dependency_status(keystore_uid, trustee_type=trustee_type,
-                                                                            trustee_id=trustee_id,
-                                                                            trustee_keypair_identifiers=trustee_keypair_identifiers)
+                    status = self._get_cryptainer_trustee_dependency_status(
+                        keystore_uid,
+                        trustee_type=trustee_type,
+                        trustee_id=trustee_id,
+                        trustee_keypair_identifiers=trustee_keypair_identifiers,
+                    )
                     self._display_cryptainer_trustee_dependency_status(status)
                 else:
                     pass  # FIXME handle other types of trustee?
 
     def _display_cryptainer_trustee_dependency_status(self, status):
 
-        trustee_label = format_authenticator_label(authenticator_owner=status["trustee_owner"],
-                                                   trustee_type=status["trustee_type"],
-                                                   keystore_uid=status["keystore_uid"])
+        trustee_label = format_authenticator_label(
+            authenticator_owner=status["trustee_owner"],
+            trustee_type=status["trustee_type"],
+            keystore_uid=status["keystore_uid"],
+        )
 
         trustee_info = tr._("Key guardian") + COLON() + trustee_label
 
@@ -170,23 +190,32 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
                     trustee_key_missing_label = format_keypair_label(**private_key_missing)
                     trustee_keys_missing_labels.append(trustee_key_missing_label)
 
-                trustee_keys_missing_full_label = ", ".join(trustee_keys_missing_labels) if trustee_keys_missing_labels else tr._("None")
+                trustee_keys_missing_full_label = (
+                    ", ".join(trustee_keys_missing_labels) if trustee_keys_missing_labels else tr._("None")
+                )
 
-                trustee_private_keys_status_text = tr._(
-                    "Missing private key(s)") + COLON() + "{trustee_keys_missing_full_label}".format(
-                    trustee_keys_missing_full_label=trustee_keys_missing_full_label)
+                trustee_private_keys_status_text = (
+                    tr._("Missing private key(s)")
+                    + COLON()
+                    + "{trustee_keys_missing_full_label}".format(
+                        trustee_keys_missing_full_label=trustee_keys_missing_full_label
+                    )
+                )
 
-        dependencies_status_text = Factory.WAThreeListItemEntry(text=trustee_info,
-                                                                secondary_text=trustee_present + ', ' + passphrase,
-                                                                tertiary_text=trustee_private_keys_status_text)
+        dependencies_status_text = Factory.WAThreeListItemEntry(
+            text=trustee_info,
+            secondary_text=trustee_present + ", " + passphrase,
+            tertiary_text=trustee_private_keys_status_text,
+        )
 
         message = ""
         for index, keypair_identifier in enumerate(status["trustee_keypair_identifiers"], start=1):
-            keypair_label = format_keypair_label(keychain_uid=keypair_identifier["keychain_uid"],
-                                                 key_algo=keypair_identifier["key_algo"],
-                                                 private_key_present=False if keypair_identifier in status[
-                                                     "trustee_private_keys_missing"] else True,
-                                                 error_on_missing_key=False)
+            keypair_label = format_keypair_label(
+                keychain_uid=keypair_identifier["keychain_uid"],
+                key_algo=keypair_identifier["key_algo"],
+                private_key_present=False if keypair_identifier in status["trustee_private_keys_missing"] else True,
+                error_on_missing_key=False,
+            )
             message += tr._("Keypair n°") + SPACE + str(index) + COLON() + keypair_label + LINEBREAK
 
         def information_callback(widget, message=message):
@@ -198,11 +227,7 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
         self.ids.information_text.add_widget(dependencies_status_text)
 
     def show_trustee_keypair_identifiers(self, message):
-        dialog_with_close_button(
-            close_btn_label=tr._("Close"),
-            title=tr._("Keypairs used"),
-            text=message,
-        )
+        dialog_with_close_button(close_btn_label=tr._("Close"), title=tr._("Keypairs used"), text=message)
 
     @safe_catch_unhandled_exception_and_display_popup
     def check_passphrase(self, passphrase):
@@ -243,24 +268,23 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
 
                 try:
                     private_key_pem = filesystem_keystore.get_private_key(keychain_uid=keychain_uid, key_algo=key_algo)
-                    key_obj = load_asymmetric_key_from_pem_bytestring(key_pem=private_key_pem, key_algo=key_algo,
-                                                                      passphrase=passphrase)
+                    key_obj = load_asymmetric_key_from_pem_bytestring(
+                        key_pem=private_key_pem, key_algo=key_algo, passphrase=passphrase
+                    )
                     assert key_obj, key_obj
                 except (KeyLoadingError, KeyDoesNotExist):
                     pass  # This was not the right keystore
                 else:
                     trustee_id = get_trustee_id(trustee_conf)
                     self.passphrase_mapper[trustee_id] = [
-                        passphrase]  # For now we assume only ONE PASSPHRASE per trustee, here
+                        passphrase
+                    ]  # For now we assume only ONE PASSPHRASE per trustee, here
                     result = tr._("Success")
                     details = tr._("Passphrase recognized")
 
         self.get_cryptainer_trustee_dependency_status()
 
-        dialog_with_close_button(
-            title=tr._("Validation result: %s") % result,
-            text=details,
-        )
+        dialog_with_close_button(title=tr._("Validation result: %s") % result, text=details)
 
     def open_dialog_check_passphrase(self):  # FIXME RENAME
 
@@ -270,9 +294,14 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
             type="custom",
             content_cls=Factory.AddForeignPassphraseContent(),
             buttons=[
-                MDFlatButton(text=tr._("Check"),
-                             on_release=lambda *args: (
-                             close_current_dialog(), self.check_passphrase(dialog.content_cls.ids.passphrase.text)))],
+                MDFlatButton(
+                    text=tr._("Check"),
+                    on_release=lambda *args: (
+                        close_current_dialog(),
+                        self.check_passphrase(dialog.content_cls.ids.passphrase.text),
+                    ),
+                )
+            ],
         )
 
     def decrypt_cryptainers_from_storage(self):
@@ -295,9 +324,12 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
                     cryptainer_name,
                     passphrase_mapper=self.passphrase_mapper,
                     revelation_requestor_uid=self.revelation_requestor_uid,
-                    gateway_urls=[self.jsonrpc_url])
+                    gateway_urls=[self.jsonrpc_url],
+                )
 
-                if result is not None:  # Could be an empty bytestring though, after successful decryption of empty container
+                if (
+                    result is not None
+                ):  # Could be an empty bytestring though, after successful decryption of empty container
                     target_path = EXTERNAL_EXPORTS_DIR / (Path(cryptainer_name).with_suffix(""))
                     target_path.write_bytes(result)
                     decryption_status = True
@@ -312,7 +344,7 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
             decryption_result_for_single_cryptainer = dict(
                 cryptainer_name=cryptainer_name,
                 decryption_status=decryption_status,
-                decryption_error=error_report  # Might be empty if exception was raised, too...
+                decryption_error=error_report,  # Might be empty if exception was raised, too...
             )
             decryption_results.append(decryption_result_for_single_cryptainer)
 
@@ -332,11 +364,7 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
 
                 message = tr._("All decryptions failed, see reports")
 
-                Snackbar(
-                    text=message,
-                    font_size="12sp",
-                    duration=5,
-                ).open()
+                Snackbar(text=message, font_size="12sp", duration=5).open()
 
         self._app._offload_task_with_spinner(self.decrypt_cryptainers_from_storage, resultat_callable)
 
@@ -350,7 +378,8 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
     def launch_remote_decryption_request(self):
         _claimant_revelation_request_creation_form_screen_name = WAScreenName.claimant_revelation_request_creation_form
         remote_decryption_request_screen = self.manager.get_screen(
-            _claimant_revelation_request_creation_form_screen_name)
+            _claimant_revelation_request_creation_form_screen_name
+        )
         remote_decryption_request_screen.selected_cryptainer_names = self.selected_cryptainer_names
         remote_decryption_request_screen.trustee_data = self.trustee_data  # FIXME rename here too
         self.manager.current = _claimant_revelation_request_creation_form_screen_name

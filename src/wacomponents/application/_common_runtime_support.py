@@ -4,8 +4,13 @@ from urllib.parse import urlparse
 
 import os
 
-from wacomponents.default_settings import INTERNAL_APP_ROOT, INTERNAL_CRYPTAINER_DIR, INTERNAL_KEYSTORE_POOL_DIR, \
-    INTERNAL_LOGS_DIR, EXTERNAL_APP_ROOT_PREFIX
+from wacomponents.default_settings import (
+    INTERNAL_APP_ROOT,
+    INTERNAL_CRYPTAINER_DIR,
+    INTERNAL_KEYSTORE_POOL_DIR,
+    INTERNAL_LOGS_DIR,
+    EXTERNAL_APP_ROOT_PREFIX,
+)
 from wacomponents.i18n import tr
 from wacryptolib.jsonrpc_client import JsonRpcProxy, status_slugs_response_error_handler
 from wacryptolib.utilities import load_from_json_file, generate_uuid0, dump_to_json_file
@@ -15,6 +20,7 @@ class WaRuntimeSupportMixin:
     """
     Runtime utilities for both GUI and non-GUI applications!
     """
+
     # Big status text to be displayed wherever possible
     checkup_status_text = None
 
@@ -54,7 +60,7 @@ class WaRuntimeSupportMixin:
         """For all app logs"""
         return str(INTERNAL_LOGS_DIR)
 
-    _home_path = os.path.expanduser('~/')
+    _home_path = os.path.expanduser("~/")
 
     def format_path_for_display(self, path):
 
@@ -63,11 +69,11 @@ class WaRuntimeSupportMixin:
         path = str(path)  # Convert from Path if needed
 
         if EXTERNAL_APP_ROOT_PREFIX and path.startswith(EXTERNAL_APP_ROOT_PREFIX):
-            path = path[len(EXTERNAL_APP_ROOT_PREFIX):]
+            path = path[len(EXTERNAL_APP_ROOT_PREFIX) :]
             path = "<sdcard>" + path  # e.g. sdcard/subfolder/...
 
         if self._home_path and path.startswith(self._home_path):
-            path = path[len(self._home_path):]
+            path = path[len(self._home_path) :]
             path = "~/" + path  # e.g. /private/var/mobile/... under iOS
 
         return path
@@ -97,12 +103,15 @@ class WaRuntimeSupportMixin:
         if cryptainer_dir and cryptainer_dir.is_dir():
             return True, tr.f(tr._("Container storage: {cryptainer_dir}"))
 
-        return False, tr.f(tr._("Invalid container storage: \"{cryptainer_dir}\""))
+        return False, tr.f(tr._('Invalid container storage: "{cryptainer_dir}"'))
 
     @staticmethod
     def check_keyguardian_counts(keyguardian_threshold, keyguardian_count):
-        message = tr.f(tr._(
-            "{keyguardian_count} key guardian(s) selected, {keyguardian_threshold} of which necessary for decryption"))
+        message = tr.f(
+            tr._(
+                "{keyguardian_count} key guardian(s) selected, {keyguardian_threshold} of which necessary for decryption"
+            )
+        )
         if 0 < keyguardian_threshold <= keyguardian_count:
             return True, message
         return False, message
@@ -116,7 +125,7 @@ class WaRuntimeSupportMixin:
                     return True, tr.f(tr._("IP camera url: {camera_url}"))
             except ValueError:
                 pass
-        return False, tr.f(tr._("Wrong IP camera url: \"{camera_url}\""))
+        return False, tr.f(tr._('Wrong IP camera url: "{camera_url}"'))
 
     @staticmethod
     def check_witness_angel_gateway_url(wagateway_url):
@@ -146,6 +155,7 @@ class WaRuntimeSupportMixin:
     @staticmethod
     def check_ffmpeg(min_ffmpeg_version: float):
         from wacomponents.sensors.camera.rtsp_stream import get_ffmpeg_version
+
         ffmpeg_version, error_msg = get_ffmpeg_version()
         if ffmpeg_version is None:
             return False, error_msg
@@ -153,8 +163,15 @@ class WaRuntimeSupportMixin:
         if ffmpeg_version >= min_ffmpeg_version:
             return True, tr.f(tr._("Ffmpeg module is installed with a compatible {ffmpeg_version:.1f} version"))
         else:
-            return False, tr.f(tr._("Ffmpeg module is installed but this {ffmpeg_version:.1f} version is below "
-                                    "required {min_ffmpeg_version} "))
+            return (
+                False,
+                tr.f(
+                    tr._(
+                        "Ffmpeg module is installed but this {ffmpeg_version:.1f} version is below "
+                        "required {min_ffmpeg_version} "
+                    )
+                ),
+            )
 
     @staticmethod
     def get_wa_device_uid():
@@ -165,9 +182,7 @@ class WaRuntimeSupportMixin:
         except FileNotFoundError:
             device_info_file.parent.mkdir(parents=False, exist_ok=True)
 
-            device_info = {
-                "wa_device_uid": generate_uuid0()
-            }
+            device_info = {"wa_device_uid": generate_uuid0()}
             dump_to_json_file(device_info_file, device_info)
 
         device_uid = device_info["wa_device_uid"]
@@ -175,7 +190,5 @@ class WaRuntimeSupportMixin:
 
     def get_gateway_proxy(self):
         jsonrpc_url = self.get_wagateway_url()
-        gateway_proxy = JsonRpcProxy(
-            url=jsonrpc_url, response_error_handler=status_slugs_response_error_handler
-        )
+        gateway_proxy = JsonRpcProxy(url=jsonrpc_url, response_error_handler=status_slugs_response_error_handler)
         return gateway_proxy

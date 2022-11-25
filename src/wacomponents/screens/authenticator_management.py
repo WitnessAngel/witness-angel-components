@@ -17,11 +17,23 @@ from wacomponents.default_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_A
 from wacomponents.i18n import tr
 from wacomponents.screens.base import WAScreenName, WAScreenBase
 from wacomponents.system_permissions import request_external_storage_dirs_access, is_folder_readable, is_folder_writable
-from wacomponents.utilities import convert_bytes_to_human_representation, shorten_uid, format_keypair_label, \
-    format_utc_datetime_label, COLON, LINEBREAK, indent_text
+from wacomponents.utilities import (
+    convert_bytes_to_human_representation,
+    shorten_uid,
+    format_keypair_label,
+    format_utc_datetime_label,
+    COLON,
+    LINEBREAK,
+    indent_text,
+)
 from wacomponents.widgets.layout_components import LanguageSwitcherScreenMixin
-from wacomponents.widgets.popups import dialog_with_close_button, register_current_dialog, close_current_dialog, \
-    help_text_popup, display_info_toast
+from wacomponents.widgets.popups import (
+    dialog_with_close_button,
+    register_current_dialog,
+    close_current_dialog,
+    help_text_popup,
+    display_info_toast,
+)
 from wacomponents.widgets.popups import safe_catch_unhandled_exception_and_display_popup
 from wacryptolib.authdevice import list_available_authdevices
 from wacryptolib.authenticator import is_authenticator_initialized
@@ -29,7 +41,7 @@ from wacryptolib.exceptions import KeyLoadingError, SchemaValidationError, KeyDo
 from wacryptolib.keygen import load_asymmetric_key_from_pem_bytestring
 from wacryptolib.keystore import FilesystemKeystore, load_keystore_metadata
 
-Builder.load_file(str(Path(__file__).parent / 'authenticator_management.kv'))
+Builder.load_file(str(Path(__file__).parent / "authenticator_management.kv"))
 
 
 logger = logging.getLogger(__name__)
@@ -43,7 +55,7 @@ class AuthenticatorType(Enum):
 
 
 class FolderKeyStoreListItem(Factory.ThinTwoLineAvatarIconListItem):
-    ''' FAILED attempt at fixing button position on this item
+    """ FAILED attempt at fixing button position on this item
     def __init__(self):
         super().__init__()
         #print(">>>>>>>>>>>>>>", self._EventDispatcher__event_stack)
@@ -54,7 +66,7 @@ class FolderKeyStoreListItem(Factory.ThinTwoLineAvatarIconListItem):
             # dispatch this property on the button instance
             prop.dispatch(self)
         Clock.schedule_once(force_reset, timeout=1)
-    '''
+    """
 
 
 class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
@@ -68,16 +80,18 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
 
     selected_authenticator_dir = ObjectProperty(None, allownone=True)  # Path of selected authenticator entry
 
-    selected_custom_folder_path = ObjectProperty(None,
-                                                 allownone=True)  # Custom folder selected for FolderKeyStoreListItem entry
+    selected_custom_folder_path = ObjectProperty(
+        None, allownone=True
+    )  # Custom folder selected for FolderKeyStoreListItem entry
 
     authenticator_status = ObjectProperty(None, allownone=True)
     authenticator_status_message = StringProperty("")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        Clock.schedule_once(lambda *args,
-                                   **kwargs: self.refresh_authenticator_list())  # "on_pre_enter" is not called for initial screen
+        Clock.schedule_once(
+            lambda *args, **kwargs: self.refresh_authenticator_list()
+        )  # "on_pre_enter" is not called for initial screen
         self._folder_chooser = MDFileManager(
             selector="folder",
             exit_manager=lambda x: close_current_dialog(),
@@ -111,33 +125,39 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
 
         profile_authenticator_widget = Factory.UserKeyStoreListItem()
         authenticator_list_entries.append(
-            (profile_authenticator_widget, dict(authenticator_type=AuthenticatorType.USER_PROFILE)))
+            (profile_authenticator_widget, dict(authenticator_type=AuthenticatorType.USER_PROFILE))
+        )
 
         folder_authenticator_widget = Factory.FolderKeyStoreListItem()
         folder_authenticator_widget.selected_path = self.selected_custom_folder_path
-        self.bind(selected_custom_folder_path=folder_authenticator_widget.setter('selected_path'))
+        self.bind(selected_custom_folder_path=folder_authenticator_widget.setter("selected_path"))
         folder_authenticator_widget.ids.open_folder_btn.bind(on_press=self.folder_chooser_open)  #
         authenticator_list_entries.append(
-            (folder_authenticator_widget, dict(authenticator_type=AuthenticatorType.CUSTOM_FOLDER)))
+            (folder_authenticator_widget, dict(authenticator_type=AuthenticatorType.CUSTOM_FOLDER))
+        )
 
         for index, authdevice in enumerate(authdevice_list):
             filesystem_size = convert_bytes_to_human_representation(authdevice["filesystem_size"])
             filesystem = authdevice["filesystem_format"].upper()
 
             authenticator_widget = Factory.ThinTwoLineAvatarIconListItem(
-                text=tr._("Drive {drive} ({label})").format(drive=authdevice["partition_mountpoint"],
-                                                             label=authdevice["partition_label"] or tr._("no name")),
-                secondary_text=tr._("Size: {size}, Filesystem: {filesystem}").format(size=filesystem_size,
-                                                                                     filesystem=filesystem),
+                text=tr._("Drive {drive} ({label})").format(
+                    drive=authdevice["partition_mountpoint"], label=authdevice["partition_label"] or tr._("no name")
+                ),
+                secondary_text=tr._("Size: {size}, Filesystem: {filesystem}").format(
+                    size=filesystem_size, filesystem=filesystem
+                ),
             )
             authenticator_widget.add_widget(IconLeftWidget(icon="usb-flash-drive"))
             authenticator_list_entries.append(
-                (authenticator_widget, dict(authenticator_type=AuthenticatorType.USB_DEVICE, **authdevice)))
+                (authenticator_widget, dict(authenticator_type=AuthenticatorType.USB_DEVICE, **authdevice))
+            )
 
         for (authenticator_widget, authenticator_metadata) in authenticator_list_entries:
             authenticator_widget._authenticator_metadata = authenticator_metadata
-            authenticator_widget._onrelease_callback = partial(self.display_authenticator_info,
-                                                               authenticator_metadata=authenticator_metadata)
+            authenticator_widget._onrelease_callback = partial(
+                self.display_authenticator_info, authenticator_metadata=authenticator_metadata
+            )
             authenticator_widget.bind(on_release=authenticator_widget._onrelease_callback)
             authenticator_list_widget.add_widget(authenticator_widget)
 
@@ -173,8 +193,11 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
             return
         file_manager_path = EXTERNAL_APP_ROOT
         previously_selected_custom_folder_path = self.selected_custom_folder_path
-        if previously_selected_custom_folder_path and previously_selected_custom_folder_path.is_dir() \
-            and is_folder_readable(previously_selected_custom_folder_path):  # Else file manager fails silently if path is unreadable
+        if (
+            previously_selected_custom_folder_path
+            and previously_selected_custom_folder_path.is_dir()
+            and is_folder_readable(previously_selected_custom_folder_path)
+        ):  # Else file manager fails silently if path is unreadable
             file_manager_path = previously_selected_custom_folder_path
         self._folder_chooser.show(str(file_manager_path))
         register_current_dialog(self._folder_chooser)
@@ -198,7 +221,8 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
         authenticator_list_widget = self.ids.authenticator_list
         for authenticator_widget in authenticator_list_widget.children:  # Starts from bottom of list so!
             target_authenticator_dir = self._get_authenticator_dir_from_metadata(
-                authenticator_widget._authenticator_metadata)
+                authenticator_widget._authenticator_metadata
+            )
             if target_authenticator_dir == authenticator_dir:
                 authenticator_widget._onrelease_callback(authenticator_widget)
                 return True
@@ -213,7 +237,6 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
             return tr._("Authenticator initialized")
 
     @safe_catch_unhandled_exception_and_display_popup
-
     def display_authenticator_info(self, authenticator_widget, authenticator_metadata):
 
         logger.debug("Displaying current authenticator information")
@@ -277,26 +300,50 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
                     except KeyDoesNotExist:
                         private_key_present = False
 
-                    keypairs_label += format_keypair_label(keychain_uid=keychain_uid, key_algo=key_algo,
-                                                           private_key_present=private_key_present) + LINEBREAK
+                    keypairs_label += (
+                        format_keypair_label(
+                            keychain_uid=keychain_uid, key_algo=key_algo, private_key_present=private_key_present
+                        )
+                        + LINEBREAK
+                    )
                 keypairs_label_indented = indent_text(keypairs_label)
 
                 keystore_creation_datetime_label = "Inconnu"
                 if "keystore_creation_datetime" in authenticator_metadata:
                     keystore_creation_datetime_label = format_utc_datetime_label(
-                        field_datetime=authenticator_metadata["keystore_creation_datetime"],
-                        show_time=True)
+                        field_datetime=authenticator_metadata["keystore_creation_datetime"], show_time=True
+                    )
 
                 keystore_passphrase_hint = authenticator_metadata["keystore_passphrase_hint"]
 
-                authenticator_info_text = \
-                    tr._("Path") + COLON() + str(authenticator_dir_shortened) + LINEBREAK + LINEBREAK + \
-                   tr._("User") + COLON() + authenticator_metadata["keystore_owner"] + LINEBREAK + \
-                   tr._("Password hint") + COLON() + keystore_passphrase_hint + LINEBREAK + \
-                   tr._("Creation date") + COLON() + keystore_creation_datetime_label + LINEBREAK + \
-                   tr._("ID") + COLON() + str(authenticator_metadata["keystore_uid"]) + LINEBREAK + LINEBREAK + \
-                   tr._("Keypairs") + COLON() + LINEBREAK + \
-                    keypairs_label_indented
+                authenticator_info_text = (
+                    tr._("Path")
+                    + COLON()
+                    + str(authenticator_dir_shortened)
+                    + LINEBREAK
+                    + LINEBREAK
+                    + tr._("User")
+                    + COLON()
+                    + authenticator_metadata["keystore_owner"]
+                    + LINEBREAK
+                    + tr._("Password hint")
+                    + COLON()
+                    + keystore_passphrase_hint
+                    + LINEBREAK
+                    + tr._("Creation date")
+                    + COLON()
+                    + keystore_creation_datetime_label
+                    + LINEBREAK
+                    + tr._("ID")
+                    + COLON()
+                    + str(authenticator_metadata["keystore_uid"])
+                    + LINEBREAK
+                    + LINEBREAK
+                    + tr._("Keypairs")
+                    + COLON()
+                    + LINEBREAK
+                    + keypairs_label_indented
+                )
 
         textarea = self.ids.authenticator_information
         textarea.text = authenticator_info_text
@@ -326,8 +373,8 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
 
         dialog_with_close_button(
             title=tr._("Import successful"),
-            text=tr._(
-                "Authenticator archive unpacked from %s, its integrity has not been checked though.") % archive_path.name,
+            text=tr._("Authenticator archive unpacked from %s, its integrity has not been checked though.")
+            % archive_path.name,
         )
 
         self.refresh_authenticator_list()
@@ -338,8 +385,12 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
             title=tr._("Export authenticator"),
             text=tr._("The exported archive should be kept in a secure place."),
             # size_hint=(0.8, 1),
-            buttons=[MDFlatButton(text=tr._("Confirm"), on_release=lambda *args: (
-                close_current_dialog(), self._export_authenticator_to_archive()))],
+            buttons=[
+                MDFlatButton(
+                    text=tr._("Confirm"),
+                    on_release=lambda *args: (close_current_dialog(), self._export_authenticator_to_archive()),
+                )
+            ],
         )
 
     @safe_catch_unhandled_exception_and_display_popup
@@ -360,8 +411,9 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
         archive_path_base = EXTERNAL_EXPORTS_DIR.joinpath("authenticator_%s_%s" % (keystore_uid_shortened, timestamp))
 
         logger.debug("Exporting authenticator to archive %s", archive_path_base)
-        archive_path = shutil.make_archive(base_name=archive_path_base, format=self.AUTHENTICATOR_ARCHIVE_FORMAT,
-                                           root_dir=authenticator_dir)
+        archive_path = shutil.make_archive(
+            base_name=archive_path_base, format=self.AUTHENTICATOR_ARCHIVE_FORMAT, root_dir=authenticator_dir
+        )
 
         dialog_with_close_button(
             title=tr._("Export successful"),
@@ -375,8 +427,15 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
             title=tr._("Destroy authenticator"),
             text=tr._("Beware, this might make encrypted data using these keys impossible to decrypt."),
             # size_hint=(0.8, 1),
-            buttons=[MDFlatButton(text=tr._("Confirm"), on_release=lambda *args: (
-                close_current_dialog(), self._delete_authenticator_data(authenticator_dir)))],
+            buttons=[
+                MDFlatButton(
+                    text=tr._("Confirm"),
+                    on_release=lambda *args: (
+                        close_current_dialog(),
+                        self._delete_authenticator_data(authenticator_dir),
+                    ),
+                )
+            ],
         )
 
     @safe_catch_unhandled_exception_and_display_popup
@@ -391,8 +450,7 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
             raise ValueError("Path %s not found (%s)" % (authenticator_dir, exc))
 
         dialog_with_close_button(
-            title=tr._("Deletion is over"),
-            text=tr._("Folder %s has been properly removed.") % authenticator_dir,
+            title=tr._("Deletion is over"), text=tr._("Folder %s has been properly removed.") % authenticator_dir
         )
         self.refresh_authenticator_list()
 
@@ -406,10 +464,15 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
             title=tr._("Sanity check"),
             type="custom",
             content_cls=Factory.AuthenticatorTesterContent(),
-            buttons=[MDFlatButton(text=tr._("Check"),
-                                  on_release=lambda *args: (
-                                      close_current_dialog(), self._check_authenticator_integrity(dialog,
-                                                                                                  authenticator_dir)))],
+            buttons=[
+                MDFlatButton(
+                    text=tr._("Check"),
+                    on_release=lambda *args: (
+                        close_current_dialog(),
+                        self._check_authenticator_integrity(dialog, authenticator_dir),
+                    ),
+                )
+            ],
         )
 
         def _set_focus_on_passphrase(*args):
@@ -425,8 +488,9 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
         logger.debug("Checking integrity of authenticator %s", authenticator_dir)
 
         keystore_passphrase = dialog.content_cls.ids.tester_passphrase.text
-        result_dict = self._test_authenticator_passphrase(authenticator_dir=authenticator_dir,
-                                                          keystore_passphrase=keystore_passphrase)
+        result_dict = self._test_authenticator_passphrase(
+            authenticator_dir=authenticator_dir, keystore_passphrase=keystore_passphrase
+        )
 
         keypair_count = result_dict["keypair_count"]
         missing_private_keys = result_dict["missing_private_keys"]
@@ -440,15 +504,14 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
             missing_private_keys_shortened = [format_keypair_label(*key) for key in missing_private_keys]
             undecodable_private_keys_shortened = [format_keypair_label(*key) for key in undecodable_private_keys]
             details = tr._(
-                "Keypairs tested: {keypair_count}\nMissing private keys: {missing_private_keys}\nWrong passphrase for keys:  {undecodable_private_keys}").format(
+                "Keypairs tested: {keypair_count}\nMissing private keys: {missing_private_keys}\nWrong passphrase for keys:  {undecodable_private_keys}"
+            ).format(
                 keypair_count=keypair_count,
                 missing_private_keys=(", ".join(missing_private_keys_shortened) or "-"),
-                undecodable_private_keys=", ".join(undecodable_private_keys_shortened) or "-")
+                undecodable_private_keys=", ".join(undecodable_private_keys_shortened) or "-",
+            )
 
-        dialog_with_close_button(
-            title=tr._("Checkup result: %s") % result,
-            text=details,
-        )
+        dialog_with_close_button(title=tr._("Checkup result: %s") % result, text=details)
 
     def _test_authenticator_passphrase(self, authenticator_dir, keystore_passphrase):
         filesystem_keystore = FilesystemKeystore(authenticator_dir)
@@ -473,9 +536,11 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
             except KeyLoadingError:
                 undecodable_private_keys.append((key_algo, keychain_uid))
 
-        return dict(keypair_count=len(keypair_identifiers),
-                    missing_private_keys=missing_private_keys,
-                    undecodable_private_keys=undecodable_private_keys)
+        return dict(
+            keypair_count=len(keypair_identifiers),
+            missing_private_keys=missing_private_keys,
+            undecodable_private_keys=undecodable_private_keys,
+        )
 
     def show_authenticator_publish_page(self):
         self.manager.current = WAScreenName.authenticator_publication_form
@@ -484,20 +549,26 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
 
     def display_help_popup(self):
 
-        authenticator_management_help_text = \
+        authenticator_management_help_text = (
             tr._(
-            """On this page, you can manage your authenticators, which are actually digital keychains identified by unique IDs.""") + LINEBREAK + \
-            tr._(
-                 """These keychains contain both public keys, which can be freely shared, and their corresponding private keys, protected by passphrases, which must be kept hidden.""") + LINEBREAK * 2 + \
-            tr._(
-                 """Authenticators can be stored in your user profile or in a custom folder, especially at the root of removable devices.""") + LINEBREAK + \
-            tr._(
-                 """You can initialize new authenticators from scratch, import/export them from/to ZIP archives, or check their integrity by providing their passphrases.""") + LINEBREAK * 2 + \
-            tr._(  #  Note: "unless they used a shared secret with other trusted third parties"...
-                 """Note that if you entirely destroy an authenticator, the WitnessAngel recordings which used it as a trusted third party might not be decryptable anymore.""")
+                """On this page, you can manage your authenticators, which are actually digital keychains identified by unique IDs."""
+            )
+            + LINEBREAK
+            + tr._(
+                """These keychains contain both public keys, which can be freely shared, and their corresponding private keys, protected by passphrases, which must be kept hidden."""
+            )
+            + LINEBREAK * 2
+            + tr._(
+                """Authenticators can be stored in your user profile or in a custom folder, especially at the root of removable devices."""
+            )
+            + LINEBREAK
+            + tr._(
+                """You can initialize new authenticators from scratch, import/export them from/to ZIP archives, or check their integrity by providing their passphrases."""
+            )
+            + LINEBREAK * 2
+            + tr._(  #  Note: "unless they used a shared secret with other trusted third parties"...
+                """Note that if you entirely destroy an authenticator, the WitnessAngel recordings which used it as a trusted third party might not be decryptable anymore."""
+            )
+        )
 
-        help_text_popup(
-            title=tr._("Authenticator management page"),
-            text=authenticator_management_help_text, )
-
-
+        help_text_popup(title=tr._("Authenticator management page"), text=authenticator_management_help_text)

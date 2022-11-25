@@ -18,14 +18,9 @@ class CallbackLoggingHandler(Handler):
             msg = self.format(record)
             self._gui_console_callback(msg)
         except Exception as exc:
-            print(
-                "Warning: exception in CallbackLoggingHandler when emitting record",
-                record,
-                "->",
-                exc,
-            )
-            #import traceback
-            #traceback.print_exc(file=sys.stdout)
+            print("Warning: exception in CallbackLoggingHandler when emitting record", record, "->", exc)
+            # import traceback
+            # traceback.print_exc(file=sys.stdout)
 
 
 @decorator
@@ -34,13 +29,8 @@ def safe_catch_unhandled_exception(f, *args, **kwargs):  # FIXME move to utiliti
         return f(*args, **kwargs)
     except Exception as exc:
         try:
-            logger.error(
-                f"Caught unhandled exception in call of function {f!r}: {exc!r}",
-                exc_info=True
-            )
-            #import traceback
-            #traceback.print_exc(file=sys.stdout)  # Important, since stderr is hooked by Kivy!
+            logger.error(f"Caught unhandled exception in call of function {f!r}: {exc!r}", exc_info=True)
+            # import traceback
+            # traceback.print_exc(file=sys.stdout)  # Important, since stderr is hooked by Kivy!
         except Exception as exc2:
-            print(
-                "Beware, service callback {f!r} and logging system are both broken: {exc2!r}"
-            )
+            print("Beware, service callback {f!r} and logging system are both broken: {exc2!r}")

@@ -1,4 +1,3 @@
-
 import os
 
 PACKAGE_NAME = os.getenv("WA_PACKAGE_NAME")  # Java package name here  FIXME BROKEN
@@ -14,28 +13,29 @@ def preload_java_classes():
     from jnius import autoclass
 
     autoclass("org.jnius.NativeInvocationHandler")
-    autoclass('android.graphics.BitmapFactory')
+    autoclass("android.graphics.BitmapFactory")
     autoclass("{}.R$drawable".format(PACKAGE_NAME))
-    autoclass('android.content.Intent')
-    autoclass('android.app.PendingIntent')
-    autoclass('android.app.NotificationManager')
-    autoclass('android.app.NotificationChannel')
-    autoclass('android.app.Notification$Builder')
-    autoclass('android.content.Context')
-    autoclass('java.lang.String')
+    autoclass("android.content.Intent")
+    autoclass("android.app.PendingIntent")
+    autoclass("android.app.NotificationManager")
+    autoclass("android.app.NotificationChannel")
+    autoclass("android.app.Notification$Builder")
+    autoclass("android.content.Context")
+    autoclass("java.lang.String")
 
 
 def _set_icons(context, notification, icon=None):
-    '''
+    """
     Set the small application icon displayed at the top panel together with
     WiFi, battery percentage and time and the big optional icon (preferably
     PNG format with transparent parts) displayed directly in the
     notification body.
     .. versionadded:: 1.4.0
-    '''
+    """
 
     from jnius import autoclass
-    BitmapFactory = autoclass('android.graphics.BitmapFactory')
+
+    BitmapFactory = autoclass("android.graphics.BitmapFactory")
     Drawable = autoclass("{}.R$drawable".format(PACKAGE_NAME))
 
     app_icon = Drawable.icon
@@ -58,14 +58,15 @@ def _set_icons(context, notification, icon=None):
 
 
 def _set_open_behavior(context, notification):
-    '''
+    """
     Open the source application when user opens the notification.
     .. versionadded:: 1.4.0
-    '''
+    """
 
     from jnius import autoclass
-    Intent = autoclass('android.content.Intent')
-    PendingIntent = autoclass('android.app.PendingIntent')
+
+    Intent = autoclass("android.content.Intent")
+    PendingIntent = autoclass("android.app.PendingIntent")
     from android import python_act
 
     # create Intent that navigates back to the application
@@ -78,9 +79,7 @@ def _set_open_behavior(context, notification):
     notification_intent.addCategory(Intent.CATEGORY_LAUNCHER)
 
     # get our application Activity
-    pending_intent = PendingIntent.getActivity(
-        app_context, 0, notification_intent, 0
-    )
+    pending_intent = PendingIntent.getActivity(app_context, 0, notification_intent, 0)
 
     notification.setContentIntent(pending_intent)
     notification.setAutoCancel(False)
@@ -89,24 +88,20 @@ def _set_open_behavior(context, notification):
 def build_notification_channel(context, name):
     from jnius import autoclass
 
-    manager = autoclass('android.app.NotificationManager')  # -> "notification"
-    channel = autoclass('android.app.NotificationChannel')
+    manager = autoclass("android.app.NotificationManager")  # -> "notification"
+    channel = autoclass("android.app.NotificationChannel")
 
-    app_channel = channel(
-         CHANNEL_ID, name, manager.IMPORTANCE_DEFAULT
-    )
-    context.getSystemService("notification").createNotificationChannel(
-        app_channel
-    )
+    app_channel = channel(CHANNEL_ID, name, manager.IMPORTANCE_DEFAULT)
+    context.getSystemService("notification").createNotificationChannel(app_channel)
     return app_channel
 
 
-def build_notification(context, title, message, ticker ):
+def build_notification(context, title, message, ticker):
     from jnius import autoclass
 
-    AndroidString = autoclass('java.lang.String')
+    AndroidString = autoclass("java.lang.String")
 
-    NotificationBuilder = autoclass('android.app.Notification$Builder')
+    NotificationBuilder = autoclass("android.app.Notification$Builder")
 
     notification = NotificationBuilder(context, CHANNEL_ID)
 
@@ -126,7 +121,7 @@ def build_notification(context, title, message, ticker ):
 def display_notification(context, notification):
     from jnius import autoclass
 
-    Context = autoclass('android.content.Context')
+    Context = autoclass("android.content.Context")
 
     notification_service = context.getSystemService(Context.NOTIFICATION_SERVICE)
     notification_service.notify(0, notification)
@@ -135,4 +130,5 @@ def display_notification(context, notification):
 def patch_ctypes_module_for_android():
     """ctypes.pythonapi fails on Android due to wrong ctypes.PyDLL(None) setup"""
     import ctypes, sys
+
     ctypes.pythonapi = ctypes.PyDLL("libpython%d.%d.so" % sys.version_info[:2])

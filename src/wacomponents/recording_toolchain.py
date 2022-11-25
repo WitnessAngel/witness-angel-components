@@ -1,15 +1,9 @@
-
-
 # from oscpy.server import OSCThreadServer
 import logging
 
 from wacryptolib.cryptainer import CryptainerStorage
 from wacryptolib.keystore import get_free_keypair_generator_worker
-from wacryptolib.sensor import (
-    TarfileRecordAggregator,
-    JsonDataAggregator,
-    SensorManager,
-)
+from wacryptolib.sensor import TarfileRecordAggregator, JsonDataAggregator, SensorManager
 
 
 logger = logging.getLogger(__name__)
@@ -63,10 +57,7 @@ def stop_recording_toolchain(toolchain):
         data_aggregator.flush_payload()
 
     for idx, tarfile_aggregator in enumerate(tarfile_aggregators, start=1):
-        logger.info(
-            "Flushing tarfile builder %s",
-            " #%d" % idx if len(tarfile_aggregators) > 1 else ""
-        )
+        logger.info("Flushing tarfile builder %s", " #%d" % idx if len(tarfile_aggregators) > 1 else "")
         tarfile_aggregator.finalize_tarfile()
 
     cryptainer_storage.wait_for_idle_state()  # Encryption workers must finish their job

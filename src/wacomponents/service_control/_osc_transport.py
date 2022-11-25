@@ -4,6 +4,7 @@ from pathlib import Path
 
 from functools import partial
 from kivy.utils import platform
+
 # TODO factorize and use unix socks when possible
 from oscpy.client import OSCClient
 from oscpy.server import OSCThreadServer as _OSCThreadServer
@@ -16,24 +17,19 @@ logger = logging.getLogger(__name__)
 
 
 class RobustOSCThreadServer(_OSCThreadServer):
-
     def _listen(self):
         while True:  # This server listens forever
             with catch_and_log_exception("RobustOSCThreadServer._listen"):  # Prevent crash of server loop...
                 super()._listen()
 
+
 def _osc_default_handler(address, *values, socket_name=None):
-    logger.error(
-        "Unknown OSC address %s called on listener %s, with arguments" % (
-            address, socket_name, list(values))
-    )
+    logger.error("Unknown OSC address %s called on listener %s, with arguments" % (address, socket_name, list(values)))
 
 
 def _get_osc_socket_options(socket_index):
     if platform == "win":
-        socket_options = dict(
-            address="127.0.0.1", port=6420 + socket_index, family="inet"
-        )
+        socket_options = dict(address="127.0.0.1", port=6420 + socket_index, family="inet")
     else:
         socket_file = INTERNAL_APP_ROOT.joinpath(".witnessangel%d.sock" % socket_index)
         socket_options = dict(address=str(socket_file), port=None, family="unix")
@@ -53,10 +49,7 @@ def get_osc_server(is_application=True):
     )  # This launches a DAEMON thread!
 
     def starter_callback():
-        logger.info(
-            "Binding OSC server of %s process to socket %s"
-            % (socket_name, socket_options)
-        )
+        logger.info("Binding OSC server of %s process to socket %s" % (socket_name, socket_options))
         if socket_options["family"] == "unix":
             socket_file = Path(socket_options["address"])
             if socket_file.exists():
@@ -74,9 +67,7 @@ def get_osc_client(to_app):
     socket_options = _get_osc_socket_options(socket_index=socket_index)
 
     socket_family = socket_options.pop("family")
-    sock = socket.socket(
-        socket.AF_UNIX if socket_family == "unix" else socket.AF_INET, socket.SOCK_DGRAM
-    )
+    sock = socket.socket(socket.AF_UNIX if socket_family == "unix" else socket.AF_INET, socket.SOCK_DGRAM)
     socket_options["sock"] = sock
     client = OSCClient(encoding="utf8", **socket_options)
 

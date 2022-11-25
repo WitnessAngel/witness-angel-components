@@ -11,12 +11,16 @@ from wacomponents.i18n import tr
 from wacomponents.screens.authenticator_management import shorten_uid
 from wacomponents.screens.base import WAScreenName, WAScreenBase
 from wacomponents.utilities import COLON, LINEBREAK, indent_text
-from wacomponents.widgets.popups import help_text_popup, display_info_toast, \
-    safe_catch_unhandled_exception_and_display_popup, display_info_snackbar
+from wacomponents.widgets.popups import (
+    help_text_popup,
+    display_info_toast,
+    safe_catch_unhandled_exception_and_display_popup,
+    display_info_snackbar,
+)
 from wacryptolib.exceptions import ExistenceError
 from wacryptolib.keystore import load_keystore_metadata, ReadonlyFilesystemKeystore
 
-Builder.load_file(str(Path(__file__).parent / 'authenticator_publication_form.kv'))
+Builder.load_file(str(Path(__file__).parent / "authenticator_publication_form.kv"))
 
 logger = logging.getLogger(__name__)
 
@@ -54,24 +58,28 @@ class AuthenticatorPublicationFormScreen(WAScreenBase):
             del x["private_key_present"]
 
         local_keys_and_authenticator_metadata = {
-            'keystore_owner': authenticator_metadata["keystore_owner"],
-            'keystore_uid': authenticator_metadata["keystore_uid"],
-            'keystore_secret': authenticator_metadata["keystore_secret"],  # Only useful when PUBLISHING
-            'public_keys': local_keys_status
+            "keystore_owner": authenticator_metadata["keystore_owner"],
+            "keystore_uid": authenticator_metadata["keystore_uid"],
+            "keystore_secret": authenticator_metadata["keystore_secret"],  # Only useful when PUBLISHING
+            "public_keys": local_keys_status,
         }
-        if 'keystore_creation_datetime' in authenticator_metadata:
+        if "keystore_creation_datetime" in authenticator_metadata:
             local_keys_and_authenticator_metadata["keystore_creation_datetime"] = authenticator_metadata[
-                "keystore_creation_datetime"]
+                "keystore_creation_datetime"
+            ]
         return local_keys_and_authenticator_metadata
 
     @staticmethod
     def _compare_local_and_remote_status(local_metadata, remote_public_authenticator) -> dict:
 
-        local_key_tuples = [(public_key["keychain_uid"], public_key["key_algo"]) for public_key in
-                            local_metadata["public_keys"]]
+        local_key_tuples = [
+            (public_key["keychain_uid"], public_key["key_algo"]) for public_key in local_metadata["public_keys"]
+        ]
 
-        remote_key_tuples = [(public_key["keychain_uid"], public_key["key_algo"]) for public_key in
-                             remote_public_authenticator["public_keys"]]
+        remote_key_tuples = [
+            (public_key["keychain_uid"], public_key["key_algo"])
+            for public_key in remote_public_authenticator["public_keys"]
+        ]
 
         missing_public_keys_in_remote = set(local_key_tuples) - set(remote_key_tuples)
         exceeding_public_keys_in_remote = set(remote_key_tuples) - set(local_key_tuples)
@@ -81,7 +89,8 @@ class AuthenticatorPublicationFormScreen(WAScreenBase):
         report = dict(
             missing_keys_in_remote=missing_public_keys_in_remote,
             exceeding_keys_in_remote=exceeding_public_keys_in_remote,
-            is_synchronized=is_synchronized)
+            is_synchronized=is_synchronized,
+        )
 
         return report
 
@@ -91,8 +100,9 @@ class AuthenticatorPublicationFormScreen(WAScreenBase):
         msg = ""
         try:
             remote_public_authenticator = self._query_remote_authenticator_status(
-                keystore_uid=local_metadata["keystore_uid"])
-        except(JSONRPCError, OSError) as exc:
+                keystore_uid=local_metadata["keystore_uid"]
+            )
+        except (JSONRPCError, OSError) as exc:
             logger.error("Error calling gateway server: %r", exc)
             msg = tr._("Error querying gateway server, please check its url and you connectivity")
 
@@ -128,7 +138,8 @@ class AuthenticatorPublicationFormScreen(WAScreenBase):
                 synchronization_status = tr._("PUBLISHED")
 
                 report = self._compare_local_and_remote_status(
-                    local_metadata=local_metadata, remote_public_authenticator=remote_public_authenticator)
+                    local_metadata=local_metadata, remote_public_authenticator=remote_public_authenticator
+                )
 
                 if report["is_synchronized"]:
                     message = tr._("The remote authenticator is up to date.")
@@ -139,33 +150,60 @@ class AuthenticatorPublicationFormScreen(WAScreenBase):
                     exceeding_public_keys_shortened = [shorten_uid(k[0]) for k in report["exceeding_keys_in_remote"]]
                     missing_public_keys_shortened = [shorten_uid(k[0]) for k in report["missing_keys_in_remote"]]
 
-                    exceeding_keys_in_remote = (", ".join(exceeding_public_keys_shortened) or "-"),
-                    missing_keys_in_remote = (", ".join(missing_public_keys_shortened) or "-"),
+                    exceeding_keys_in_remote = ((", ".join(exceeding_public_keys_shortened) or "-"),)
+                    missing_keys_in_remote = ((", ".join(missing_public_keys_shortened) or "-"),)
 
-                    synchronization_details_text = tr._("Error details") + COLON() + LINEBREAK + \
-                                                   indent_text(tr._("Exceeding key(s) in remote") + COLON() + str(
-                                                       exceeding_keys_in_remote)) + LINEBREAK + \
-                                                   indent_text(tr._("Missing key(s) in remote") + COLON() + str(
-                                                       missing_keys_in_remote))
+                    synchronization_details_text = (
+                        tr._("Error details")
+                        + COLON()
+                        + LINEBREAK
+                        + indent_text(tr._("Exceeding key(s) in remote") + COLON() + str(exceeding_keys_in_remote))
+                        + LINEBREAK
+                        + indent_text(tr._("Missing key(s) in remote") + COLON() + str(missing_keys_in_remote))
+                    )
 
             _displayed_values = dict(
                 gateway=self._app.get_wagateway_url(),
                 status=synchronization_status,
                 message=message,
                 authenticator_owner=keystore_owner,
-                authenticator_uid=str(keystore_uid)
+                authenticator_uid=str(keystore_uid),
             )
-            synchronization_info_text = \
-                tr._("Local path") + COLON() + self._app.format_path_for_display(self.selected_authenticator_dir) + LINEBREAK + \
-                tr._("Gateway") + COLON() + _displayed_values["gateway"] + LINEBREAK + LINEBREAK + \
-                tr._("Remote status") + COLON() + _displayed_values["status"] + LINEBREAK + \
-                tr._("Message") + COLON() + _displayed_values["message"] + LINEBREAK + LINEBREAK + \
-                tr._("User") + COLON() + _displayed_values["authenticator_owner"] + LINEBREAK + \
-                tr._("ID") + COLON() + _displayed_values["authenticator_uid"]
+            synchronization_info_text = (
+                tr._("Local path")
+                + COLON()
+                + self._app.format_path_for_display(self.selected_authenticator_dir)
+                + LINEBREAK
+                + tr._("Gateway")
+                + COLON()
+                + _displayed_values["gateway"]
+                + LINEBREAK
+                + LINEBREAK
+                + tr._("Remote status")
+                + COLON()
+                + _displayed_values["status"]
+                + LINEBREAK
+                + tr._("Message")
+                + COLON()
+                + _displayed_values["message"]
+                + LINEBREAK
+                + LINEBREAK
+                + tr._("User")
+                + COLON()
+                + _displayed_values["authenticator_owner"]
+                + LINEBREAK
+                + tr._("ID")
+                + COLON()
+                + _displayed_values["authenticator_uid"]
+            )
 
             if is_published:
-                synchronization_info_text += LINEBREAK + LINEBREAK + tr._(
-                    "Provide this Authenticator ID to users wanting to rely on you as a Key Guardian") + LINEBREAK
+                synchronization_info_text += (
+                    LINEBREAK
+                    + LINEBREAK
+                    + tr._("Provide this Authenticator ID to users wanting to rely on you as a Key Guardian")
+                    + LINEBREAK
+                )
 
             if synchronization_details_text:
                 synchronization_info_text += "\n" + synchronization_details_text
@@ -190,12 +228,15 @@ class AuthenticatorPublicationFormScreen(WAScreenBase):
         public_keys = []
 
         for public_key in local_metadata["public_keys"]:
-            public_keys.append({
-                "keychain_uid": public_key["keychain_uid"],
-                "key_algo": public_key["key_algo"],
-                "key_value": readonly_filesystem_keystorage.get_public_key(
-                    keychain_uid=public_key["keychain_uid"], key_algo=public_key["key_algo"])
-            })
+            public_keys.append(
+                {
+                    "keychain_uid": public_key["keychain_uid"],
+                    "key_algo": public_key["key_algo"],
+                    "key_value": readonly_filesystem_keystorage.get_public_key(
+                        keychain_uid=public_key["keychain_uid"], key_algo=public_key["key_algo"]
+                    ),
+                }
+            )
         local_authenticator = deepcopy(local_metadata)
         local_authenticator["public_keys"] = public_keys
         gateway_proxy = self._app.get_gateway_proxy()
@@ -204,21 +245,21 @@ class AuthenticatorPublicationFormScreen(WAScreenBase):
 
     @safe_catch_unhandled_exception_and_display_popup
     def publish_authenticator(self):
-
         def resultat_callable(result, *args, **kwargs):  # FIXME CHANGE THIS NAME
             self.refresh_synchronization_status()
 
         self._app._offload_task_with_spinner(self._publish_authenticator, resultat_callable)
 
     def display_help_popup(self):
-        authenticator_publication_help_text = \
+        authenticator_publication_help_text = (
             tr._(
-                 """This page allows to publish the PUBLIC part of an authenticator to a remote Witness Angel Gateway, so that other users may import it to secure their recordings.""") + LINEBREAK * 2 + \
-            tr._(
-                 """For now, a published authenticator can't be modified or deleted.""") + LINEBREAK * 2 + \
-            tr._(
-                 """In case of incoherences between the keys locally and remotely stored, these errors are displayed here.""")
-        help_text_popup(
-            title=tr._("Authenticator publishing"),
-            text=authenticator_publication_help_text)
-
+                """This page allows to publish the PUBLIC part of an authenticator to a remote Witness Angel Gateway, so that other users may import it to secure their recordings."""
+            )
+            + LINEBREAK * 2
+            + tr._("""For now, a published authenticator can't be modified or deleted.""")
+            + LINEBREAK * 2
+            + tr._(
+                """In case of incoherences between the keys locally and remotely stored, these errors are displayed here."""
+            )
+        )
+        help_text_popup(title=tr._("Authenticator publishing"), text=authenticator_publication_help_text)

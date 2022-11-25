@@ -4,16 +4,11 @@ from pathlib import Path
 from kivy.app import App
 from kivy.base import runTouchApp
 from kivy.lang import Builder
-from kivy.properties import (
-    ObjectProperty,
-    ListProperty,
-    StringProperty,
-    NumericProperty,
-)
+from kivy.properties import ObjectProperty, ListProperty, StringProperty, NumericProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
 
-Builder.load_file(str(Path(__file__).parent / 'logging_console.kv'))
+Builder.load_file(str(Path(__file__).parent / "logging_console.kv"))
 
 
 class ConsoleOutput(TextInput):
@@ -27,8 +22,7 @@ class ConsoleOutput(TextInput):
         app = App.get_running_app()
 
     def is_locked(self):
-        return ((self.parent.height >= self.height) or
-                (self.parent.scroll_y <= 0.05))
+        return (self.parent.height >= self.height) or (self.parent.scroll_y <= 0.05)
 
     def scroll_to_bottom(self):
         self.parent.scroll_y = 0
@@ -48,9 +42,7 @@ class ConsoleOutput(TextInput):
             # TODO reajust scroll_y after that?
             if len(self.text) > self.max_text_size:
                 lines = self.text.splitlines()
-                new_lines = lines[
-                    int(len(lines) / 4) :
-                ]  # Remove the first chunk of lines
+                new_lines = lines[int(len(lines) / 4) :]  # Remove the first chunk of lines
                 new_text = "\n".join(new_lines) + "\n"
                 self.text = new_text
 

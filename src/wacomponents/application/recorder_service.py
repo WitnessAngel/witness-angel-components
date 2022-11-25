@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 
 if IS_ANDROID:
     from wacomponents.application.android_helpers import preload_java_classes
+
     preload_java_classes()
 
 
@@ -54,7 +55,7 @@ class WaRecorderService(WaRuntimeSupportMixin):
         self._osc_client = get_osc_client(to_app=True)
 
         # Redirect root logger traffic to GUI console widget if wanted
-        #logging.getLogger(None).addHandler(CallbackLoggingHandler(self._remote_logging_callback))
+        # logging.getLogger(None).addHandler(CallbackLoggingHandler(self._remote_logging_callback))
 
         self._termination_event = InterruptableEvent()
         logger.info("Service is started")
@@ -63,13 +64,14 @@ class WaRecorderService(WaRuntimeSupportMixin):
 
         # Initial setup of service according to persisted config
         try:
-            daemonize_service = self.config.getboolean("usersettings", "daemonize_service")  # FIXME is that really "usersettings" here?
+            daemonize_service = self.config.getboolean(
+                "usersettings", "daemonize_service"
+            )  # FIXME is that really "usersettings" here?
         except ConfigParserError:
             daemonize_service = False  # Probably App is just initializing itself
         self.switch_daemonize_service(daemonize_service)
 
-        #import traceback; traceback.print_stack()
-
+        # import traceback; traceback.print_stack()
 
     def _get_cryptoconf(self):
         """Return a wacryptolib-compatible encryption configuration"""
@@ -97,9 +99,7 @@ class WaRecorderService(WaRuntimeSupportMixin):
                 raise FileNotFoundError(filename)
             config.read(str(filename))  # Actually fails silently if file not found
         except (ConfigParserError, FileNotFoundError) as exc:
-            logger.error(
-                f"Service ignored missing or corrupted config file {filename} ({exc!r})"
-            )
+            logger.error(f"Service ignored missing or corrupted config file {filename} ({exc!r})")
 
         # logger.info(f"Config file {filename} loaded")
         self.config = config
@@ -136,7 +136,8 @@ class WaRecorderService(WaRuntimeSupportMixin):
         logger.info("Switching background service persistence to %s", value)
         if IS_ANDROID:
             from jnius import autoclass
-            PythonService = autoclass('org.kivy.android.PythonService')
+
+            PythonService = autoclass("org.kivy.android.PythonService")
             PythonService.mService.setAutoStopService(not value)
         # Nothing to do for desktop platforms
 
@@ -149,12 +150,14 @@ class WaRecorderService(WaRuntimeSupportMixin):
     def _offloaded_start_recording(self, env):
         try:
             if self.is_recording:
-                #logger.debug("Ignoring redundant call to service.start_recording()")
+                # logger.debug("Ignoring redundant call to service.start_recording()")
                 return
             logger.info("Service offloaded-starting recording")
 
             if not self._recording_toolchain:
-                self._recording_toolchain = self._build_recording_toolchain()  # FIXME handle exceptions instead of None!
+                self._recording_toolchain = (
+                    self._build_recording_toolchain()
+                )  # FIXME handle exceptions instead of None!
 
             assert self._recording_toolchain
             start_recording_toolchain(self._recording_toolchain)
@@ -163,10 +166,14 @@ class WaRecorderService(WaRuntimeSupportMixin):
             if IS_ANDROID:
                 from wacomponents.default_settings import ANDROID_CONTEXT
                 from wacomponents.application.android_helpers import build_notification_channel, build_notification
+
                 build_notification_channel(ANDROID_CONTEXT, "Witness Angel Service")
-                notification = build_notification(ANDROID_CONTEXT, title="Sensors are active",
-                                                  message="Click to manage Witness Angel state",
-                                                  ticker="Witness Angel sensors are active")
+                notification = build_notification(
+                    ANDROID_CONTEXT,
+                    title="Sensors are active",
+                    message="Click to manage Witness Angel state",
+                    ticker="Witness Angel sensors are active",
+                )
                 notification_uid = 1
                 ANDROID_CONTEXT.startForeground(notification_uid, notification)
 
@@ -196,10 +203,7 @@ class WaRecorderService(WaRuntimeSupportMixin):
 
     @property
     def is_recording(self):
-        return bool(
-            self._recording_toolchain
-            and self._recording_toolchain["sensors_manager"].is_running
-        )
+        return bool(self._recording_toolchain and self._recording_toolchain["sensors_manager"].is_running)
 
     @osc.address_method("/broadcast_recording_state")
     @safe_catch_unhandled_exception
@@ -219,7 +223,7 @@ class WaRecorderService(WaRuntimeSupportMixin):
     def _offloaded_stop_recording(self):
         try:
             if not self.is_recording:
-                #logger.debug("Ignoring redundant call to service.stop_recording()")
+                # logger.debug("Ignoring redundant call to service.stop_recording()")
                 return
             logger.info("Service offloaded-stopping recording")
             stop_recording_toolchain(self._recording_toolchain)
@@ -227,19 +231,18 @@ class WaRecorderService(WaRuntimeSupportMixin):
 
             if IS_ANDROID:
                 from wacomponents.default_settings import ANDROID_CONTEXT
+
                 ANDROID_CONTEXT.stopForeground(True)  # Does remove notification
 
         finally:  # Trigger all this even if container flushing failed
-            self._recording_toolchain = (
-                None
-            )  # Will force a reload of config on next recording
+            self._recording_toolchain = None  # Will force a reload of config on next recording
             self._status_change_in_progress = False
             self.broadcast_recording_state()
 
     @osc.address_method("/stop_recording")
     @safe_catch_unhandled_exception
     def stop_recording(self, force=False):
-        #print("@@ IMPORTANT - RECEIVED ORDER TO STOP RECORDING IN SERVICE")
+        # print("@@ IMPORTANT - RECEIVED ORDER TO STOP RECORDING IN SERVICE")
         if self._status_change_in_progress and not force:
             logger.info("Service recording stop ignored, because other status change is already in progress")
             return
@@ -257,12 +260,10 @@ class WaRecorderService(WaRuntimeSupportMixin):
         logger.info("Service got command to SHUTDOWN entirely")
 
         if self.is_recording:
-            logger.info(
-                "Recording is currently in progress, we stop it as part of service shutdown"
-            )
+            logger.info("Recording is currently in progress, we stop it as part of service shutdown")
             future = self.stop_recording(force=True)  # Could be None if unexpected exception was caught!
             if future:
-                future.result(timeout=30)   # SYNCHRONOUS CALL (but through threadpool still)
+                future.result(timeout=30)  # SYNCHRONOUS CALL (but through threadpool still)
 
         osc.stop_all()
         self._termination_event.set()
@@ -275,4 +276,3 @@ class WaRecorderService(WaRuntimeSupportMixin):
         (meant for use by the main thread of the service process).
         """
         self._termination_event.wait()
-

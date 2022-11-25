@@ -16,25 +16,29 @@ from wacomponents.i18n import tr
 
 # FIXME RENAME THIS MODULE AS MISC_WIDGETS??
 
+
 def activate_widget_debug_outline():
     """Create a dotted outline around widgets, to help layout setup."""
-    widget_outline_hack = textwrap.dedent("""
+    widget_outline_hack = textwrap.dedent(
+        """
     <Widget>:
         canvas.after:
             Line:
                 rectangle: self.x+1,self.y+1,self.width-1,self.height-1
                 dash_offset: 5
                 dash_length: 3
-    """)
+    """
+    )
 
     Builder.load_string(widget_outline_hack)
 
 
 def load_layout_helper_widgets():
-    Builder.load_file(str(Path(__file__).parent / 'layout_components.kv'))  # TODO use "with_name"
+    Builder.load_file(str(Path(__file__).parent / "layout_components.kv"))  # TODO use "with_name"
+
 
 # FIXME use or remove?
-#<ConsoleOutput>:
+# <ConsoleOutput>:
 #    readonly: True
 #    padding: 6, 6
 #    size_hint: (1, None)
@@ -61,19 +65,16 @@ class SettingStringTruncated(SettingItem):
 
 class LanguageSwitcherScreenMixin:
     def __init__(self, *args, **kwargs):
-        super().__init__( *args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         language_menu_items = [
-            {
-                "text": lang,
-                "viewclass": "OneLineListItem",
-                "on_release": lambda x=lang_code: self.on_language_change(x),
-            } for (lang, lang_code) in [("English", "en"), ("Français", "fr")]
+            {"text": lang, "viewclass": "OneLineListItem", "on_release": lambda x=lang_code: self.on_language_change(x)}
+            for (lang, lang_code) in [("English", "en"), ("Français", "fr")]
         ]
 
         self._language_selector_menu = MDDropdownMenu(
-            #header_cls=Factory.LanguageMenuHeader(),
-            #caller=self.screen.ids.button,
+            # header_cls=Factory.LanguageMenuHeader(),
+            # caller=self.screen.ids.button,
             items=language_menu_items,
             width_mult=2,
             position="bottom",
@@ -98,11 +99,12 @@ class WASelectableLabel(TextInput):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.keyboard_mode = 'managed'  # Do not auto-show the keyboard (e.g. for mobile devices)
+        self.keyboard_mode = "managed"  # Do not auto-show the keyboard (e.g. for mobile devices)
 
         # EVEN IF READONLY, we need this to prevent selection bugs on mobile platform
         def fix_focusability(x):
             self.is_focusable = True
+
         Clock.schedule_once(fix_focusability)
 
     def _on_textinput_focused(self, instance, value, *largs):
@@ -117,7 +119,6 @@ class WASelectableLabel(TextInput):
 
 
 class GrowingAccordion(Accordion):
-
     def _do_layout(self, dt):
         children = self.children
         if children:
@@ -134,12 +135,12 @@ class GrowingAccordion(Accordion):
         w, h = self.size
         x, y = self.pos
 
-        if orientation == 'horizontal':
+        if orientation == "horizontal":
             children = reversed(children)
 
         display_space_total = 0
         for child in children:
-            if orientation == 'horizontal':
+            if orientation == "horizontal":
                 child_display_space = child.container.children[0].minimum_width
             else:
                 child_display_space = child.container.children[0].minimum_height
@@ -153,7 +154,7 @@ class GrowingAccordion(Accordion):
             child.x = x
             child.y = y
             child.orientation = self.orientation
-            if orientation == 'horizontal':
+            if orientation == "horizontal":
                 child.content_size = child_display_space, h
                 child.width = child_space
                 child.height = h
@@ -164,8 +165,7 @@ class GrowingAccordion(Accordion):
                 child.height = child_space
                 y += child_space
 
-        if orientation == 'horizontal':
+        if orientation == "horizontal":
             self.width = display_space_total
         else:
             self.height = display_space_total
-

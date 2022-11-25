@@ -36,8 +36,8 @@ def display_info_snackbar(message, duration=3.5):
         text=message,
         font_size="12sp",
         duration=duration,
-        #button_text="BUTTON",
-        #button_callback=app.callback
+        # button_text="BUTTON",
+        # button_callback=app.callback
     ).open()
 
 
@@ -56,24 +56,27 @@ def safe_catch_unhandled_exception_and_display_popup(func):
     return safe_catch_unhandled_exception(display_snackbar_on_error(func))
 
 
-def dialog_with_close_button(buttons=None, close_btn_label=None, full_width=False,
-                             close_btn_callback=None, auto_open_and_register=True, **kwargs):
+def dialog_with_close_button(
+    buttons=None, close_btn_label=None, full_width=False, close_btn_callback=None, auto_open_and_register=True, **kwargs
+):
     """A dialog which can close itself and works on smartphone too"""
     close_btn_label = close_btn_label or tr._("Close")
     logger.debug("Displaying dialog with close button %r", close_btn_label)
     dialog = None
+
     def default_on_close(*args):
         dialog.dismiss()
+
     close_btn_callback = close_btn_callback or default_on_close
     close_btn = MDFlatButton(text=close_btn_label, on_release=close_btn_callback)
     if full_width:
         kwargs["size_hint_x"] = 0.95
         kwargs["size_hint_y"] = None
     dialog = MDDialog(
-                auto_dismiss=False,  # IMPORTANT, else buggy on Android
-                buttons=buttons + [close_btn] if buttons else [close_btn],
-                **kwargs,
-            )
+        auto_dismiss=False,  # IMPORTANT, else buggy on Android
+        buttons=buttons + [close_btn] if buttons else [close_btn],
+        **kwargs,
+    )
 
     if auto_open_and_register:
         dialog.open()
@@ -84,14 +87,11 @@ def dialog_with_close_button(buttons=None, close_btn_label=None, full_width=Fals
 
 def help_text_popup(title, text):  # FIXME rename this
     text = "[size=13sp]" + text + "[/size]"  # Else it's too big
-    dialog_with_close_button(
-        title=tr._(title),
-        text=text,
-        full_width=True,
-    )
+    dialog_with_close_button(title=tr._(title), text=text, full_width=True)
 
 
 _CURRENT_DIALOG = None  # System to avoid nasty bugs with multiple dialogs overwriting each other's variables
+
 
 def register_current_dialog(dialog):
     # Works for MDFileManager as well as normal ModalView
@@ -99,6 +99,7 @@ def register_current_dialog(dialog):
     if has_current_dialog():
         return  # Might happen with slow UI, multiple clicks on buttons!
     _CURRENT_DIALOG = dialog
+
 
 def has_current_dialog():
     global _CURRENT_DIALOG
@@ -109,6 +110,7 @@ def has_current_dialog():
     else:
         assert isinstance(_CURRENT_DIALOG, ModalView)
         return bool(_CURRENT_DIALOG._window)
+
 
 def close_current_dialog():
     global _CURRENT_DIALOG
@@ -122,7 +124,8 @@ def close_current_dialog():
     _CURRENT_DIALOG = None
 
 
-Builder.load_string("""
+Builder.load_string(
+    """
 
 <WaitSpinner@MDSpinner>:
     size_hint: None, None
@@ -130,7 +133,9 @@ Builder.load_string("""
     pos_hint: {'center_x': .5, 'center_y': .5}
     active: False
 
-""")
+"""
+)
+
 
 @decorator  # FIXME OBSOLETE - REPLACE THIS WITH GUIAPP._offload_task_with_spinner()
 def process_method_with_gui_spinner(func, self, *args, **kwargs):
@@ -147,5 +152,3 @@ def process_method_with_gui_spinner(func, self, *args, **kwargs):
         return func(self, *args, **kwargs)
     finally:
         Clock.schedule_once(lambda x: wait_spinner.setter("active")(x, False))
-
-

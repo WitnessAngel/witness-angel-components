@@ -1,11 +1,10 @@
-
 from pathlib import Path
 
 from waveshare_epd import epd2in7, epd2in13_V3
 
 from wacomponents.devices.epaper._epaper_base import EpaperStatusDisplayBase
 
-FONT_PATH = str(Path(__file__).parent.joinpath('Font.ttc'))  # FIXME put assets elsewhere
+FONT_PATH = str(Path(__file__).parent.joinpath("Font.ttc"))  # FIXME put assets elsewhere
 
 
 class WaveshareEpaperStatusDisplayBase(EpaperStatusDisplayBase):
@@ -16,8 +15,8 @@ class WaveshareEpaperStatusDisplayBase(EpaperStatusDisplayBase):
         self.epd.init()
 
     def _display_image(self, pil_image):
-        #self._clear_display()
-        pil_image.convert('1')  # Most screens don't support levels of grey
+        # self._clear_display()
+        pil_image.convert("1")  # Most screens don't support levels of grey
         self.epd.display(self.epd.getbuffer(pil_image))
 
     def _clear_display(self):
@@ -38,7 +37,7 @@ class WaveshareEpaperStatusDisplay2in7(WaveshareEpaperStatusDisplayBase):
 
     # FIXME rename to "thumbnail" stuffs"
     PREVIEW_IMAGE_WIDTH = 140
-    PREVIEW_IMAGE_HEIGHT = int(PREVIEW_IMAGE_WIDTH / (16/9))
+    PREVIEW_IMAGE_HEIGHT = int(PREVIEW_IMAGE_WIDTH / (16 / 9))
 
     BUTTON_PIN_1 = 5
     BUTTON_PIN_2 = 6
@@ -65,7 +64,7 @@ class WaveshareEpaperStatusDisplay2in13V3(WaveshareEpaperStatusDisplayBase):
     TEXT_OFFSET_Y = 70
 
     PREVIEW_IMAGE_WIDTH = 120
-    PREVIEW_IMAGE_HEIGHT = int(PREVIEW_IMAGE_WIDTH / (16/9))
+    PREVIEW_IMAGE_HEIGHT = int(PREVIEW_IMAGE_WIDTH / (16 / 9))
 
     # No BUTTON_PIN_X on this screen, so leave them as "None"
 
@@ -73,4 +72,3 @@ class WaveshareEpaperStatusDisplay2in13V3(WaveshareEpaperStatusDisplayBase):
 
     def __init__(self):
         self.epd = epd2in13_V3.EPD()
-

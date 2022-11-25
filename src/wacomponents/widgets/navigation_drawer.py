@@ -7,7 +7,7 @@ from kivymd.theming import ThemableBehavior
 from kivymd.uix.list import OneLineIconListItem, MDList
 from kivymd.uix.navigationdrawer import MDNavigationDrawer
 
-Builder.load_file(str(Path(__file__).parent / 'navigation_drawer.kv'))
+Builder.load_file(str(Path(__file__).parent / "navigation_drawer.kv"))
 
 
 class WaNavigationDrawer(MDNavigationDrawer):

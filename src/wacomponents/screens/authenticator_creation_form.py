@@ -10,14 +10,18 @@ from kivy.properties import ObjectProperty, StringProperty
 from wacomponents.i18n import tr
 from wacomponents.screens.base import WAScreenName, WAScreenBase
 from wacomponents.utilities import LINEBREAK, MONOTHREAD_POOL_EXECUTOR
-from wacomponents.widgets.popups import dialog_with_close_button, process_method_with_gui_spinner, help_text_popup, \
-    safe_catch_unhandled_exception_and_display_popup
+from wacomponents.widgets.popups import (
+    dialog_with_close_button,
+    process_method_with_gui_spinner,
+    help_text_popup,
+    safe_catch_unhandled_exception_and_display_popup,
+)
 from wacryptolib.authenticator import initialize_authenticator
 from wacryptolib.keygen import generate_keypair
 from wacryptolib.keystore import FilesystemKeystore
 from wacryptolib.utilities import generate_uuid0, catch_and_log_exception
 
-Builder.load_file(str(Path(__file__).parent / 'authenticator_creation_form.kv'))
+Builder.load_file(str(Path(__file__).parent / "authenticator_creation_form.kv"))
 
 
 logger = logging.getLogger(__name__)
@@ -48,21 +52,28 @@ class AuthenticatorCreationFormScreen(WAScreenBase):
         self.ids.initialization_form_toolbar.disabled = False
 
     def get_form_values(self):
-        return dict(keystore_owner=self.ids.formfield_username.text.strip(),
-                    keystore_passphrase=self.ids.formfield_passphrase.text.strip(),
-                    keystore_passphrase_hint=self.ids.formfield_passphrasehint.text.strip())
+        return dict(
+            keystore_owner=self.ids.formfield_username.text.strip(),
+            keystore_passphrase=self.ids.formfield_passphrase.text.strip(),
+            keystore_passphrase_hint=self.ids.formfield_passphrasehint.text.strip(),
+        )
 
     def validate_form_values(self, form_values):
         form_error = None
-        form_values_max_length = {key: len(value) for key, value in form_values.items() if
-                              len(value) > MAX_WA_CHARFIELD_LENGTH}
+        form_values_max_length = {
+            key: len(value) for key, value in form_values.items() if len(value) > MAX_WA_CHARFIELD_LENGTH
+        }
         if not all(form_values.values()):
             form_error = tr._("Please enter a username, passphrase and passphrase hint.")
         elif form_values_max_length:
-            form_error = tr._(
-                "Username, passphrase and passphrase hint must not exceed %s characters") % MAX_WA_CHARFIELD_LENGTH
-        elif (len(form_values["keystore_passphrase"]) < PASSPHRASE_MIN_LENGTH and
-              not form_values["keystore_passphrase"].startswith("¤")):  # HACK to have short passwords for tests
+            form_error = (
+                tr._("Username, passphrase and passphrase hint must not exceed %s characters") % MAX_WA_CHARFIELD_LENGTH
+            )
+        elif len(form_values["keystore_passphrase"]) < PASSPHRASE_MIN_LENGTH and not form_values[
+            "keystore_passphrase"
+        ].startswith(
+            "¤"
+        ):  # HACK to have short passwords for tests
             form_error = tr._("Passphrase must be at least %s characters long.") % PASSPHRASE_MIN_LENGTH
 
         if form_error:
@@ -71,7 +82,7 @@ class AuthenticatorCreationFormScreen(WAScreenBase):
     def request_authenticator_initialization(self):
         form_values = self.get_form_values()
 
-        try :
+        try:
             self.validate_form_values(form_values)
         except ValueError as exc:
             self.open_generic_dialog(str(exc), title=tr._("Validation error"))
@@ -80,11 +91,7 @@ class AuthenticatorCreationFormScreen(WAScreenBase):
         self._launch_authenticator_initialization(form_values=form_values)
 
     def open_generic_dialog(self, text, title, on_dismiss=None):
-        dialog_with_close_button(
-            title=title,
-            text=text,
-            **({"on_dismiss": on_dismiss} if on_dismiss else {})
-        )
+        dialog_with_close_button(title=title, text=text, **({"on_dismiss": on_dismiss} if on_dismiss else {}))
 
     # No safe_catch_unhandled_exception_and_display_popup() here, we handle finalization in any case
     @process_method_with_gui_spinner
@@ -98,18 +105,17 @@ class AuthenticatorCreationFormScreen(WAScreenBase):
 
             Clock.schedule_once(partial(self._do_update_progress_bar, 10))
 
-            initialize_authenticator(authenticator_dir,
-                                     keystore_owner=form_values["keystore_owner"],
-                                     keystore_passphrase_hint=form_values["keystore_passphrase_hint"])
+            initialize_authenticator(
+                authenticator_dir,
+                keystore_owner=form_values["keystore_owner"],
+                keystore_passphrase_hint=form_values["keystore_passphrase_hint"],
+            )
 
             filesystem_keystore = FilesystemKeystore(authenticator_dir)
 
             for i in range(1, GENERATED_KEYS_COUNT + 1):
                 # TODO add some logging here
-                key_pair = generate_keypair(
-                    key_algo="RSA_OAEP",
-                    passphrase=form_values["keystore_passphrase"]
-                )
+                key_pair = generate_keypair(key_algo="RSA_OAEP", passphrase=form_values["keystore_passphrase"])
                 filesystem_keystore.set_keypair(
                     keychain_uid=generate_uuid0(),
                     key_algo="RSA_OAEP",
@@ -128,11 +134,7 @@ class AuthenticatorCreationFormScreen(WAScreenBase):
     def set_form_fields_status(self, enabled):
 
         form_ids = self.ids
-        form_fields = [
-            form_ids.formfield_username,
-            form_ids.formfield_passphrase,
-            form_ids.formfield_passphrasehint,
-        ]
+        form_fields = [form_ids.formfield_username, form_ids.formfield_passphrase, form_ids.formfield_passphrasehint]
 
         for text_field in form_fields:
             text_field.focus = False
@@ -167,27 +169,37 @@ class AuthenticatorCreationFormScreen(WAScreenBase):
         self.set_form_fields_status(enabled=False)
         self.ids.initialization_form_toolbar.disabled = True
 
-        MONOTHREAD_POOL_EXECUTOR.submit(self._offloaded_initialize_authenticator,
-                                    form_values=form_values,
-                                    authenticator_dir=authenticator_dir)
+        MONOTHREAD_POOL_EXECUTOR.submit(
+            self._offloaded_initialize_authenticator, form_values=form_values, authenticator_dir=authenticator_dir
+        )
 
     def finish_initialization(self, *args, success, **kwargs):
         if success:
-            self.open_generic_dialog(tr._("Initialization successfully completed."),
-                                     title=tr._("Success"), on_dismiss=lambda x: self.go_to_home_screen())
+            self.open_generic_dialog(
+                tr._("Initialization successfully completed."),
+                title=tr._("Success"),
+                on_dismiss=lambda x: self.go_to_home_screen(),
+            )
         else:
-            self.open_generic_dialog(tr._("Operation failed, check logs."),
-                                     title=tr._("Failure"), on_dismiss=lambda x: self.go_to_home_screen())
+            self.open_generic_dialog(
+                tr._("Operation failed, check logs."),
+                title=tr._("Failure"),
+                on_dismiss=lambda x: self.go_to_home_screen(),
+            )
 
     def display_help_popup(self):
-        authenticator_creation_form_help_text = \
+        authenticator_creation_form_help_text = (
             tr._(
-             """On this page, you can initialize an authenticator inside an empty folder; this authenticator actually consists in metadata files as well as a set of asymmetric keypairs.""") + LINEBREAK * 2 + \
-            tr._(
-             """To proceed, you have to input your user name or pseudo, a long passphrase (e.g. consisting of 4 different words), and a public hint to help your remember your passphrase later.""") + LINEBREAK * 2 + \
-            tr._(
-             """You should keep your passphrase somewhere safe (in a digital password manager, on a paper in a vault...), because if you forget any of its aspects (upper/lower case, accents, spaces...), there is no way to recover it.""")
+                """On this page, you can initialize an authenticator inside an empty folder; this authenticator actually consists in metadata files as well as a set of asymmetric keypairs."""
+            )
+            + LINEBREAK * 2
+            + tr._(
+                """To proceed, you have to input your user name or pseudo, a long passphrase (e.g. consisting of 4 different words), and a public hint to help your remember your passphrase later."""
+            )
+            + LINEBREAK * 2
+            + tr._(
+                """You should keep your passphrase somewhere safe (in a digital password manager, on a paper in a vault...), because if you forget any of its aspects (upper/lower case, accents, spaces...), there is no way to recover it."""
+            )
+        )
 
-        help_text_popup(
-            title=tr._("Authenticator creation page"),
-            text=authenticator_creation_form_help_text, )
+        help_text_popup(title=tr._("Authenticator creation page"), text=authenticator_creation_form_help_text)

@@ -1,4 +1,3 @@
-
 import logging
 import subprocess
 from datetime import timezone, datetime
@@ -27,7 +26,7 @@ def get_ffmpeg_version() -> tuple:
 
     output = output.decode("ascii", "ignore").lower()
 
-    regex = r'ffmpeg version .?(\d\.\d)'  # E.g. FFMPEG SNAPs contain a "n" before version number
+    regex = r"ffmpeg version .?(\d\.\d)"  # E.g. FFMPEG SNAPs contain a "n" before version number
     match = re.search(regex, output)
 
     if match is None:
@@ -47,11 +46,7 @@ class RtspCameraSensor(PreviewImageMixin, ActivityNotificationMixin, PeriodicSub
     sensor_name = "rtsp_camera"
     activity_notification_color = (0, 150, 0)
 
-    def __init__(self,
-                 video_stream_url: str,
-                 ffmpeg_rtsp_parameters: list,
-                 ffmpeg_rtsp_output_format: str,
-                 **kwargs):
+    def __init__(self, video_stream_url: str, ffmpeg_rtsp_parameters: list, ffmpeg_rtsp_output_format: str, **kwargs):
         super().__init__(**kwargs)
         assert video_stream_url, video_stream_url
         self._video_stream_url = video_stream_url
@@ -88,8 +83,10 @@ class RtspCameraSensor(PreviewImageMixin, ActivityNotificationMixin, PeriodicSub
         ]
 
         input = additional_input_args + [
-            "-rtsp_flags", "prefer_tcp",  # Safer alternative to ( "-rtsp_transport", "tcp", )
-            "-fflags", "+igndts",  # Fix "non-monotonous DTS in output stream" error
+            "-rtsp_flags",
+            "prefer_tcp",  # Safer alternative to ( "-rtsp_transport", "tcp", )
+            "-fflags",
+            "+igndts",  # Fix "non-monotonous DTS in output stream" error
             # Beware these flags only concern HTTP, no use for them in RTPS!
             #  "-reconnect", "1", "-reconnect_at_eof", "1", "-reconnect_streamed", "1",
             #  "-reconnect_delay_max", "10",  "-reconnect_on_network_error", "1",
@@ -101,32 +98,38 @@ class RtspCameraSensor(PreviewImageMixin, ActivityNotificationMixin, PeriodicSub
             codec = self._ffmpeg_rtsp_parameters
         else:
             codec = [
-                #"-copytb", "1", (doesn't work for timestamps)
-                "-vcodec", "copy",
+                # "-copytb", "1", (doesn't work for timestamps)
+                "-vcodec",
+                "copy",
                 "-an",  # NO AUDIO FOR NOW, codec pcm-mulaw not supported for Bluestork cameras...
                 # "-acodec", "copy",
-                "-map", "0",
-                "-f", "ismv",  # https://ffmpeg.org/ffmpeg-formats.html#mov_002c-mp4_002c-ismv necessary for non-seekable output
-                "-movflags", "empty_moov+delay_moov",  # empty_moov is already implicit for ISMV, delay_moov is for "Non-monotonous DTS in output stream"
-                "-probesize", "128",
-                "-analyzeduration", "500",
+                "-map",
+                "0",
+                "-f",
+                "ismv",  # https://ffmpeg.org/ffmpeg-formats.html#mov_002c-mp4_002c-ismv necessary for non-seekable output
+                "-movflags",
+                "empty_moov+delay_moov",  # empty_moov is already implicit for ISMV, delay_moov is for "Non-monotonous DTS in output stream"
+                "-probesize",
+                "128",
+                "-analyzeduration",
+                "500",
             ]
 
-        logs = [
-            "-loglevel",
-            "info"  # Values: error, warning, info, debug or trace
-        ]
+        logs = ["-loglevel", "info"]  # Values: error, warning, info, debug or trace
         video_output = [
-            "-f", self._get_actual_ouput_format(),
+            "-f",
+            self._get_actual_ouput_format(),
             "pipe:1",  # Pipe to stdout
-            #"-vf", "fps=1/60", "img%03d.jpg"
+            # "-vf", "fps=1/60", "img%03d.jpg"
         ]
 
         preview_image_output = []
         if self._preview_image_path:
             preview_image_output = [
-                "-frames:v",  "1",
-                "-filter:v", "scale=%d:-1,hue=s=0" % self.PREVIEW_IMAGE_WIDTH_PX,  # Keep image ratio!
+                "-frames:v",
+                "1",
+                "-filter:v",
+                "scale=%d:-1,hue=s=0" % self.PREVIEW_IMAGE_WIDTH_PX,  # Keep image ratio!
                 str(self._preview_image_path),
             ]
         subprocess_command_line = executable + input + codec + logs + video_output + preview_image_output

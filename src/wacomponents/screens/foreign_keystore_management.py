@@ -10,17 +10,27 @@ from kivymd.uix.button import MDFlatButton
 
 from wacomponents.i18n import tr
 from wacomponents.screens.base import WAScreenBase
-from wacomponents.utilities import shorten_uid, format_authenticator_label, format_keypair_label, COLON, LINEBREAK, \
-    SPACE
+from wacomponents.utilities import (
+    shorten_uid,
+    format_authenticator_label,
+    format_keypair_label,
+    COLON,
+    LINEBREAK,
+    SPACE,
+)
 from wacomponents.widgets.layout_components import build_fallback_information_box
-from wacomponents.widgets.popups import display_info_toast, close_current_dialog, dialog_with_close_button, \
-    safe_catch_unhandled_exception_and_display_popup
+from wacomponents.widgets.popups import (
+    display_info_toast,
+    close_current_dialog,
+    dialog_with_close_button,
+    safe_catch_unhandled_exception_and_display_popup,
+)
 from wacryptolib.authdevice import list_available_authdevices
 from wacryptolib.authenticator import is_authenticator_initialized
 from wacryptolib.exceptions import SchemaValidationError, ExistenceError, ValidationError
 from wacryptolib.keystore import FilesystemKeystore, KEYSTORE_FORMAT, validate_keystore_tree
 
-Builder.load_file(str(Path(__file__).parent / 'foreign_keystore_management.kv'))
+Builder.load_file(str(Path(__file__).parent / "foreign_keystore_management.kv"))
 
 
 logger = logging.getLogger(__name__)
@@ -31,7 +41,7 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
 
     def __init__(self, *args, **kwargs):
         self.selected_keystore_uids = []  # List of STRINGS
-        self.register_event_type('on_selected_keyguardians_changed')
+        self.register_event_type("on_selected_keyguardians_changed")
         super().__init__(*args, **kwargs)
 
     def on_selected_keyguardians_changed(self, *args):
@@ -79,8 +89,7 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
 
             try:
                 remote_keystore = FilesystemKeystore(remote_keystore_dir)
-                keystore_tree = remote_keystore.export_to_keystore_tree(
-                    include_private_keys=include_private_keys)
+                keystore_tree = remote_keystore.export_to_keystore_tree(include_private_keys=include_private_keys)
 
                 # Special operation: we remove optional sensitive data from this "foreign" keystore...
                 for sensitive_key in ["keystore_secret", "keystore_passphrase_hint"]:
@@ -97,7 +106,7 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
                 updated = self.filesystem_keystore_pool.import_foreign_keystore_from_keystore_tree(keystore_tree)
 
                 keystore_metadata = keystore_tree.copy()
-                del keystore_metadata['keypairs']
+                del keystore_metadata["keypairs"]
 
                 if updated:
                     already_existing_keystore_metadata.append(keystore_metadata)
@@ -108,10 +117,11 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
                 corrupted_keystore_count += 1
 
         msg = tr._(
-            "{foreign_keystore_count} new authenticators imported, {already_existing_keystore_count} updated, {corrupted_keystore_count} skipped because corrupted").format(
+            "{foreign_keystore_count} new authenticators imported, {already_existing_keystore_count} updated, {corrupted_keystore_count} skipped because corrupted"
+        ).format(
             foreign_keystore_count=len(foreign_keystore_metadata),
             already_existing_keystore_count=len(already_existing_keystore_metadata),
-            corrupted_keystore_count=corrupted_keystore_count
+            corrupted_keystore_count=corrupted_keystore_count,
         )
         # print(foreign_keystore_metadata)
 
@@ -140,9 +150,13 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
             text=message,
             buttons=[
                 MDFlatButton(
-                    text=tr._("Confirm removal"), on_release=lambda *args: (
-                        close_current_dialog(), self.delete_keystores(keystore_uids=keystore_uids))
-                ), ]
+                    text=tr._("Confirm removal"),
+                    on_release=lambda *args: (
+                        close_current_dialog(),
+                        self.delete_keystores(keystore_uids=keystore_uids),
+                    ),
+                )
+            ],
         )
 
     @safe_catch_unhandled_exception_and_display_popup
@@ -160,8 +174,9 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
             except OSError as exc:
                 logger.error("Failed deletion of imported authentication device %s: %r", keystore_uid, exc)
 
-        self._change_authenticator_selection_status(keystore_uids=keystore_uids,
-                                                    is_selected=False)  # Update selection list
+        self._change_authenticator_selection_status(
+            keystore_uids=keystore_uids, is_selected=False
+        )  # Update selection list
 
         msg = "Selected imported authentication devices were deleted"
         display_info_toast(msg)
@@ -196,19 +211,23 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
         for (index, (keystore_uid, metadata)) in enumerate(sorted(keystore_metadata.items()), start=1):
             keystore_uid_shortened = shorten_uid(keystore_uid)
 
-            authenticator_label = format_authenticator_label(authenticator_owner=metadata["keystore_owner"],
-                                                             keystore_uid=metadata["keystore_uid"], short_uid=True)
+            authenticator_label = format_authenticator_label(
+                authenticator_owner=metadata["keystore_owner"], keystore_uid=metadata["keystore_uid"], short_uid=True
+            )
 
             foreign_authenticator_label = tr._("User") + " " + authenticator_label
 
-            authenticator_entry = Factory.WASelectableListItemEntry(text=foreign_authenticator_label)  # FIXME RENAME THIS
+            authenticator_entry = Factory.WASelectableListItemEntry(
+                text=foreign_authenticator_label
+            )  # FIXME RENAME THIS
 
             selection_checkbox = authenticator_entry.ids.selection_checkbox
             # print(">>>>>>>>selection_checkbox", selection_checkbox)
             selection_checkbox.active = str(keystore_uid) in self.selected_keystore_uids
 
-            def selection_callback(widget, value,
-                                   keystore_uid=keystore_uid):  # Force keystore_uid save here, else scope bug
+            def selection_callback(
+                widget, value, keystore_uid=keystore_uid
+            ):  # Force keystore_uid save here, else scope bug
                 self.on_keystore_checkbox_click(keystore_uid=keystore_uid, is_selected=value)
 
             selection_checkbox.bind(active=selection_callback)
@@ -216,8 +235,9 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
             information_icon = authenticator_entry.ids.information_icon
 
             @safe_catch_unhandled_exception_and_display_popup
-            def information_callback(widget, keystore_uid=keystore_uid,
-                                     metadata=metadata):  # Force keystore_uid save here, else scope bug
+            def information_callback(
+                widget, keystore_uid=keystore_uid, metadata=metadata
+            ):  # Force keystore_uid save here, else scope bug
                 self.display_keystore_details(keystore_uid=keystore_uid, keystore_owner=metadata["keystore_owner"])
 
             information_icon.bind(on_press=information_callback)
@@ -282,7 +302,7 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
         self.ids.imported_authenticator_list.add_widget(fallback_info_box)
 
     def on_keystore_checkbox_click(self, keystore_uid: uuid.UUID, is_selected: bool):
-        self._change_authenticator_selection_status(keystore_uids=[keystore_uid], is_selected=is_selected, )
+        self._change_authenticator_selection_status(keystore_uids=[keystore_uid], is_selected=is_selected)
 
     def _change_authenticator_selection_status(self, keystore_uids: list, is_selected: bool):
         for keystore_uid in keystore_uids:
@@ -291,7 +311,7 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
                 self.selected_keystore_uids.remove(keystore_uid_str)
             elif is_selected and keystore_uid_str not in self.selected_keystore_uids:
                 self.selected_keystore_uids.append(keystore_uid_str)
-        self.dispatch('on_selected_keyguardians_changed', self.selected_keystore_uids)  # FIXME rename this
+        self.dispatch("on_selected_keyguardians_changed", self.selected_keystore_uids)  # FIXME rename this
         # print("self.selected_keystore_uids", self.selected_keystore_uids)
 
     def display_keystore_details(self, keystore_uid, keystore_owner):
@@ -301,13 +321,19 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
         foreign_keystore = self.filesystem_keystore_pool.get_foreign_keystore(keystore_uid=keystore_uid)
         keypair_identifiers = foreign_keystore.list_keypair_identifiers()
 
-        message = tr._("Type: {keystore_type}").format(keystore_type=foreign_metadata["keystore_type"].upper()) + 2 * LINEBREAK
+        message = (
+            tr._("Type: {keystore_type}").format(keystore_type=foreign_metadata["keystore_type"].upper())
+            + 2 * LINEBREAK
+        )
 
         for index, keypair_identifier in enumerate(keypair_identifiers, start=1):
             private_key_present = True if keypair_identifier["private_key_present"] else False
-            keypair_label = format_keypair_label(keychain_uid=keypair_identifier["keychain_uid"],
-                                                 key_algo=keypair_identifier["key_algo"],
-                                                 private_key_present=private_key_present, error_on_missing_key=False)
+            keypair_label = format_keypair_label(
+                keychain_uid=keypair_identifier["keychain_uid"],
+                key_algo=keypair_identifier["key_algo"],
+                private_key_present=private_key_present,
+                error_on_missing_key=False,
+            )
 
             # FIXME it's private key SINGULAR HERE!!
             message += tr._("Key n°") + SPACE + str(index) + COLON() + keypair_label + LINEBREAK
@@ -316,9 +342,7 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
 
     def open_keystore_details_dialog(self, message, keystore_owner):
         dialog_with_close_button(
-            close_btn_label=tr._("Close"),
-            title=tr._("Key Guardian %s") % keystore_owner,
-            text=message,
+            close_btn_label=tr._("Close"), title=tr._("Key Guardian %s") % keystore_owner, text=message
         )
 
     def show_import_key_from_web_dialog(self):
@@ -329,8 +353,14 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
             type="custom",
             content_cls=Factory.AuthenticatorTesterContent(),
             buttons=[
-                MDFlatButton(text=tr._("Import"),
-                             on_release=lambda *args: (close_current_dialog(), self.import_key_storage_from_web_gateway(dialog.content_cls.ids.tester_keystore_uid.text)))],
+                MDFlatButton(
+                    text=tr._("Import"),
+                    on_release=lambda *args: (
+                        close_current_dialog(),
+                        self.import_key_storage_from_web_gateway(dialog.content_cls.ids.tester_keystore_uid.text),
+                    ),
+                )
+            ],
         )
 
     def choice_import_private_key_or_no_dialog(self):  # FIXME rename
@@ -343,10 +373,24 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
                 type="custom",
                 content_cls=Factory.IncludePrivateKeysContent(),
                 buttons=[
-                    MDFlatButton(text=tr._("Yes"),
-                                 on_release=lambda *args: (close_current_dialog(), self.import_keystores_from_usb(include_private_keys=True, authdevices_initialized=authdevices_initialized))),
-                    MDFlatButton(text=tr._("No"),
-                                 on_release=lambda *args: (close_current_dialog(), self.import_keystores_from_usb(include_private_keys=False, authdevices_initialized=authdevices_initialized)))
+                    MDFlatButton(
+                        text=tr._("Yes"),
+                        on_release=lambda *args: (
+                            close_current_dialog(),
+                            self.import_keystores_from_usb(
+                                include_private_keys=True, authdevices_initialized=authdevices_initialized
+                            ),
+                        ),
+                    ),
+                    MDFlatButton(
+                        text=tr._("No"),
+                        on_release=lambda *args: (
+                            close_current_dialog(),
+                            self.import_keystores_from_usb(
+                                include_private_keys=False, authdevices_initialized=authdevices_initialized
+                            ),
+                        ),
+                    ),
                 ],
             )
 
@@ -360,7 +404,7 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
                     keychain_uid=public_key["keychain_uid"],
                     key_algo=public_key["key_algo"],
                     public_key=public_key["key_value"],
-                    private_key=None  # FIXME invalid
+                    private_key=None,  # FIXME invalid
                 )
             )
 
@@ -369,7 +413,7 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
             "keystore_format": KEYSTORE_FORMAT,
             "keystore_owner": public_authenticator["keystore_owner"],
             "keystore_uid": public_authenticator["keystore_uid"],
-            "keypairs": keypairs
+            "keypairs": keypairs,
         }
         if public_authenticator["keystore_creation_datetime"]:  # NULLABLE
             keystore_tree["keystore_creation_datetime"] = public_authenticator["keystore_creation_datetime"]
@@ -419,7 +463,4 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
             result = tr._("Success")
             details = tr._("Authenticator has been imported successfully")
 
-        dialog_with_close_button(
-            title=tr._("Import result: %s") % result,
-            text=details,
-        )
+        dialog_with_close_button(title=tr._("Import result: %s") % result, text=details)

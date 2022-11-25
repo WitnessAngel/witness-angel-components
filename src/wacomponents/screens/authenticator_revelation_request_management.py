@@ -11,20 +11,32 @@ from kivymd.uix.tab import MDTabsBase
 
 from wacomponents.i18n import tr
 from wacomponents.screens.base import WAScreenName, WAScreenBase
-from wacomponents.utilities import format_revelation_request_label, format_keypair_label, \
-    format_authenticator_label, COLON, LINEBREAK, format_cryptainer_label, shorten_uid
+from wacomponents.utilities import (
+    format_revelation_request_label,
+    format_keypair_label,
+    format_authenticator_label,
+    COLON,
+    LINEBREAK,
+    format_cryptainer_label,
+    shorten_uid,
+)
 from wacomponents.widgets.layout_components import GrowingAccordion, build_fallback_information_box
-from wacomponents.widgets.popups import dialog_with_close_button, close_current_dialog, display_info_snackbar, \
-    help_text_popup, safe_catch_unhandled_exception_and_display_popup, display_info_toast
+from wacomponents.widgets.popups import (
+    dialog_with_close_button,
+    close_current_dialog,
+    display_info_snackbar,
+    help_text_popup,
+    safe_catch_unhandled_exception_and_display_popup,
+    display_info_toast,
+)
 from wacryptolib.cipher import encrypt_bytestring
-from wacryptolib.exceptions import KeyLoadingError, KeyDoesNotExist, KeystoreDoesNotExist, \
-    AuthenticationError
+from wacryptolib.exceptions import KeyLoadingError, KeyDoesNotExist, KeystoreDoesNotExist, AuthenticationError
 from wacryptolib.keygen import load_asymmetric_key_from_pem_bytestring
 from wacryptolib.keystore import load_keystore_metadata, FilesystemKeystore
 from wacryptolib.trustee import TrusteeApi
 from wacryptolib.utilities import load_from_json_bytes, dump_to_json_bytes
 
-Builder.load_file(str(Path(__file__).parent / 'authenticator_revelation_request_management.kv'))
+Builder.load_file(str(Path(__file__).parent / "authenticator_revelation_request_management.kv"))
 
 
 logger = logging.getLogger(__name__)
@@ -43,11 +55,11 @@ class Tab(MDFloatLayout, MDTabsBase):
 
 
 class SymkeyDecryptionStatus:  # FIXME name this enum more precisely, unless we then use it elsewhere?
-    DECRYPTED = 'DECRYPTED'
-    PRIVATE_KEY_MISSING = 'PRIVATE KEY MISSING'
-    CORRUPTED = 'CORRUPTED'
-    MISMATCH = 'METADATA MISMATCH'
-    PENDING = 'PENDING'
+    DECRYPTED = "DECRYPTED"
+    PRIVATE_KEY_MISSING = "PRIVATE KEY MISSING"
+    CORRUPTED = "CORRUPTED"
+    MISMATCH = "METADATA MISMATCH"
+    PENDING = "PENDING"
 
 
 class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
@@ -66,40 +78,52 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
 
         revelation_request_label = format_revelation_request_label(
             revelation_request_uid=revelation_request["revelation_request_uid"],
-            revelation_request_creation_datetime=revelation_request["created_at"])
+            revelation_request_creation_datetime=revelation_request["created_at"],
+        )
 
         revelationRequestEntry.title = tr._(revelation_request_label)
 
         target_public_authenticator_label = format_authenticator_label(
             authenticator_owner=revelation_request["target_public_authenticator"]["keystore_owner"],
-            keystore_uid=revelation_request["target_public_authenticator"]["keystore_uid"])
+            keystore_uid=revelation_request["target_public_authenticator"]["keystore_uid"],
+        )
 
         response_key_label = format_keypair_label(
             keychain_uid=revelation_request["revelation_response_keychain_uid"],
-            key_algo=revelation_request["revelation_response_key_algo"])
+            key_algo=revelation_request["revelation_response_key_algo"],
+        )
 
         _displayed_values = dict(
             target_public_authenticator_label=target_public_authenticator_label,
             request_description=revelation_request["revelation_request_description"],
             response_key_label=response_key_label,
         )
-        revelation_request_summary_text = tr._("Authenticator") + COLON() + _displayed_values[
-            "target_public_authenticator_label"] + LINEBREAK + \
-                                          tr._("Description") + COLON() + _displayed_values[
-                                              "request_description"] + LINEBREAK + \
-                                          tr._("Local response key") + COLON() + _displayed_values["response_key_label"]
+        revelation_request_summary_text = (
+            tr._("Authenticator")
+            + COLON()
+            + _displayed_values["target_public_authenticator_label"]
+            + LINEBREAK
+            + tr._("Description")
+            + COLON()
+            + _displayed_values["request_description"]
+            + LINEBREAK
+            + tr._("Local response key")
+            + COLON()
+            + _displayed_values["response_key_label"]
+        )
 
         revelationRequestEntry.revelation_request_summary.text = revelation_request_summary_text
 
-        for index, symkey_decryption in enumerate(revelation_request['symkey_decryption_requests'], start=1):
+        for index, symkey_decryption in enumerate(revelation_request["symkey_decryption_requests"], start=1):
 
             symkey_decryption_label1 = tr._("Key of container {short_cryptainer_uid}").format(
-                key_index=index,
-                short_cryptainer_uid=shorten_uid(symkey_decryption["cryptainer_uid"]))
+                key_index=index, short_cryptainer_uid=shorten_uid(symkey_decryption["cryptainer_uid"])
+            )
             symkey_decryption_label2 = format_cryptainer_label(cryptainer_name=symkey_decryption["cryptainer_name"])
 
             symkey_decryption_item = Factory.WAIconListItemEntry(
-                text=symkey_decryption_label1, secondary_text=symkey_decryption_label2)  # FIXME RENAME THIS
+                text=symkey_decryption_label1, secondary_text=symkey_decryption_label2
+            )  # FIXME RENAME THIS
 
             def information_callback(widget, symkey_decryption=symkey_decryption):
                 self.show_symkey_decryption_details(symkey_decryption=symkey_decryption)
@@ -132,24 +156,32 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
         authenticator_key_algo = symkey_decryption["target_public_authenticator_key"]["key_algo"]
         authenticator_keychain_uid = symkey_decryption["target_public_authenticator_key"]["keychain_uid"]
 
-        authenticator_key_label = format_keypair_label(keychain_uid=authenticator_keychain_uid,
-                                                       key_algo=authenticator_key_algo)
+        authenticator_key_label = format_keypair_label(
+            keychain_uid=authenticator_keychain_uid, key_algo=authenticator_key_algo
+        )
 
         _displayed_values = dict(  # FIXME remove this useless dict! and others too!
             authenticator_key_label=authenticator_key_label,
             cryptainer_metadata=symkey_decryption["cryptainer_metadata"],
-            symkey_decryption_status=symkey_decryption["symkey_decryption_status"]
+            symkey_decryption_status=symkey_decryption["symkey_decryption_status"],
         )
 
-        symkey_decryption_info_text = \
-            tr._("Concerned authenticator key") + COLON() + _displayed_values["authenticator_key_label"] + LINEBREAK + \
-            tr._("Cryptainer metadata") + COLON() + str(_displayed_values["cryptainer_metadata"]) + LINEBREAK + \
-            tr._("Decryption status") + COLON() + _displayed_values["symkey_decryption_status"]
+        symkey_decryption_info_text = (
+            tr._("Concerned authenticator key")
+            + COLON()
+            + _displayed_values["authenticator_key_label"]
+            + LINEBREAK
+            + tr._("Cryptainer metadata")
+            + COLON()
+            + str(_displayed_values["cryptainer_metadata"])
+            + LINEBREAK
+            + tr._("Decryption status")
+            + COLON()
+            + _displayed_values["symkey_decryption_status"]
+        )
 
         dialog_with_close_button(
-            close_btn_label=tr._("Close"),
-            title=tr._("Symkey decryption request"),
-            text=symkey_decryption_info_text,
+            close_btn_label=tr._("Close"), title=tr._("Symkey decryption request"), text=symkey_decryption_info_text
         )
 
     def open_dialog_accept_request(self, revelation_request):
@@ -162,10 +194,16 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
             type="custom",
             content_cls=Factory.AddPersonalPassphraseContent(),
             buttons=[
-                MDFlatButton(text=tr._("Accept"),
-                             on_release=lambda *args: (close_current_dialog(), self.accept_revelation_request(
-                                 passphrase=dialog.content_cls.ids.passphrase.text,
-                                 revelation_request=revelation_request)))],
+                MDFlatButton(
+                    text=tr._("Accept"),
+                    on_release=lambda *args: (
+                        close_current_dialog(),
+                        self.accept_revelation_request(
+                            passphrase=dialog.content_cls.ids.passphrase.text, revelation_request=revelation_request
+                        ),
+                    ),
+                )
+            ],
         )
 
     def open_dialog_reject_request(self, revelation_request):
@@ -177,18 +215,25 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
             title=tr._("Do you want to reject this request?"),
             type="custom",
             buttons=[
-                MDFlatButton(text=tr._("Reject"),
-                             on_release=lambda *args: (close_current_dialog(), self.reject_revelation_request(
-                                 revelation_request=revelation_request)))],
+                MDFlatButton(
+                    text=tr._("Reject"),
+                    on_release=lambda *args: (
+                        close_current_dialog(),
+                        self.reject_revelation_request(revelation_request=revelation_request),
+                    ),
+                )
+            ],
         )
 
     def display_remote_revelation_request(self, revelation_requests_per_status_list):  # FIXME rename
 
         logger.debug("Displaying remote decryption requests")
 
-        tab_per_status = dict(PENDING=self.ids.pending_revelation_request,
-                              REJECTED=self.ids.rejected_revelation_request,
-                              ACCEPTED=self.ids.accepted_revelation_request)
+        tab_per_status = dict(
+            PENDING=self.ids.pending_revelation_request,
+            REJECTED=self.ids.rejected_revelation_request,
+            ACCEPTED=self.ids.accepted_revelation_request,
+        )
 
         for status, revelation_requests in revelation_requests_per_status_list.items():
 
@@ -198,12 +243,13 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
                 continue
 
             scroll = Factory.WAVerticalScrollView()
-            root = GrowingAccordion(orientation='vertical', size_hint=(1, None), height=self.height)
+            root = GrowingAccordion(orientation="vertical", size_hint=(1, None), height=self.height)
 
             revelation_requests.sort(key=lambda request: request["created_at"], reverse=True)
             for revelation_request in revelation_requests:
                 revelation_request_entry = self._display_single_remote_revelation_request(
-                    status=status, revelation_request=revelation_request)
+                    status=status, revelation_request=revelation_request
+                )
                 root.add_widget(revelation_request_entry)
 
             root.select(root.children[-1])  # Open FIRST entry
@@ -228,9 +274,11 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
         try:
             authenticator_revelation_request_list = gateway_proxy.list_authenticator_revelation_requests(
                 authenticator_keystore_secret=authenticator_metadata["keystore_secret"],
-                authenticator_keystore_uid=keystore_uid)
+                authenticator_keystore_uid=keystore_uid,
+            )
             revelation_requests_per_status_list = self.sort_list_revelation_request_per_status(
-                authenticator_revelation_request_list)
+                authenticator_revelation_request_list
+            )
             message = tr._("Authorization requests were updated")
 
         except KeystoreDoesNotExist:
@@ -239,7 +287,7 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
         except AuthenticationError:
             message = tr._("The keystore secret of authenticator is not valid")
 
-        except(JSONRPCError, OSError) as exc:  # FIXME factorize this!
+        except (JSONRPCError, OSError) as exc:  # FIXME factorize this!
             logger.error("Error calling gateway server: %r", exc)
             message = tr._("Error querying gateway server, please check its url and you connectivity")
 
@@ -255,13 +303,14 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
         self.ids.accepted_revelation_request.clear_widgets()
 
         def resultat_callable(result, *args, **kwargs):  # FIXME CHANGE THIS NAME
-            revelation_requests_per_status_list, message= result
+            revelation_requests_per_status_list, message = result
             if revelation_requests_per_status_list is None:
                 display_info_snackbar(message)
             else:
                 display_info_toast(message)
                 self.display_remote_revelation_request(
-                    revelation_requests_per_status_list=revelation_requests_per_status_list)
+                    revelation_requests_per_status_list=revelation_requests_per_status_list
+                )
 
         self._app._offload_task_with_spinner(self.get_revelation_request_list_per_status, resultat_callable)
 
@@ -289,9 +338,9 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
 
             try:
 
-                key_struct_bytes = trustee_api.decrypt_with_private_key(keychain_uid=keychain_uid,
-                                                                        cipher_algo=cipher_algo,
-                                                                        cipherdict=cipherdict, passphrases=passphrases)
+                key_struct_bytes = trustee_api.decrypt_with_private_key(
+                    keychain_uid=keychain_uid, cipher_algo=cipher_algo, cipherdict=cipherdict, passphrases=passphrases
+                )
 
             except KeyDoesNotExist:
                 decryption_status = SymkeyDecryptionStatus.PRIVATE_KEY_MISSING
@@ -312,7 +361,7 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
             symkey_decryption_result = {
                 "symkey_decryption_request_data": symkey_decryption["symkey_decryption_request_data"],
                 "symkey_decryption_response_data": response_data,
-                "symkey_decryption_status": decryption_status
+                "symkey_decryption_status": decryption_status,
             }
 
             symkey_decryption_results.append(symkey_decryption_result)
@@ -321,7 +370,8 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
         gateway_proxy.accept_revelation_request(
             authenticator_keystore_secret=authenticator_metadata["keystore_secret"],
             revelation_request_uid=revelation_request_uid,
-            symkey_decryption_results=symkey_decryption_results)
+            symkey_decryption_results=symkey_decryption_results,
+        )
 
         message = tr._("The decryption request was accepted")
 
@@ -340,20 +390,28 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
         gateway_proxy = self._app.get_gateway_proxy()
         gateway_proxy.reject_revelation_request(
             authenticator_keystore_secret=authenticator_metadata["keystore_secret"],
-            revelation_request_uid=revelation_request_uid)
+            revelation_request_uid=revelation_request_uid,
+        )
         message = tr._("The authorization request was rejected")
 
         display_info_toast(message)
         self.fetch_and_display_revelation_requests()
 
     def display_help_popup(self):
-        authenticator_revelation_request_management_help_text = \
-            tr._("""This page summarizes the authorization requests that have been sent to your authenticator, in order to decrypt some remote containers.""") + LINEBREAK * 2 + \
-            tr._("""Requests can be freely rejected. Else, to accept them, you must input your passphrase, which will be used to load your private keys and generate authorization tokens for the requester.""") + LINEBREAK * 2 + \
-            tr._("""For now, it is not possible to change the status of a request which has been accepted or rejected.""")
+        authenticator_revelation_request_management_help_text = (
+            tr._(
+                """This page summarizes the authorization requests that have been sent to your authenticator, in order to decrypt some remote containers."""
+            )
+            + LINEBREAK * 2
+            + tr._(
+                """Requests can be freely rejected. Else, to accept them, you must input your passphrase, which will be used to load your private keys and generate authorization tokens for the requester."""
+            )
+            + LINEBREAK * 2
+            + tr._(
+                """For now, it is not possible to change the status of a request which has been accepted or rejected."""
+            )
+        )
 
         help_text_popup(
-            title=tr._("Remote authorization requests page"),
-            text=authenticator_revelation_request_management_help_text, )
-
-
+            title=tr._("Remote authorization requests page"), text=authenticator_revelation_request_management_help_text
+        )

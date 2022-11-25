@@ -8,20 +8,24 @@ from kivy.properties import ObjectProperty
 from wacomponents.i18n import tr
 from wacomponents.screens.base import WAScreenName, WAScreenBase
 from wacomponents.utilities import shorten_uid, format_authenticator_label, LINEBREAK, COLON, indent_text, SPACE
-from wacomponents.widgets.popups import display_info_toast, dialog_with_close_button, \
-    safe_catch_unhandled_exception_and_display_popup
+from wacomponents.widgets.popups import (
+    display_info_toast,
+    dialog_with_close_button,
+    safe_catch_unhandled_exception_and_display_popup,
+)
 from wacryptolib.cryptainer import gather_decryptable_symkeys
 from wacryptolib.exceptions import KeyDoesNotExist, KeystoreDoesNotExist
 from wacryptolib.keystore import generate_keypair_for_storage
 from wacryptolib.utilities import generate_uuid0
 
-Builder.load_file(str(Path(__file__).parent / 'claimant_revelation_request_creation_form.kv'))
+Builder.load_file(str(Path(__file__).parent / "claimant_revelation_request_creation_form.kv"))
 
 DESCRIPTION_MIN_LENGTH = 10
 
 logger = logging.getLogger(__name__)
 
 # FIXME RENAME THIS FILE AND KV FILE to decryption_request_creation_form.py (and later revelation_request_creation_form.py)
+
 
 class ClaimantRevelationRequestCreationFormScreen(WAScreenBase):
     selected_cryptainer_names = ObjectProperty(None, allownone=True)
@@ -52,21 +56,26 @@ class ClaimantRevelationRequestCreationFormScreen(WAScreenBase):
 
         cryptainer_string_names = "\n".join(cryptainer_names)
 
-        _displayed_values = dict(
-            containers_selected=cryptainer_string_names,
-            gateway_url=self._app.get_wagateway_url()
+        _displayed_values = dict(containers_selected=cryptainer_string_names, gateway_url=self._app.get_wagateway_url())
+        revelation_request_summary_text = (
+            tr._("Container(s) selected")
+            + COLON()
+            + LINEBREAK
+            + indent_text(_displayed_values["containers_selected"])
+            + LINEBREAK * 2
+            + tr._("Gateway url")
+            + COLON()
+            + _displayed_values["gateway_url"]
         )
-        revelation_request_summary_text = tr._("Container(s) selected") + COLON() + LINEBREAK +\
-                                          indent_text(_displayed_values["containers_selected"]) + LINEBREAK*2 +\
-                                          tr._("Gateway url") + COLON() + _displayed_values["gateway_url"]
 
         self.ids.revelation_request_summary.text = revelation_request_summary_text
 
         # Display the list of required authenticators
         for trustee_info, trustee_keypair_identifiers in self.trustee_data:
             keystore_uid = trustee_info["keystore_uid"]
-            authenticator_label = format_authenticator_label(authenticator_owner=trustee_info["keystore_owner"],
-                                                             keystore_uid=keystore_uid)
+            authenticator_label = format_authenticator_label(
+                authenticator_owner=trustee_info["keystore_owner"], keystore_uid=keystore_uid
+            )
 
             authenticator_entry = Factory.ListItemWithCheckbox(text=tr._("Authenticator") + SPACE + authenticator_label)
             authenticator_entry.unique_identifier = keystore_uid
@@ -76,10 +85,12 @@ class ClaimantRevelationRequestCreationFormScreen(WAScreenBase):
         local_keystore = self.filesystem_keystore_pool.get_local_keyfactory()
         response_keychain_uid = generate_uuid0()
         response_key_algo = "RSA_OAEP"
-        generate_keypair_for_storage(key_algo=response_key_algo, keystore=local_keystore,
-                                     keychain_uid=response_keychain_uid)
-        response_public_key = local_keystore.get_public_key(keychain_uid=response_keychain_uid,
-                                                            key_algo=response_key_algo)
+        generate_keypair_for_storage(
+            key_algo=response_key_algo, keystore=local_keystore, keychain_uid=response_keychain_uid
+        )
+        response_public_key = local_keystore.get_public_key(
+            keychain_uid=response_keychain_uid, key_algo=response_key_algo
+        )
 
         return response_keychain_uid, response_key_algo, response_public_key
 
@@ -104,7 +115,9 @@ class ClaimantRevelationRequestCreationFormScreen(WAScreenBase):
         decryptable_symkeys_per_trustee = gather_decryptable_symkeys(cryptainers_with_names)
 
         # Response keypair used to encrypt the decrypted symkey/shard
-        response_keychain_uid, response_key_algo, response_public_key = self._create_and_return_response_keypair_from_local_factory()
+        response_keychain_uid, response_key_algo, response_public_key = (
+            self._create_and_return_response_keypair_from_local_factory()
+        )
 
         successful_request_count = 0
         error = []
@@ -116,25 +129,30 @@ class ClaimantRevelationRequestCreationFormScreen(WAScreenBase):
             trustee_data, symkey_decryption_requests = decryptable_data
             if trustee_data["keystore_uid"] in authenticator_selected:
                 try:
-                    gateway_proxy.submit_revelation_request(authenticator_keystore_uid=trustee_data["keystore_uid"],
-                                                            revelation_requestor_uid=revelation_requestor_uid,
-                                                            revelation_request_description=request_description,
-                                                            revelation_response_public_key=response_public_key,
-                                                            revelation_response_keychain_uid=response_keychain_uid,
-                                                            revelation_response_key_algo=response_key_algo,
-                                                            symkey_decryption_requests=symkey_decryption_requests)
+                    gateway_proxy.submit_revelation_request(
+                        authenticator_keystore_uid=trustee_data["keystore_uid"],
+                        revelation_requestor_uid=revelation_requestor_uid,
+                        revelation_request_description=request_description,
+                        revelation_response_public_key=response_public_key,
+                        revelation_response_keychain_uid=response_keychain_uid,
+                        revelation_response_key_algo=response_key_algo,
+                        symkey_decryption_requests=symkey_decryption_requests,
+                    )
 
                     # stocker les infos utiles dans operation_report
                     successful_request_count += 1
 
                 except KeystoreDoesNotExist:
                     message = tr._(
-                        "Authenticator %s does not exist in sql storage" % shorten_uid(trustee_data["keystore_uid"]))
+                        "Authenticator %s does not exist in sql storage" % shorten_uid(trustee_data["keystore_uid"])
+                    )
                     error.append(message)
 
                 except KeyDoesNotExist as exc:
-                    message = tr._("Public key needed does not exist in key storage in %s authenticator" % shorten_uid(
-                        trustee_data["keystore_uid"]))
+                    message = tr._(
+                        "Public key needed does not exist in key storage in %s authenticator"
+                        % shorten_uid(trustee_data["keystore_uid"])
+                    )
                     error.append(message)
 
         return error, successful_request_count
@@ -163,11 +181,12 @@ class ClaimantRevelationRequestCreationFormScreen(WAScreenBase):
             _displayed_values = dict(
                 successful_request_count=successful_request_count,
                 len_authenticator_selected=len(authenticator_selected),
-                error_report=error_report
+                error_report=error_report,
             )
 
-            operation_report_text = tr._("Successful requests: {successful_request_count} out of {"
-                                         "len_authenticator_selected}").format(**_displayed_values)
+            operation_report_text = tr._(
+                "Successful requests: {successful_request_count} out of {" "len_authenticator_selected}"
+            ).format(**_displayed_values)
 
             error_report_text = LINEBREAK * 2 + tr._("Error Report") + COLON() + LINEBREAK + indent_text(error_report)
 
@@ -178,7 +197,7 @@ class ClaimantRevelationRequestCreationFormScreen(WAScreenBase):
                 close_btn_label=tr._("Close"),
                 title=tr._("Operation Report"),
                 text=operation_report_text,
-                close_btn_callback=self.go_to_management_screen()
+                close_btn_callback=self.go_to_management_screen(),
             )
 
         self._app._offload_task_with_spinner(self.submit_revelation_request, resultat_callable)

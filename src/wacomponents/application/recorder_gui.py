@@ -25,6 +25,7 @@ class WaRecorderGui(WaGenericGui):  # FIXME WaGui instead?
     Main GUI app, which controls the recording service (via OSC protocol), and
     exposes settings as well as existing containers.
     """
+
     service_querying_interval = 2 * WAIT_TIME_MULTIPLIER  # To check when service is ready, at app start
 
     # Overridden as property to allow event dispatching in GUI
@@ -32,12 +33,14 @@ class WaRecorderGui(WaGenericGui):  # FIXME WaGui instead?
     checkup_status_text = StringProperty("")
 
     def __init__(self, **kwargs):
-        self._unanswered_service_state_requests = 0  # Used to detect a service not responding anymore to status requests
-        #print("STARTING INIT OF WitnessAngelClientApp")
+        self._unanswered_service_state_requests = (
+            0
+        )  # Used to detect a service not responding anymore to status requests
+        # print("STARTING INIT OF WitnessAngelClientApp")
         super(WaRecorderGui, self).__init__(**kwargs)
-        #print("AFTER PARENT INIT OF WitnessAngelClientApp")
+        # print("AFTER PARENT INIT OF WitnessAngelClientApp")
         osc_starter_callback()  # Opens server port
-        #print("FINISHED INIT OF WitnessAngelClientApp")
+        # print("FINISHED INIT OF WitnessAngelClientApp")
 
     def close_settings(self, *args, **kwargs):
         super().close_settings(*args, **kwargs)
@@ -49,7 +52,7 @@ class WaRecorderGui(WaGenericGui):  # FIXME WaGui instead?
         """Do not forget to call this super method from child classes"""
         self.refresh_checkup_status()
 
-    def set_recording_btn_state(self, pushed: bool=None, disabled: bool=None):
+    def set_recording_btn_state(self, pushed: bool = None, disabled: bool = None):
         assert pushed is not None or disabled is not None, (pushed, disabled)
         recording_btn = self.recording_button  # Must have been defined on subclass!
         if pushed is not None:
@@ -65,12 +68,10 @@ class WaRecorderGui(WaGenericGui):  # FIXME WaGui instead?
         self.service_controller = ServiceController()
 
         # Redirect root logger traffic to GUI console widget if wanted
-        #logging.getLogger(None).addHandler(CallbackLoggingHandler(self.log_output))
+        # logging.getLogger(None).addHandler(CallbackLoggingHandler(self.log_output))
 
         # Constantly check the state of background service
-        Clock.schedule_interval(
-            self._request_recording_state, self.service_querying_interval
-        )
+        Clock.schedule_interval(self._request_recording_state, self.service_querying_interval)
         self._request_recording_state()  # Immediate first iteration
 
         self.refresh_checkup_status()
@@ -115,8 +116,10 @@ class WaRecorderGui(WaGenericGui):  # FIXME WaGui instead?
         logger.debug("GUI requesting recording state")
         self._unanswered_service_state_requests += 1
         if self._unanswered_service_state_requests > 2:
-            logger.info("Launching recorder service from main app (unanswered requests = %s)",
-                        self._unanswered_service_state_requests)
+            logger.info(
+                "Launching recorder service from main app (unanswered requests = %s)",
+                self._unanswered_service_state_requests,
+            )
             self._unanswered_service_state_requests = -8  # Leave some time for the service to go online
             self.service_controller.start_service()
         else:
@@ -133,7 +136,7 @@ class WaRecorderGui(WaGenericGui):  # FIXME WaGui instead?
     @osc.address_method("/receive_recording_state")
     @safe_catch_unhandled_exception
     def receive_recording_state(self, is_recording):
-        #print(">>>>> app receive_recording_state", repr(is_recording))
+        # print(">>>>> app receive_recording_state", repr(is_recording))
         self._schedule_once(self._receive_recording_state, is_recording)
 
     # SERVICE FEEDBACKS AND DAEMONIZATION #
@@ -152,4 +155,3 @@ class WaRecorderGui(WaGenericGui):  # FIXME WaGui instead?
 
     def log_output(self, msg, *args, **kwargs):  # OVERRIDE THIS TO DISPLAY OUTPUT
         pass  # Do nothing by default
-

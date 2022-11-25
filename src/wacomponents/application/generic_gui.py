@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 class ImprovedSettingsWithSpinner(SettingsWithSpinner):
     def __init__(self, *args, **kargs):
         super().__init__(*args, **kargs)
-        self.register_type('string_truncated', SettingStringTruncated)
+        self.register_type("string_truncated", SettingStringTruncated)
 
 
 class WaGenericGui(WaRuntimeSupportMixin, MDApp):
@@ -38,7 +38,7 @@ class WaGenericGui(WaRuntimeSupportMixin, MDApp):
     def build(self):
         self.title = self.title_app_window  # We properly use this Kivy property
         self.theme_cls.primary_palette = "Blue"
-        #self.theme_cls.theme_style = "Dark"  # or "Light"
+        # self.theme_cls.theme_style = "Dark"  # or "Light"
         self.theme_cls.primary_hue = "900"  # "500"
 
     def on_pause(self):
@@ -66,18 +66,16 @@ class WaGenericGui(WaRuntimeSupportMixin, MDApp):
         assert self.config_defaults_path.exists(), self.config_defaults_path
         logger.debug("Loading default settings from file %s", self.config_defaults_path)
         config.read(str(self.config_defaults_path))
-        '''# If we want to immediately transfer default settings to local file?
+        """# If we want to immediately transfer default settings to local file?
         config.filename = self.get_application_config()
         if not os.path.exists(config.filename):
             config.write()  # Initial user preferences file
-            '''
+            """
 
     def build_settings(self, settings):
         """Read the settings schema and create a panel from it."""
         data = json.dumps(self.get_config_schema_data())
-        settings.add_json_panel(
-            title=self.title_conf_panel, config=self.config, data=data
-        )
+        settings.add_json_panel(title=self.title_conf_panel, config=self.config, data=data)
 
     def close_settings(self, *args, **kwargs):
         # Hook in case of need
@@ -109,6 +107,7 @@ class WaGenericGui(WaRuntimeSupportMixin, MDApp):
 
     def _offload_task_with_spinner(self, task_callable, result_callback):
         logger.debug("Launching offloaded task with spinner: %s", task_callable)
+
         @safe_catch_unhandled_exception_and_display_popup
         def execute_task_callable_and_schedule_result():
             Clock.schedule_once(partial(self._activate_or_disable_spinner, True))
@@ -118,6 +117,7 @@ class WaGenericGui(WaRuntimeSupportMixin, MDApp):
                 Clock.schedule_once(result_callback_bound)
             finally:
                 Clock.schedule_once(partial(self._activate_or_disable_spinner, False))
+
         MONOTHREAD_POOL_EXECUTOR.submit(execute_task_callable_and_schedule_result)
 
     def _activate_or_disable_spinner(self, value, *args, **kwargs):

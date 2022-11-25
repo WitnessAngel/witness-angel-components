@@ -33,22 +33,24 @@ def detect_default_language():
     if IS_ANDROID:
         with catch_and_log_exception("detect_default_language() under Android"):
             from jnius import autoclass
-            JavaUtilLocale = autoclass('java.util.Locale')
+
+            JavaUtilLocale = autoclass("java.util.Locale")
             java_locale = JavaUtilLocale.getDefault()
             lang_code = java_locale.language
-            #print("######### JAVA LOCALE DETECTED: %s %s #########" % (java_locale.language, java_locale.country ))
+            # print("######### JAVA LOCALE DETECTED: %s %s #########" % (java_locale.language, java_locale.country ))
     elif IS_IOS:
         with catch_and_log_exception("detect_default_language() under iOS"):
             import pyobjus
+
             NSLocale = pyobjus.autoclass("NSLocale")
             languages = NSLocale.preferredLanguages()
             lang_code = languages.objectAtIndex_(0).UTF8String().decode("utf-8")  # Might include region code too
-            #print("######### APPLE LOCALE DETECTED: %s #########" % lang_code)
+            # print("######### APPLE LOCALE DETECTED: %s #########" % lang_code)
     else:
         # VERY rough detection of user language, will often not work under Windows but it's OK
         # See https://stackoverflow.com/a/25691701 and win32.GetUserDefaultUILanguage()
         lang_code, _charset = locale.getdefaultlocale()
-        #print("######### DEFAULT LOCALE DETECTED: %s %s #########" % (lang_code, _charset))
+        # print("######### DEFAULT LOCALE DETECTED: %s %s #########" % (lang_code, _charset))
 
     lang_code = lang_code or ""  # lang_code might be None if undetected
     language = "fr" if _normalize(lang_code).startswith("fr") else "en"
@@ -64,7 +66,7 @@ def get_package_translator(language, locale_dir):
         "witnessangel",
         locale_dir,
         languages=[language],
-        fallback=True  # (language == "en")  # We don't care about EN translations
+        fallback=True,  # (language == "en")  # We don't care about EN translations
     )
 
 
@@ -141,6 +143,7 @@ class _Translator(Observable):
         """
         from inspect import currentframe
         from copy import copy
+
         frame = currentframe().f_back
         kwargs = copy(frame.f_globals)
         kwargs.update(frame.f_locals)

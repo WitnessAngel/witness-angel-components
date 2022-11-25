@@ -22,7 +22,7 @@ class DfrobotEpaperStatusDisplay2in13v2(EpaperStatusDisplayBase):
     TEXT_OFFSET_Y = 70
 
     PREVIEW_IMAGE_WIDTH = 120
-    PREVIEW_IMAGE_HEIGHT = int(PREVIEW_IMAGE_WIDTH / (16/9))
+    PREVIEW_IMAGE_HEIGHT = int(PREVIEW_IMAGE_WIDTH / (16 / 9))
 
     BUTTON_PIN_1 = 21
     BUTTON_PIN_2 = 20
@@ -33,8 +33,12 @@ class DfrobotEpaperStatusDisplay2in13v2(EpaperStatusDisplayBase):
 
     def __init__(self):
         self.epaper = dfrobot_epaper.DFRobot_Epaper_SPI(
-            self._RASPBERRY_SPI_BUS, self._RASPBERRY_SPI_DEV, self._RASPBERRY_PIN_CS,
-            self._RASPBERRY_PIN_CD, self._RASPBERRY_PIN_BUSY)
+            self._RASPBERRY_SPI_BUS,
+            self._RASPBERRY_SPI_DEV,
+            self._RASPBERRY_PIN_CS,
+            self._RASPBERRY_PIN_CD,
+            self._RASPBERRY_PIN_BUSY,
+        )
 
     def _initialize_display(self):
         # Weirdly, no need for _powerOn/_poweroff on this e-paper screen
@@ -42,12 +46,12 @@ class DfrobotEpaperStatusDisplay2in13v2(EpaperStatusDisplayBase):
 
     def _display_image(self, pil_image):
         self._clear_display()
-        pil_image.convert('1').save("tempimage.bmp")
+        pil_image.convert("1").save("tempimage.bmp")
         self.epaper.bitmapFile(0, 0, "tempimage.bmp")
 
     def _clear_display(self):
         self.epaper.clearScreen()
-        #self.epaper.readID()
+        # self.epaper.readID()
 
     def _release_display(self):
         # Nothing to do after an update, it seems

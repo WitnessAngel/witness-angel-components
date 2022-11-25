@@ -1,5 +1,3 @@
-
-
 def generate_and_send_crashdump(exc_info, target_url, client_type):
 
     import traceback
@@ -27,9 +25,7 @@ def generate_and_send_crashdump(exc_info, target_url, client_type):
     except Exception as exc:
         print("Could not gather android system info: %r" % exc)  # Do not use logging here
 
-    system_info_str = "\n".join(
-        "%s: %s" % (k, v) for (k, v) in sorted(system_info.items())
-    )
+    system_info_str = "\n".join("%s: %s" % (k, v) for (k, v) in sorted(system_info.items()))
 
     main_exception_str = "\n".join(traceback.format_exception(*exc_info))
 
@@ -49,8 +45,6 @@ EXCEPTION
         main_exception_str,
     )
 
-    requests.post(
-        target_url, dict(crashdump=full_report_str)
-    )  # If it fails, it fails...
+    requests.post(target_url, dict(crashdump=full_report_str))  # If it fails, it fails...
 
     return full_report_str
