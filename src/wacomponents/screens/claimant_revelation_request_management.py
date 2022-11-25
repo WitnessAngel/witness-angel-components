@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 from jsonrpc_requests import JSONRPCError

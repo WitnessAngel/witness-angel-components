@@ -54,7 +54,7 @@ def _presetup_app_environment(setup_kivy_gui: bool):
     logging_level_str = os.getenv("WA_LOG_LEVEL", default="INFO").upper()
     logging.root.setLevel(getattr(logging, logging_level_str))
     logging.disable(0)
-    logging.info("Default logging level set to %s, use WA_LOG_LEVEL environment variable to change it", logging_level_str)
+    logging.info("Root logging level set to %s, use WA_LOG_LEVEL environment variable to change it", logging_level_str)
 
     #import logging_tree ; logging_tree.printout()  # To display the actual logging setup
 
