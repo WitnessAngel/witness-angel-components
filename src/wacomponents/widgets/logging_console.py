@@ -18,7 +18,7 @@ class ConsoleOutput(TextInput):
     _add_text_is_in_progress = False
 
     def __init__(self, **kwargs):
-        super(ConsoleOutput, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         app = App.get_running_app()
 
     def is_locked(self):
@@ -92,7 +92,7 @@ class LoggingConsole(BoxLayout):
     """
 
     def __init__(self, **kwargs):
-        super(LoggingConsole, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
 
 if __name__ == "__main__":

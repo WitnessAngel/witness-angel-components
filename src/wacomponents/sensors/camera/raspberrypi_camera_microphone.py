@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 def list_pulseaudio_microphone_names():
-    """Equivalent to command:  pactl list | grep -A2 'Source #' | grep 'Name:' 
+    """Equivalent to command:  pactl list | grep -A2 'Source #' | grep 'Name:'
     """
     import pulsectl
 
@@ -325,6 +325,7 @@ class RaspberryPicameraSensor(
     )
 
     _current_start_time = None
+    _current_buffer = None
 
     _live_image_preview_pusher = None
 
@@ -388,7 +389,6 @@ class RaspberryPicameraSensor(
         self._picamera.stop_recording()
         self._picamera.close()  # IMPORTANT
         self._picamera = None
-        return None
 
     def _do_restart_recording(self):
         new_buffer = self._create_custom_output()

@@ -213,7 +213,7 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
             keypair_label = format_keypair_label(
                 keychain_uid=keypair_identifier["keychain_uid"],
                 key_algo=keypair_identifier["key_algo"],
-                private_key_present=False if keypair_identifier in status["trustee_private_keys_missing"] else True,
+                private_key_present=keypair_identifier not in status["trustee_private_keys_missing"],
                 error_on_missing_key=False,
             )
             message += tr._("Keypair n°") + SPACE + str(index) + COLON() + keypair_label + LINEBREAK

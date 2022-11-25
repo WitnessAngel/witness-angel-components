@@ -103,10 +103,6 @@ class CryptainerStorageManagementScreen(WAScreenBase):
             cryptainers_page_ids.cryptainer_table.add_widget(fallback_info_box)
             return
 
-        self.check_box_cryptainer_uuid_dict = {}
-        self.btn_cryptainer_uuid_dict = {}
-
-        self.cryptainer_checkboxes = []
 
         assert not self.cryptainer_loading_schedule
         self.cryptainer_loading_schedule = Clock.schedule_interval(

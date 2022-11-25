@@ -32,12 +32,14 @@ class WaRecorderGui(WaGenericGui):  # FIXME WaGui instead?
     assert hasattr(WaGenericGui, "checkup_status_text")
     checkup_status_text = StringProperty("")
 
+    service_controller = None  # To be instantated in start()
+
     def __init__(self, **kwargs):
         self._unanswered_service_state_requests = (
             0
         )  # Used to detect a service not responding anymore to status requests
         # print("STARTING INIT OF WitnessAngelClientApp")
-        super(WaRecorderGui, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         # print("AFTER PARENT INIT OF WitnessAngelClientApp")
         osc_starter_callback()  # Opens server port
         # print("FINISHED INIT OF WitnessAngelClientApp")

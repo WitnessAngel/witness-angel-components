@@ -19,8 +19,6 @@ class EpaperStatusDisplayBase:
 
     SMALL_DISPLAY = False
 
-    def __init__(self, **options):
-        pass
 
     def get_font(self, font_file_path, font_size):
         font = ImageFont.truetype(font_file_path, font_size)

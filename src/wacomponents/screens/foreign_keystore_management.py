@@ -327,7 +327,7 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
         )
 
         for index, keypair_identifier in enumerate(keypair_identifiers, start=1):
-            private_key_present = True if keypair_identifier["private_key_present"] else False
+            private_key_present = keypair_identifier["private_key_present"]
             keypair_label = format_keypair_label(
                 keychain_uid=keypair_identifier["keychain_uid"],
                 key_algo=keypair_identifier["key_algo"],
