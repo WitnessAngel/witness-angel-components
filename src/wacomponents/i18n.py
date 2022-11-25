@@ -11,7 +11,6 @@ from kivy.lang import Observable
 from wacomponents.default_settings import IS_ANDROID, IS_IOS
 from wacryptolib.utilities import catch_and_log_exception
 
-
 logger = logging.getLogger(__name__)
 
 

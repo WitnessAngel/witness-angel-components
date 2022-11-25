@@ -15,7 +15,6 @@ from wacomponents.default_settings import IS_ANDROID
 from wacomponents.i18n import tr
 from wacomponents.logging.handlers import safe_catch_unhandled_exception
 
-
 logger = logging.getLogger(__name__)
 
 

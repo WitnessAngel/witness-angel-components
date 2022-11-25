@@ -12,7 +12,6 @@ from wacomponents.utilities import MONOTHREAD_POOL_EXECUTOR
 from wacomponents.widgets.layout_components import SettingStringTruncated
 from wacomponents.widgets.popups import safe_catch_unhandled_exception_and_display_popup
 
-
 logger = logging.getLogger(__name__)
 
 

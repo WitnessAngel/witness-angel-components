@@ -4,14 +4,12 @@ from pathlib import Path
 
 from functools import partial
 from kivy.utils import platform
-
 # TODO factorize and use unix socks when possible
 from oscpy.client import OSCClient
 from oscpy.server import OSCThreadServer as _OSCThreadServer
 
 from wacomponents.default_settings import INTERNAL_APP_ROOT
 from wacryptolib.utilities import catch_and_log_exception
-
 
 logger = logging.getLogger(__name__)
 

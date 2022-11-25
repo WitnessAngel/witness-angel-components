@@ -4,7 +4,6 @@ from pathlib import Path
 from wacomponents.application.recorder_service import ActivityNotificationType
 from wacryptolib.cryptainer import CryptainerEncryptionPipeline
 
-
 logger = logging.getLogger(__name__)
 
 

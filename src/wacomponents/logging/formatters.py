@@ -1,7 +1,7 @@
 import logging
+
 import sys
 import time
-
 
 DEFAULT_UTC_LOG_FORMAT = "%(asctime)sZ - %(levelname)s - %(message)s"
 
