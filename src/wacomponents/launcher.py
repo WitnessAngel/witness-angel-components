@@ -51,7 +51,7 @@ def launch_main_module_with_crash_handler(main_module: str, client_type: str):
         sys.modules["kivymd.uix"] = None  # Force early failure if service tries to load Kivy GUI
         if _is_service_alive():
             dt = datetime.now()
-            print(">>> %s - WANVR service already started and listening on its UNIX socket, aborting relaunch" % dt)
+            print(">>> %s - Witness Angel Recorder service already started and listening on its UNIX socket, aborting relaunch" % dt)
             return
 
     try:

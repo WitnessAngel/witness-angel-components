@@ -363,6 +363,7 @@ class RaspberryPicameraSensor(
             )
 
     def _create_custom_output(self):
+        logger.info("Building new cryptainer encryption stream for Picamera ")
         encryption_stream = self._build_cryptainer_encryption_stream()
         return _CustomPicameraOutputWithEncryptionStream(encryption_stream)
 
@@ -376,6 +377,7 @@ class RaspberryPicameraSensor(
 
         import picamera  # LAZY loaded
 
+        logger.info("Creating Picamera instance for video and image recording")
         self._picamera = picamera.PiCamera(**picamera_init_parameters)
         self._picamera.rotation = self._local_camera_rotation
         self._picamera.start_recording(self._current_buffer, **picamera_start_parameters)
@@ -384,6 +386,8 @@ class RaspberryPicameraSensor(
             self._live_image_preview_pusher.start()
 
     def _do_stop_recording(self):  # pragma: no cover
+
+        logger.info("Destroying Picamera instance")
         if self._live_image_preview_pusher:
             self._live_image_preview_pusher.stop()
         self._picamera.stop_recording()

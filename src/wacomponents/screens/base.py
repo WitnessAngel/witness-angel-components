@@ -5,7 +5,7 @@ from kivymd.uix import Screen
 class WAScreenName:
     """Common registry for all the screen names to be used in WA applications"""
 
-    # NVR Screens
+    # Recorder Screens
     recorder_homepage = "recorder_homepage"
     foreign_keystore_management = "foreign_keystore_management"
     cryptainer_storage_management = "cryptainer_storage_management"
