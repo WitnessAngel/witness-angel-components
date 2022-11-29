@@ -37,7 +37,7 @@ class EpaperStatusDisplayBase:
         try:
             img = Image.open(preview_image_path)
             # To test max dimensions of image -> img = img.resize(thumbnail_image_dimensions)
-            img.thumbnail(thumbnail_image_dimensions)  # Modifies in-place
+            img.thumbnail(thumbnail_image_dimensions, Image.Resampling.LANCZOS)  # Modifies in-place
             image_gray = img.convert("L")
             image_gray.save(thumbnail_image_path)
         except FileNotFoundError:

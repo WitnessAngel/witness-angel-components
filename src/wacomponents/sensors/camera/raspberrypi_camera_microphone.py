@@ -129,8 +129,8 @@ class RaspberryLibcameraSensor(PreviewImageMixin, PeriodicSubprocessStreamRecord
     ):
         super().__init__(**kwargs)
         self._alsa_device_name = alsa_device_name
-        self._libcameravid_video_parameters = (libcameravid_video_parameters,)
-        self._libcameravid_audio_parameters = (libcameravid_audio_parameters,)
+        self._libcameravid_video_parameters = libcameravid_video_parameters
+        self._libcameravid_audio_parameters = libcameravid_audio_parameters
 
     def _build_subprocess_command_line(self):
         alsa_device_name = self._alsa_device_name
@@ -350,6 +350,7 @@ class RaspberryPicameraSensor(
         self._picamera.capture(output, use_video_port=True, format="jpeg", resize=(width_px, height_px))
 
     @synchronized
+    @catch_and_log_exception("RaspberryPicameraSensor._push_live_preview_image")
     def _push_live_preview_image(self):
         # print(">>>>>> _push_live_preview_image called")
         with catch_and_log_exception("RaspberryPicameraSensor._push_live_preview_image"):
