@@ -364,7 +364,7 @@ class RaspberryPicameraSensor(
             )
 
     def _create_custom_output(self):
-        logger.info("Building new cryptainer encryption stream for Picamera ")
+        logger.info("Building new cryptainer encryption stream for picamera sensor")
         encryption_stream = self._build_cryptainer_encryption_stream()
         return _CustomPicameraOutputWithEncryptionStream(encryption_stream)
 

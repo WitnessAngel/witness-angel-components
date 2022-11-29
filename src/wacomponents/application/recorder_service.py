@@ -194,8 +194,9 @@ class WaRecorderService(WaRuntimeSupportMixin):
 
         WIP_RECORDING_MARKER.touch(exist_ok=True)
         self.reload_config()  # Important
-        if not self.refresh_checkup_status():
-            logger.error("Service failed to start recording because of configuration issues")
+        status, messages = self.refresh_checkup_status()
+        if not status:
+            logger.error("Service failed to start recording because of configuration issues: %s", "; ".join(messages))
             return
 
         self._status_change_in_progress = True  # We do it LAST MINUTE!

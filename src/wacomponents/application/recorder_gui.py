@@ -105,7 +105,7 @@ class WaRecorderGui(WaGenericGui):  # FIXME WaGui instead?
         self.set_recording_btn_state(disabled=True)
         if is_recording:
 
-            if not self.refresh_checkup_status():
+            if not self.refresh_checkup_status()[0]:
                 display_info_snackbar(tr._("Configuration errors prevent recording"))
                 return
 

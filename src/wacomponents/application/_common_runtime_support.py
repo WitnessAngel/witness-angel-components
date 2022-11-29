@@ -82,7 +82,7 @@ class WaRuntimeSupportMixin:
         """Return ready-to-call bound checkers from below"""
         raise NotImplementedError("_get_status_checkers")
 
-    def refresh_checkup_status(self) -> bool:
+    def refresh_checkup_status(self) -> tuple:
         status_checkers = self._get_status_checkers()
 
         global_status = True
@@ -94,7 +94,7 @@ class WaRuntimeSupportMixin:
             checkup_status_messages.append(("[OK]" if status else "[KO]") + " " + message)
 
         self.checkup_status_text = "\n".join(checkup_status_messages)
-        return global_status
+        return global_status, checkup_status_messages
 
     ## SETTING CHECKERS - might have to access instance properties someday... ##
 
