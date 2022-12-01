@@ -1,9 +1,14 @@
+import logging
+
 import os
 from PIL import Image, ImageDraw, ImageFont
 
 
 ###THIS_DIR = Path(__file__).parent
 from kivy.resources import resource_find
+
+
+logger = logging.getLogger(__name__)
 
 
 class EpaperStatusDisplayBase:
@@ -71,6 +76,7 @@ class EpaperStatusDisplayBase:
     def display_status(
         self, status_obj, preview_image_path, text_offset_x=None, text_offset_y=None, font_file_path=None
     ):
+        logger.debug("Creating status image for E-paper display")
         assert isinstance(preview_image_path, str), preview_image_path
 
         text_offset_x = text_offset_x if text_offset_x is not None else self.TEXT_OFFSET_X
@@ -138,4 +144,5 @@ class EpaperStatusDisplayBase:
             draw.text((left_margin, (text_offset_y + idx * self.line_height)), label, font=font, fill=0)
             draw.text(((left_margin + 120), (text_offset_y + idx * self.line_height)), value, font=font, fill=0)
 
+        logger.debug("Sending status image to E-paper display")
         self._display_image(framebuffer)
