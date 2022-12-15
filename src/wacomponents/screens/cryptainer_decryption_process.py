@@ -126,7 +126,7 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
 
     def _get_cryptainers_with_cryptainer_names(
         self, cryptainer_names
-    ):  # FIXME duplicated and not neeed as METHOD but FUNCTION
+    ):  # FIXME duplicated and not need as METHOD but FUNCTION
         cryptainers = []
         for cryptainer_name in cryptainer_names:
             cryptainer = self.filesystem_cryptainer_storage.load_cryptainer_from_storage(cryptainer_name)

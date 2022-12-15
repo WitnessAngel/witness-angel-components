@@ -41,7 +41,7 @@ class ClaimantRevelationRequestCreationFormScreen(WAScreenBase):
     def _get_cryptainers_with_cryptainer_names(self, cryptainer_names):  # FIXME wrong naming, not "with", returns PAIRS
         cryptainers = []
         for cryptainer_name in cryptainer_names:
-            cryptainer = self.filesystem_cryptainer_storage.load_cryptainer_from_storage(cryptainer_name)
+            cryptainer = self.filesystem_cryptainer_storage.load_cryptainer_from_storage(cryptainer_name, include_payload_ciphertext=False)
             cryptainers.append((cryptainer_name, cryptainer))
         return cryptainers
 
