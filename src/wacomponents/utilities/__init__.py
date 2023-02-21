@@ -147,7 +147,7 @@ def format_authenticator_label(
     if short_uid:
         keystore_uid = shorten_uid(keystore_uid)
     authenticator_label = "{authenticator_owner} (ID {keystore_uid}".format(
-        authenticator_owner=authenticator_owner, keystore_uid=keystore_uid
+        authenticator_owner=(authenticator_owner or tr._("Unknown")), keystore_uid=keystore_uid
     )
     if trustee_type:
         authenticator_label += ", type {trustee_type}".format(trustee_type=trustee_type)

@@ -179,11 +179,10 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
 
         trustee_present = tr._("Status") + COLON() + status["trustee_status"].upper()
 
-        trustee_private_keys_status_text = tr._("Private keys needed for decryption are present")
-
         passphrase = tr._("passphrase") + COLON() + status["passphrase_status"].upper()
 
         if status["trustee_is_present"]:
+
             if status["trustee_private_keys_missing"]:
                 trustee_keys_missing_labels = []
                 for private_key_missing in status["trustee_private_keys_missing"]:
@@ -201,6 +200,11 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
                         trustee_keys_missing_full_label=trustee_keys_missing_full_label
                     )
                 )
+            else:
+                trustee_private_keys_status_text = tr._("Private keys needed for decryption are present")
+
+        else:
+            trustee_private_keys_status_text = tr._("Private keys needed were not found")
 
         dependencies_status_text = Factory.WAThreeListItemEntry(
             text=trustee_info,
@@ -213,7 +217,7 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
             keypair_label = format_keypair_label(
                 keychain_uid=keypair_identifier["keychain_uid"],
                 key_algo=keypair_identifier["key_algo"],
-                private_key_present=keypair_identifier not in status["trustee_private_keys_missing"],
+                private_key_present=status["trustee_is_present"] and (keypair_identifier not in status["trustee_private_keys_missing"]),
                 error_on_missing_key=False,
             )
             message += tr._("Keypair n°") + SPACE + str(index) + COLON() + keypair_label + LINEBREAK
