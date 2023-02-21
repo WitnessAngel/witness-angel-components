@@ -23,6 +23,7 @@ GPIO.setwarnings(False)  # Other apps or previous crash might have left GPIOs in
 
 def register_button_callback(pin, callback):
     GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    # FIXME use this to fix debounce troubles - https://gist.github.com/D4koon/cf6b16a32bd278876286e74c1301202c
     GPIO.add_event_detect(pin, GPIO.FALLING, callback=callback, bouncetime=1000)
 
 
