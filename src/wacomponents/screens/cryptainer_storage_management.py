@@ -60,10 +60,23 @@ class CryptainerStorageManagementScreen(WAScreenBase):
             self.cryptainer_loading_schedule = None
             self.cryptainer_names_to_be_loaded = []
 
+    def _gen_listed_cryptainer_entries(self):
+        for cryptainer_entry in self.ids.cryptainer_table.children:
+            if hasattr(cryptainer_entry, "selected"):  # Beware of possible WABigInformationBox
+                yield cryptainer_entry
+
+    def select_all_cryptainers(self):
+        for cryptainer_entry in self._gen_listed_cryptainer_entries():
+            cryptainer_entry.ids.selection_checkbox.active = True
+
+    def deselect_all_cryptainers(self):
+        for cryptainer_entry in self._gen_listed_cryptainer_entries():
+            cryptainer_entry.ids.selection_checkbox.active = False
+
     def _get_selected_cryptainer_names(self):
         cryptainer_names = []
-        for cryptainer_entry in self.ids.cryptainer_table.children:
-            if getattr(cryptainer_entry, "selected", None):  # Beware of possible WABigInformationBox
+        for cryptainer_entry in self._gen_listed_cryptainer_entries():
+            if cryptainer_entry.selected:
                 assert cryptainer_entry.unique_identifier, cryptainer_entry.unique_identifier
                 cryptainer_names.append(cryptainer_entry.unique_identifier)
         # print(">>>>> extract_selected_cryptainer_names", container_names)
@@ -146,7 +159,7 @@ class CryptainerStorageManagementScreen(WAScreenBase):
         self.ids.cryptainer_table.add_widget(cryptainer_entry)
         logger.debug("Loaded widget of cryptainer %s in storage management screen", cryptainer_name)
 
-    def get_selected_cryptainer_names(self):
+    def _____get_selected_cryptainer_names(self):
 
         cryptainers_page_ids = self.ids
 
