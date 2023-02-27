@@ -11,6 +11,7 @@ from kivy.uix.textinput import TextInput
 from kivymd.app import MDApp
 from kivymd.uix.menu import MDDropdownMenu
 
+from wacomponents.default_settings import IS_MOBILE
 from wacomponents.i18n import tr
 
 
@@ -99,7 +100,9 @@ class WASelectableLabel(TextInput):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.keyboard_mode = "managed"  # Do not auto-show the keyboard (e.g. for mobile devices)
+        if IS_MOBILE:
+            self.keyboard_mode = "managed"  # Do not auto-show the keyboard on mobile devices
+            # Else let it be, so that copy/paste shortcuts work
 
         # EVEN IF READONLY, we need this to prevent selection bugs on mobile platform
         def fix_focusability(x):
