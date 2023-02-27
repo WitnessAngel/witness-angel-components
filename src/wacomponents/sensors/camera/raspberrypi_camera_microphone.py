@@ -379,7 +379,7 @@ class RaspberryPicameraSensor(
         import picamera  # LAZY loaded
 
         logger.info("Creating Picamera instance for video and image recording")
-        self._picamera = picamera.PiCamera(**picamera_init_parameters)
+        self._picamera = picamera.PiCamera(**picamera_init_parameters)  # Might raise e.g. PiCameraMMALError
         self._picamera.rotation = self._local_camera_rotation
         self._picamera.start_recording(self._current_buffer, **picamera_start_parameters)
         self._conditionally_regenerate_preview_image()
@@ -391,9 +391,10 @@ class RaspberryPicameraSensor(
         logger.info("Destroying Picamera instance")
         if self._live_image_preview_pusher:
             self._live_image_preview_pusher.stop()
-        self._picamera.stop_recording()
-        self._picamera.close()  # IMPORTANT
-        self._picamera = None
+        if self._picamera:  # Might not exist if start() broke
+            self._picamera.stop_recording()
+            self._picamera.close()  # IMPORTANT
+            self._picamera = None
 
     def _do_restart_recording(self):
         new_buffer = self._create_custom_output()
