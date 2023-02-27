@@ -102,7 +102,7 @@ class CryptainerStorageManagementScreen(WAScreenBase):
 
         # print(">>>>>>>>>>>>>self.filesystem_cryptainer_storage, ", self.filesystem_cryptainer_storage)
         if self.filesystem_cryptainer_storage is None:
-            fallback_info_box = build_fallback_information_box(tr._("Container storage is invalid"))
+            fallback_info_box = build_fallback_information_box("\n\n" + tr._("Container storage is invalid"))
             cryptainers_page_ids.cryptainer_table.add_widget(fallback_info_box)
             return
 
@@ -112,7 +112,7 @@ class CryptainerStorageManagementScreen(WAScreenBase):
         self.cryptainer_names_to_be_loaded = sorted_cryptainers  # They'll be loaded from the end, that's what we want
 
         if not self.cryptainer_names_to_be_loaded:
-            fallback_info_box = build_fallback_information_box(tr._("No containers found"))
+            fallback_info_box = build_fallback_information_box("\n\n" + tr._("No containers found"))
             cryptainers_page_ids.cryptainer_table.add_widget(fallback_info_box)
             return
 

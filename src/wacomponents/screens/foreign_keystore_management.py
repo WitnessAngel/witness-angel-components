@@ -298,7 +298,7 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
         # Display_layout = MDBoxLayout(orientation="horizontal", padding=[140, 0])
         # Display_layout.add_widget(devices_display)
 
-        fallback_info_box = build_fallback_information_box(tr._("No imported authentication device found"))
+        fallback_info_box = build_fallback_information_box("\n\n" + tr._("No imported authentication device found"))
         self.ids.imported_authenticator_list.add_widget(fallback_info_box)
 
     def on_keystore_checkbox_click(self, keystore_uid: uuid.UUID, is_selected: bool):

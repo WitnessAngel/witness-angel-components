@@ -124,14 +124,13 @@
     font_style: "H6"
     font_size: "18sp"
 
-<WABigInformationBox@MDBoxLayout>:
+<WABigInformationBox@MDLabel>:
     message: ""
-    padding: [10, 0]
-    MDLabel:
-        id: inner_label
-        halign: "center"
-        font_size: "20sp"
-        text: root.message
+    id: inner_label
+    halign: "center"
+    valign: "middle"
+    font_size: "20sp"
+    text: root.message
 
 <WATextInput@TextInput>:
     padding: [10,10]
