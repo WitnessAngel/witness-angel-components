@@ -77,20 +77,27 @@
 
 <WASelectableListItemEntry@OneLineAvatarIconListItem>:
     text: ""
-    selected: selection_checkbox.active
-    unique_identifier: None  # Useful for UIDs and such
+    ###selected: selection_checkbox.active
+
+    unique_identifier: None  # Useful for UIDs, filenames and such
+    information_callback: None
+    selection_callback: None
+    selected_unique_identifiers: None
 
     WAListItemLeftCheckbox:
         id: selection_checkbox
-        active: root.selected
+        active: bool(root.unique_identifier and root.selected_unique_identifiers and root.unique_identifier in root.selected_unique_identifiers)
+        on_active: root.selection_callback(root.unique_identifier, *args)
 
     IconRightWidget:
         icon: "information-outline"
         id: information_icon
+        on_press: root.information_callback(root.unique_identifier)
 
 
 <WAIconListItemEntry@TwoLineAvatarIconListItem>:  # FIXME wrong naming, its' always a KEY here, and 2 LINES now!
     text: ""
+
 
     IconLeftWidget:
         icon: "key"

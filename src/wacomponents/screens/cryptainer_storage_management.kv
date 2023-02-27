@@ -20,7 +20,7 @@
         cryptainer_delete_btn.size_hint_x = 0.5
         cryptainer_decrypt_btn.size_hint_x = 0.5
         remote_decryption_request_list_btn.size_hint_x=0.5
-        root.get_detected_cryptainer()  # FIXME rename this!!!
+        root.refresh_cryptainer_list()
 
     on_pre_leave:
         root.cancel_cryptainer_loading()
@@ -33,17 +33,25 @@
             WAToolbar:
                 title: tr._("Containers")
                 left_action_items: [['menu', lambda x: app.navigation_drawer.set_state("toggle")]]
-                right_action_items: [["select-all", lambda x: root.select_all_cryptainers(), tr._("Select all")], ["select-off", lambda x: root.deselect_all_cryptainers(), tr._("Select none")], ["refresh", lambda x: root.get_detected_cryptainer(), tr._("Refresh")], ["home", lambda x: app.get_back_to_home_screen(), tr._("Back to home")],]
+                right_action_items: [["select-all", lambda x: root.select_all_cryptainers(), tr._("Select all")], ["select-off", lambda x: root.deselect_all_cryptainers(), tr._("Select none")], ["refresh", lambda x: root.refresh_cryptainer_list(), tr._("Refresh")], ["home", lambda x: app.get_back_to_home_screen(), tr._("Back to home")],]
 
             WAElevatedBoxLayout:
 
                 MDLabel:
-                    text: tr._("View and manage encrypted containers")
+                    text: tr._("View and manage encrypted containers") + " (" + tr._("selected: %d") % len(root.selected_unique_identifiers) + ")"
                     padding_x: "10dp"
 
-            WAVerticalScrollView:
-                MDList:
-                    id: cryptainer_table
+            RecycleView:
+                id: cryptainer_table
+                viewclass: 'WASelectableCryptainerEntry'
+                RecycleBoxLayout:
+                    default_size: None, None
+                    default_size_hint: 1, None
+                    size_hint_y: None
+                    height: self.minimum_height
+                    orientation: 'vertical'
+
+
             WAButtonsGridLayout:
                 padding: [10, 10]
 

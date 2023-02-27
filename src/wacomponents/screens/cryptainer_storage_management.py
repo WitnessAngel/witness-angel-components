@@ -1,3 +1,4 @@
+import cProfile
 import logging
 from pathlib import Path
 
@@ -5,8 +6,9 @@ from functools import partial
 from kivy.clock import Clock
 from kivy.factory import Factory
 from kivy.lang import Builder
-from kivy.properties import ObjectProperty
+from kivy.properties import ObjectProperty, ListProperty
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.recycleview.views import RecycleDataViewBehavior
 from kivy.uix.textinput import TextInput
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.snackbar import Snackbar
@@ -42,8 +44,22 @@ class PassphrasesDialogContent(BoxLayout):
     pass
 
 
+class WASelectableCryptainerEntry(RecycleDataViewBehavior, Factory.WASelectableListItemEntry):
+    pass
+    #def __init__(self):    #, text, cryptainer_name, show_cryptainer_details_callback):
+        #super().__init__(text=text)
+        #self.unique_identifier = cryptainer_name
+        #self.information_callback = show_cryptainer_details_callback
+
+
+
+
+
 class CryptainerStorageManagementScreen(WAScreenBase):
     #: The container storage managed by this Screen, might be None if unset
+
+    selected_unique_identifiers = ListProperty(None, allownone=True)
+
     filesystem_cryptainer_storage = ObjectProperty(None, allownone=True)
     cryptainer_names_to_be_loaded = ObjectProperty(None, allownone=True)
     cryptainer_loading_schedule = ObjectProperty(None, allownone=True)
@@ -52,6 +68,7 @@ class CryptainerStorageManagementScreen(WAScreenBase):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.selected_unique_identifiers = []
         # print("CREATED CryptainerStorageManagementScreen")
 
     def cancel_cryptainer_loading(self, *args):
@@ -65,15 +82,26 @@ class CryptainerStorageManagementScreen(WAScreenBase):
             if hasattr(cryptainer_entry, "selected"):  # Beware of possible WABigInformationBox
                 yield cryptainer_entry
 
+    def _refresh_recycle_view(self):
+        Clock.schedule_once(lambda x: self.ids.cryptainer_table.refresh_from_data())
+
     def select_all_cryptainers(self):
-        for cryptainer_entry in self._gen_listed_cryptainer_entries():
-            cryptainer_entry.ids.selection_checkbox.active = True
+        del self.selected_unique_identifiers[:]
+        self.selected_unique_identifiers.extend(x[1] for x in self.cryptainer_names_to_be_loaded)
+        #print(">> WE FILLED selected_unique_identifiers", self.selected_unique_identifiers)
+        self._refresh_recycle_view()
+        #self.ids.cryptainer_table.refresh_from_data()
+        #for cryptainer_entry in self._gen_listed_cryptainer_entries():
+        #    cryptainer_entry.ids.selection_checkbox.active = True
 
     def deselect_all_cryptainers(self):
-        for cryptainer_entry in self._gen_listed_cryptainer_entries():
-            cryptainer_entry.ids.selection_checkbox.active = False
+        del self.selected_unique_identifiers[:]
+        #print(">> WE EMPTIED selected_unique_identifiers", self.selected_unique_identifiers)))
+        self._refresh_recycle_view()
+        #for cryptainer_entry in self._gen_listed_cryptainer_entries():
+        #    cryptainer_entry.ids.selection_checkbox.active = False
 
-    def _get_selected_cryptainer_names(self):
+    def ____get_selected_cryptainer_names(self):
         cryptainer_names = []
         for cryptainer_entry in self._gen_listed_cryptainer_entries():
             if cryptainer_entry.selected:
@@ -83,10 +111,19 @@ class CryptainerStorageManagementScreen(WAScreenBase):
         return cryptainer_names
 
     @safe_catch_unhandled_exception_and_display_popup
-    def get_detected_cryptainer(self):  # FIXME rename and mereg with private method?
-        self._get_detected_cryptainer()
+    def refresh_cryptainer_list(self):  # FIXME rename and mereg with private method?
+        #cProfile.runctx("self._get_detected_cryptainer()", globals(), locals(), sort="cumtime")
+        self._refresh_cryptainer_list()
+        '''
+        data = []
+        for key in range(100):
+            key = str(key)
+            value = "value " + str(key)
+            data.append({'text': key, 'secondary_text': value})
+        self.ids.cryptainer_table.data = data
+        '''
 
-    def _get_detected_cryptainer(self):
+    def _refresh_cryptainer_list(self):
         self.cancel_cryptainer_loading()
 
         # FIXME use RecycleView instead for performance!!
@@ -97,8 +134,8 @@ class CryptainerStorageManagementScreen(WAScreenBase):
         # self.root.ids.screen_manager.get_screen(
         #    "Container_management"
         # ).ids
-        cryptainers_page_ids.cryptainer_table.clear_widgets()
-        cryptainers_page_ids.cryptainer_table.do_layout()  # Prevents bug with "not found" message position
+        ###cryptainers_page_ids.cryptainer_table.clear_widgets()
+        ###cryptainers_page_ids.cryptainer_table.do_layout()  # Prevents bug with "not found" message position
 
         # print(">>>>>>>>>>>>>self.filesystem_cryptainer_storage, ", self.filesystem_cryptainer_storage)
         if self.filesystem_cryptainer_storage is None:
@@ -111,16 +148,50 @@ class CryptainerStorageManagementScreen(WAScreenBase):
         )
         self.cryptainer_names_to_be_loaded = sorted_cryptainers  # They'll be loaded from the end, that's what we want
 
+        sorted_cryptainers_names = [x[1] for x in sorted_cryptainers]
+        _still_valid_selected_cryptainer_names = [
+            x for x in self.selected_unique_identifiers
+            if x in sorted_cryptainers_names]
+        del self.selected_unique_identifiers[:]
+        self.selected_unique_identifiers.extend(_still_valid_selected_cryptainer_names)
+        self._refresh_recycle_view()
+        print(">>> STILL VALID ONES", _still_valid_selected_cryptainer_names)
+        '''
         if not self.cryptainer_names_to_be_loaded:
             fallback_info_box = build_fallback_information_box("\n\n" + tr._("No containers found"))
             cryptainers_page_ids.cryptainer_table.add_widget(fallback_info_box)
-            return
+            return'''
 
 
-        assert not self.cryptainer_loading_schedule
-        self.cryptainer_loading_schedule = Clock.schedule_interval(
-            partial(self._load_next_scheduled_cryptainer), self.CRYPTAINER_LOADING_INTERVAL
-        )
+
+        data = []
+        for cryptainer_idx, cryptainer_name in self.cryptainer_names_to_be_loaded:
+
+            cryptainer_label = format_cryptainer_label(cryptainer_name=cryptainer_name)
+            try:
+                cryptainer_size_bytes = self.filesystem_cryptainer_storage._get_cryptainer_size(cryptainer_name)
+            except FileNotFoundError:
+                cryptainer_size_bytes = None  # Probably deleted concurrently
+
+            cryptainer_entry_label = tr._("N°") + SPACE + str(cryptainer_idx) + COLON() + cryptainer_label
+            if cryptainer_size_bytes is not None:
+                cryptainer_entry_label += " (%s)" % convert_bytes_to_human_representation(cryptainer_size_bytes)
+            else:
+                cryptainer_entry_label += " (%s)" % tr._("missing")
+
+            data.append({"text": cryptainer_entry_label,
+                         "unique_identifier": cryptainer_name,
+                         "information_callback": self.show_cryptainer_details,
+                         "selection_callback": self.handle_cryptainer_selection,
+                         "selected_unique_identifiers": self.selected_unique_identifiers})
+
+        cryptainers_page_ids.cryptainer_table.data = data
+
+
+        #assert not self.cryptainer_loading_schedule
+        #self.cryptainer_loading_schedule = Clock.schedule_interval(
+        #    partial(self._load_next_scheduled_cryptainer), self.CRYPTAINER_LOADING_INTERVAL
+        #)
 
     def _load_next_scheduled_cryptainer(self, *args):
         if self.cryptainer_names_to_be_loaded:
@@ -132,18 +203,6 @@ class CryptainerStorageManagementScreen(WAScreenBase):
     def _load_cryptainer(self, index, cryptainer_name):
 
         logger.debug("Loading cryptainer %s", cryptainer_name)
-
-        cryptainer_label = format_cryptainer_label(cryptainer_name=cryptainer_name)
-        try:
-            cryptainer_size_bytes = self.filesystem_cryptainer_storage._get_cryptainer_size(cryptainer_name)
-        except FileNotFoundError:
-            cryptainer_size_bytes = None  # Probably deleted concurrently
-
-        cryptainer_entry_label = tr._("N°") + SPACE + str(index) + COLON() + cryptainer_label
-        if cryptainer_size_bytes is not None:
-            cryptainer_entry_label += " (%s)" % convert_bytes_to_human_representation(cryptainer_size_bytes)
-        else:
-            cryptainer_entry_label += " (%s)" % tr._("missing")
 
         cryptainer_entry = Factory.WASelectableListItemEntry(text=cryptainer_entry_label)  # FIXME RENAME THIS
         cryptainer_entry.unique_identifier = cryptainer_name
@@ -174,12 +233,22 @@ class CryptainerStorageManagementScreen(WAScreenBase):
         # print("container_names", container_names)
         return cryptainer_names
 
+    def handle_cryptainer_selection(self, unique_identifier, checkbox, value):
+        print('The checkbox', unique_identifier, "is active=", value, 'and', checkbox.state, 'state')
+        if value:
+            if unique_identifier not in self.selected_unique_identifiers:
+                self.selected_unique_identifiers.append(unique_identifier)
+        else:
+            if unique_identifier in self.selected_unique_identifiers:
+                self.selected_unique_identifiers.remove(unique_identifier)
+
+
     def show_cryptainer_details(self, cryptainer_name):
         """
         Display the contents of container
         """
 
-        logger.debug("Showing details for cryptainer %s", cryptainer_name)
+        logger.warning("Showing details for cryptainer %s", cryptainer_name)
 
         assert self.filesystem_cryptainer_storage, self.filesystem_cryptainer_storage  # By construction...
         cryptainer_label = ""
@@ -225,7 +294,7 @@ class CryptainerStorageManagementScreen(WAScreenBase):
 
     def open_cryptainer_deletion_dialog(self):
 
-        cryptainer_names = self._get_selected_cryptainer_names()
+        cryptainer_names = self.selected_unique_identifiers
         if not cryptainer_names:
             msg = tr._("Please select containers to delete")
             display_info_toast(msg)
@@ -272,7 +341,7 @@ class CryptainerStorageManagementScreen(WAScreenBase):
             except FileNotFoundError:
                 pass  # File has probably been purged already
 
-        self.get_detected_cryptainer()  # FIXME rename
+        self.refresh_cryptainer_list()  # FIXME rename
 
     @safe_catch_unhandled_exception_and_display_popup
     def _____OBSOLETE_open_cryptainer_decryption_dialog(self):
@@ -386,7 +455,7 @@ class CryptainerStorageManagementScreen(WAScreenBase):
         Snackbar(text=message, font_size="12sp", duration=5).open()
 
     def launch_cryptainer_decryption(self):  # FIXME rename
-        selected_cryptainer_names = self._get_selected_cryptainer_names()
+        selected_cryptainer_names = self.selected_unique_identifiers
         if not selected_cryptainer_names:
             msg = tr._("Please select containers to decrypt")
             display_info_toast(msg)
