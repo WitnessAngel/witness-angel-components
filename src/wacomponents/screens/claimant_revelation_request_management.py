@@ -1,3 +1,4 @@
+import cProfile
 import logging
 from pathlib import Path
 
@@ -64,8 +65,11 @@ class ClaimantRevelationRequestManagementScreen(WAScreenBase):
         return requestor_revelation_requests
 
     def display_decryption_request_list(self):
+        cProfile.runctx("self._display_decryption_request_list()", globals(), locals(), sort="cumtime")
 
-        logger.debug("Displaying decryption request list")
+    def _display_decryption_request_list(self):
+
+        logger.info("Displaying decryption request list")
 
         self.ids.list_decryption_request_scrollview.clear_widgets()
 
@@ -89,6 +93,7 @@ class ClaimantRevelationRequestManagementScreen(WAScreenBase):
             for cryptainer_uid, revelation_requests_with_single_symkey in sorted(
                 revelation_requests_per_cryptainer_uid.items(), reverse=True
             ):
+                print(">>> We display", cryptainer_uid)
 
                 # Fetch cryptainer name from FIRST entry (which MUST exist)
                 cryptainer_name = revelation_requests_with_single_symkey[0]["symkey_decryption_request"][
@@ -197,7 +202,9 @@ class ClaimantRevelationRequestManagementScreen(WAScreenBase):
             display_layout.select(display_layout.children[-1])  # Open FIRST entry
             self.ids.list_decryption_request_scrollview.add_widget(display_layout)
 
-        self._app._offload_task_with_spinner(self.list_requestor_revelation_requests, resultat_callable)
+        data = self.list_requestor_revelation_requests()
+        resultat_callable(data)
+        #self._app._offload_task_with_spinner(self.list_requestor_revelation_requests, resultat_callable)
 
     def show_revelation_request_info(self, revelation_request_info):
 

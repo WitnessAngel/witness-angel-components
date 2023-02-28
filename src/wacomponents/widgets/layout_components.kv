@@ -5,6 +5,9 @@
 
 ## Structure of a Screen ##
 
+<ScrollView>:
+    bar_width: 10
+
 # Scrollview for a whole Screen
 <WAMainVerticalScrollView@ScrollView>:
     do_scroll_x: False
@@ -87,7 +90,7 @@
     WAListItemLeftCheckbox:
         id: selection_checkbox
         active: bool(root.unique_identifier and root.selected_unique_identifiers and root.unique_identifier in root.selected_unique_identifiers)
-        on_active: root.selection_callback(root.unique_identifier, *args)
+        on_active: if root.selection_callback: root.selection_callback(root.unique_identifier, *args)
 
     IconRightWidget:
         icon: "information-outline"
