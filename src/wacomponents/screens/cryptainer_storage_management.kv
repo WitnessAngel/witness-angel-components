@@ -38,12 +38,12 @@
             WAElevatedBoxLayout:
 
                 MDLabel:
-                    text: tr._("View and manage encrypted containers") + " (" + tr._("selected: %d") % len(root.selected_unique_identifiers) + ")"
+                    text: tr._("View and manage encrypted containers") + " (" + tr._("selected: %d") % len(root.selected_cryptainer_names) + ")"
                     padding_x: "10dp"
 
             RecycleView:
                 id: cryptainer_table
-                viewclass: 'WASelectableCryptainerEntry'
+                viewclass: 'WASelectableListItemEntry'
                 RecycleBoxLayout:
                     default_size: None, None
                     default_size_hint: 1, None

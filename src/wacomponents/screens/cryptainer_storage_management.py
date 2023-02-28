@@ -44,21 +44,11 @@ class PassphrasesDialogContent(BoxLayout):
     pass
 
 
-class WASelectableCryptainerEntry(RecycleDataViewBehavior, Factory.WASelectableListItemEntry):
-    pass
-    #def __init__(self):    #, text, cryptainer_name, show_cryptainer_details_callback):
-        #super().__init__(text=text)
-        #self.unique_identifier = cryptainer_name
-        #self.information_callback = show_cryptainer_details_callback
-
-
-
-
 
 class CryptainerStorageManagementScreen(WAScreenBase):
     #: The container storage managed by this Screen, might be None if unset
 
-    selected_unique_identifiers = ListProperty(None, allownone=True)
+    selected_cryptainer_names = ListProperty(None, allownone=True)
 
     filesystem_cryptainer_storage = ObjectProperty(None, allownone=True)
     cryptainer_names_to_be_loaded = ObjectProperty(None, allownone=True)
@@ -68,7 +58,7 @@ class CryptainerStorageManagementScreen(WAScreenBase):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.selected_unique_identifiers = []
+        self.selected_cryptainer_names = []
         # print("CREATED CryptainerStorageManagementScreen")
 
     def cancel_cryptainer_loading(self, *args):
@@ -86,8 +76,8 @@ class CryptainerStorageManagementScreen(WAScreenBase):
         Clock.schedule_once(lambda x: self.ids.cryptainer_table.refresh_from_data())
 
     def select_all_cryptainers(self):
-        del self.selected_unique_identifiers[:]
-        self.selected_unique_identifiers.extend(x[1] for x in self.cryptainer_names_to_be_loaded)
+        del self.selected_cryptainer_names[:]
+        self.selected_cryptainer_names.extend(x[1] for x in self.cryptainer_names_to_be_loaded)
         #print(">> WE FILLED selected_unique_identifiers", self.selected_unique_identifiers)
         self._refresh_recycle_view()
         #self.ids.cryptainer_table.refresh_from_data()
@@ -95,7 +85,7 @@ class CryptainerStorageManagementScreen(WAScreenBase):
         #    cryptainer_entry.ids.selection_checkbox.active = True
 
     def deselect_all_cryptainers(self):
-        del self.selected_unique_identifiers[:]
+        del self.selected_cryptainer_names[:]
         #print(">> WE EMPTIED selected_unique_identifiers", self.selected_unique_identifiers)))
         self._refresh_recycle_view()
         #for cryptainer_entry in self._gen_listed_cryptainer_entries():
@@ -150,10 +140,10 @@ class CryptainerStorageManagementScreen(WAScreenBase):
 
         sorted_cryptainers_names = [x[1] for x in sorted_cryptainers]
         _still_valid_selected_cryptainer_names = [
-            x for x in self.selected_unique_identifiers
+            x for x in self.selected_cryptainer_names
             if x in sorted_cryptainers_names]
-        del self.selected_unique_identifiers[:]
-        self.selected_unique_identifiers.extend(_still_valid_selected_cryptainer_names)
+        del self.selected_cryptainer_names[:]
+        self.selected_cryptainer_names.extend(_still_valid_selected_cryptainer_names)
         self._refresh_recycle_view()
         print(">>> STILL VALID ONES", _still_valid_selected_cryptainer_names)
         '''
@@ -183,7 +173,7 @@ class CryptainerStorageManagementScreen(WAScreenBase):
                          "unique_identifier": cryptainer_name,
                          "information_callback": self.show_cryptainer_details,
                          "selection_callback": self.handle_cryptainer_selection,
-                         "selected_unique_identifiers": self.selected_unique_identifiers})
+                         "selected_unique_identifiers": self.selected_cryptainer_names})
 
         cryptainers_page_ids.cryptainer_table.data = data
 
@@ -233,14 +223,14 @@ class CryptainerStorageManagementScreen(WAScreenBase):
         # print("container_names", container_names)
         return cryptainer_names
 
-    def handle_cryptainer_selection(self, unique_identifier, checkbox, value):
-        print('The checkbox', unique_identifier, "is active=", value, 'and', checkbox.state, 'state')
+    def handle_cryptainer_selection(self, cryptainer_name, checkbox, value):
+        print('The checkbox', cryptainer_name, "is active=", value, 'and', checkbox.state, 'state')
         if value:
-            if unique_identifier not in self.selected_unique_identifiers:
-                self.selected_unique_identifiers.append(unique_identifier)
+            if cryptainer_name not in self.selected_cryptainer_names:
+                self.selected_cryptainer_names.append(cryptainer_name)
         else:
-            if unique_identifier in self.selected_unique_identifiers:
-                self.selected_unique_identifiers.remove(unique_identifier)
+            if cryptainer_name in self.selected_cryptainer_names:
+                self.selected_cryptainer_names.remove(cryptainer_name)
 
 
     def show_cryptainer_details(self, cryptainer_name):
@@ -294,13 +284,13 @@ class CryptainerStorageManagementScreen(WAScreenBase):
 
     def open_cryptainer_deletion_dialog(self):
 
-        cryptainer_names = self.selected_unique_identifiers
-        if not cryptainer_names:
+        selected_cryptainer_names = self.selected_cryptainer_names
+        if not selected_cryptainer_names:
             msg = tr._("Please select containers to delete")
             display_info_toast(msg)
             return
 
-        message = tr._("Are you sure you want to delete %s container(s)?") % len(cryptainer_names)
+        message = tr._("Are you sure you want to delete %s container(s)?") % len(selected_cryptainer_names)
         """
         self.list_chbx_active = []
         for chbx in self.check_box_cryptainer_uuid_dict:
@@ -325,7 +315,7 @@ class CryptainerStorageManagementScreen(WAScreenBase):
                     text=tr._("Confirm deletion"),
                     on_release=lambda *args: (
                         close_current_dialog(),
-                        self.delete_cryptainers(cryptainer_names=cryptainer_names),
+                        self.delete_cryptainers(cryptainer_names=selected_cryptainer_names),
                     ),
                 )
             ],
@@ -455,7 +445,7 @@ class CryptainerStorageManagementScreen(WAScreenBase):
         Snackbar(text=message, font_size="12sp", duration=5).open()
 
     def launch_cryptainer_decryption(self):  # FIXME rename
-        selected_cryptainer_names = self.selected_unique_identifiers
+        selected_cryptainer_names = self.selected_cryptainer_names
         if not selected_cryptainer_names:
             msg = tr._("Please select containers to decrypt")
             display_info_toast(msg)
