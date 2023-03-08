@@ -123,7 +123,6 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
             already_existing_keystore_count=len(already_existing_keystore_metadata),
             corrupted_keystore_count=corrupted_keystore_count,
         )
-        # print(foreign_keystore_metadata)
 
         # Autoselect freshly imported keys
         new_keystore_uids = [metadata["keystore_uid"] for metadata in foreign_keystore_metadata]
@@ -194,10 +193,10 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
         logger.debug("Listing foreign keystores")
 
         # print(">> we refresh auth devices panel")
-        Keys_page_ids = self.ids  # FIXME rename this
+        widget_ids = self.ids
 
-        Keys_page_ids.imported_authenticator_list.clear_widgets()  # FIXME naming
-        Keys_page_ids.imported_authenticator_list.do_layout()  # Prevents bug with "not found" message position
+        widget_ids.imported_authenticator_list.clear_widgets()
+        widget_ids.imported_authenticator_list.do_layout()  # Prevents bug with "not found" message position
 
         keystore_metadata = self.filesystem_keystore_pool.get_all_foreign_keystore_metadata()
 
@@ -205,11 +204,7 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
             self.display_message_no_device_found()
             return
 
-        # self.chbx_lbls = {}  # FIXME: lbls ?
-        # self.btn_lbls = {}  # FIXME: lbls ?
-
         for (index, (keystore_uid, metadata)) in enumerate(sorted(keystore_metadata.items()), start=1):
-            keystore_uid_shortened = shorten_uid(keystore_uid)
 
             authenticator_label = format_authenticator_label(
                 authenticator_owner=metadata["keystore_owner"], keystore_uid=metadata["keystore_uid"], short_uid=True
@@ -230,7 +225,7 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
 
             authenticator_entry = Factory.WASelectableListItemEntry(
                 text=foreign_authenticator_label,
-            )  # FIXME RENAME THIS
+            )
 
             #print(">>>>>selected_keystore_uids is", self.selected_keystore_uids)
             data = dict(
@@ -240,86 +235,14 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
                 selected_unique_identifiers=self.selected_keystore_uids,
             )
             for key, value in data.items():
-                print(">>>>>>>> WE SETATTR", repr(key), repr(value))
                 setattr(authenticator_entry, key, value)
 
-            #print(">>>>>>>> CHECKBOX", authenticator_entry.ids.selection_checkbox.state)
-            '''
-            information_callback: None
-            selection_callback: None
-            selected_unique_identifiers: None
-
-            selection_checkbox = authenticator_entry.ids.selection_checkbox
-            # print(">>>>>>>>selection_checkbox", selection_checkbox)
-            '''
-            #selection_checkbox.active = str(keystore_uid) in self.selected_keystore_uids
-
-
-
-            ##selection_checkbox.bind(active=selection_callback)
-
-            #information_icon = authenticator_entry.ids.information_icon
-
-
-
-            #information_icon.bind(on_press=information_callback)
-
-            Keys_page_ids.imported_authenticator_list.add_widget(authenticator_entry)
-            # Keys_page_ids.device_table.add_widget(my_check_btn)
-            # Keys_page_ids.device_table.add_widget(device_row)
+            widget_ids.imported_authenticator_list.add_widget(authenticator_entry)
 
         if display_toast:
             display_info_toast(tr._("Refreshed imported key guardians"))
-        """
-                file_metadata = Path(dir_key_sorage).joinpath(".metadata.json")
-                if file_metadata.exists():
-
-                    metadata = load_from_json_file(file_metadata)
-                    keystore_uid = str(metadata["keystore_uid"])
-                    uuid = keystore_uid.split("-")
-                    start_of_uuid = uuid[0].lstrip()
-                    start_of_UUID = start_of_uuid.rstrip()
-                    my_check_box = CheckBox(#start
-                        active=False,
-                        size_hint=(0.2, 0.2),
-                        on_release=self.on_keystore_checkbox_click,
-                    )
-                    my_check_btn = Button(
-                        text=" key N°:  %s        User:  %s      |      UUID device:  %s "
-                        % ((str(index + 1)), str(metadata["keystore_owner"]), start_of_UUID),
-                        size_hint=(0.8, 0.2),
-                        background_color=(1, 1, 1, 0.01),
-                        on_press=self.display_keystore_details,
-                    )
-                    self.chbx_lbls[my_check_box] = str(metadata["keystore_uid"])
-                    self.btn_lbls[my_check_btn] = str(metadata["keystore_uid"])
-                    layout = BoxLayout(
-                        orientation="horizontal",
-                        pos_hint={"center": 1, "top": 1},
-                        padding=[140, 0]
-                    )
-                    layout.add_widget(my_check_box)
-                    layout.add_widget(my_check_btn)
-                    Keys_page_ids.table.add_widget(layout)
-                    index += 1
-                else:
-                    self.display_message_no_device_found()
-        """
 
     def display_message_no_device_found(self):
-
-        # keys_page_ids = self.ids
-        # devices_display = MDLabel(
-        #     text="No imported autentication device found ",
-        #     #background_color=(1, 0, 0, 0.01),
-        #     halign="center",
-        #     font_size="20sp",
-        #     #color=[0, 1, 0, 1],
-        # )
-        # #keys_page_ids.imported_authenticator_list.clear_widgets()
-        # Display_layout = MDBoxLayout(orientation="horizontal", padding=[140, 0])
-        # Display_layout.add_widget(devices_display)
-
         fallback_info_box = build_fallback_information_box("\n\n" + tr._("No imported authentication device found"))
         self.ids.imported_authenticator_list.add_widget(fallback_info_box)
 
@@ -358,7 +281,6 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
                 error_on_missing_key=False,
             )
 
-            # FIXME it's private key SINGULAR HERE!!
             message += tr._("Key n°") + SPACE + str(index) + COLON() + keypair_label + LINEBREAK
 
         self.open_keystore_details_dialog(message, keystore_owner=keystore_owner)
@@ -445,7 +367,7 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
         return keystore_tree
 
     @safe_catch_unhandled_exception_and_display_popup
-    def import_key_storage_from_web_gateway(self, keystore_uid_str):  # FIXME bad name
+    def import_key_storage_from_web_gateway(self, keystore_uid_str):
 
         logger.debug("Importing foreign keystore %s from web gateway", keystore_uid_str)
 
@@ -471,7 +393,7 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
         else:
             self.filesystem_keystore_pool.import_foreign_keystore_from_keystore_tree(keystore_tree)
 
-            msg = "An authentication device(s) updated"  # FIXME CHANGE THIS
+            msg = "Authentication device(s) updated"
 
             # Autoselect freshly imported keys
 
