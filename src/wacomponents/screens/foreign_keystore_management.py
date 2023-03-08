@@ -217,30 +217,52 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
 
             foreign_authenticator_label = tr._("User") + " " + authenticator_label
 
-            authenticator_entry = Factory.WASelectableListItemEntry(
-                text=foreign_authenticator_label
-            )  # FIXME RENAME THIS
-
-            selection_checkbox = authenticator_entry.ids.selection_checkbox
-            # print(">>>>>>>>selection_checkbox", selection_checkbox)
-            selection_checkbox.active = str(keystore_uid) in self.selected_keystore_uids
-
-            def selection_callback(
-                widget, value, keystore_uid=keystore_uid
-            ):  # Force keystore_uid save here, else scope bug
-                self.on_keystore_checkbox_click(keystore_uid=keystore_uid, is_selected=value)
-
-            selection_checkbox.bind(active=selection_callback)
-
-            information_icon = authenticator_entry.ids.information_icon
-
             @safe_catch_unhandled_exception_and_display_popup
             def information_callback(
-                widget, keystore_uid=keystore_uid, metadata=metadata
+                keystore_uid, metadata=metadata
             ):  # Force keystore_uid save here, else scope bug
                 self.display_keystore_details(keystore_uid=keystore_uid, keystore_owner=metadata["keystore_owner"])
 
-            information_icon.bind(on_press=information_callback)
+            def selection_callback(  # FIXME make it class-level method
+                keystore_uid, widget, value
+            ):  # Force keystore_uid save here, else scope bug
+                self.on_keystore_checkbox_click(keystore_uid=keystore_uid, is_selected=value)
+
+            authenticator_entry = Factory.WASelectableListItemEntry(
+                text=foreign_authenticator_label,
+            )  # FIXME RENAME THIS
+
+            #print(">>>>>selected_keystore_uids is", self.selected_keystore_uids)
+            data = dict(
+                unique_identifier=str(keystore_uid),
+                selection_callback=selection_callback,
+                information_callback=information_callback,
+                selected_unique_identifiers=self.selected_keystore_uids,
+            )
+            for key, value in data.items():
+                print(">>>>>>>> WE SETATTR", repr(key), repr(value))
+                setattr(authenticator_entry, key, value)
+
+            #print(">>>>>>>> CHECKBOX", authenticator_entry.ids.selection_checkbox.state)
+            '''
+            information_callback: None
+            selection_callback: None
+            selected_unique_identifiers: None
+
+            selection_checkbox = authenticator_entry.ids.selection_checkbox
+            # print(">>>>>>>>selection_checkbox", selection_checkbox)
+            '''
+            #selection_checkbox.active = str(keystore_uid) in self.selected_keystore_uids
+
+
+
+            ##selection_checkbox.bind(active=selection_callback)
+
+            #information_icon = authenticator_entry.ids.information_icon
+
+
+
+            #information_icon.bind(on_press=information_callback)
 
             Keys_page_ids.imported_authenticator_list.add_widget(authenticator_entry)
             # Keys_page_ids.device_table.add_widget(my_check_btn)
@@ -311,6 +333,7 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
                 self.selected_keystore_uids.remove(keystore_uid_str)
             elif is_selected and keystore_uid_str not in self.selected_keystore_uids:
                 self.selected_keystore_uids.append(keystore_uid_str)
+        #print(">>>>>> on_selected_keyguardians_changed", self.selected_keystore_uids)
         self.dispatch("on_selected_keyguardians_changed", self.selected_keystore_uids)  # FIXME rename this
         # print("self.selected_keystore_uids", self.selected_keystore_uids)
 
