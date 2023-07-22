@@ -27,7 +27,8 @@ def _presetup_app_environment(setup_kivy_gui: bool):
         # WORKAROUND FOR LOGGING AND GRAPHICS WEIRDNESS IN KIVY SETUP #
 
         assert "kivy.logger" not in sys.modules, "problem, kivy logger is already loaded!"  # Not loaded yet!
-        real_logging_root = logging.root
+        # Kivy used to monkeypatch logging.root, it no longer does that as of https://github.com/kivy/kivy/pull/7979
+        # but it still does some funky stuff with stderr hence need to control that here
         real_stderr = sys.stderr
         assert isinstance(real_stderr, io.TextIOWrapper), real_stderr
 
@@ -35,14 +36,10 @@ def _presetup_app_environment(setup_kivy_gui: bool):
 
         del kivy_logger
         assert "kivy.logger" in sys.modules, "kivy logger should now be loaded!"
-
-        # Revert ugly monkey-patching by Kivy
-        assert logging.getLogger("kivy") is logging.root
-        logging.root = real_logging_root
         sys.stderr = real_stderr
 
     except Exception as exc:
-        print(">>>>>>>> FAILED REPAIR OF KIVY LOGGING: %r" % exc)
+        print(">>>>>>>> FAILED INITIALIZING KIVY LOGGING: %r" % exc)
 
     # Setup basic logging to stderr
     stream_handler = StreamHandler(sys.stderr)
