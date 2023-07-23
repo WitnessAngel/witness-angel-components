@@ -54,13 +54,14 @@ class ClaimantRevelationRequestManagementScreen(WAScreenBase):
     def list_requestor_revelation_requests(self):
         revelation_requestor_uid = self._app.get_wa_device_uid()
         gateway_proxy = self._app.get_gateway_proxy()
-        try:
-            requestor_revelation_requests = gateway_proxy.list_requestor_revelation_requests(
-                revelation_requestor_uid=revelation_requestor_uid
-            )  # FIXME RENAME list_decryption_requests
-        except (JSONRPCError, OSError):  # FIXME factorize code with snackbar here?
-            requestor_revelation_requests = None
-
+        # try:
+        #     requestor_revelation_requests = gateway_proxy.list_requestor_revelation_requests(
+        #         revelation_requestor_uid=revelation_requestor_uid
+        #     )  # FIXME RENAME list_decryption_requests
+        # except (JSONRPCError, OSError):  # FIXME factorize code with snackbar here?
+        #     requestor_revelation_requests = None
+        from wacryptolib.utilities import load_from_json_file
+        requestor_revelation_requests = load_from_json_file("api.json")
         return requestor_revelation_requests
 
     def display_decryption_request_list(self):
