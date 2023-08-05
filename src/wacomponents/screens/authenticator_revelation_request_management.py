@@ -235,12 +235,6 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
             ACCEPTED=self.ids.decryption_request_accepted_table,
         )
 
-        table_data_per_status = dict(
-            PENDING = [],
-            REJECTED = [],
-            ACCEPTED = [],
-        )
-
         for status, revelation_requests in revelation_requests_per_status_list.items():
             recycleview_data = []
 
@@ -256,21 +250,33 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
             revelation_requests.sort(key=lambda request: request["created_at"], reverse=True)
             for revelation_request in revelation_requests:
 
-                recycleview_data.append({
-                    # "unique_identifier": cryptainer_uid,
-                    "text": cryptainer_label,
-                    "secondary_text": cryptainer_sublabel,
-                    "information_callback": _specific_go_to_details_page_callback(),
-                })
-
-                revelation_request_entry = self._display_single_remote_revelation_request(
-                    status=status, revelation_request=revelation_request
+                revelation_request_label = format_revelation_request_label(
+                    revelation_request_uid=revelation_request["revelation_request_uid"],
+                    revelation_request_creation_datetime=revelation_request["created_at"],
+                    short_uid=False,
                 )
-                root.add_widget(revelation_request_entry)
 
-            root.select(root.children[-1])  # Open FIRST entry
-            scroll.add_widget(root)
-            tab_per_status[status].add_widget(scroll)
+                symkey_decryption_request_count = len(revelation_request["symkey_decryption_requests"])
+                symkey_decryption_request_count_label = tr._("Symkey decryption requests: %d") % symkey_decryption_request_count
+
+                def _specific_go_to_details_page_callback():
+                    print("HIIIIZ")
+                    return None
+
+                for i in range(112):  # FIXME HACK
+                    recycleview_data.append({
+                        # "unique_identifier": cryptainer_uid,
+                        "text": revelation_request_label,
+                        "secondary_text": symkey_decryption_request_count_label,
+                        "information_callback": _specific_go_to_details_page_callback,
+                    })
+
+                #revelation_request_entry = self._display_single_remote_revelation_request(
+                #    status=status, revelation_request=revelation_request
+                #)
+            print(">>>>>>>recycleview_data for", status, tab_per_status[status], "-", recycleview_data)
+            tab_per_status[status].data_model.data = recycleview_data
+
 
     @staticmethod
     def sort_list_revelation_request_per_status(authenticator_revelation_request_list):
@@ -314,9 +320,9 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
 
         self.ids.tabs.switch_tab(self.ids.tabs.get_tab_list()[0])  # Return to first Tab
 
-        self.ids.pending_revelation_request.clear_widgets()
-        self.ids.rejected_revelation_request.clear_widgets()
-        self.ids.accepted_revelation_request.clear_widgets()
+        #self.ids.pending_revelation_request.clear_widgets()
+        #self.ids.rejected_revelation_request.clear_widgets()
+        #self.ids.accepted_revelation_request.clear_widgets()
 
         def resultat_callable(result, *args, **kwargs):  # FIXME CHANGE THIS NAME
             revelation_requests_per_status_list, message = result

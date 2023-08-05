@@ -127,13 +127,13 @@ class ClaimantRevelationRequestManagementScreen(WAScreenBase):
                     return go_to_details_page_callback
 
                 #container_item = Factory.ContainerItem(title=tr._("Container") + " " + cryptainer_label)
-                for i in range(1):
-                    recycleview_data.append({
-                        #"unique_identifier": cryptainer_uid,
-                        "text": cryptainer_label,
-                        "secondary_text": cryptainer_sublabel,
-                        "information_callback": _specific_go_to_details_page_callback(),
-                    })
+                ###for i in range(1):
+                recycleview_data.append({
+                    #"unique_identifier": cryptainer_uid,
+                    "text": cryptainer_label,
+                    "secondary_text": cryptainer_sublabel,
+                    "information_callback": _specific_go_to_details_page_callback(),
+                })
 
 
                 """
