@@ -406,9 +406,9 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
         if not request_external_storage_dirs_access():
             return
 
-        keystore_uid_shortened = shorten_uid(authenticator_metadata["keystore_uid"])
+        keystore_uid_shortened = shorten_uid(authenticator_metadata["keystore_uid"], prefix="id")
         EXTERNAL_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
-        archive_path_base = EXTERNAL_EXPORTS_DIR.joinpath("authenticator_%s_%s" % (keystore_uid_shortened, timestamp))
+        archive_path_base = EXTERNAL_EXPORTS_DIR.joinpath("authenticator_%s_date%s" % (keystore_uid_shortened, timestamp))
 
         logger.debug("Exporting authenticator to archive %s", archive_path_base)
         archive_path = shutil.make_archive(

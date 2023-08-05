@@ -94,8 +94,8 @@ def convert_bytes_to_human_representation(size):
     return size
 
 
-def shorten_uid(uid):
-    return "..." + str(uid).split("-")[-1]
+def shorten_uid(uid, prefix="…"):
+    return prefix + str(uid).split("-")[-1]
 
 
 def get_nice_size(size):
