@@ -91,6 +91,7 @@ class WaRuntimeSupportMixin:
         for status_checker in status_checkers:
             status, message = status_checker()
             global_status = global_status and status
+            # Fixme use "Check Mark" unicode character with proper font, one day
             checkup_status_messages.append(("[OK]" if status else "[KO]") + " " + message)
 
         self.checkup_status_text = "\n".join(checkup_status_messages)

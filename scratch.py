@@ -82,7 +82,7 @@ class RV(RecycleView):
         super(RV, self).__init__(**kwargs)
         from wacryptolib.utilities import load_from_json_file
         self.api_response: List[Dict[str, Any]] = load_from_json_file(
-            "api.json"
+            "list_requestor_revelation_requests_fixture.json"
         )
         self.data = self.parse_data()
 

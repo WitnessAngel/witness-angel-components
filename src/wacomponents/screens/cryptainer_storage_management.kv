@@ -38,15 +38,15 @@
                     text: tr._("View and manage encrypted containers") + " (" + tr._("selected: %d") % len(root.selected_cryptainer_names) + ")"
                     padding_x: "10dp"
 
-            RecycleView:
+            WARecycleView:
                 id: cryptainer_table
                 viewclass: 'WASelectableListItemEntry'
-                RecycleBoxLayout:
-                    default_size: None, None
-                    default_size_hint: 1, None
-                    size_hint_y: None
-                    height: self.minimum_height
-                    orientation: 'vertical'
+                #RecycleBoxLayout:
+                #    default_size: None, None
+                #    default_size_hint: 1, None
+                #    size_hint_y: None
+                #    height: self.minimum_height
+                #    orientation: 'vertical'
 
 
             WAButtonsGridLayout:

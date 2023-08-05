@@ -225,28 +225,44 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
             ],
         )
 
-    def display_remote_revelation_request(self, revelation_requests_per_status_list):  # FIXME rename
+    def _display_remote_revelation_request_(self, revelation_requests_per_status_list):  # FIXME rename
 
         logger.debug("Displaying remote decryption requests")
 
-        tab_per_status = dict(
-            PENDING=self.ids.pending_revelation_request,
-            REJECTED=self.ids.rejected_revelation_request,
-            ACCEPTED=self.ids.accepted_revelation_request,
+        tab_per_status = dict(  # FIXME rename
+            PENDING=self.ids.decryption_request_pending_table,
+            REJECTED=self.ids.decryption_request_rejected_table,
+            ACCEPTED=self.ids.decryption_request_accepted_table,
+        )
+
+        table_data_per_status = dict(
+            PENDING = [],
+            REJECTED = [],
+            ACCEPTED = [],
         )
 
         for status, revelation_requests in revelation_requests_per_status_list.items():
+            recycleview_data = []
 
             if not revelation_requests:
                 fallback_info_box = build_fallback_information_box(tr._("No authorization request"))
-                tab_per_status[status].add_widget(fallback_info_box)
+                # FIXME HANDLE THIS
+                ##tab_per_status[status].add_widget(fallback_info_box)
                 continue
 
-            scroll = Factory.WAVerticalScrollView()
-            root = GrowingAccordion(orientation="vertical", size_hint=(1, None), height=self.height)
+            #scroll = Factory.WAVerticalScrollView()
+            #root = GrowingAccordion(orientation="vertical", size_hint=(1, None), height=self.height)
 
             revelation_requests.sort(key=lambda request: request["created_at"], reverse=True)
             for revelation_request in revelation_requests:
+
+                recycleview_data.append({
+                    # "unique_identifier": cryptainer_uid,
+                    "text": cryptainer_label,
+                    "secondary_text": cryptainer_sublabel,
+                    "information_callback": _specific_go_to_details_page_callback(),
+                })
+
                 revelation_request_entry = self._display_single_remote_revelation_request(
                     status=status, revelation_request=revelation_request
                 )
@@ -308,7 +324,7 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
                 display_info_snackbar(message)
             else:
                 display_info_toast(message)
-                self.display_remote_revelation_request(
+                self._display_remote_revelation_request_(
                     revelation_requests_per_status_list=revelation_requests_per_status_list
                 )
 

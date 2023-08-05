@@ -85,14 +85,41 @@
                 title: tr._("Pending")
                 id: pending_revelation_request
 
+                WARecycleView:
+                    id: decryption_request_pending_table
+                    viewclass: 'WAClaimantAuthorizationRequestListItemEntry'
+                    #RecycleBoxLayout:
+                    #    default_size: None, None
+                    #    default_size_hint: 1, None
+                    #    size_hint_y: None
+                    #    height: self.minimum_height
+                    #    orientation: 'vertical'
+
             Tab:
                 title: tr._("Accepted")
                 id: accepted_revelation_request
+
+                WARecycleView:
+                    id: decryption_request_accepted_table
+                    viewclass: 'WAClaimantAuthorizationRequestListItemEntry'
+                    #RecycleBoxLayout:
+                    #    default_size: None, None
+                    #    default_size_hint: 1, None
+                    #    size_hint_y: None
+                    #    height: self.minimum_height
+                    #    orientation: 'vertical'
 
             Tab:
                 title: tr._("Rejected")
                 id: rejected_revelation_request
 
-
-
+                WARecycleView:
+                    id: decryption_request_rejected_table
+                    viewclass: 'WAClaimantAuthorizationRequestListItemEntry'
+                    #RecycleBoxLayout:
+                    #    default_size: None, None
+                    #    default_size_hint: 1, None
+                    #    size_hint_y: None
+                    #    height: self.minimum_height
+                    #    orientation: 'vertical'
 

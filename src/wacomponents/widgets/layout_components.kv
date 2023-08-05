@@ -5,7 +5,7 @@
 
 ## Structure of a Screen ##
 
-# Scrollview for a whole Screen
+# Scrollview for a whole Screen, mainly for security
 <WAMainVerticalScrollView@ScrollView>:
     do_scroll_x: False
     do_scroll_y: True
@@ -14,6 +14,7 @@
 
 # Inner scrollview, with bar always clearly visible if present
 <WAVerticalScrollView@WAMainVerticalScrollView>:
+    bar_width: 5
     bar_inactive_color: self.bar_color
 
 # Main layout of each view, to place both fixed-height and relative-height components
@@ -44,6 +45,16 @@
     height: self.minimum_height
     spacing: 10
     padding: [10, 0]
+
+# Recycleview with better scroll bar and vertical layout
+<WARecycleView@RecycleView>:
+    bar_width: 5
+    RecycleBoxLayout:
+        default_size: None, None
+        default_size_hint: 1, None
+        size_hint_y: None
+        height: self.minimum_height
+        orientation: 'vertical'
 
 
 # Buttons for important actions like import/export/delete etc.
