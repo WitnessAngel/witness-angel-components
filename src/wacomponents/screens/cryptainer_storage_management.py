@@ -114,7 +114,8 @@ class CryptainerStorageManagementScreen(WAScreenBase):
                          "selected_unique_identifiers": self.selected_cryptainer_names})
 
         cryptainers_page_ids.cryptainer_table.data = data
-        self._refresh_recycle_view()
+        self._refresh_recycle_view()  # FIXME is it really necessary ???
+        display_info_toast(tr._("Refreshed local containers"))
 
     def handle_cryptainer_selection(self, cryptainer_name, checkbox, value):
         #print('The checkbox', cryptainer_name, "is active=", value, 'and', checkbox.state, 'state')

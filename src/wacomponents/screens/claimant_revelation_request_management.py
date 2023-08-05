@@ -16,7 +16,7 @@ from wacomponents.utilities import (
     format_cryptainer_label,
 )
 from wacomponents.widgets.layout_components import GrowingAccordion, build_fallback_information_box
-from wacomponents.widgets.popups import dialog_with_close_button, display_info_snackbar
+from wacomponents.widgets.popups import dialog_with_close_button, display_info_snackbar, display_info_toast
 
 Builder.load_file(str(Path(__file__).parent / "claimant_revelation_request_management.kv"))
 
@@ -26,6 +26,9 @@ logger = logging.getLogger(__name__)
 
 
 class ClaimantRevelationRequestManagementScreen(WAScreenBase):
+
+    has_been_initialized = False
+
     def go_to_previous_screen(self):
         self.manager.current = WAScreenName.cryptainer_storage_management
 
@@ -54,15 +57,18 @@ class ClaimantRevelationRequestManagementScreen(WAScreenBase):
     def list_requestor_revelation_requests(self):
         revelation_requestor_uid = self._app.get_wa_device_uid()
         gateway_proxy = self._app.get_gateway_proxy()
-        # try:
-        #     requestor_revelation_requests = gateway_proxy.list_requestor_revelation_requests(
-        #         revelation_requestor_uid=revelation_requestor_uid
-        #     )  # FIXME RENAME list_decryption_requests
-        # except (JSONRPCError, OSError):  # FIXME factorize code with snackbar here?
-        #     requestor_revelation_requests = None
-        from wacryptolib.utilities import load_from_json_file
-        requestor_revelation_requests = load_from_json_file("list_requestor_revelation_requests_fixture.json")
+        try:
+            requestor_revelation_requests = gateway_proxy.list_requestor_revelation_requests(
+                revelation_requestor_uid=revelation_requestor_uid
+            )  # FIXME RENAME list_decryption_requests
+        except (JSONRPCError, OSError):  # FIXME factorize code with snackbar here?
+            requestor_revelation_requests = None
         return requestor_revelation_requests
+
+    def conditionally_refresh_decryption_request_list(self):
+        if not self.has_been_initialized:
+            self.display_decryption_request_list()
+            self.has_been_initialized = True  # Whetever the success of async operation above
 
     def display_decryption_request_list(self):  #FIXME rename -> cryptainers display
 
@@ -229,6 +235,8 @@ class ClaimantRevelationRequestManagementScreen(WAScreenBase):
 
             #display_layout.select(display_layout.children[-1])  # Open FIRST entry
             self.ids.decryption_request_table.data = recycleview_data
+            # FIXME do we need to force refresh of data???
+            display_info_toast(tr._("Refreshed authorization requests"))
 
         self._app._offload_task_with_spinner(self.list_requestor_revelation_requests, resultat_callable)
 
