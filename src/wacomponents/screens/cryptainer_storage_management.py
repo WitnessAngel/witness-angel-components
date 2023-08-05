@@ -56,6 +56,7 @@ class CryptainerStorageManagementScreen(WAScreenBase):
         self.selected_cryptainer_names = []
 
     def _refresh_recycle_view(self):
+        """Forced refresh, for when we silently modify a nested field from RecycleView.data"""
         Clock.schedule_once(lambda x: self.ids.cryptainer_table.refresh_from_data())
 
     def select_all_cryptainers(self):
@@ -114,7 +115,7 @@ class CryptainerStorageManagementScreen(WAScreenBase):
                          "selected_unique_identifiers": self.selected_cryptainer_names})
 
         cryptainers_page_ids.cryptainer_table.data = data
-        self._refresh_recycle_view()  # FIXME is it really necessary ???
+        ## USELESS self._refresh_recycle_view()  # FIXME is it really necessary ??? NOPE
         display_info_toast(tr._("Refreshed local containers"))
 
     def handle_cryptainer_selection(self, cryptainer_name, checkbox, value):
