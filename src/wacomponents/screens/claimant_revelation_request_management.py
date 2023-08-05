@@ -64,7 +64,7 @@ class ClaimantRevelationRequestManagementScreen(WAScreenBase):
         requestor_revelation_requests = load_from_json_file("list_requestor_revelation_requests_fixture.json")
         return requestor_revelation_requests
 
-    def display_decryption_request_list(self):
+    def display_decryption_request_list(self):  #FIXME rename -> cryptainers display
 
         logger.debug("Displaying decryption request list")
 
@@ -104,13 +104,29 @@ class ClaimantRevelationRequestManagementScreen(WAScreenBase):
 
                 cryptainer_sublabel = tr._("Authorization requests: %d") % len(revelation_requests_with_single_symkey)
 
+                def _specific_go_to_details_page_callback(  # Capture current loop variables
+                        _cryptainer_uid=cryptainer_uid,
+                        _cryptainer_label=cryptainer_label,
+                        _revelation_requests_with_single_symkey=revelation_requests_with_single_symkey):
+
+                    def go_to_details_page_callback():
+                        #print("CALLING go_to_details_page_callback() with cryptainer_uid")
+                        detail_screen = self.manager.get_screen(WAScreenName.claimant_revelation_request_detail)
+                        detail_screen.setup_revelation_request_details(
+                            cryptainer_uid=_cryptainer_uid,
+                            cryptainer_label=_cryptainer_label,
+                            revelation_requests_with_single_symkey=_revelation_requests_with_single_symkey,
+                        )
+                        self.manager.current = WAScreenName.claimant_revelation_request_detail
+                    return go_to_details_page_callback
+
                 #container_item = Factory.ContainerItem(title=tr._("Container") + " " + cryptainer_label)
-                for i in range(10):
+                for i in range(1):
                     recycleview_data.append({
-                        "unique_identifier": cryptainer_uid,
+                        #"unique_identifier": cryptainer_uid,
                         "text": cryptainer_label,
                         "secondary_text": cryptainer_sublabel,
-                        "information_callback" : lambda *args, **kwargs: None
+                        "information_callback": _specific_go_to_details_page_callback(),
                     })
 
 

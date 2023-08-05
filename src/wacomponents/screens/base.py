@@ -13,6 +13,7 @@ class WAScreenName:
     cryptainer_decryption_result = "cryptainer_decryption_result"
     claimant_revelation_request_creation_form = "claimant_revelation_request_creation_form"
     claimant_revelation_request_management = "claimant_revelation_request_management"
+    claimant_revelation_request_detail = "claimant_revelation_request_detail"
 
     # AUTHENTICATOR Screens
     authenticator_management = "authenticator_management"
