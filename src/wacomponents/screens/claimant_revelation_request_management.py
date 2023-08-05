@@ -61,14 +61,14 @@ class ClaimantRevelationRequestManagementScreen(WAScreenBase):
         # except (JSONRPCError, OSError):  # FIXME factorize code with snackbar here?
         #     requestor_revelation_requests = None
         from wacryptolib.utilities import load_from_json_file
-        requestor_revelation_requests = load_from_json_file("api.json")
+        requestor_revelation_requests = load_from_json_file("list_requestor_revelation_requests_fixture.json")
         return requestor_revelation_requests
 
     def display_decryption_request_list(self):
 
         logger.debug("Displaying decryption request list")
 
-        self.ids.list_decryption_request_scrollview.clear_widgets()
+        #self.ids.list_decryption_request_scrollview.clear_widgets()
 
         def resultat_callable(requestor_revelation_requests, *args, **kwargs):  # FIXME CHANGE THIS NAME
             if requestor_revelation_requests is None:
@@ -77,14 +77,16 @@ class ClaimantRevelationRequestManagementScreen(WAScreenBase):
 
             if requestor_revelation_requests == []:  # FIXME RENAME ALL decryption requests!!!!
                 fallback_info_box = build_fallback_information_box(tr._("No authorization requests found"))
-                self.ids.list_decryption_request_scrollview.add_widget(fallback_info_box)
+                self.ids.list_decryption_request_scrollview.add_widget(fallback_info_box)  # FIXME
                 return
 
             revelation_requests_per_cryptainer_uid = self._list_revelation_requests_per_cryptainer_uid(
                 requestor_revelation_requests
             )
 
-            display_layout = GrowingAccordion(orientation="vertical", size_hint=(1, None))
+            #display_layout = GrowingAccordion(orientation="vertical", size_hint=(1, None))
+
+            recycleview_data = []  # List of dicts
 
             # Sorting kinda works, because UUID0 of cryptainers are built by datetime!
             for cryptainer_uid, revelation_requests_with_single_symkey in sorted(
@@ -100,8 +102,19 @@ class ClaimantRevelationRequestManagementScreen(WAScreenBase):
                     cryptainer_name=cryptainer_name, cryptainer_uid=cryptainer_uid
                 )
 
-                container_item = Factory.ContainerItem(title=tr._("Container") + " " + cryptainer_label)
+                cryptainer_sublabel = tr._("Authorization requests: %d") % len(revelation_requests_with_single_symkey)
 
+                #container_item = Factory.ContainerItem(title=tr._("Container") + " " + cryptainer_label)
+                for i in range(10):
+                    recycleview_data.append({
+                        "unique_identifier": cryptainer_uid,
+                        "text": cryptainer_label,
+                        "secondary_text": cryptainer_sublabel,
+                        "information_callback" : lambda *args, **kwargs: None
+                    })
+
+
+                """
                 for revelation_request_with_single_symkey in revelation_requests_with_single_symkey:
 
                     assert (
@@ -183,7 +196,9 @@ class ClaimantRevelationRequestManagementScreen(WAScreenBase):
                     revelation_request_entry = Factory.WAIconListItemEntry(
                         text=revelation_request_label1, secondary_text=revelation_request_label2
                     )
+                    """
 
+                """
                     def information_callback(widget, revelation_request_info=revelation_request_summary_text):
                         # We MUST use this "revelation_request_info" parameter to freeze the "variable revelation_request_summary_text"
                         self.show_revelation_request_info(revelation_request_info=revelation_request_info)
@@ -192,11 +207,12 @@ class ClaimantRevelationRequestManagementScreen(WAScreenBase):
                     information_icon.bind(on_press=information_callback)
 
                     container_item.revelation_requests_list.add_widget(revelation_request_entry)
+                    """
 
-                display_layout.add_widget(container_item)
+                #display_layout.add_widget(container_item)
 
-            display_layout.select(display_layout.children[-1])  # Open FIRST entry
-            self.ids.list_decryption_request_scrollview.add_widget(display_layout)
+            #display_layout.select(display_layout.children[-1])  # Open FIRST entry
+            self.ids.decryption_request_table.data = recycleview_data
 
         self._app._offload_task_with_spinner(self.list_requestor_revelation_requests, resultat_callable)
 

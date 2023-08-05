@@ -75,7 +75,7 @@
 
 <WAListItemLeftCheckbox@ILeftBodyTouch+MDCheckbox>:
 
-<WASelectableListItemEntry@RecycleDataViewBehavior+OneLineAvatarIconListItem>:
+<WASelectableListItemEntry@RecycleDataViewBehavior+OneLineAvatarIconListItem>: # FIXME improve naming
     text: ""
     ###selected: selection_checkbox.active
 
@@ -88,6 +88,19 @@
         id: selection_checkbox
         active: bool(root.unique_identifier and root.selected_unique_identifiers and root.unique_identifier in root.selected_unique_identifiers)
         on_active: root.selection_callback(root.unique_identifier, *args)
+
+    IconRightWidget:
+        icon: "information-outline"
+        id: information_icon
+        on_press: root.information_callback(root.unique_identifier)
+
+
+<WAClaimantAuthorizationRequestListItemEntry@RecycleDataViewBehavior+TwoLineAvatarIconListItem>:
+    text: ""
+    secondary_text: ""
+
+    IconLeftWidget:
+        icon: "file-arrow-left-right"
 
     IconRightWidget:
         icon: "information-outline"

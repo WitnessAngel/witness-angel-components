@@ -2,6 +2,7 @@
 
 
 <ContainerItem@AccordionItem>
+    # FIXME UNUSED
     revelation_requests_list : revelation_requests_list
 
     MDGridLayout:
@@ -26,8 +27,18 @@
 
             WAElevatedBoxLayout:
                 MDLabel:
-                    text: tr._("View all submitted authorization requests")
+                    text: tr._("View authorization requests submitted for each container")
                     padding_x: "10dp"
 
-            WAVerticalScrollView:
-                id: list_decryption_request_scrollview
+            RecycleView:
+                id: decryption_request_table
+                viewclass: 'WAClaimantAuthorizationRequestListItemEntry'
+                RecycleBoxLayout:
+                    default_size: None, None
+                    default_size_hint: 1, None
+                    size_hint_y: None
+                    height: self.minimum_height
+                    orientation: 'vertical'
+
+            #WAVerticalScrollView:
+            #    id: list_decryption_request_scrollview
