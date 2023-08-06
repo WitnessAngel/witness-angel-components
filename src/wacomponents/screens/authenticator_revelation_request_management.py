@@ -66,13 +66,8 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
     index = 0   #FIXME remove?
     selected_authenticator_dir = ObjectProperty(None, allownone=True)
 
-    has_been_initialized = False
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-    def on_selected_authenticator_dir(self, instance, value):
-        self.request_refreshing_of_revelation_requests()
 
     def go_to_home_screen(self):  # Fixme deduplicate and push to App!
         self.manager.current = WAScreenName.authenticator_management
@@ -89,12 +84,6 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
 
         for status, revelation_requests in revelation_requests_per_status_list.items():
             recycleview_data = []
-
-            if not revelation_requests:
-                fallback_info_box = build_fallback_information_box(tr._("No authorization request"))
-                # FIXME HANDLE THIS
-                ##tab_per_status[status].add_widget(fallback_info_box)
-                continue
 
             #scroll = Factory.WAVerticalScrollView()
             #root = GrowingAccordion(orientation="vertical", size_hint=(1, None), height=self.height)
@@ -113,7 +102,7 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
                 symkey_decryption_request_count_label = tr._("Symkey decryption requests: %d") % symkey_decryption_request_count
 
                 def _specific_go_to_details_page_callback(status=status, revelation_request=revelation_request):
-                    print("HIIIIZ")
+                    #print("HIIIIZ")
                     detail_screen = self.manager.get_screen(WAScreenName.authenticator_revelation_request_detail)
                     detail_screen.setup_revelation_request_details(
                         status=status, revelation_request=revelation_request
@@ -130,7 +119,15 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
                 #revelation_request_entry = self._display_single_remote_revelation_request(
                 #    status=status, revelation_request=revelation_request
                 #)
-            print(">>>>>>>recycleview_data for", status, tab_per_status[status], "-", recycleview_data)
+
+            if not revelation_requests:
+                fallback_info_box = build_fallback_information_box(tr._("No authorization request"))
+                # FIXME HANDLE THIS
+                ##tab_per_status[status].add_widget(fallback_info_box)
+                # DO SOMETHING
+
+
+            print(">>>>>>>recycleview_data for", status, tab_per_status[status], "-", len(recycleview_data))
             tab_per_status[status].data = recycleview_data
 
 
@@ -170,14 +167,6 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
             message = tr._("Error querying gateway server, please check its url and you connectivity")
 
         return revelation_requests_per_status_list, message
-
-    def request_refreshing_of_revelation_requests(self):  # UNUSED
-        self.has_been_initialized = False
-
-    def conditionally_fetch_and_display_revelation_requests(self):
-        if not self.has_been_initialized:
-            self.fetch_and_display_revelation_requests()
-            self.has_been_initialized = True  # Whetever the success of async operation above
 
     @safe_catch_unhandled_exception_and_display_popup
     def fetch_and_display_revelation_requests(self):
