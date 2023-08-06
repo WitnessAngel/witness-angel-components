@@ -63,11 +63,16 @@ class SymkeyDecryptionStatus:  # FIXME name this enum more precisely, unless we 
 
 
 class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
-    index = 0
+    index = 0   #FIXME remove?
     selected_authenticator_dir = ObjectProperty(None, allownone=True)
+
+    has_been_initialized = False
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+    def on_selected_authenticator_dir(self, instance, value):
+        self.request_refreshing_of_revelation_requests()
 
     def go_to_home_screen(self):  # Fixme deduplicate and push to App!
         self.manager.current = WAScreenName.authenticator_management
@@ -165,6 +170,14 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
             message = tr._("Error querying gateway server, please check its url and you connectivity")
 
         return revelation_requests_per_status_list, message
+
+    def request_refreshing_of_revelation_requests(self):  # UNUSED
+        self.has_been_initialized = False
+
+    def conditionally_fetch_and_display_revelation_requests(self):
+        if not self.has_been_initialized:
+            self.fetch_and_display_revelation_requests()
+            self.has_been_initialized = True  # Whetever the success of async operation above
 
     @safe_catch_unhandled_exception_and_display_popup
     def fetch_and_display_revelation_requests(self):

@@ -68,7 +68,6 @@ class ClaimantRevelationRequestManagementScreen(WAScreenBase):
     def conditionally_refresh_decryption_request_list(self):
         if not self.has_been_initialized:
             self.display_decryption_request_list()
-            self.has_been_initialized = True  # Whetever the success of async operation above
 
     def display_decryption_request_list(self):  #FIXME rename -> cryptainers display
 

@@ -35,7 +35,12 @@ logger = logging.getLogger(__name__)
 
 
 class AuthenticatorRevelationRequestDetailScreen(WAScreenBase):
-    def go_to_previous_screen(self):
+    def go_to_previous_screen(self, request_refreshing=False):
+        if request_refreshing:
+            revelation_request_management_screen = self.manager.get_screen(
+                WAScreenName.authenticator_revelation_request_management
+            )
+            revelation_request_management_screen.request_refreshing_of_revelation_requests()
         self.manager.current = WAScreenName.authenticator_revelation_request_management
 
     def setup_revelation_request_details(self, status, revelation_request):
@@ -244,7 +249,7 @@ class AuthenticatorRevelationRequestDetailScreen(WAScreenBase):
         message = tr._("The decryption request was accepted")
 
         display_info_toast(message)
-        self.fetch_and_display_revelation_requests()
+        self.go_to_previous_screen(request_refreshing=True)
 
     @safe_catch_unhandled_exception_and_display_popup
     def reject_revelation_request(self, revelation_request):
@@ -263,4 +268,4 @@ class AuthenticatorRevelationRequestDetailScreen(WAScreenBase):
         message = tr._("The authorization request was rejected")
 
         display_info_toast(message)
-        self.fetch_and_display_revelation_requests()
+        self.go_to_previous_screen(request_refreshing=True)
