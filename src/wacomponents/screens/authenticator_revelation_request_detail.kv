@@ -15,7 +15,7 @@
             WAToolbar:
                 title: tr._("Authorization request details")
                 left_action_items: [["arrow-left", lambda x: root.go_to_previous_screen(), tr._("Back")]]
-                right_action_items: [["home", lambda x: app.get_back_to_home_screen(), tr._("Back to home")],]  #FIXME DRY this back-to-home
+                right_action_items: []
 
             WAElevatedBoxLayout:
                 MDLabel:
@@ -41,14 +41,14 @@
                     id: accepted_button
                     icon: "check"
                     text: tr._("Accept")
-                    #on_press: root.open_dialog_accept_request()
+                    on_press: root.open_dialog_accept_request()
                     size_hint_x: 1  # HACK
 
                 WAOperationButton:
                     id: rejected_button
                     icon: "close"
                     text: tr._("Reject")
-                    #on_press: root.open_dialog_reject_request()
+                    on_press: root.open_dialog_reject_request()
                     size_hint_x: 1  # HACK
 
             VSeparator:

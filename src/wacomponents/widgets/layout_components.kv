@@ -103,6 +103,7 @@
     IconRightWidget:
         icon: "information-outline"
         id: information_icon
+        # FIXME make information_callback argument-less here like everywhere
         on_press: root.information_callback(root.unique_identifier)
 
 
@@ -122,14 +123,15 @@
 
 <WAIconListItemEntry@TwoLineAvatarIconListItem>:  # FIXME wrong naming, its' always a KEY here, and 2 LINES now!
     text: ""
-
+    information_callback: None
 
     IconLeftWidget:
         icon: "key"
 
     IconRightWidget:
-        icon: "information-outline"
         id: information_icon
+        icon: "information-outline"
+        on_press: root.information_callback() if root.information_callback else None
 
 
 # FIXME do these belong here really?
