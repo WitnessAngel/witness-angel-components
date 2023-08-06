@@ -67,8 +67,7 @@ class AuthenticatorRevelationRequestDetailScreen(WAScreenBase):
         )
         self.revelation_request_summary_text = revelation_request_summary_text
 
-        print(">>>>>self.ids.symkey_decryption_request_list", self.ids.symkey_decryption_request_list)
-        self.ids.symkey_decryption_request_list.clear_widgets()
+        recycleview_data = []
 
         for index, symkey_decryption in enumerate(revelation_request["symkey_decryption_requests"], start=1):
 
@@ -77,17 +76,24 @@ class AuthenticatorRevelationRequestDetailScreen(WAScreenBase):
             )
             symkey_decryption_label2 = format_cryptainer_label(cryptainer_name=symkey_decryption["cryptainer_name"])
 
+            '''
             symkey_decryption_item = Factory.WAIconListItemEntry(
                 text=symkey_decryption_label1, secondary_text=symkey_decryption_label2
             )  # FIXME RENAME THIS
+            '''
 
-            def information_callback(widget, symkey_decryption=symkey_decryption):
+            def _specific_information_popup_callback(symkey_decryption=symkey_decryption):
                 self.show_symkey_decryption_details(symkey_decryption=symkey_decryption)
 
-            information_icon = symkey_decryption_item.ids.information_icon
-            information_icon.bind(on_press=information_callback)
+            recycleview_data.append({
+                # "unique_identifier": cryptainer_uid,
+                "text": symkey_decryption_label1,
+                "secondary_text": symkey_decryption_label2,
+                "information_callback": _specific_information_popup_callback,
+            })
 
-            self.ids.symkey_decryption_request_list.add_widget(symkey_decryption_item)
+        print(">>>>>> symkey_decryption_request_table recycleview_data:", recycleview_data)
+        self.ids.symkey_decryption_request_table.data = recycleview_data
 
     def show_symkey_decryption_details(self, symkey_decryption):  # FIXME rename method
 

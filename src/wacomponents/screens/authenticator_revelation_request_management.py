@@ -103,6 +103,7 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
                     short_uid=False,
                 )
 
+                ### print("<<<<<<<<<<< revelation_request[symkey_decryption_requests]", revelation_request["symkey_decryption_requests"])
                 symkey_decryption_request_count = len(revelation_request["symkey_decryption_requests"])
                 symkey_decryption_request_count_label = tr._("Symkey decryption requests: %d") % symkey_decryption_request_count
 
@@ -113,10 +114,8 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
                         status=status, revelation_request=revelation_request
                     )
                     self.manager.current = WAScreenName.authenticator_revelation_request_detail
-                    return None
 
-                for i in range(112):  # FIXME HACK
-                    recycleview_data.append({
+                recycleview_data.append({
                         # "unique_identifier": cryptainer_uid,
                         "text": revelation_request_label,
                         "secondary_text": symkey_decryption_request_count_label,
@@ -127,7 +126,7 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
                 #    status=status, revelation_request=revelation_request
                 #)
             print(">>>>>>>recycleview_data for", status, tab_per_status[status], "-", recycleview_data)
-            tab_per_status[status].data_model.data = recycleview_data
+            tab_per_status[status].data = recycleview_data
 
 
     @staticmethod

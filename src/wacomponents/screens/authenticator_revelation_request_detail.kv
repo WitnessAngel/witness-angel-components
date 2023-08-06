@@ -30,9 +30,9 @@
                 height: self.minimum_height
                 text: root.revelation_request_summary_text
 
-            MDList:
-                #padding: [10, 10]
-                id: symkey_decryption_request_list
+            WARecycleView:
+                id: symkey_decryption_request_table
+                viewclass: 'WAIconListItemEntry'
 
             WAButtonsGridLayout:
                 disabled: not root.action_buttons_are_enabled
