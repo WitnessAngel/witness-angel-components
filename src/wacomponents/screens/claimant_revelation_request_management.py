@@ -115,7 +115,7 @@ class ClaimantRevelationRequestManagementScreen(WAScreenBase):
                         _cryptainer_label=cryptainer_label,
                         _revelation_requests_with_single_symkey=revelation_requests_with_single_symkey):
 
-                    def go_to_details_page_callback():
+                    def go_to_details_page_callback():  # FIXME no need for nested fun here actually!
                         #print("CALLING go_to_details_page_callback() with cryptainer_uid")
                         detail_screen = self.manager.get_screen(WAScreenName.claimant_revelation_request_detail)
                         detail_screen.setup_revelation_request_details(

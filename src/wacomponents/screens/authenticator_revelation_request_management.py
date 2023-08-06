@@ -72,159 +72,6 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
     def go_to_home_screen(self):  # Fixme deduplicate and push to App!
         self.manager.current = WAScreenName.authenticator_management
 
-    def _display_single_remote_revelation_request(self, status, revelation_request):
-
-        revelationRequestEntry = Factory.revelationRequestEntry()
-
-        revelation_request_label = format_revelation_request_label(
-            revelation_request_uid=revelation_request["revelation_request_uid"],
-            revelation_request_creation_datetime=revelation_request["created_at"],
-        )
-
-        revelationRequestEntry.title = tr._(revelation_request_label)
-
-        target_public_authenticator_label = format_authenticator_label(
-            authenticator_owner=revelation_request["target_public_authenticator"]["keystore_owner"],
-            keystore_uid=revelation_request["target_public_authenticator"]["keystore_uid"],
-        )
-
-        response_key_label = format_keypair_label(
-            keychain_uid=revelation_request["revelation_response_keychain_uid"],
-            key_algo=revelation_request["revelation_response_key_algo"],
-        )
-
-        _displayed_values = dict(
-            target_public_authenticator_label=target_public_authenticator_label,
-            request_description=revelation_request["revelation_request_description"],
-            response_key_label=response_key_label,
-        )
-        revelation_request_summary_text = (
-            tr._("Authenticator")
-            + COLON()
-            + _displayed_values["target_public_authenticator_label"]
-            + LINEBREAK
-            + tr._("Description")
-            + COLON()
-            + _displayed_values["request_description"]
-            + LINEBREAK
-            + tr._("Local response key")
-            + COLON()
-            + _displayed_values["response_key_label"]
-        )
-
-        revelationRequestEntry.revelation_request_summary.text = revelation_request_summary_text
-
-        for index, symkey_decryption in enumerate(revelation_request["symkey_decryption_requests"], start=1):
-
-            symkey_decryption_label1 = tr._("Key of container {short_cryptainer_uid}").format(
-                key_index=index, short_cryptainer_uid=shorten_uid(symkey_decryption["cryptainer_uid"])
-            )
-            symkey_decryption_label2 = format_cryptainer_label(cryptainer_name=symkey_decryption["cryptainer_name"])
-
-            symkey_decryption_item = Factory.WAIconListItemEntry(
-                text=symkey_decryption_label1, secondary_text=symkey_decryption_label2
-            )  # FIXME RENAME THIS
-
-            def information_callback(widget, symkey_decryption=symkey_decryption):
-                self.show_symkey_decryption_details(symkey_decryption=symkey_decryption)
-
-            information_icon = symkey_decryption_item.ids.information_icon
-            information_icon.bind(on_press=information_callback)
-
-            revelationRequestEntry.symkeys_decryption.add_widget(symkey_decryption_item)
-
-        if status == SymkeyDecryptionStatus.PENDING:
-            gridButtons = Factory.GridButtons()
-
-            def reject_request_callback(widget, revelation_request=revelation_request):
-                self.open_dialog_reject_request(revelation_request=revelation_request)
-
-            def accept_request_callback(widget, revelation_request=revelation_request):
-                self.open_dialog_accept_request(revelation_request=revelation_request)
-
-            gridButtons.rejected_button.bind(on_press=reject_request_callback)
-            gridButtons.accepted_button.bind(on_press=accept_request_callback)
-
-            revelationRequestEntry.entry_grid.add_widget(gridButtons)
-
-        return revelationRequestEntry
-
-    def show_symkey_decryption_details(self, symkey_decryption):  # FIXME rename method
-
-        logger.debug("Showing details of single symkey decryption request")
-
-        authenticator_key_algo = symkey_decryption["target_public_authenticator_key"]["key_algo"]
-        authenticator_keychain_uid = symkey_decryption["target_public_authenticator_key"]["keychain_uid"]
-
-        authenticator_key_label = format_keypair_label(
-            keychain_uid=authenticator_keychain_uid, key_algo=authenticator_key_algo
-        )
-
-        _displayed_values = dict(  # FIXME remove this useless dict! and others too!
-            authenticator_key_label=authenticator_key_label,
-            cryptainer_metadata=symkey_decryption["cryptainer_metadata"],
-            symkey_decryption_status=symkey_decryption["symkey_decryption_status"],
-        )
-
-        symkey_decryption_info_text = (
-            tr._("Concerned authenticator key")
-            + COLON()
-            + _displayed_values["authenticator_key_label"]
-            + LINEBREAK
-            + tr._("Cryptainer metadata")
-            + COLON()
-            + str(_displayed_values["cryptainer_metadata"])
-            + LINEBREAK
-            + tr._("Decryption status")
-            + COLON()
-            + _displayed_values["symkey_decryption_status"]
-        )
-
-        dialog_with_close_button(
-            close_btn_label=tr._("Close"), title=tr._("Symkey decryption request"), text=symkey_decryption_info_text
-        )
-
-    def open_dialog_accept_request(self, revelation_request):
-
-        logger.debug("Opening dialog to accept decryption request")
-
-        dialog = dialog_with_close_button(
-            close_btn_label=tr._("Cancel"),
-            title=tr._("Enter your authenticator passphrase"),
-            type="custom",
-            content_cls=Factory.AddPersonalPassphraseContent(),
-            buttons=[
-                MDFlatButton(
-                    text=tr._("Accept"),
-                    on_release=lambda *args: (
-                        close_current_dialog(),
-                        self.accept_revelation_request(
-                            passphrase=dialog.content_cls.ids.passphrase.text, revelation_request=revelation_request
-                        ),
-                    ),
-                )
-            ],
-        )
-
-    def open_dialog_reject_request(self, revelation_request):
-
-        logger.debug("Opening dialog to reject decryption request")
-
-        dialog_with_close_button(
-            close_btn_label=tr._("Cancel"),
-            title=tr._("Do you want to reject this request?"),
-            type="custom",
-            buttons=[
-                MDFlatButton(
-                    text=tr._("Reject"),
-                    on_release=lambda *args: (
-                        close_current_dialog(),
-                        self.reject_revelation_request(revelation_request=revelation_request),
-                    ),
-                )
-            ],
-        )
-
     def _display_remote_revelation_request_(self, revelation_requests_per_status_list):  # FIXME rename
 
         logger.debug("Displaying remote decryption requests")
@@ -259,8 +106,13 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
                 symkey_decryption_request_count = len(revelation_request["symkey_decryption_requests"])
                 symkey_decryption_request_count_label = tr._("Symkey decryption requests: %d") % symkey_decryption_request_count
 
-                def _specific_go_to_details_page_callback():
+                def _specific_go_to_details_page_callback(status=status, revelation_request=revelation_request):
                     print("HIIIIZ")
+                    detail_screen = self.manager.get_screen(WAScreenName.authenticator_revelation_request_detail)
+                    detail_screen.setup_revelation_request_details(
+                        status=status, revelation_request=revelation_request
+                    )
+                    self.manager.current = WAScreenName.authenticator_revelation_request_detail
                     return None
 
                 for i in range(112):  # FIXME HACK

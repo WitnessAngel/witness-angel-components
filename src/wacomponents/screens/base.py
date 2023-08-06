@@ -20,6 +20,7 @@ class WAScreenName:
     authenticator_creation_form = "authenticator_creation_form"
     authenticator_publication_form = "authenticator_publication_form"
     authenticator_revelation_request_management = "authenticator_revelation_request_management"
+    authenticator_revelation_request_detail = "authenticator_revelation_request_detail"
 
 
 class WAScreenBase(Screen):
