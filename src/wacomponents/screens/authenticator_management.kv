@@ -1,6 +1,7 @@
 #:import tr wacomponents.i18n.tr
 #:import WAScreenName wacomponents.screens.base.WAScreenName
 
+
 <ThinTwoLineAvatarIconListItem@TwoLineAvatarIconListItem>
     _height: dp(60)
     # This might help with the blurred content of scrollview... see https://github.com/kivy/kivy/issues/2297
@@ -13,7 +14,7 @@
     IconLeftWidget:
         icon: "account-box"
 
-<FolderKeyStoreListItem>:
+<FolderKeyStoreListItem@ThinTwoLineAvatarIconListItem>:
     selected_path: None
     text: tr._("Custom location")
     secondary_text: app.format_path_for_display(self.selected_path) if self.selected_path else tr._("Please select a folder")
@@ -26,7 +27,7 @@
         id: open_folder_btn
 
 
-<AuthenticatorTesterContent@MDBoxLayout>
+<AuthenticatorCheckupPopupContent@MDBoxLayout>
     orientation: "vertical"
     spacing: "12dp"
     size_hint_y: None

@@ -296,7 +296,7 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
             close_btn_label=tr._("Cancel"),
             title=tr._("Import keys from web gateway"),
             type="custom",
-            content_cls=Factory.AuthenticatorTesterContent(),
+            content_cls=Factory.AuthenticatorTesterContent(),  # FIXME WRONG
             buttons=[
                 MDFlatButton(
                     text=tr._("Import"),

@@ -49,13 +49,14 @@ logger = logging.getLogger(__name__)
 
 @unique
 class AuthenticatorType(Enum):
-    USER_PROFILE = 1
-    CUSTOM_FOLDER = 2
-    USB_DEVICE = 3
+    USER_PROFILE = "USER_PROFILE"
+    CUSTOM_FOLDER = "CUSTOM_FOLDER"
+    USB_DEVICE = "USB_DEVICE"
 
 
+""" 
 class FolderKeyStoreListItem(Factory.ThinTwoLineAvatarIconListItem):
-    """ FAILED attempt at fixing button position on this item
+    FAILED attempt at fixing button position on this item
     def __init__(self):
         super().__init__()
         #print(">>>>>>>>>>>>>>", self._EventDispatcher__event_stack)
@@ -84,7 +85,7 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
         None, allownone=True
     )  # Custom folder selected for FolderKeyStoreListItem entry
 
-    authenticator_status = ObjectProperty(None, allownone=True)
+    authenticator_status = ObjectProperty(None, allownone=True)  # Ternary boolean
     authenticator_status_message = StringProperty("")
 
     def __init__(self, *args, **kwargs):
@@ -207,9 +208,9 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
 
     def reselect_previously_selected_authenticator(self):
         logger.debug("Reselecting previously selected authenticator")
-        previouslyselected_authenticator_dir = self.selected_authenticator_dir
-        if previouslyselected_authenticator_dir:
-            result = self._select_matching_authenticator_entry(previouslyselected_authenticator_dir)
+        previously_selected_authenticator_dir = self.selected_authenticator_dir
+        if previously_selected_authenticator_dir:
+            result = self._select_matching_authenticator_entry(previously_selected_authenticator_dir)
             if not result:
                 self.selected_authenticator_dir = None  # Extra security
                 self._select_default_authenticator_entry()
@@ -467,7 +468,7 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
             close_btn_label=tr._("Cancel"),
             title=tr._("Sanity check"),
             type="custom",
-            content_cls=Factory.AuthenticatorTesterContent(),
+            content_cls=Factory.AuthenticatorCheckupPopupContent(),
             buttons=[
                 MDFlatButton(
                     text=tr._("Check"),
