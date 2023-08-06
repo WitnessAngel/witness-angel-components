@@ -166,6 +166,9 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
 
         self.reselect_previously_selected_authenticator()  # Preserve previous selection across refreshes
 
+        # DIRTY HACKISH REDIRECTION FOE DEVELOPMENT
+        ######self.manager.current = WAScreenName.authenticator_revelation_request_management
+
     def _get_authenticator_dir_from_metadata(self, authenticator_metadata):
         authenticator_type = authenticator_metadata["authenticator_type"]
         if authenticator_type == AuthenticatorType.USER_PROFILE:
@@ -239,7 +242,6 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
     @safe_catch_unhandled_exception_and_display_popup
     def display_authenticator_info(self, authenticator_widget, authenticator_metadata):
 
-        logger.debug("Displaying current authenticator information")
 
         authenticator_list_widget = self.ids.authenticator_list
 
@@ -250,6 +252,8 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
 
         authenticator_dir = self._get_authenticator_dir_from_metadata(authenticator_metadata)
         authenticator_dir_shortened = self._app.format_path_for_display(authenticator_dir)
+
+        logger.debug("Displaying authenticator information for %s" % authenticator_dir_shortened)
 
         if not authenticator_dir:
             authenticator_info_text = tr._("Please select an authenticator folder")
