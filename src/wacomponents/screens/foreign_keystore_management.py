@@ -1,8 +1,8 @@
 import logging
+import shutil
 import uuid
 from pathlib import Path
 
-import shutil
 from kivy.factory import Factory
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty
@@ -11,7 +11,6 @@ from kivymd.uix.button import MDFlatButton
 from wacomponents.i18n import tr
 from wacomponents.screens.base import WAScreenBase
 from wacomponents.utilities import (
-    shorten_uid,
     format_authenticator_label,
     format_keypair_label,
     COLON,

@@ -1,17 +1,16 @@
 from typing import List, Dict, Any
 from uuid import UUID
 
-from kivymd.app import MDApp
 from kivy.lang import Builder
-from kivymd.uix.recycleview import RecycleView
-from kivy.uix.recycleview.views import RecycleDataViewBehavior
-from kivy.uix.label import Label
 from kivy.properties import BooleanProperty
-from kivy.uix.recycleboxlayout import RecycleBoxLayout
 from kivy.uix.behaviors import FocusBehavior
+from kivy.uix.label import Label
+from kivy.uix.recycleboxlayout import RecycleBoxLayout
 from kivy.uix.recycleview.layout import LayoutSelectionBehavior
+from kivy.uix.recycleview.views import RecycleDataViewBehavior
+from kivymd.app import MDApp
+from kivymd.uix.recycleview import RecycleView
 
-from wacomponents.i18n import tr
 from wacomponents.widgets.popups import dialog_with_close_button
 
 Builder.load_string(

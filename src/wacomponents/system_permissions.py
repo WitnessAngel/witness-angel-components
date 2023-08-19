@@ -1,7 +1,7 @@
 import logging
+import random
 from typing import List
 
-import random
 import time
 
 from wacomponents.default_settings import IS_ANDROID, EXTERNAL_EXPORTS_DIR

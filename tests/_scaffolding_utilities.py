@@ -1,6 +1,6 @@
+import tempfile
 from datetime import datetime
 
-import tempfile
 import time
 from ffprobe import FFProbe
 

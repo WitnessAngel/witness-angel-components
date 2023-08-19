@@ -1,12 +1,9 @@
 import logging
-
 import os
+
 from PIL import Image, ImageDraw, ImageFont
-
-
 ###THIS_DIR = Path(__file__).parent
 from kivy.resources import resource_find
-
 
 logger = logging.getLogger(__name__)
 

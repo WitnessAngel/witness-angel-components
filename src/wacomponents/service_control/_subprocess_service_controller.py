@@ -1,7 +1,7 @@
 import logging
+import os
 import subprocess
 
-import os
 import sys
 
 from ._base_service_controller import ServiceControllerBase

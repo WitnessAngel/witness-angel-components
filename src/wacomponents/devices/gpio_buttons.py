@@ -1,7 +1,7 @@
-import atexit
 import logging
 
 import RPi.GPIO as GPIO
+import atexit
 
 logger = logging.getLogger(__name__)
 

@@ -1,7 +1,7 @@
 import logging
+from functools import partial
 from pathlib import Path
 
-from functools import partial
 from kivy.animation import Animation
 from kivy.clock import Clock
 from kivy.lang import Builder

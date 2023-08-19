@@ -1,8 +1,7 @@
 import logging
+import re
 import subprocess
 from datetime import timezone, datetime
-
-import re
 
 from wacomponents.i18n import tr
 from wacomponents.sensors.camera._camera_base import PreviewImageMixin, ActivityNotificationMixin

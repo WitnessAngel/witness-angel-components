@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import gettext
+import locale
 import logging
+import os
 from gettext import NullTranslations
 
-import locale
-import os
 from kivy.lang import Observable
 
 from wacomponents.default_settings import IS_ANDROID, IS_IOS

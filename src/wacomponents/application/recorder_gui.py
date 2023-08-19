@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-import atexit
 import logging
 
+import atexit
 from kivy.clock import Clock
 from kivy.properties import StringProperty
 from oscpy.server import ServerClass

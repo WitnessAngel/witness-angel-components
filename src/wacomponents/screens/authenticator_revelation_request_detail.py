@@ -1,7 +1,6 @@
 import logging
 from pathlib import Path
 
-from jsonrpc_requests import JSONRPCError
 from kivy.factory import Factory
 from kivy.lang import Builder
 from kivymd.uix.button import MDFlatButton
@@ -16,7 +15,6 @@ from wacomponents.utilities import (
     LINEBREAK,
     format_cryptainer_label, shorten_uid,
 )
-from wacomponents.widgets.layout_components import GrowingAccordion, build_fallback_information_box
 from wacomponents.widgets.popups import dialog_with_close_button, display_info_snackbar, close_current_dialog, \
     safe_catch_unhandled_exception_and_display_popup, display_info_toast
 from wacryptolib.cipher import encrypt_bytestring

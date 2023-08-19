@@ -1,8 +1,8 @@
 import logging
 import socket
+from functools import partial
 from pathlib import Path
 
-from functools import partial
 from kivy.utils import platform
 # TODO factorize and use unix socks when possible
 from oscpy.client import OSCClient

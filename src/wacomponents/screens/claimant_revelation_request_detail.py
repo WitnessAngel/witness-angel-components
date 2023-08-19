@@ -1,7 +1,6 @@
 import logging
 from pathlib import Path
 
-from jsonrpc_requests import JSONRPCError
 from kivy.factory import Factory
 from kivy.lang import Builder
 
@@ -13,10 +12,8 @@ from wacomponents.utilities import (
     format_keypair_label,
     COLON,
     LINEBREAK,
-    format_cryptainer_label,
 )
-from wacomponents.widgets.layout_components import GrowingAccordion, build_fallback_information_box
-from wacomponents.widgets.popups import dialog_with_close_button, display_info_snackbar
+from wacomponents.widgets.popups import dialog_with_close_button
 
 Builder.load_file(str(Path(__file__).parent / "claimant_revelation_request_detail.kv"))
 

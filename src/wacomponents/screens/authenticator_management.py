@@ -1,10 +1,10 @@
 import logging
+import shutil
 from datetime import datetime
 from enum import Enum, unique
+from functools import partial
 from pathlib import Path
 
-import shutil
-from functools import partial
 from kivy.clock import Clock
 from kivy.factory import Factory
 from kivy.lang import Builder

@@ -1,9 +1,9 @@
+import io
 import logging
 import subprocess
 from subprocess import CalledProcessError, TimeoutExpired
 from typing import Optional
 
-import io
 import multitimer
 from PIL import Image
 

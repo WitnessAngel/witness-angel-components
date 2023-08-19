@@ -1,7 +1,7 @@
 import logging
+import os
 from configparser import ConfigParser, Error as ConfigParserError
 
-import os
 from oscpy.server import ServerClass
 
 from wacomponents.application._common_runtime_support import WaRuntimeSupportMixin

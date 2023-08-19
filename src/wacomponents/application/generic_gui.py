@@ -1,8 +1,8 @@
+import functools
 import json
 import logging
-
-import functools
 from functools import partial
+
 from kivy.clock import Clock
 from kivy.uix.settings import SettingsWithSpinner
 from kivymd.app import MDApp
