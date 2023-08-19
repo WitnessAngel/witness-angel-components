@@ -31,8 +31,6 @@ Builder.load_file(str(Path(__file__).parent / "authenticator_revelation_request_
 
 logger = logging.getLogger(__name__)
 
-# FIXME RENAME THIS FILE AND KV FILE to decryption_request_detail.py (and later revelation_request_visualization.py) ?
-
 
 class AuthenticatorRevelationRequestDetailScreen(WAScreenBase):
     def go_to_previous_screen(self):
@@ -62,7 +60,11 @@ class AuthenticatorRevelationRequestDetailScreen(WAScreenBase):
         )
 
         revelation_request_summary_text = (
-            tr._("Authenticator")
+            tr._("Status")
+            + COLON()
+            + revelation_request["revelation_request_status"]
+            + LINEBREAK
+            + tr._("Authenticator")
             + COLON()
             + target_public_authenticator_label
             + LINEBREAK
@@ -85,23 +87,15 @@ class AuthenticatorRevelationRequestDetailScreen(WAScreenBase):
             )
             symkey_decryption_label2 = format_cryptainer_label(cryptainer_name=symkey_decryption["cryptainer_name"])
 
-            '''
-            symkey_decryption_item = Factory.WAIconListItemEntry(
-                text=symkey_decryption_label1, secondary_text=symkey_decryption_label2
-            )  # FIXME RENAME THIS
-            '''
-
             def _specific_information_popup_callback(symkey_decryption=symkey_decryption):
                 self.show_symkey_decryption_details(symkey_decryption=symkey_decryption)
 
             recycleview_data.append({
-                # "unique_identifier": cryptainer_uid,
                 "text": symkey_decryption_label1,
                 "secondary_text": symkey_decryption_label2,
                 "information_callback": _specific_information_popup_callback,
             })
 
-        #print(">>>>>> symkey_decryption_request_table recycleview_data:", recycleview_data)
         self.ids.symkey_decryption_request_table.data = recycleview_data
 
     def show_symkey_decryption_details(self, symkey_decryption):  # FIXME rename method
@@ -187,8 +181,6 @@ class AuthenticatorRevelationRequestDetailScreen(WAScreenBase):
 
     @safe_catch_unhandled_exception_and_display_popup
     def accept_revelation_request(self, passphrase, revelation_request):
-        # USE THIS FORM BEFORE :                text=tr._("Confirm removal"), on_release=lambda *args: (
-        #                         close_current_dialog(), self.delete_keystores(keystore_uids=keystore_uids))
 
         revelation_request_uid = revelation_request["revelation_request_uid"]
         logger.info("Accepting decryption request %s", revelation_request_uid)
@@ -197,8 +189,6 @@ class AuthenticatorRevelationRequestDetailScreen(WAScreenBase):
         filesystem_keystore = FilesystemKeystore(self.selected_authenticator_dir)
         trustee_api = TrusteeApi(keystore=filesystem_keystore)
         symkey_decryption_results = []
-
-        # FIXME check passphrase first and report error, instead of leaving "abnormal error" flowing to safe_catch_unhandled_exception_and_display_popup
 
         for symkey_decryption in revelation_request["symkey_decryption_requests"]:
             decryption_status = SymkeyDecryptionStatus.DECRYPTED
@@ -220,7 +210,7 @@ class AuthenticatorRevelationRequestDetailScreen(WAScreenBase):
                 display_info_snackbar(tr._("Loading of authenticator private key failed (wrong passphrase?)"))
                 return  # Abort everything, since the same passphrase is used for all Authenticator keys anyway...
 
-            # We encrypt teh response with the provided response key, this shouldn't fail
+            # We encrypt the response with the provided response key, this shouldn't fail
             response_key_algo = revelation_request["revelation_response_key_algo"]
             response_public_key = revelation_request["revelation_response_public_key"]
             public_key = load_asymmetric_key_from_pem_bytestring(key_pem=response_public_key, key_algo=cipher_algo)

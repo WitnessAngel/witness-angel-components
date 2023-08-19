@@ -26,19 +26,10 @@
                 WABigInformationBox:
                     message: app.NO_DATA_MESSAGE
                     enabled: not decryption_request_pending_table.data
-                #MDLabel:
-                #    text: tr._("XXXXXXXXX")
-                #    padding_x: "10dp"
 
                 WARecycleView:
                     id: decryption_request_pending_table
                     viewclass: 'WAClaimantAuthorizationRequestListItemEntry'
-                    #RecycleBoxLayout:
-                    #    default_size: None, None
-                    #    default_size_hint: 1, None
-                    #    size_hint_y: None
-                    #    height: self.minimum_height
-                    #    orientation: 'vertical'
 
             Tab:
                 title: tr._("Accepted")
@@ -51,12 +42,6 @@
                 WARecycleView:
                     id: decryption_request_accepted_table
                     viewclass: 'WAClaimantAuthorizationRequestListItemEntry'
-                    #RecycleBoxLayout:
-                    #    default_size: None, None
-                    #    default_size_hint: 1, None
-                    #    size_hint_y: None
-                    #    height: self.minimum_height
-                    #    orientation: 'vertical'
 
             Tab:
                 title: tr._("Rejected")
@@ -68,13 +53,6 @@
                     message: app.NO_DATA_MESSAGE
                     enabled: not decryption_request_rejected_table.data
 
-
                 WARecycleView:
                     id: decryption_request_rejected_table
                     viewclass: 'WAClaimantAuthorizationRequestListItemEntry'
-                    #RecycleBoxLayout:
-                    #    default_size: None, None
-                    #    default_size_hint: 1, None
-                    #    size_hint_y: None
-                    #    height: self.minimum_height
-                    #    orientation: 'vertical'
