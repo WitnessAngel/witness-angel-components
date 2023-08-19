@@ -148,14 +148,14 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
 
         self._app._offload_task_with_spinner(self._fetch_revelation_requests_sorted_by_status, resultat_callable)
 
-    def display_help_popup(self):   # FIXME update this
+    def display_help_popup(self):
         authenticator_revelation_request_management_help_text = (
             tr._(
-                """This page summarizes the authorization requests that have been sent to your authenticator, in order to decrypt some remote containers."""
+                """This page summarizes the authorization requests that have been sent to the selected authenticator, by people wishing to decrypt some of their containers."""
             )
             + LINEBREAK * 2
             + tr._(
-                """Requests can be freely rejected. Else, to accept them, you must input your passphrase, which will be used to load your private keys and generate authorization tokens for the requester."""
+                """These requests can be freely rejected. Else, to accept them, you must input your passphrase, which will be used to load your private keys and generate authorization tokens for the requester."""
             )
             + LINEBREAK * 2
             + tr._(
@@ -164,5 +164,5 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
         )
 
         help_text_popup(
-            title=tr._("Remote authorization requests page"), text=authenticator_revelation_request_management_help_text
+            title=tr._("Authorization requests page"), text=authenticator_revelation_request_management_help_text
         )
