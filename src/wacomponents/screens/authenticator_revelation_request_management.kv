@@ -1,69 +1,6 @@
 #:import tr wacomponents.i18n.tr
 
 
-# FIXME RENAME THIS
-<AddPersonalPassphraseContent@MDBoxLayout>: # TODO Move to layout component
-    orientation: "vertical"
-    spacing: "12dp"
-    size_hint_y: None
-    height: "90dp"
-
-    MDLabel:
-        text: tr._("This will provide access to the requested key parts")
-
-    MDTextField:
-        id: passphrase
-        hint_text: tr._("Passphrase")
-
-
-# FIXME USELESS
-<GridButtons@MDGridLayout>
-    cols: 2
-    spacing: 10
-    padding: [10, 0]
-    size_hint: 1, None
-    height: self.minimum_height
-    accepted_button: accepted_button
-    rejected_button: rejected_button
-
-
-    WAOperationButton:
-        id: accepted_button
-        icon: "check"
-        text: tr._("Accept")
-        #on_press: root.open_dialog_reject_request()
-        size_hint_x: 1  # HACK
-
-    WAOperationButton:
-        id: rejected_button
-        icon: "close"
-        text: tr._("Reject")
-        #on_press: root.open_dialog_accept_request()
-        size_hint_x: 1  # HACK
-
-
-# FIXME rename with capital
-<revelationRequestEntry@AccordionItem>
-    revelation_request_summary : revelation_request_summary
-    symkeys_decryption : symkeys_decryption
-    entry_grid : entry_grid
-
-    MDGridLayout:
-        cols: 1
-        id:entry_grid
-
-        WATextInput:
-            id: revelation_request_summary
-            padding: 10
-            halign: "left"
-            size_hint: 1, None
-            height: self.minimum_height
-
-        MDList:
-            #padding: [10, 10]
-            id: symkeys_decryption
-
-
 <AuthenticatorRevelationRequestManagementScreen>:
 
     on_pre_enter: root.fetch_and_display_revelation_requests()
@@ -86,6 +23,9 @@
                 title: tr._("Pending")
                 id: pending_revelation_request
 
+                WABigInformationBox:
+                    message: app.NO_DATA_MESSAGE
+                    enabled: not decryption_request_pending_table.data
                 #MDLabel:
                 #    text: tr._("XXXXXXXXX")
                 #    padding_x: "10dp"
@@ -104,6 +44,10 @@
                 title: tr._("Accepted")
                 id: accepted_revelation_request
 
+                WABigInformationBox:
+                    message: app.NO_DATA_MESSAGE
+                    enabled: not decryption_request_accepted_table.data
+
                 WARecycleView:
                     id: decryption_request_accepted_table
                     viewclass: 'WAClaimantAuthorizationRequestListItemEntry'
@@ -118,6 +62,13 @@
                 title: tr._("Rejected")
                 id: rejected_revelation_request
 
+                orientation: "vertical"
+
+                WABigInformationBox:
+                    message: app.NO_DATA_MESSAGE
+                    enabled: not decryption_request_rejected_table.data
+
+
                 WARecycleView:
                     id: decryption_request_rejected_table
                     viewclass: 'WAClaimantAuthorizationRequestListItemEntry'
@@ -127,4 +78,3 @@
                     #    size_hint_y: None
                     #    height: self.minimum_height
                     #    orientation: 'vertical'
-
