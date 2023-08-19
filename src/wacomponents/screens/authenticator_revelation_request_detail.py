@@ -7,7 +7,6 @@ from kivy.lang import Builder
 from kivymd.uix.button import MDFlatButton
 
 from wacomponents.i18n import tr
-from wacomponents.screens.authenticator_revelation_request_management import SymkeyDecryptionStatus
 from wacomponents.screens.base import WAScreenName, WAScreenBase
 from wacomponents.utilities import (
     format_revelation_request_label,
@@ -30,6 +29,14 @@ from wacryptolib.utilities import load_from_json_bytes, dump_to_json_bytes
 Builder.load_file(str(Path(__file__).parent / "authenticator_revelation_request_detail.kv"))
 
 logger = logging.getLogger(__name__)
+
+
+class SymkeyDecryptionStatus:  # BEWARE, DUPLICATED from WASERVER, and some cases aren't used
+    DECRYPTED = "DECRYPTED"
+    PRIVATE_KEY_MISSING = "PRIVATE_KEY_MISSING"
+    CORRUPTED = "CORRUPTED"
+    METADATA_MISMATCH = "METADATA_MISMATCH"
+    PENDING = "PENDING"
 
 
 class AuthenticatorRevelationRequestDetailScreen(WAScreenBase):
@@ -209,6 +216,8 @@ class AuthenticatorRevelationRequestDetailScreen(WAScreenBase):
             except KeyLoadingError:
                 display_info_snackbar(tr._("Loading of authenticator private key failed (wrong passphrase?)"))
                 return  # Abort everything, since the same passphrase is used for all Authenticator keys anyway...
+
+            # FIXME handle cases of corruption or metadata mismatch???
 
             # We encrypt the response with the provided response key, this shouldn't fail
             response_key_algo = revelation_request["revelation_response_key_algo"]

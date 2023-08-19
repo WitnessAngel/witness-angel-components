@@ -576,7 +576,7 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
             )
             + LINEBREAK * 2
             + tr._(  #  Note: "unless they used a shared secret with other trusted third parties"...
-                """Note that if you entirely destroy an authenticator, the WitnessAngel recordings which used it as a trusted third party might not be decryptable anymore."""
+                """Note that if you destroy an authenticator, or lose its passphrase, the WitnessAngel recordings which used it as a trusted third party might not be decryptable anymore."""
             )
         )
 

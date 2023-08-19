@@ -170,23 +170,9 @@ class AuthenticatorPublicationFormScreen(WAScreenBase):
                 authenticator_uid=str(keystore_uid),
             )
             synchronization_info_text = (
-                tr._("Local path")
+                tr._("Authenticator path")
                 + COLON()
                 + self._app.format_path_for_display(self.selected_authenticator_dir)
-                + LINEBREAK
-                + tr._("Gateway")
-                + COLON()
-                + _displayed_values["gateway"]
-                + LINEBREAK
-                + LINEBREAK
-                + tr._("Remote status")
-                + COLON()
-                + _displayed_values["status"]
-                + LINEBREAK
-                + tr._("Message")
-                + COLON()
-                + _displayed_values["message"]
-                + LINEBREAK
                 + LINEBREAK
                 + tr._("User")
                 + COLON()
@@ -195,24 +181,35 @@ class AuthenticatorPublicationFormScreen(WAScreenBase):
                 + tr._("ID")
                 + COLON()
                 + _displayed_values["authenticator_uid"]
+                + LINEBREAK
+                + LINEBREAK
+                + tr._("Gateway")
+                + COLON()
+                + _displayed_values["gateway"]
+                + LINEBREAK
+                + tr._("Remote status")
+                + COLON()
+                + _displayed_values["status"]
+                + LINEBREAK
+                + tr._("Message")
+                + COLON()
+                + _displayed_values["message"]
             )
 
             if is_published:
                 synchronization_info_text += (
                     LINEBREAK
                     + LINEBREAK
-                    + tr._("Provide this Authenticator ID to users wanting to rely on you as a Key Guardian")
+                    + tr._("Provide the Authenticator ID to users wanting to rely on you as a Key Guardian")
                     + LINEBREAK
                 )
 
             if synchronization_details_text:
-                synchronization_info_text += "\n" + synchronization_details_text
+                synchronization_info_text += LINEBREAK + synchronization_details_text
 
             # Update the GUI
-
             self.ids.synchronization_information.text = synchronization_info_text
             display_info_toast(tr._("Remote authenticator status has been updated"))
-
             self.enable_publish_button = enable_publish_button
 
         self._app._offload_task_with_spinner(self.get_remote_public_authenticator_status, resultat_callable)

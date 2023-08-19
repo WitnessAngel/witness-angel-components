@@ -46,14 +46,6 @@ class Tab(MDFloatLayout, MDTabsBase):
     """Class implementing content for a tab as a FloatLayout."""
 
 
-class SymkeyDecryptionStatus:  # BEWARE, DUPLICATED from WASERVER
-    DECRYPTED = "DECRYPTED"
-    PRIVATE_KEY_MISSING = "PRIVATE_KEY_MISSING"
-    CORRUPTED = "CORRUPTED"
-    METADATA_MISMATCH = "METADATA_MISMATCH"
-    PENDING = "PENDING"
-
-
 class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
 
     selected_authenticator_dir = ObjectProperty(None, allownone=True)
@@ -99,12 +91,6 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
                         "secondary_text": symkey_decryption_request_count_label,
                         "information_callback": _specific_go_to_details_page_callback,
                     })
-
-            if not revelation_requests:
-                fallback_info_box = build_fallback_information_box(tr._("No authorization request"))
-                # FIXME HANDLE THIS
-                ##tab_per_status[status].add_widget(fallback_info_box)
-                # DO SOMETHING
 
             tab_per_status[status].data = recycleview_data
 
