@@ -27,19 +27,6 @@
         id: open_folder_btn
 
 
-<AuthenticatorCheckupPopupContent@MDBoxLayout>
-    orientation: "vertical"
-    spacing: "12dp"
-    size_hint_y: None
-    height: "80dp"
-
-    MDLabel:
-        text: tr._("Test integrity and passphrase of authenticator")
-    MDTextField:
-        id: tester_passphrase
-        hint_text: tr._("Passphrase")
-
-
 <AuthenticatorManagementScreen>:
 
     on_pre_enter: root.refresh_authenticator_list()

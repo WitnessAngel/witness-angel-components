@@ -144,18 +144,21 @@ class AuthenticatorRevelationRequestDetailScreen(WAScreenBase):
 
         logger.debug("Opening dialog to accept decryption request")
 
+        content = Factory.PassphraseRequestForm()
+        content.description = tr._("This will allow unmasking the requested symkey parts")
+
         dialog = dialog_with_close_button(
             close_btn_label=tr._("Cancel"),
             title=tr._("Enter your authenticator passphrase"),
             type="custom",
-            content_cls=Factory.AddPersonalPassphraseContent(),
+            content_cls=content,
             buttons=[
                 MDFlatButton(
                     text=tr._("Accept"),
                     on_release=lambda *args: (
                         close_current_dialog(),
                         self.accept_revelation_request(
-                            passphrase=dialog.content_cls.ids.passphrase.text, revelation_request=revelation_request
+                            passphrase=dialog.content_cls.ids.passphrase_input.text, revelation_request=revelation_request
                         ),
                     ),
                 )

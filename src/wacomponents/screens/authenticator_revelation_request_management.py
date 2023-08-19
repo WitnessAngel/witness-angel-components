@@ -41,33 +41,23 @@ Builder.load_file(str(Path(__file__).parent / "authenticator_revelation_request_
 
 logger = logging.getLogger(__name__)
 
-# FIXME RENAME THIS FILE AND KV FILE to authenticator_decryption_request_management.py
-
-# FIXME IN ALL FILES @Francinette:
-# - do not use "Error calling method" as message, it means nothing
-# - protect public callbacks with @safe_catch_unhandled_exception_and_display_popup
-# - use an auto-close in popup callback declaration, not in the handler itself
-# - do not intercept exceptions that can't be treated, just let @safe_catch_unhandled_exception_and_display_popup display their snackbar
-
 
 class Tab(MDFloatLayout, MDTabsBase):
-    """Class implementing content for a tab."""
+    """Class implementing content for a tab as a FloatLayout."""
 
 
-class SymkeyDecryptionStatus:  # FIXME name this enum more precisely, unless we then use it elsewhere?
+class SymkeyDecryptionStatus:  # BEWARE, DUPLICATED from WASERVER
     DECRYPTED = "DECRYPTED"
-    PRIVATE_KEY_MISSING = "PRIVATE KEY MISSING"
+    PRIVATE_KEY_MISSING = "PRIVATE_KEY_MISSING"
     CORRUPTED = "CORRUPTED"
-    MISMATCH = "METADATA MISMATCH"
+    METADATA_MISMATCH = "METADATA_MISMATCH"
     PENDING = "PENDING"
 
 
 class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
-    index = 0   #FIXME remove?
+
     selected_authenticator_dir = ObjectProperty(None, allownone=True)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
 
     def go_to_home_screen(self):  # Fixme deduplicate and push to App!
         self.manager.current = WAScreenName.authenticator_management
@@ -76,7 +66,7 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
 
         logger.debug("Displaying remote decryption requests")
 
-        tab_per_status = dict(  # FIXME rename
+        tab_per_status = dict(
             PENDING=self.ids.decryption_request_pending_table,
             REJECTED=self.ids.decryption_request_rejected_table,
             ACCEPTED=self.ids.decryption_request_accepted_table,
@@ -84,9 +74,6 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
 
         for status, revelation_requests in revelation_requests_per_status_list.items():
             recycleview_data = []
-
-            #scroll = Factory.WAVerticalScrollView()
-            #root = GrowingAccordion(orientation="vertical", size_hint=(1, None), height=self.height)
 
             revelation_requests.sort(key=lambda request: request["created_at"], reverse=True)
             for revelation_request in revelation_requests:
@@ -97,12 +84,10 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
                     short_uid=False,
                 )
 
-                ### print("<<<<<<<<<<< revelation_request[symkey_decryption_requests]", revelation_request["symkey_decryption_requests"])
                 symkey_decryption_request_count = len(revelation_request["symkey_decryption_requests"])
                 symkey_decryption_request_count_label = tr._("Symkey decryption requests: %d") % symkey_decryption_request_count
 
                 def _specific_go_to_details_page_callback(status=status, revelation_request=revelation_request):
-                    #print("HIIIIZ")
                     detail_screen = self.manager.get_screen(WAScreenName.authenticator_revelation_request_detail)
                     detail_screen.setup_revelation_request_details(
                         status=status, revelation_request=revelation_request
@@ -110,15 +95,10 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
                     self.manager.current = WAScreenName.authenticator_revelation_request_detail
 
                 recycleview_data.append({
-                        # "unique_identifier": cryptainer_uid,
                         "text": revelation_request_label,
                         "secondary_text": symkey_decryption_request_count_label,
                         "information_callback": _specific_go_to_details_page_callback,
                     })
-
-                #revelation_request_entry = self._display_single_remote_revelation_request(
-                #    status=status, revelation_request=revelation_request
-                #)
 
             if not revelation_requests:
                 fallback_info_box = build_fallback_information_box(tr._("No authorization request"))
@@ -126,10 +106,7 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
                 ##tab_per_status[status].add_widget(fallback_info_box)
                 # DO SOMETHING
 
-
-            print(">>>>>>>recycleview_data for", status, tab_per_status[status], "-", len(recycleview_data))
             tab_per_status[status].data = recycleview_data
-
 
     @staticmethod
     def sort_list_revelation_request_per_status(authenticator_revelation_request_list):
@@ -140,7 +117,7 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
             revelation_requests_per_status[revelation_request["revelation_request_status"]].append(revelation_request)
         return revelation_requests_per_status
 
-    def get_revelation_request_list_per_status(self):  # FIXME NAMING
+    def _fetch_revelation_requests_sorted_by_status(self):
         authenticator_path = self.selected_authenticator_dir
         revelation_requests_per_status_list = None
         authenticator_metadata = load_keystore_metadata(authenticator_path)
@@ -173,10 +150,6 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
 
         self.ids.tabs.switch_tab(self.ids.tabs.get_tab_list()[0])  # Return to first Tab
 
-        #self.ids.pending_revelation_request.clear_widgets()
-        #self.ids.rejected_revelation_request.clear_widgets()
-        #self.ids.accepted_revelation_request.clear_widgets()
-
         def resultat_callable(result, *args, **kwargs):  # FIXME CHANGE THIS NAME
             revelation_requests_per_status_list, message = result
             if revelation_requests_per_status_list is None:
@@ -187,8 +160,7 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
                     revelation_requests_per_status_list=revelation_requests_per_status_list
                 )
 
-        self._app._offload_task_with_spinner(self.get_revelation_request_list_per_status, resultat_callable)
-
+        self._app._offload_task_with_spinner(self._fetch_revelation_requests_sorted_by_status, resultat_callable)
 
     def display_help_popup(self):   # FIXME update this
         authenticator_revelation_request_management_help_text = (

@@ -463,12 +463,16 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
         logger.debug("Showing authenticator checkup dialog")
 
         authenticator_dir = self.selected_authenticator_dir
+
+        content = Factory.PassphraseRequestForm()
+        content.description = tr._("Test integrity and passphrase of authenticator")
+
         dialog = dialog_with_close_button(
             auto_open_and_register=False,  # Important, we customize before
             close_btn_label=tr._("Cancel"),
             title=tr._("Sanity check"),
             type="custom",
-            content_cls=Factory.AuthenticatorCheckupPopupContent(),
+            content_cls=content,
             buttons=[
                 MDFlatButton(
                     text=tr._("Check"),
@@ -481,7 +485,7 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
         )
 
         def _set_focus_on_passphrase(*args):
-            dialog.content_cls.ids.tester_passphrase.focus = True
+            dialog.content_cls.ids.passphrase_input.focus = True
 
         dialog.bind(on_open=_set_focus_on_passphrase)
         dialog.open()
@@ -492,7 +496,7 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
 
         logger.debug("Checking integrity of authenticator %s", authenticator_dir)
 
-        keystore_passphrase = dialog.content_cls.ids.tester_passphrase.text
+        keystore_passphrase = dialog.content_cls.ids.passphrase_input.text
         result_dict = self._test_authenticator_passphrase(
             authenticator_dir=authenticator_dir, keystore_passphrase=keystore_passphrase
         )

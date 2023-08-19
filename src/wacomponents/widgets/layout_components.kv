@@ -159,12 +159,15 @@
     font_size: "18sp"
 
 <WABigInformationBox@MDLabel>:
+    enabled: True
+    size_y: 1 if root.enabled else 0
+    size_hint_y: 1 if root.enabled else 0
     message: ""
     id: inner_label
     halign: "center"
     valign: "middle"
     font_size: "20sp"
-    text: root.message
+    text: root.message if root.enabled else ""
 
 <WATextInput@TextInput>:
     padding: [10,10]
@@ -224,6 +227,21 @@
         Color:
             rgba: self.disabled_foreground_color if self.disabled else (self.hint_text_color if not self.text else self.foreground_color)
 
+
+## Popup contents #
+
+<PassphraseRequestForm@MDBoxLayout>
+    orientation: "vertical"
+    spacing: "12dp"
+    size_hint_y: None
+    height: "80dp"
+    description: ""
+
+    MDLabel:
+        text: root.description
+    MDTextField:
+        id: passphrase_input
+        hint_text: tr._("Passphrase")
 
 ## Separator helpers ##
 
