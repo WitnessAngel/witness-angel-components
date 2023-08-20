@@ -16,6 +16,11 @@ from wacomponents.i18n import tr
 logger = logging.getLogger(__name__)
 
 
+# Disable broken RoundedRectangularElevationBehavior which breaks on old KivyMD...
+from kivymd.uix.behaviors import RoundedRectangularElevationBehavior
+RoundedRectangularElevationBehavior.__draw_shadow__ = lambda *args, **kwargs: None
+
+
 class ImprovedSettingsWithSpinner(SettingsWithSpinner):
     def __init__(self, *args, **kargs):
         super().__init__(*args, **kargs)

@@ -24,18 +24,19 @@
 
 # Top toolbar of each Screen
 <WAToolbar@MDTopAppBar>:
-    elevation: 8
-    shadow_softness: 20
-    shadow_softness_size: 4
+    #elevation: 8
+    #shadow_softness: 20
+    #shadow_softness_size: 4
 
 # Some kind of explanatory title on top of each view
-<WAElevatedBoxLayout@CommonElevationBehavior+MDBoxLayout>:
-    elevation: 3
-    shadow_softness: 10
-    shadow_softness_size: 2
+## DISABLED FOR NOW: parents 'CommonElevationBehavior+MDBoxLayout'
+<WAElevatedBoxLayout@MDBoxLayout>:
+    #elevation: 3
+    #shadow_softness: 10
+    #shadow_softness_size: 2
     height: dp(40)
     size_hint_y: None
-    md_bg_color: app.theme_cls.bg_light
+    md_bg_color: app.theme_cls.divider_color
 
 # Bottom panel with 2 columns of action buttons
 <WAButtonsGridLayout@MDGridLayout>:
