@@ -11,6 +11,7 @@ from wacomponents.application._common_runtime_support import WaRuntimeSupportMix
 from wacomponents.utilities import MONOTHREAD_POOL_EXECUTOR
 from wacomponents.widgets.layout_components import SettingStringTruncated
 from wacomponents.widgets.popups import safe_catch_unhandled_exception_and_display_popup
+from wacomponents.i18n import tr
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +34,10 @@ class WaGenericGui(WaRuntimeSupportMixin, MDApp):
     use_kivy_settings = False  # No need
 
     settings_cls = ImprovedSettingsWithSpinner
+
+    @property
+    def NO_DATA_MESSAGE(self):
+        return tr._("Empty")
 
     def build(self):
         self.title = self.title_app_window  # We properly use this Kivy property
