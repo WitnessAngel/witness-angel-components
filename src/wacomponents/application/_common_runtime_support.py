@@ -175,13 +175,10 @@ class WaRuntimeSupportMixin:
 
     @staticmethod
     def get_wa_device_uid():
-        root_dir = INTERNAL_APP_ROOT
-        device_info_file = root_dir.joinpath(".wa_device_uid.json")
+        device_info_file = INTERNAL_APP_ROOT.joinpath(".wa_device_uid.json")
         try:
             device_info = load_from_json_file(device_info_file)
         except FileNotFoundError:
-            device_info_file.parent.mkdir(parents=False, exist_ok=True)
-
             device_info = {"wa_device_uid": generate_uuid0()}
             dump_to_json_file(device_info_file, device_info)
 
