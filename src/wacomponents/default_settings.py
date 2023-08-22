@@ -2,9 +2,12 @@
 These settings should preferably be star-imported by setting files of actual projects, not directly referenced.
 """
 from pathlib import Path
+import logging
 
 from kivy import platform
 from plyer import storagepath
+
+logger = logging.getLogger(__name__)
 
 ANDROID_ACTIVITY_CLASS = "org.kivy.android.PythonActivity"
 SERVICE_START_ARGUMENT = ""
@@ -79,6 +82,9 @@ if IS_ANDROID:
         # WE ARE IN SERVICE!!!
         ANDROID_CONTEXT = autoclass("org.kivy.android.PythonService").mService
 
+    _ANDROID_VERSION_CLS = autoclass('android.os.Build$VERSION')
+    ANDROID_SDK_VERSION = _ANDROID_VERSION_CLS().SDK_INT
+
     INTERNAL_APP_ROOT = Path(ANDROID_CONTEXT.getFilesDir().toString())
     INTERNAL_CACHE_DIR = Path(ANDROID_CONTEXT.getCacheDir().toString())
     Environment = autoclass("android.os.Environment")
@@ -86,6 +92,10 @@ if IS_ANDROID:
     EXTERNAL_APP_ROOT_PREFIX = Environment.getExternalStorageDirectory().toString()  # Can be stripped as <sdcard>
     _documents_folder = Path(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).toString())
     EXTERNAL_APP_ROOT = _documents_folder.joinpath("WitnessAngel")
+    _android_external_file_dir = ANDROID_CONTEXT.getExternalFilesDir(None)  # Could be None if unavailable
+    _android_external_file_dir_path = Path(_android_external_file_dir.toString()) if _android_external_file_dir else None
+    print(">>> ANDROID SDK_VERSION:", repr(ANDROID_SDK_VERSION))
+    print(">>> ANDROID external_files_dir:", repr(_android_external_file_dir_path))
 
     AndroidPackageManager = autoclass("android.content.pm.PackageManager")  # Precached for permission checking
 
@@ -134,3 +144,12 @@ INTERNAL_CRYPTAINER_DIR = INTERNAL_APP_ROOT / "cryptainers"  # FIXME rename
 INTERNAL_CRYPTAINER_DIR.mkdir(exist_ok=True)
 
 EXTERNAL_EXPORTS_DIR = EXTERNAL_APP_ROOT / "exports"  # Might no exist yet (and require permissions!)
+
+
+_app_paths = dict(
+    INTERNAL_APP_ROOT=INTERNAL_APP_ROOT,
+    INTERNAL_CACHE_DIR=INTERNAL_CACHE_DIR,
+    EXTERNAL_APP_ROOT_PREFIX=EXTERNAL_APP_ROOT_PREFIX,
+    EXTERNAL_APP_ROOT=EXTERNAL_APP_ROOT,
+)
+logger.info("Default application paths: %s", _app_paths)
