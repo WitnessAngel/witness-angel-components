@@ -82,20 +82,22 @@ if IS_ANDROID:
         # WE ARE IN SERVICE!!!
         ANDROID_CONTEXT = autoclass("org.kivy.android.PythonService").mService
 
-    _ANDROID_VERSION_CLS = autoclass('android.os.Build$VERSION')
-    ANDROID_SDK_VERSION = _ANDROID_VERSION_CLS().SDK_INT
+    # If necessary:
+    #_ANDROID_VERSION_CLS = autoclass('android.os.Build$VERSION')
+    #ANDROID_SDK_VERSION = _ANDROID_VERSION_CLS().SDK_INT
 
     INTERNAL_APP_ROOT = Path(ANDROID_CONTEXT.getFilesDir().toString())
     INTERNAL_CACHE_DIR = Path(ANDROID_CONTEXT.getCacheDir().toString())
     Environment = autoclass("android.os.Environment")
     # FIXME we must use getExternalFilesDir now!!
     EXTERNAL_APP_ROOT_PREFIX = Environment.getExternalStorageDirectory().toString()  # Can be stripped as <sdcard>
-    _documents_folder = Path(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).toString())
-    EXTERNAL_APP_ROOT = _documents_folder.joinpath("WitnessAngel")
+    # Obsolete shared Documents/ folder
+    #_documents_folder = Path(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).toString())
+    #EXTERNAL_APP_ROOT = _documents_folder.joinpath("WitnessAngel")
+
+    # SANDBOXED folder in Android/data/..., could be not present (e.g. if SDCARD was ejected)
     _android_external_file_dir = ANDROID_CONTEXT.getExternalFilesDir(None)  # Could be None if unavailable
-    _android_external_file_dir_path = Path(_android_external_file_dir.toString()) if _android_external_file_dir else None
-    print(">>> ANDROID SDK_VERSION:", repr(ANDROID_SDK_VERSION))
-    print(">>> ANDROID external_files_dir:", repr(_android_external_file_dir_path))
+    EXTERNAL_APP_ROOT = Path(_android_external_file_dir.toString()) if _android_external_file_dir else None
 
     AndroidPackageManager = autoclass("android.content.pm.PackageManager")  # Precached for permission checking
 
@@ -117,11 +119,12 @@ else:
     EXTERNAL_APP_ROOT_PREFIX = None
     EXTERNAL_APP_ROOT = INTERNAL_APP_ROOT / "external"
 
+EXTERNAL_EXPORTS_DIR = (EXTERNAL_APP_ROOT / "exports") if EXTERNAL_APP_ROOT else None
+
 
 # print(">> DETECTED INTERNAL_APP_ROOT is ", INTERNAL_APP_ROOT)
 INTERNAL_APP_ROOT.mkdir(exist_ok=True, parents=True)  # Creates base directory too!
 INTERNAL_CACHE_DIR.mkdir(exist_ok=True)
-
 
 # Created/deleted by app, looked up by daemon service on boot/restart
 WIP_RECORDING_MARKER = INTERNAL_APP_ROOT / "recording_in_progress"
@@ -140,11 +143,20 @@ else:
 INTERNAL_KEYSTORE_POOL_DIR = INTERNAL_APP_ROOT / "keystore_pool"
 INTERNAL_KEYSTORE_POOL_DIR.mkdir(exist_ok=True)
 
-INTERNAL_CRYPTAINER_DIR = INTERNAL_APP_ROOT / "cryptainers"  # FIXME rename
+INTERNAL_CRYPTAINER_DIR = INTERNAL_APP_ROOT / "cryptainers"  # FIXME rename?
 INTERNAL_CRYPTAINER_DIR.mkdir(exist_ok=True)
 
-EXTERNAL_EXPORTS_DIR = EXTERNAL_APP_ROOT / "exports"  # Might no exist yet (and require permissions!)
+if EXTERNAL_APP_ROOT:
+    try:
+        EXTERNAL_APP_ROOT.mkdir(exist_ok=True)
+    except OSError:
+        pass  # Maybe permission issues
 
+if EXTERNAL_EXPORTS_DIR:
+    try:
+        EXTERNAL_EXPORTS_DIR.mkdir(exist_ok=True)
+    except OSError:
+        pass  # Maybe permission issues
 
 _app_paths = dict(
     INTERNAL_APP_ROOT=INTERNAL_APP_ROOT,
