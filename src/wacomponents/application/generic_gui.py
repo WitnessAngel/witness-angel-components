@@ -16,6 +16,11 @@ from wacomponents.i18n import tr
 logger = logging.getLogger(__name__)
 
 
+def _(val):
+    """NO-OP gettext marker"""
+    return val
+
+
 class ImprovedSettingsWithSpinner(SettingsWithSpinner):
     def __init__(self, *args, **kargs):
         super().__init__(*args, **kargs)
