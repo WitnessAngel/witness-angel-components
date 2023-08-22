@@ -16,7 +16,7 @@ from kivymd.uix.list import IconLeftWidget
 from wacomponents.default_settings import INTERNAL_AUTHENTICATOR_DIR, EXTERNAL_APP_ROOT, EXTERNAL_EXPORTS_DIR, IS_MOBILE
 from wacomponents.i18n import tr
 from wacomponents.screens.base import WAScreenName, WAScreenBase
-from wacomponents.system_permissions import request_external_storage_dirs_access, is_folder_readable, is_folder_writable
+from wacomponents.system_permissions import is_folder_readable, is_folder_writable
 from wacomponents.utilities import (
     convert_bytes_to_human_representation,
     shorten_uid,
@@ -191,11 +191,21 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
         authenticator_widget = self.ids.authenticator_list.children[-2]  # AUTOSELECT "custom folder" item
         authenticator_widget._onrelease_callback(authenticator_widget)
 
+    @staticmethod
+    def _ensure_external_folder_is_accessible_else_display_warning(folder_path, require_writability=False):
+        if (not folder_path or not folder_path.is_dir() or not is_folder_readable(folder_path) or
+                (require_writability and not is_folder_writable(folder_path))):
+            msg = tr._("External storage is not accessible")
+            display_info_toast(msg)
+            return False
+        return True
+
     def folder_chooser_open(self, widget, *args):
         logger.debug("Opening folder chooser for the location of current authenticator")
-        if not request_external_storage_dirs_access():
-            return
         file_manager_path = EXTERNAL_APP_ROOT
+        if not self._ensure_external_folder_is_accessible_else_display_warning(file_manager_path):
+            return
+        # This folder might have become inaccessible, after Android upgrade for example (scoped storage)
         previously_selected_custom_folder_path = self.selected_custom_folder_path
         if (
             previously_selected_custom_folder_path
@@ -242,7 +252,6 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
 
     @safe_catch_unhandled_exception_and_display_popup
     def display_authenticator_info(self, authenticator_widget, authenticator_metadata):
-
 
         authenticator_list_widget = self.ids.authenticator_list
 
@@ -359,9 +368,9 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
 
     def archive_chooser_open(self, *args):
         logger.debug("Opening folder chooser for the location of archive to import")
-        if not request_external_storage_dirs_access():
-            return
         file_manager_path = EXTERNAL_EXPORTS_DIR
+        if not self._ensure_external_folder_is_accessible_else_display_warning(file_manager_path):
+            return
         self._archive_chooser.show(str(file_manager_path))
         register_current_dialog(self._archive_chooser)
 
@@ -400,20 +409,18 @@ class AuthenticatorManagementScreen(LanguageSwitcherScreenMixin, WAScreenBase):
 
     @safe_catch_unhandled_exception_and_display_popup
     def _export_authenticator_to_archive(self):
+        export_dir = EXTERNAL_EXPORTS_DIR
+        if not self._ensure_external_folder_is_accessible_else_display_warning(export_dir, require_writability=True):
+            return
 
         authenticator_dir = self.selected_authenticator_dir
-
         timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
 
         # This loading is not supposed to fail, by construction
         authenticator_metadata = load_keystore_metadata(authenticator_dir)
 
-        if not request_external_storage_dirs_access():
-            return
-
         keystore_uid_shortened = shorten_uid(authenticator_metadata["keystore_uid"], prefix="id")
-        EXTERNAL_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
-        archive_path_base = EXTERNAL_EXPORTS_DIR.joinpath("authenticator_%s_date%s" % (keystore_uid_shortened, timestamp))
+        archive_path_base = export_dir.joinpath("authenticator_%s_date%s" % (keystore_uid_shortened, timestamp))
 
         logger.debug("Exporting authenticator to archive %s", archive_path_base)
         archive_path = shutil.make_archive(

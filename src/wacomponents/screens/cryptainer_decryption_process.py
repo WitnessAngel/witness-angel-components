@@ -322,8 +322,6 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
 
             try:
 
-                EXTERNAL_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
-                # FIXME make this asynchronous, to avoid stalling the app!
                 result, error_report = self.filesystem_cryptainer_storage.decrypt_cryptainer_from_storage(
                     cryptainer_name,
                     passphrase_mapper=self.passphrase_mapper,
