@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-22 09:50+0200\n"
-"PO-Revision-Date: 2023-08-22 09:50+0200\n"
+"POT-Creation-Date: 2023-08-24 10:21+0200\n"
+"PO-Revision-Date: 2023-08-24 10:22+0200\n"
 "Last-Translator: chamb <pythoniks@gmail.com>\n"
 "Language-Team: Pascal\n"
 "Language: fr\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Virtaal 0.7.1\n"
 
-#: src/wacomponents/application/generic_gui.py:50
+#: src/wacomponents/application/generic_gui.py:45
 msgid "Empty"
 msgstr "Vide"
 
@@ -132,7 +132,7 @@ msgstr "Utilisateur"
 
 #: src/wacomponents/screens/authenticator_creation_form.kv:38
 #: src/wacomponents/screens/cryptainer_decryption_process.kv:16
-#: src/wacomponents/widgets/layout_components.kv:245
+#: src/wacomponents/widgets/layout_components.kv:244
 msgid "Passphrase"
 msgstr "Phrase secrète"
 
@@ -177,7 +177,7 @@ msgid "Initialization successfully completed."
 msgstr "Initialisation complétée avec succès."
 
 #: src/wacomponents/screens/authenticator_creation_form.py:180
-#: src/wacomponents/screens/authenticator_management.py:509
+#: src/wacomponents/screens/authenticator_management.py:516
 #: src/wacomponents/screens/cryptainer_decryption_process.py:286
 #: src/wacomponents/screens/foreign_keystore_management.py:407
 msgid "Success"
@@ -188,7 +188,7 @@ msgid "Operation failed, check logs."
 msgstr "Opération échouée, vérifiez les logs."
 
 #: src/wacomponents/screens/authenticator_creation_form.py:186
-#: src/wacomponents/screens/authenticator_management.py:512
+#: src/wacomponents/screens/authenticator_management.py:519
 #: src/wacomponents/screens/cryptainer_decryption_process.py:242
 #: src/wacomponents/screens/cryptainer_decryption_process.py:247
 #: src/wacomponents/screens/foreign_keystore_management.py:385
@@ -294,7 +294,7 @@ msgid "Export"
 msgstr "Exporter"
 
 #: src/wacomponents/screens/authenticator_management.kv:101
-#: src/wacomponents/screens/authenticator_management.py:478
+#: src/wacomponents/screens/authenticator_management.py:485
 #: src/wacomponents/screens/cryptainer_decryption_process.py:302
 msgid "Check"
 msgstr "Vérifier"
@@ -330,80 +330,84 @@ msgstr "Taille : {size}, Format : {filesystem}"
 msgid "Refreshed authenticator locations"
 msgstr "Emplacements d'authentifieurs rafraichis"
 
-#: src/wacomponents/screens/authenticator_management.py:237
+#: src/wacomponents/screens/authenticator_management.py:198
+msgid "External storage is not accessible"
+msgstr "Stockage externe non accessible"
+
+#: src/wacomponents/screens/authenticator_management.py:247
 msgid "No valid location selected"
 msgstr "Aucun emplacement valide sélectionné"
 
-#: src/wacomponents/screens/authenticator_management.py:239
+#: src/wacomponents/screens/authenticator_management.py:249
 msgid "Authenticator not initialized"
 msgstr "Authentifieur non initialisé"
 
-#: src/wacomponents/screens/authenticator_management.py:241
+#: src/wacomponents/screens/authenticator_management.py:251
 msgid "Authenticator initialized"
 msgstr "Authentifieur initialisé"
 
-#: src/wacomponents/screens/authenticator_management.py:260
+#: src/wacomponents/screens/authenticator_management.py:269
 msgid "Please select an authenticator folder"
 msgstr "Veuillez sélectionner un dossier d'authentifieur"
 
-#: src/wacomponents/screens/authenticator_management.py:264
+#: src/wacomponents/screens/authenticator_management.py:273
 #, python-format
 msgid "Path: %s"
 msgstr "Chemin : %s"
 
-#: src/wacomponents/screens/authenticator_management.py:267
+#: src/wacomponents/screens/authenticator_management.py:276
 msgid "Selected folder is invalid!"
 msgstr "Le dossier sélectionné est invalide !"
 
-#: src/wacomponents/screens/authenticator_management.py:270
+#: src/wacomponents/screens/authenticator_management.py:279
 msgid "Beware, parent folder is NOT writable!"
 msgstr "Attention, le dossier parent n'est PAS accessible en écriture !"
 
-#: src/wacomponents/screens/authenticator_management.py:273
+#: src/wacomponents/screens/authenticator_management.py:282
 msgid "Beware, this is not a folder!"
 msgstr "Attention, ce n'est pas un dossier !"
 
-#: src/wacomponents/screens/authenticator_management.py:276
+#: src/wacomponents/screens/authenticator_management.py:285
 msgid "Beware, this folder is NOT writable!"
 msgstr "Attention, ce dossier n'est PAS accessible en écriture !"
 
-#: src/wacomponents/screens/authenticator_management.py:288
+#: src/wacomponents/screens/authenticator_management.py:297
 #, python-format
 msgid "Invalid authenticator data in %s"
 msgstr "Données d'authentifieur invalides dans %s"
 
-#: src/wacomponents/screens/authenticator_management.py:325
+#: src/wacomponents/screens/authenticator_management.py:334
 msgid "Path"
 msgstr "Chemin"
 
-#: src/wacomponents/screens/authenticator_management.py:330
+#: src/wacomponents/screens/authenticator_management.py:339
 #: src/wacomponents/screens/authenticator_publication_form.py:177
 #: src/wacomponents/screens/foreign_keystore_management.py:212
 msgid "User"
 msgstr "Utilisateur"
 
-#: src/wacomponents/screens/authenticator_management.py:334
+#: src/wacomponents/screens/authenticator_management.py:343
 msgid "Password hint"
 msgstr "Indice de phrase secrète"
 
-#: src/wacomponents/screens/authenticator_management.py:338
+#: src/wacomponents/screens/authenticator_management.py:347
 msgid "Creation date"
 msgstr "Date de création"
 
-#: src/wacomponents/screens/authenticator_management.py:342
+#: src/wacomponents/screens/authenticator_management.py:351
 #: src/wacomponents/screens/authenticator_publication_form.py:181
 msgid "ID"
 msgstr "ID"
 
-#: src/wacomponents/screens/authenticator_management.py:347
+#: src/wacomponents/screens/authenticator_management.py:356
 msgid "Keypairs"
 msgstr "Paires de clés"
 
-#: src/wacomponents/screens/authenticator_management.py:380
+#: src/wacomponents/screens/authenticator_management.py:389
 msgid "Import successful"
 msgstr "Importation réussie"
 
-#: src/wacomponents/screens/authenticator_management.py:381
+#: src/wacomponents/screens/authenticator_management.py:390
 #, python-format
 msgid ""
 "Authenticator archive unpacked from %s, its integrity has not been checked "
@@ -412,9 +416,9 @@ msgstr ""
 "L'archive d'authentifieur a été décompressée depuis %s, son intégrité n'a "
 "cependant pas été vérifiée."
 
-#: src/wacomponents/screens/authenticator_management.py:389
-#: src/wacomponents/screens/authenticator_management.py:431
-#: src/wacomponents/screens/authenticator_management.py:472
+#: src/wacomponents/screens/authenticator_management.py:398
+#: src/wacomponents/screens/authenticator_management.py:438
+#: src/wacomponents/screens/authenticator_management.py:479
 #: src/wacomponents/screens/authenticator_revelation_request_detail.py:150
 #: src/wacomponents/screens/authenticator_revelation_request_detail.py:173
 #: src/wacomponents/screens/cryptainer_decryption_process.py:296
@@ -425,33 +429,33 @@ msgstr ""
 msgid "Cancel"
 msgstr "Annuler"
 
-#: src/wacomponents/screens/authenticator_management.py:390
+#: src/wacomponents/screens/authenticator_management.py:399
 msgid "Export authenticator"
 msgstr "Exporter l'authentifieur"
 
-#: src/wacomponents/screens/authenticator_management.py:391
+#: src/wacomponents/screens/authenticator_management.py:400
 msgid "The exported archive should be kept in a secure place."
 msgstr "L'archive exportée doit être gardée en lieu sûr."
 
-#: src/wacomponents/screens/authenticator_management.py:395
-#: src/wacomponents/screens/authenticator_management.py:437
+#: src/wacomponents/screens/authenticator_management.py:404
+#: src/wacomponents/screens/authenticator_management.py:444
 msgid "Confirm"
 msgstr "Confirmer"
 
-#: src/wacomponents/screens/authenticator_management.py:424
+#: src/wacomponents/screens/authenticator_management.py:431
 msgid "Export successful"
 msgstr "Exportation réussie"
 
-#: src/wacomponents/screens/authenticator_management.py:425
+#: src/wacomponents/screens/authenticator_management.py:432
 #, python-format
 msgid "Authenticator archive exported to %s"
 msgstr "L'archive de l'authentifieur a été exportée vers %s"
 
-#: src/wacomponents/screens/authenticator_management.py:432
+#: src/wacomponents/screens/authenticator_management.py:439
 msgid "Destroy authenticator"
 msgstr "Détruire l'authentifieur"
 
-#: src/wacomponents/screens/authenticator_management.py:433
+#: src/wacomponents/screens/authenticator_management.py:440
 msgid ""
 "Beware, this might make encrypted data using these keys impossible to "
 "decrypt."
@@ -459,29 +463,29 @@ msgstr ""
 "Attention, cela peut rendre impossible le déchiffrement des données "
 "chiffrées utilisant ces clés."
 
-#: src/wacomponents/screens/authenticator_management.py:458
+#: src/wacomponents/screens/authenticator_management.py:465
 msgid "Deletion is over"
 msgstr "Destruction terminée"
 
-#: src/wacomponents/screens/authenticator_management.py:458
+#: src/wacomponents/screens/authenticator_management.py:465
 #, python-format
 msgid "Folder %s has been properly removed."
 msgstr "Le dossier %s a été correctement supprimé."
 
-#: src/wacomponents/screens/authenticator_management.py:468
+#: src/wacomponents/screens/authenticator_management.py:475
 msgid "Test integrity and passphrase of authenticator"
 msgstr "Tester l'intégrité et la phrase secrète de l'authentifieur"
 
-#: src/wacomponents/screens/authenticator_management.py:473
+#: src/wacomponents/screens/authenticator_management.py:480
 msgid "Sanity check"
 msgstr "Contrôle d'intégrité"
 
-#: src/wacomponents/screens/authenticator_management.py:510
+#: src/wacomponents/screens/authenticator_management.py:517
 #, python-format
 msgid "Keypairs successfully tested: %s"
 msgstr "Paires de clés testées avec succès : %s"
 
-#: src/wacomponents/screens/authenticator_management.py:516
+#: src/wacomponents/screens/authenticator_management.py:523
 #, python-brace-format
 msgid ""
 "Keypairs tested: {keypair_count}\n"
@@ -492,12 +496,12 @@ msgstr ""
 "Clés privées manquantes : {missing_private_keys}\n"
 "Mauvaise phrase secrète pour les clés :  {undecodable_private_keys}"
 
-#: src/wacomponents/screens/authenticator_management.py:523
+#: src/wacomponents/screens/authenticator_management.py:530
 #, python-format
 msgid "Checkup result: %s"
 msgstr "Résultat du contrôle : %s"
 
-#: src/wacomponents/screens/authenticator_management.py:563
+#: src/wacomponents/screens/authenticator_management.py:570
 msgid ""
 "On this page, you can manage your authenticators, which are actually digital "
 "keychains identified by unique IDs."
@@ -505,7 +509,7 @@ msgstr ""
 "Sur cette page, vous pouvez gérer vos authentifieurs, qui sont en fait des "
 "trousseaux de clés numériques identifiés par des ID uniques."
 
-#: src/wacomponents/screens/authenticator_management.py:567
+#: src/wacomponents/screens/authenticator_management.py:574
 msgid ""
 "These keychains contain both public keys, which can be freely shared, and "
 "their corresponding private keys, protected by passphrases, which must be "
@@ -515,7 +519,7 @@ msgstr ""
 "partagées librement, et les clés privées correspondantes, protégées par des "
 "phrases secrètes, qui doivent rester cachées."
 
-#: src/wacomponents/screens/authenticator_management.py:571
+#: src/wacomponents/screens/authenticator_management.py:578
 msgid ""
 "Authenticators can be stored in your user profile or in a custom folder, "
 "especially at the root of removable devices."
@@ -524,7 +528,7 @@ msgstr ""
 "dans un dossier personnalisé, notamment à la racine des périphériques "
 "amovibles."
 
-#: src/wacomponents/screens/authenticator_management.py:575
+#: src/wacomponents/screens/authenticator_management.py:582
 msgid ""
 "You can initialize new authenticators from scratch, import/export them from/"
 "to ZIP archives, or check their integrity by providing their passphrases."
@@ -533,7 +537,7 @@ msgstr ""
 "importer/exporter depuis/vers des archives ZIP, ou vérifier leur intégrité "
 "en fournissant leurs phrases secrètes."
 
-#: src/wacomponents/screens/authenticator_management.py:579
+#: src/wacomponents/screens/authenticator_management.py:586
 msgid ""
 "Note that if you destroy an authenticator, or lose its passphrase, the "
 "WitnessAngel recordings which used it as a trusted third party might not be "
@@ -543,7 +547,7 @@ msgstr ""
 "les enregistrements WitnessAngel qui l'utilisaient en tant que tiers de "
 "confiance risquent de ne plus pouvoir être déchiffrés."
 
-#: src/wacomponents/screens/authenticator_management.py:583
+#: src/wacomponents/screens/authenticator_management.py:590
 msgid "Authenticator management page"
 msgstr "Page de gestion des authentifieurs"
 
@@ -719,7 +723,7 @@ msgstr "Requête de déchiffrement de symkey"
 
 #: src/wacomponents/screens/authenticator_revelation_request_detail.py:147
 msgid "This will allow unmasking the requested symkey parts"
-msgstr "Cela permettra de révéler les morceaux de clé symmétrique requis"
+msgstr "Cela permettra de révéler les morceaux de symkey requis"
 
 #: src/wacomponents/screens/authenticator_revelation_request_detail.py:151
 msgid "Enter your authenticator passphrase"
@@ -1059,7 +1063,7 @@ msgstr "Résultat de validation : %s"
 msgid "Add passphrase"
 msgstr "Ajouter une phrase secrète"
 
-#: src/wacomponents/screens/cryptainer_decryption_process.py:369
+#: src/wacomponents/screens/cryptainer_decryption_process.py:367
 msgid "All decryptions failed, see reports"
 msgstr "Tous les déchiffrements ont échoué, voir les rapports"
 
