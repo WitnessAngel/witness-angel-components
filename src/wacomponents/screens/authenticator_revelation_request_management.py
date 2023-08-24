@@ -40,7 +40,7 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
     def go_to_home_screen(self):  # Fixme deduplicate and push to App!
         self.manager.current = WAScreenName.authenticator_management
 
-    def _display_remote_revelation_request_(self, revelation_requests_per_status_list):  # FIXME rename
+    def _display_remote_revelation_request_(self, revelation_requests_per_status_dict):
 
         logger.debug("Displaying remote decryption requests")
 
@@ -50,7 +50,11 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
             ACCEPTED=self.ids.decryption_request_accepted_table,
         )
 
-        for status, revelation_requests in revelation_requests_per_status_list.items():
+        # CLEANUP
+        for tab in tab_per_status.values():
+            tab.data = []
+
+        for status, revelation_requests in revelation_requests_per_status_dict.items():
             recycleview_data = []
 
             revelation_requests.sort(key=lambda request: request["created_at"], reverse=True)
@@ -91,7 +95,7 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
 
     def _fetch_revelation_requests_sorted_by_status(self):
         authenticator_path = self.selected_authenticator_dir
-        revelation_requests_per_status_list = None
+        revelation_requests_per_status_dict = None
         authenticator_metadata = load_keystore_metadata(authenticator_path)
         keystore_uid = authenticator_metadata["keystore_uid"]
         gateway_proxy = self._app.get_gateway_proxy()
@@ -100,7 +104,7 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
                 authenticator_keystore_secret=authenticator_metadata["keystore_secret"],
                 authenticator_keystore_uid=keystore_uid,
             )
-            revelation_requests_per_status_list = self.sort_list_revelation_request_per_status(
+            revelation_requests_per_status_dict = self.sort_list_revelation_request_per_status(
                 authenticator_revelation_request_list
             )
             message = tr._("Authorization requests were updated")
@@ -115,7 +119,7 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
             logger.error("Error calling gateway server: %r", exc)
             message = tr._("Error querying gateway server, please check its url and your connectivity")
 
-        return revelation_requests_per_status_list, message
+        return revelation_requests_per_status_dict, message
 
     @safe_catch_unhandled_exception_and_display_popup
     def fetch_and_display_revelation_requests(self):
@@ -123,14 +127,15 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
         self.ids.tabs.switch_tab(self.ids.tabs.get_tab_list()[0])  # Return to first Tab
 
         def resultat_callable(result, *args, **kwargs):  # FIXME CHANGE THIS NAME
-            revelation_requests_per_status_list, message = result
-            if revelation_requests_per_status_list is None:
+            revelation_requests_per_status_dict, message = result
+            if revelation_requests_per_status_dict is None:
                 display_info_snackbar(message)
             else:
                 display_info_toast(message)
-                self._display_remote_revelation_request_(
-                    revelation_requests_per_status_list=revelation_requests_per_status_list
-                )
+            # In any case refresh the displayed list!
+            self._display_remote_revelation_request_(
+                revelation_requests_per_status_dict=revelation_requests_per_status_dict or {}
+            )
 
         self._app._offload_task_with_spinner(self._fetch_revelation_requests_sorted_by_status, resultat_callable)
 
