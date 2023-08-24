@@ -365,8 +365,7 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
             if not decrypted_cryptainer_count:
 
                 message = tr._("All decryptions failed, see reports")
-
-                Snackbar(text=message, font_size="12sp", duration=5).open()
+                display_info_snackbar(message)
 
         self._app._offload_task_with_spinner(self.decrypt_cryptainers_from_storage, resultat_callable)
 
