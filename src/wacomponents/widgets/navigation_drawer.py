@@ -18,7 +18,7 @@ class NavigationDrawerContent(BoxLayout):  # FIXME useless intermediate class?
     pass
 
 
-class DrawerList(ThemableBehavior, MDList):
+class DrawerList(MDList, ThemableBehavior):
     def __obsolete_set_color_item(self, instance_item):
         """
         Called when tap on a menu item - UNSAFE SINCE WE CAN NAVIGATE ALSO DIFFERENTLY

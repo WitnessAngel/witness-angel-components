@@ -107,7 +107,7 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
             revelation_requests_per_status_dict = self.sort_list_revelation_request_per_status(
                 authenticator_revelation_request_list
             )
-            message = tr._("Authorization requests were updated")
+            message = tr._("Authorization requests were updated")  # FIXME overrides the decryption success toast, how to handle that?
 
         except KeystoreDoesNotExist:
             message = tr._("Authenticator does not exist in remote registry")

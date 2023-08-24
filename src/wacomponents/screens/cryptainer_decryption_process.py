@@ -239,7 +239,7 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
 
         if [passphrase] in self.passphrase_mapper.values():
             result = tr._("Failure")
-            details = tr._("Already existing passphrase") + SPACE + passphrase
+            details = tr._("Already existing passphrase") + COLON + passphrase
 
         else:
             # Default values
