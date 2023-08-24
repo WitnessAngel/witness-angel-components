@@ -9,7 +9,8 @@ from kivymd.toast import toast
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.filemanager import MDFileManager
-from kivymd.uix.snackbar import Snackbar
+from kivymd.uix.label import MDLabel
+from kivymd.uix.snackbar import MDSnackbar
 
 from wacomponents.default_settings import IS_ANDROID
 from wacomponents.i18n import tr
@@ -31,14 +32,12 @@ def display_info_toast(message):
 def display_info_snackbar(message, duration=3.5):
     """Full-width temporary bottom message bar"""
     logger.debug("Displaying Snackbar with message %r", message)
-    Snackbar(
-        text=message,
-        font_size="12sp",
-        duration=duration,
-        # button_text="BUTTON",
-        # button_callback=app.callback
+    MDSnackbar(
+        MDLabel(
+            text=message,
+        ),
+        duration=duration
     ).open()
-
 
 @decorator
 def display_snackbar_on_error(f, *args, **kwargs):

@@ -5,7 +5,6 @@ from kivy.factory import Factory
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty, BooleanProperty
 from kivymd.uix.button import MDFlatButton
-from kivymd.uix.snackbar import Snackbar
 
 from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
