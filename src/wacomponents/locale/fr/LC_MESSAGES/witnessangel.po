@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WitnessAngelGuilib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-11 15:09+0200\n"
-"PO-Revision-Date: 2023-09-11 15:11+0200\n"
+"POT-Creation-Date: 2023-09-11 15:28+0200\n"
+"PO-Revision-Date: 2023-09-11 15:28+0200\n"
 "Last-Translator: PChambon <pythoniks@gmail.com>\n"
 "Language-Team: Pascal\n"
 "Language: fr\n"
@@ -687,8 +687,8 @@ msgstr "Description"
 
 #: src/wacomponents/screens/authenticator_revelation_request_detail.py:80
 #: src/wacomponents/screens/claimant_revelation_request_detail.py:113
-msgid "Local response key"
-msgstr "Clé locale de la réponse"
+msgid "Local key for response"
+msgstr "Clé locale pour la réponse"
 
 #: src/wacomponents/screens/authenticator_revelation_request_detail.py:90
 #, python-brace-format
@@ -720,11 +720,11 @@ msgstr "Fermer"
 
 #: src/wacomponents/screens/authenticator_revelation_request_detail.py:138
 msgid "Symkey decryption request"
-msgstr "Requêtes de déchiffrement de symkey"
+msgstr "Requêtes de déchiffrement de la Symkey"
 
 #: src/wacomponents/screens/authenticator_revelation_request_detail.py:147
-msgid "This will allow unmasking the requested symkey parts"
-msgstr "Cela permettra de révéler les morceaux de symkey requis"
+msgid "This will allow unmasking the requested Symkey parts"
+msgstr "Cela permettra de révéler les morceaux de Symkey requis"
 
 #: src/wacomponents/screens/authenticator_revelation_request_detail.py:151
 msgid "Enter your authenticator passphrase"
@@ -843,8 +843,8 @@ msgid "Summary: "
 msgstr "Résumé :"
 
 #: src/wacomponents/screens/claimant_revelation_request_creation_form.kv:54
-msgid "Select authenticator(s) to query"
-msgstr "Sélectionnez le(s) authentifieur(s) à interroger"
+msgid "Select key guardian(s) to query"
+msgstr "Sélectionnez les gardiens de clé à solliciter"
 
 #: src/wacomponents/screens/claimant_revelation_request_creation_form.kv:60
 msgid "Justify the authorization request"
@@ -1024,8 +1024,8 @@ msgid "None"
 msgstr "Aucun(e)"
 
 #: src/wacomponents/screens/cryptainer_decryption_process.py:196
-msgid "Missing private key(s)"
-msgstr "Clé(s) privée(s) manquante(s)"
+msgid "Private key(s) missing locally"
+msgstr "Clé(s) privée(s) manquant localement"
 
 #: src/wacomponents/screens/cryptainer_decryption_process.py:203
 msgid "Private keys needed for decryption are present"
@@ -1345,9 +1345,7 @@ msgstr "Inconnu(e)"
 #: src/wacomponents/utilities/__init__.py:176
 #, python-brace-format
 msgid "Request \"{revelation_request_description_truncated}\" ({reformatted_revelation_request_creation_date})"
-msgstr ""
-"Demande \"{revelation_request_description_truncated}\" "
-"({reformatted_revelation_request_creation_date})"
+msgstr "Demande \"{revelation_request_description_truncated}\" ({reformatted_revelation_request_creation_date})"
 
 #: src/wacomponents/utilities/__init__.py:183
 #, python-brace-format
@@ -1362,6 +1360,12 @@ msgstr "à"
 #, python-format
 msgid "Abnormal error caught: %s"
 msgstr "Erreur anormale détectée : %s"
+
+#~ msgid "Select authenticator(s) to query"
+#~ msgstr "Sélectionnez le(s) authentifieur(s) à interroger"
+
+#~ msgid "Missing private key(s)"
+#~ msgstr "Clé(s) privée(s) manquante(s)"
 
 #~ msgid "Local path"
 #~ msgstr "Chemin local"

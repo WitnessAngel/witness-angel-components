@@ -77,7 +77,7 @@ class AuthenticatorRevelationRequestDetailScreen(WAScreenBase):
             + COLON()
             + revelation_request["revelation_request_description"]
             + LINEBREAK
-            + tr._("Local response key")
+            + tr._("Local key for response")
             + COLON()
             + response_key_label
         )
@@ -144,7 +144,7 @@ class AuthenticatorRevelationRequestDetailScreen(WAScreenBase):
         logger.debug("Opening dialog to accept decryption request")
 
         content = Factory.PassphraseRequestForm()
-        content.description = tr._("This will allow unmasking the requested symkey parts")
+        content.description = tr._("This will allow unmasking the requested Symkey parts")
 
         dialog = dialog_with_close_button(
             close_btn_label=tr._("Cancel"),

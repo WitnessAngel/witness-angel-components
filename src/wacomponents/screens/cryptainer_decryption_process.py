@@ -193,7 +193,7 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
                 )
 
                 trustee_private_keys_status_text = (
-                    tr._("Missing private key(s)")
+                    tr._("Private key(s) missing locally")
                     + COLON()
                     + "{trustee_keys_missing_full_label}".format(
                         trustee_keys_missing_full_label=trustee_keys_missing_full_label

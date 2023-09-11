@@ -110,7 +110,7 @@ class ClaimantRevelationRequestDetailScreen(WAScreenBase):
                 + COLON()
                 + _displayed_values["authenticator_key_label"]
                 + LINEBREAK
-                + tr._("Local response key")
+                + tr._("Local key for response")
                 + COLON()
                 + _displayed_values["response_key_label"]
                 + 2 * LINEBREAK
