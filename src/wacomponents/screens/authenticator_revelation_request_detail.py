@@ -49,7 +49,7 @@ class AuthenticatorRevelationRequestDetailScreen(WAScreenBase):
         self.action_buttons_are_enabled = (status == SymkeyDecryptionStatus.PENDING)
 
         revelation_request_label = format_revelation_request_label(
-            revelation_request_uid=revelation_request["revelation_request_uid"],
+            revelation_request_description=revelation_request["revelation_request_description"],
             revelation_request_creation_datetime=revelation_request["created_at"],
         )
         self.revelation_request_label = revelation_request_label

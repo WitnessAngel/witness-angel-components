@@ -98,6 +98,12 @@ def shorten_uid(uid, prefix="…"):
     return prefix + str(uid).split("-")[-1]
 
 
+def truncate_chars(string, max_length, suffix="…"):
+    if len(string) <= max_length:
+        return string
+    return string[:max_length] + suffix
+
+
 def get_nice_size(size):
     for unit in filesize_units:
         if size < 1024.0:
@@ -158,14 +164,8 @@ def format_authenticator_label(
 
 def format_revelation_request_label(
     revelation_request_creation_datetime: datetime,
-    revelation_request_uid: uuid.UUID,
-    keystore_owner=None,
-    short_uid=True,
-):
-    # Request ... 1abfb5411 (2022/05/22)
-
-    if short_uid:
-        revelation_request_uid = shorten_uid(revelation_request_uid)
+    revelation_request_description: str,
+    keystore_owner=None):
 
     # Date into isoformat
     reformatted_revelation_request_creation_date = format_utc_datetime_label(
@@ -173,9 +173,9 @@ def format_revelation_request_label(
     )
 
     revelation_request_label = tr._(
-        "Request {revelation_request_uid} ({reformatted_revelation_request_creation_date})"
+        "Request \"{revelation_request_description_truncated}\" ({reformatted_revelation_request_creation_date})"
     ).format(
-        revelation_request_uid=revelation_request_uid,
+        revelation_request_description_truncated=truncate_chars(revelation_request_description, max_length=40),
         reformatted_revelation_request_creation_date=reformatted_revelation_request_creation_date,
     )
 

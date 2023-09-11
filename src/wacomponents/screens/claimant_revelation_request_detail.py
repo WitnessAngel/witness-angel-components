@@ -49,7 +49,7 @@ class ClaimantRevelationRequestDetailScreen(WAScreenBase):
             ), (self.cryptainer_uid, revelation_request_with_single_symkey["symkey_decryption_request"]["cryptainer_uid"])
 
             revelation_request_label1 = format_revelation_request_label(
-                revelation_request_uid=revelation_request_with_single_symkey["revelation_request_uid"],
+                revelation_request_description=revelation_request_with_single_symkey["revelation_request_description"],
                 revelation_request_creation_datetime=revelation_request_with_single_symkey["created_at"],
                 keystore_owner=revelation_request_with_single_symkey["target_public_authenticator"][
                     "keystore_owner"

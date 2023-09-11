@@ -61,9 +61,8 @@ class AuthenticatorRevelationRequestManagementScreen(WAScreenBase):
             for revelation_request in revelation_requests:
 
                 revelation_request_label = format_revelation_request_label(
-                    revelation_request_uid=revelation_request["revelation_request_uid"],
+                    revelation_request_description=revelation_request["revelation_request_description"],
                     revelation_request_creation_datetime=revelation_request["created_at"],
-                    short_uid=False,
                 )
 
                 symkey_decryption_request_count = len(revelation_request["symkey_decryption_requests"])
