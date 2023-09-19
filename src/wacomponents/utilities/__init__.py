@@ -1,3 +1,4 @@
+import textwrap
 import threading
 import uuid
 from concurrent.futures import ThreadPoolExecutor
@@ -220,23 +221,34 @@ def format_cryptainer_label(
     return cryptainer_label
 
 
-def format_revelation_request_error(error_criticity: str, error_type: str, error_message: str, error_exception):
+def format_revelation_request_error(entry_criticity: str, entry_type: str, entry_message: str, entry_nesting: int, entry_exception: Optional[Exception], **kwargs):
     # Criticity: ASYMMETRIC_DECRYPTION_ERROR
     # Message:
     # Exception:
 
-    error_exception_suffix = ""
-    if error_exception:
-        error_exception_suffix = " (%s)" % error_exception.__class__.__name__
+    entry_exception_suffix = ""
+    if entry_exception:
+        entry_exception_suffix = " (%s)" % entry_exception.__class__.__name__
 
-    error_label = (
-        error_criticity
-        + COLON()
-        + error_type.replace("_", " ").title()
-        + error_exception_suffix
-        + LINEBREAK
-        + tr._("Message")
-        + COLON()
-        + error_message
-    )
-    return error_label
+    if entry_criticity == "INFO":  # Special, non-error case
+        entry_label = (
+            tr._("Info")
+            + COLON()
+            + entry_message
+        )
+    else:
+        entry_label = (
+            entry_criticity
+            + COLON()
+            + entry_type.replace("_", " ").title()
+            + entry_exception_suffix
+            + LINEBREAK
+            + tr._("Message")
+            + COLON()
+            + entry_message
+        )
+
+    prefix = "> " * entry_nesting
+    entry_label = textwrap.indent(entry_label, prefix=prefix)
+
+    return entry_label

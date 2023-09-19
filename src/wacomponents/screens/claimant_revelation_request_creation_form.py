@@ -176,7 +176,7 @@ class ClaimantRevelationRequestCreationFormScreen(WAScreenBase):
         def resultat_callable(result, *args, **kwargs):  # FIXME CHANGE THIS NAME
             error, successful_request_count = result
 
-            error_report = "\n".join(error)
+            error_report = "\n".join(error)  # FIXME rename
 
             _displayed_values = dict(
                 successful_request_count=successful_request_count,

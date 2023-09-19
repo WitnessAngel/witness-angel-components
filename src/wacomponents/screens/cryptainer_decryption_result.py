@@ -72,27 +72,29 @@ class CryptainerDecryptionResultScreen(WAScreenBase):
                 layout.add_widget(cryptainer_decryption_status_label)
 
                 # Cryptainer decryption error (WASelectable)
-                if decryption_results_per_cryptainer["decryption_error"]:
-                    error_report_text = ""
-                    for error in decryption_results_per_cryptainer["decryption_error"]:
-                        error_label = format_revelation_request_error(**error)
-                        error_report_text += error_label + "\n\n"
+                report_entries = decryption_results_per_cryptainer["operation_report"].get_all_entries()
+
+                if report_entries:
+                    operation_report_text = ""
+                    for report_entry in report_entries:
+                        entry_label = format_revelation_request_error(**report_entry)  # FIXME rename "error_" stuffs
+                        operation_report_text += entry_label + "\n\n"
 
                     datetime = get_utc_now_date()
                     from_ts = datetime.strftime(CRYPTAINER_DATETIME_FORMAT)
                     revelation_report_file = EXTERNAL_EXPORTS_DIR.joinpath(
                         str(decryption_results_per_cryptainer["cryptainer_name"])
-                        + "_revelation_report"
-                        + "_"
+                        + "_revelation_report_"
                         + from_ts
                         + ".txt"
                     )
-                    dump_to_text_file(revelation_report_file, error_report_text)
+                    dump_to_text_file(revelation_report_file, data=operation_report_text)
 
                 else:
-                    error_report_text = tr._("No errors/warnings when decrypting the container")
+                    operation_report_text = tr._("No errors/warnings when decrypting the container")
+
                 error_box = Factory.WASelectableLabel(
-                    text=error_report_text + LINEBREAK, size_hint_y=None, full_height=False
+                    text=operation_report_text + LINEBREAK, size_hint_y=None, full_height=False
                 )
                 layout.add_widget(error_box)
 

@@ -316,12 +316,11 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
 
         for cryptainer_name in self.selected_cryptainer_names:
 
-            error_report = []
             decryption_status = False
 
             try:
 
-                result, error_report = self.filesystem_cryptainer_storage.decrypt_cryptainer_from_storage(
+                result_payload, operation_report = self.filesystem_cryptainer_storage.decrypt_cryptainer_from_storage(
                     cryptainer_name,
                     passphrase_mapper=self.passphrase_mapper,
                     revelation_requestor_uid=self.revelation_requestor_uid,
@@ -329,10 +328,10 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
                 )
 
                 if (
-                    result is not None
+                        result_payload is not None
                 ):  # Could be an empty bytestring though, after successful decryption of empty container
                     target_path = EXTERNAL_EXPORTS_DIR / (Path(cryptainer_name).with_suffix(""))
-                    target_path.write_bytes(result)
+                    target_path.write_bytes(result_payload)
                     decryption_status = True
                     decrypted_cryptainer_count += 1
                     # print(">> Successfully exported data file to %s" % target_path)
@@ -340,12 +339,12 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
             except Exception as exc:
                 message = "Abnormal error when decrypting container %s: %r" % (cryptainer_name, exc)
                 logger.critical(message)
-                display_info_snackbar(message)
+                ### NOPE IMPOSSIBLE insubthread display_info_snackbar(message)
 
             decryption_result_for_single_cryptainer = dict(
                 cryptainer_name=cryptainer_name,
                 decryption_status=decryption_status,
-                decryption_error=error_report,  # Might be empty if exception was raised, too...
+                operation_report=operation_report,  # Might be empty if exception was raised, too...
             )
             decryption_results.append(decryption_result_for_single_cryptainer)
 
