@@ -136,8 +136,9 @@ class CryptainerStorageManagementScreen(WAScreenBase):
             cryptainer = self.filesystem_cryptainer_storage.load_cryptainer_from_storage(cryptainer_name)
             all_dependencies = gather_trustee_dependencies([cryptainer])
             interesting_dependencies = [d[0] for d in list(all_dependencies["encryption"].values())]
-            interesting_dependencies.sort(key=lambda x: x["keystore_owner"].lower())  # Sort by pretty name
+            interesting_dependencies.sort(key=lambda x: x.get("keystore_owner", "").lower())  # Sort by pretty name if present
         except Exception as exc:
+            logger.error("Exception encountered when showing cryptainer details for %s", cryptainer_name, exc_info=True)
             message = repr(exc)[:800]
 
         else:
@@ -147,8 +148,8 @@ class CryptainerStorageManagementScreen(WAScreenBase):
             message += tr._("Key Guardians used") + COLON() + LINEBREAK * 2
             for index, key_guardian_used in enumerate(interesting_dependencies, start=1):
                 key_guardian_label = format_authenticator_label(
-                    authenticator_owner=key_guardian_used["keystore_owner"],
-                    keystore_uid=key_guardian_used["keystore_uid"],
+                    authenticator_owner=key_guardian_used.get("keystore_owner", tr._("Unknown")),
+                    keystore_uid=key_guardian_used.get("keystore_uid", tr._("Unknown")),
                     trustee_type=key_guardian_used["trustee_type"],
                 )
 
