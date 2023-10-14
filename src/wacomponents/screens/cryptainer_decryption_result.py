@@ -9,7 +9,7 @@ from wacomponents.default_settings import EXTERNAL_EXPORTS_DIR
 from wacomponents.i18n import tr
 from wacomponents.screens.base import WAScreenName, WAScreenBase
 from wacomponents.utilities import format_revelation_request_error, LINEBREAK
-from wacomponents.widgets.layout_components import build_fallback_information_box
+#from wacomponents.widgets.layout_components import build_fallback_information_box
 from wacryptolib.cryptainer import CRYPTAINER_DATETIME_FORMAT
 from wacryptolib.utilities import get_utc_now_date
 
@@ -35,68 +35,69 @@ class CryptainerDecryptionResultScreen(WAScreenBase):
 
         self.ids.decryption_info_list.clear_widgets()
 
+        ''' Should not happen
         if self.last_decryption_info is None:
             fallback_info_box = build_fallback_information_box(tr._("No decryption was performed"))
             self.ids.decryption_info_list.add_widget(fallback_info_box)
+        '''
+        assert self.last_decryption_info, self.last_decryption_info
+        decrypted_container_number, decryption_results = self.last_decryption_info
 
-        else:
-            decrypted_container_number, decryption_results = self.last_decryption_info
+        layout = self.ids.decryption_info_list
+        layout.bind(minimum_height=layout.setter("height"))
 
-            layout = self.ids.decryption_info_list
-            layout.bind(minimum_height=layout.setter("height"))
+        # Selected Cryptainer decryption resume
+        cryptainer_decryption_resume_label = tr._(
+            "{decrypted_container} out of {selected_container} container(s) " "have been decrypted"
+        ).format(decrypted_container=decrypted_container_number, selected_container=len(decryption_results))
+        cryptainer_decryption_resume = Factory.MDLabel(
+            text=cryptainer_decryption_resume_label, size_hint_y=None, height=60, font_style="H6", halign="center"
+        )
+        layout.add_widget(cryptainer_decryption_resume)
 
-            # Selected Cryptainer decryption resume
-            cryptainer_decryption_resume_label = tr._(
-                "{decrypted_container} out of {selected_container} container(s) " "have been decrypted"
-            ).format(decrypted_container=decrypted_container_number, selected_container=len(decryption_results))
-            cryptainer_decryption_resume = Factory.MDLabel(
-                text=cryptainer_decryption_resume_label, size_hint_y=None, height=60, font_style="H6", halign="center"
+        for decryption_results_per_cryptainer in decryption_results:
+
+            # Cryptainer decryption status(MDLabel)
+            cryptainer_decryption_status = tr._(
+                "Decryption status for {cryptainer_name}: {decryption_status}"
+            ).format(
+                cryptainer_name=decryption_results_per_cryptainer["cryptainer_name"],
+                decryption_status=DecryptionStatus.SUCCESS
+                if decryption_results_per_cryptainer["decryption_status"] == True
+                else DecryptionStatus.FAILURE,
             )
-            layout.add_widget(cryptainer_decryption_resume)
 
-            for decryption_results_per_cryptainer in decryption_results:
+            cryptainer_decryption_status_label = Factory.DecryptionStatusLabel(
+                text=cryptainer_decryption_status, size_hint_y=None, height=40
+            )
+            layout.add_widget(cryptainer_decryption_status_label)
 
-                # Cryptainer decryption status(MDLabel)
-                cryptainer_decryption_status = tr._(
-                    "Decryption status for {cryptainer_name}: {decryption_status}"
-                ).format(
-                    cryptainer_name=decryption_results_per_cryptainer["cryptainer_name"],
-                    decryption_status=DecryptionStatus.SUCCESS
-                    if decryption_results_per_cryptainer["decryption_status"] == True
-                    else DecryptionStatus.FAILURE,
+            # Cryptainer decryption error (WASelectable)
+            report_entries = decryption_results_per_cryptainer["operation_report"].get_all_entries()
+
+            if report_entries:
+                operation_report_text = ""
+                for report_entry in report_entries:
+                    entry_label = format_revelation_request_error(**report_entry)  # FIXME rename "error_" stuffs
+                    operation_report_text += entry_label + "\n\n"
+
+                datetime = get_utc_now_date()
+                from_ts = datetime.strftime(CRYPTAINER_DATETIME_FORMAT)
+                revelation_report_file = EXTERNAL_EXPORTS_DIR.joinpath(
+                    str(decryption_results_per_cryptainer["cryptainer_name"])
+                    + "_revelation_report_"
+                    + from_ts
+                    + ".txt"
                 )
+                dump_to_text_file(revelation_report_file, data=operation_report_text)
 
-                cryptainer_decryption_status_label = Factory.DecryptionStatusLabel(
-                    text=cryptainer_decryption_status, size_hint_y=None, height=40
-                )
-                layout.add_widget(cryptainer_decryption_status_label)
+            else:
+                operation_report_text = tr._("No errors/warnings when decrypting the container")
 
-                # Cryptainer decryption error (WASelectable)
-                report_entries = decryption_results_per_cryptainer["operation_report"].get_all_entries()
-
-                if report_entries:
-                    operation_report_text = ""
-                    for report_entry in report_entries:
-                        entry_label = format_revelation_request_error(**report_entry)  # FIXME rename "error_" stuffs
-                        operation_report_text += entry_label + "\n\n"
-
-                    datetime = get_utc_now_date()
-                    from_ts = datetime.strftime(CRYPTAINER_DATETIME_FORMAT)
-                    revelation_report_file = EXTERNAL_EXPORTS_DIR.joinpath(
-                        str(decryption_results_per_cryptainer["cryptainer_name"])
-                        + "_revelation_report_"
-                        + from_ts
-                        + ".txt"
-                    )
-                    dump_to_text_file(revelation_report_file, data=operation_report_text)
-
-                else:
-                    operation_report_text = tr._("No errors/warnings when decrypting the container")
-
-                error_box = Factory.WASelectableLabel(
-                    text=operation_report_text + LINEBREAK, size_hint_y=None, full_height=False
-                )
-                layout.add_widget(error_box)
+            error_box = Factory.WASelectableLabel(
+                text=operation_report_text + LINEBREAK, size_hint_y=None, full_height=False
+            )
+            layout.add_widget(error_box)
 
 
 def dump_to_text_file(filepath, data):  # TODO To move in wacryptolib utilities

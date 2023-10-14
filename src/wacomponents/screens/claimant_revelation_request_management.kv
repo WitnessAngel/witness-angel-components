@@ -30,6 +30,10 @@
                     text: tr._("View authorization requests submitted for each container")
                     padding_x: "10dp"
 
+            WABigInformationBox:
+                message: tr._(app.NO_DATA_MESSAGE)
+                enabled: not decryption_request_table.data
+
             WARecycleView:
                 id: decryption_request_table
                 viewclass: 'WAClaimantAuthorizationRequestListItemEntry'

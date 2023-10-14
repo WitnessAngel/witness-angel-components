@@ -9,7 +9,7 @@ from wacomponents.screens.base import WAScreenName, WAScreenBase
 from wacomponents.utilities import (
     format_cryptainer_label,
 )
-from wacomponents.widgets.layout_components import build_fallback_information_box
+#from wacomponents.widgets.layout_components import build_fallback_information_box
 from wacomponents.widgets.popups import dialog_with_close_button, display_info_snackbar, display_info_toast
 
 Builder.load_file(str(Path(__file__).parent / "claimant_revelation_request_management.kv"))
@@ -75,10 +75,10 @@ class ClaimantRevelationRequestManagementScreen(WAScreenBase):
                 display_info_snackbar(tr._("Network error, please check the gateway url"))
                 return
 
-            if requestor_revelation_requests == []:  # FIXME RENAME ALL decryption requests!!!!
-                fallback_info_box = build_fallback_information_box(tr._("No authorization requests found"))
-                self.ids.list_decryption_request_scrollview.add_widget(fallback_info_box)  # FIXME
-                return
+            #if not requestor_revelation_requests:  # FIXME RENAME ALL decryption requests!!!!
+                #fallback_info_box = build_fallback_information_box(tr._("No authorization requests found"))
+                #self.ids.list_decryption_request_scrollview.add_widget(fallback_info_box)  # FIXME
+            #    return
 
             revelation_requests_per_cryptainer_uid = self._list_revelation_requests_per_cryptainer_uid(
                 requestor_revelation_requests

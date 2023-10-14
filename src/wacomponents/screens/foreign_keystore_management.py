@@ -17,7 +17,7 @@ from wacomponents.utilities import (
     LINEBREAK,
     SPACE,
 )
-from wacomponents.widgets.layout_components import build_fallback_information_box
+#from wacomponents.widgets.layout_components import build_fallback_information_box
 from wacomponents.widgets.popups import (
     display_info_toast,
     close_current_dialog,
@@ -240,9 +240,9 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
         if display_toast:
             display_info_toast(tr._("Refreshed imported key guardians"))
 
-    def ____display_message_no_device_found(self):
-        fallback_info_box = build_fallback_information_box("\n\n" + tr._("No imported authentication device found"))
-        self.ids.imported_authenticator_list.add_widget(fallback_info_box)
+    #def ____display_message_no_device_found(self):
+    #    fallback_info_box = build_fallback_information_box("\n\n" + tr._("No imported authentication device found"))
+    #    self.ids.imported_authenticator_list.add_widget(fallback_info_box)
 
     def on_keystore_checkbox_click(self, keystore_uid: uuid.UUID, is_selected: bool):
         self._change_authenticator_selection_status(keystore_uids=[keystore_uid], is_selected=is_selected)

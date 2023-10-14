@@ -17,7 +17,7 @@ from wacomponents.utilities import (
     COLON,
     LINEBREAK,
 )
-from wacomponents.widgets.layout_components import build_fallback_information_box
+#from wacomponents.widgets.layout_components import build_fallback_information_box
 from wacomponents.widgets.popups import (
     dialog_with_close_button,
     close_current_dialog,
@@ -61,10 +61,12 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
 
         self.ids.selected_cryptainer_table.clear_widgets()
 
+        """ Useless, hould nevr happen
         if not self.selected_cryptainer_names:
             fallback_info_box = build_fallback_information_box(tr._("No containers selected"))
             self.ids.selected_cryptainer_table.add_widget(fallback_info_box)
             return
+        """
 
         for index, cryptainer_name in enumerate(reversed(self.selected_cryptainer_names), start=1):
             cryptainer_label = format_cryptainer_label(

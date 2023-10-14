@@ -18,7 +18,7 @@ from wacomponents.utilities import (
     LINEBREAK,
     convert_bytes_to_human_representation,
 )
-from wacomponents.widgets.layout_components import build_fallback_information_box
+#from wacomponents.widgets.layout_components import build_fallback_information_box
 from wacomponents.widgets.popups import (
     close_current_dialog,
     dialog_with_close_button,
