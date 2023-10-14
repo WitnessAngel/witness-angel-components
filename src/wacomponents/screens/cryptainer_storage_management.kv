@@ -38,6 +38,10 @@
                     text: tr._("View and manage encrypted containers") + " (" + tr._("selected: %d") % len(root.selected_cryptainer_names) + ")"
                     padding_x: "10dp"
 
+            WABigInformationBox:
+                message: tr._(app.NO_DATA_MESSAGE)
+                enabled: not cryptainer_table.data
+
             WARecycleView:
                 id: cryptainer_table
                 viewclass: 'WASelectableListItemEntry'

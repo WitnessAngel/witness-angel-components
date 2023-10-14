@@ -200,7 +200,6 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
         keystore_metadata = self.filesystem_keystore_pool.get_all_foreign_keystore_metadata()
 
         if not keystore_metadata:
-            self.display_message_no_device_found()
             return
 
         for (index, (keystore_uid, metadata)) in enumerate(sorted(keystore_metadata.items()), start=1):
@@ -241,7 +240,7 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
         if display_toast:
             display_info_toast(tr._("Refreshed imported key guardians"))
 
-    def display_message_no_device_found(self):
+    def ____display_message_no_device_found(self):
         fallback_info_box = build_fallback_information_box("\n\n" + tr._("No imported authentication device found"))
         self.ids.imported_authenticator_list.add_widget(fallback_info_box)
 

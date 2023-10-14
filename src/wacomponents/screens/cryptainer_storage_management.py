@@ -74,8 +74,8 @@ class CryptainerStorageManagementScreen(WAScreenBase):
         cryptainers_page_ids = self.ids
 
         if self.filesystem_cryptainer_storage is None:
-            fallback_info_box = build_fallback_information_box("\n\n" + tr._("Container storage is invalid"))
-            cryptainers_page_ids.cryptainer_table.add_widget(fallback_info_box)
+            #fallback_info_box = build_fallback_information_box("\n\n" + tr._("Container storage is invalid"))
+            #cryptainers_page_ids.cryptainer_table.add_widget(fallback_info_box)
             return
 
         sorted_cryptainer_names = list(self.filesystem_cryptainer_storage.list_cryptainer_names(as_sorted_list=True))
