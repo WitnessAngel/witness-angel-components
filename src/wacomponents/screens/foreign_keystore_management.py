@@ -204,6 +204,8 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
 
         for (index, (keystore_uid, metadata)) in enumerate(sorted(keystore_metadata.items()), start=1):
 
+            # So far, we're only dealing with AUTHENTICATORS here!
+
             authenticator_label = format_authenticator_label(
                 authenticator_owner=metadata["keystore_owner"], keystore_uid=metadata["keystore_uid"], short_uid=True
             )
@@ -358,7 +360,7 @@ class ForeignKeystoreManagementScreen(WAScreenBase):
             "keystore_uid": public_authenticator["keystore_uid"],
             "keypairs": keypairs,
         }
-        if public_authenticator["keystore_creation_datetime"]:  # NULLABLE
+        if public_authenticator["keystore_creation_datetime"]:  # NULLABLE but always present
             keystore_tree["keystore_creation_datetime"] = public_authenticator["keystore_creation_datetime"]
         # No confidential fields, like passphrase hint or keystore secret, are present in public authenticator!
         validate_keystore_tree(keystore_tree)  # SAFETY

@@ -81,10 +81,10 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
 
         display_info_toast(tr._("Refreshed concerned containers"))
 
-    def _get_cryptainer_trustee_dependency_status(
+    def _get_cryptainer_authenticator_dependency_status(
         self, keystore_uid, trustee_type, trustee_id, trustee_keypair_identifiers
     ):
-
+        assert trustee_type == CRYPTAINER_TRUSTEE_TYPES.AUTHENTICATOR_TRUSTEE, trustee_type
         trustee_is_present = False
         trustee_status = tr._("not found")
         trustee_owner = None
@@ -148,27 +148,27 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
             trustee_dependencies = gather_trustee_dependencies(cryptainers)
 
             trustee_data = list(trustee_dependencies["encryption"].values())
-            trustee_data.sort(key=lambda x: x[0]["keystore_owner"])
+            trustee_data.sort(key=lambda x: x[0].get("keystore_owner", ""))  # No keystore owner for some trustee types
 
             self.trustee_data = trustee_data  # For launching of decryption
 
             for trustee_info, trustee_keypair_identifiers in trustee_data:
                 trustee_id = get_trustee_id(trustee_info)
                 trustee_type = trustee_info["trustee_type"]
-                keystore_uid = trustee_info["keystore_uid"]
 
                 if trustee_type == CRYPTAINER_TRUSTEE_TYPES.AUTHENTICATOR_TRUSTEE:
-                    status = self._get_cryptainer_trustee_dependency_status(
+                    keystore_uid = trustee_info["keystore_uid"]
+                    status = self._get_cryptainer_authenticator_dependency_status(
                         keystore_uid,
                         trustee_type=trustee_type,
                         trustee_id=trustee_id,
                         trustee_keypair_identifiers=trustee_keypair_identifiers,
                     )
-                    self._display_cryptainer_trustee_dependency_status(status)
+                    self._display_cryptainer_authenticator_dependency_status(status)
                 else:
                     pass  # FIXME handle other types of trustee?
 
-    def _display_cryptainer_trustee_dependency_status(self, status):
+    def _display_cryptainer_authenticator_dependency_status(self, status):
 
         trustee_label = format_authenticator_label(
             authenticator_owner=status["trustee_owner"],
@@ -255,6 +255,10 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
             trustee_confs = [trustee[0] for trustee in dependencies["encryption"].values()]
 
             for trustee_conf in trustee_confs:
+
+                if trustee_conf["trustee_type"] != CRYPTAINER_TRUSTEE_TYPES.AUTHENTICATOR_TRUSTEE:
+                    continue  # This is not a trustee usable as foreign-keystore
+
                 keystore_uid = trustee_conf["keystore_uid"]
                 try:
                     filesystem_keystore = self.filesystem_keystore_pool.get_foreign_keystore(keystore_uid=keystore_uid)

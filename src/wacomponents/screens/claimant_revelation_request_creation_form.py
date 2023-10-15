@@ -13,7 +13,7 @@ from wacomponents.widgets.popups import (
     dialog_with_close_button,
     safe_catch_unhandled_exception_and_display_popup,
 )
-from wacryptolib.cryptainer import gather_decryptable_symkeys
+from wacryptolib.cryptainer import gather_decryptable_symkeys, CRYPTAINER_TRUSTEE_TYPES
 from wacryptolib.exceptions import KeyDoesNotExist, KeystoreDoesNotExist
 from wacryptolib.keystore import generate_keypair_for_storage
 from wacryptolib.utilities import generate_uuid0
@@ -72,6 +72,10 @@ class ClaimantRevelationRequestCreationFormScreen(WAScreenBase):
 
         # Display the list of required authenticators
         for trustee_info, trustee_keypair_identifiers in self.trustee_data:
+
+            if trustee_info["trustee_type"] != CRYPTAINER_TRUSTEE_TYPES.AUTHENTICATOR_TRUSTEE:
+                continue  # We can't request permission for local/server trustees
+
             keystore_uid = trustee_info["keystore_uid"]
             authenticator_label = format_authenticator_label(
                 authenticator_owner=trustee_info["keystore_owner"], keystore_uid=keystore_uid
@@ -126,7 +130,12 @@ class ClaimantRevelationRequestCreationFormScreen(WAScreenBase):
         gateway_proxy = self._app.get_gateway_proxy()
 
         for trustee_id, decryptable_data in decryptable_symkeys_per_trustee.items():
+
             trustee_data, symkey_decryption_requests = decryptable_data
+
+            if trustee_data["trustee_type"] != CRYPTAINER_TRUSTEE_TYPES.AUTHENTICATOR_TRUSTEE:
+                continue  # Can't handle this here
+
             if trustee_data["keystore_uid"] in authenticator_selected:
                 try:
                     gateway_proxy.submit_revelation_request(
