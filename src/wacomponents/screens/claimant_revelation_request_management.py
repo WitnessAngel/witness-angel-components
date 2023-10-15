@@ -54,7 +54,7 @@ class ClaimantRevelationRequestManagementScreen(WAScreenBase):
         try:
             requestor_revelation_requests = gateway_proxy.list_requestor_revelation_requests(
                 revelation_requestor_uid=revelation_requestor_uid
-            )  # FIXME RENAME list_decryption_requests
+            )
         except (JSONRPCError, OSError):  # FIXME factorize code with snackbar here?
             requestor_revelation_requests = None
         return requestor_revelation_requests

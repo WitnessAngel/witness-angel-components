@@ -656,7 +656,7 @@ msgstr "Publication de l'authentifieur"
 #: src/wacomponents/screens/authenticator_revelation_request_detail.kv:16
 #: src/wacomponents/screens/claimant_revelation_request_detail.kv:14
 msgid "Authorization request details"
-msgstr "Détails de demandes d'autorisation"
+msgstr "Détails des demandes d'autorisation"
 
 #: src/wacomponents/screens/authenticator_revelation_request_detail.kv:43
 #: src/wacomponents/screens/authenticator_revelation_request_detail.py:156
