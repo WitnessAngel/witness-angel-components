@@ -30,7 +30,5 @@ def safe_catch_unhandled_exception(f, *args, **kwargs):  # FIXME move to utiliti
     except Exception as exc:
         try:
             logger.error(f"Caught unhandled exception in call of function {f!r}: {exc!r}", exc_info=True)
-            # import traceback
-            # traceback.print_exc(file=sys.stdout)  # Important, since stderr is hooked by Kivy!
         except Exception as exc2:
             print("Beware, service callback {f!r} and logging system are both broken: {exc2!r}")
