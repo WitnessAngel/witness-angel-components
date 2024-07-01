@@ -1,3 +1,7 @@
+# This file is part of Witness Angel Components
+# SPDX-FileCopyrightText: Copyright Prolifik SARL
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 from devices import dfrobot_epaper  # Must come from DFRobot_RPi_Display_v2 repository
 
 from wacomponents.devices.epaper._epaper_base import EpaperStatusDisplayBase

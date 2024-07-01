@@ -1,3 +1,7 @@
+# This file is part of Witness Angel Components
+# SPDX-FileCopyrightText: Copyright Prolifik SARL
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 from kivy.utils import platform
 
 from ._osc_transport import get_osc_client, get_osc_server  # Must come BEFORE service controller

@@ -1,3 +1,7 @@
+# This file is part of Witness Angel Components
+# SPDX-FileCopyrightText: Copyright Prolifik SARL
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 import os
 
 PACKAGE_NAME = os.getenv("WA_PACKAGE_NAME")  # Java package name here  FIXME BROKEN

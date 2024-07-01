@@ -1,3 +1,7 @@
+# This file is part of Witness Angel Components
+# SPDX-FileCopyrightText: Copyright Prolifik SARL
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 from wacomponents.default_settings import SERVICE_CLASS, ANDROID_ACTIVITY_CLASS, SERVICE_START_ARGUMENT
 from ._base_service_controller import ServiceControllerBase
 

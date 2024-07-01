@@ -1,3 +1,7 @@
+# This file is part of Witness Angel Components
+# SPDX-FileCopyrightText: Copyright Prolifik SARL
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 def generate_and_send_crashdump(exc_info, target_url, client_type):
 
     import traceback

@@ -1,3 +1,7 @@
+# This file is part of Witness Angel Components
+# SPDX-FileCopyrightText: Copyright Prolifik SARL
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 def _presetup_app_environment(setup_kivy_gui: bool):
     """Setup for both gui and console apps.
 
