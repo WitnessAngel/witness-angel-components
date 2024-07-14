@@ -6,7 +6,7 @@ build-backend = "poetry.core.masonry.api"
 name = "wacomponents"
 description = "Witness Angel Components"
 version = "0.1"
-license = { file = "LICENSE.txt" }
+license = "GPL-2.0-or-later"
 readme = "Readme.rst"
 authors = ["Pascal Chambon", "Francinette Atchade"]
 homepage = "https://witnessangel.com/"
@@ -20,6 +20,7 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Operating System :: Microsoft :: Windows",
     "Operating System :: Unix",
@@ -32,6 +33,6 @@ include = ["README.rst"]
 exclude = []
 
 [tool.poetry.dependencies]
-python = ">=3.7, <4.0"
+python = ">=3.8, <4.0"
 # For now, let final projects install what they need, by themselves
 # We'll need lots of "extras" definitions to handle all use cases of this set of components
