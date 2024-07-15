@@ -220,6 +220,7 @@ class AuthenticatorRevelationRequestDetailScreen(WAScreenBase):
                 return  # Abort everything, since the same passphrase is used for all Authenticator keys anyway...
 
             # FIXME handle cases of corruption or metadata mismatch???
+            ## FIXME DEBUG ONLY DANGEROUS - print(">>>>>>>>>>> WE SEE THE DECRYPTED KEY TO BE SENT BACK:", repr(key_struct_bytes))
 
             # We encrypt the response with the provided response key, this shouldn't fail
             response_key_algo = revelation_request["revelation_response_key_algo"]

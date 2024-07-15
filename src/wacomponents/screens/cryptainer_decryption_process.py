@@ -346,17 +346,17 @@ class CryptainerDecryptionProcessScreen(WAScreenBase):
                     decrypted_cryptainer_count += 1
                     # print(">> Successfully exported data file to %s" % target_path)
 
+                decryption_result_for_single_cryptainer = dict(
+                    cryptainer_name=cryptainer_name,
+                    decryption_status=decryption_status,
+                    operation_report=operation_report,  # Might be empty if exception was raised, too...
+                )
+                decryption_results.append(decryption_result_for_single_cryptainer)
+
             except Exception as exc:
                 message = "Abnormal error when decrypting container %s: %r" % (cryptainer_name, exc)
-                logger.critical(message)
+                logger.critical(message, exc_info=True)
                 ### NOPE IMPOSSIBLE insubthread display_info_snackbar(message)
-
-            decryption_result_for_single_cryptainer = dict(
-                cryptainer_name=cryptainer_name,
-                decryption_status=decryption_status,
-                operation_report=operation_report,  # Might be empty if exception was raised, too...
-            )
-            decryption_results.append(decryption_result_for_single_cryptainer)
 
         decryption_info = (decrypted_cryptainer_count, decryption_results)
         return decryption_info
