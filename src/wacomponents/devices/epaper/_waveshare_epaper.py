@@ -1,10 +1,10 @@
 # This file is part of Witness Angel Components
 # SPDX-FileCopyrightText: Copyright Prolifik SARL
 # SPDX-License-Identifier: GPL-2.0-or-later
-
+from PIL import Image
 from pathlib import Path
 
-from waveshare_epd import epd2in7, epd2in13_V3
+from waveshare_epd import epd2in7, epd2in13_V3, epd2in13b_V3
 
 from wacomponents.devices.epaper._epaper_base import EpaperStatusDisplayBase
 
@@ -76,3 +76,19 @@ class WaveshareEpaperStatusDisplay2in13V3(WaveshareEpaperStatusDisplayBase):
 
     def __init__(self):
         self.epd = epd2in13_V3.EPD()
+
+
+class WaveshareEpaperStatusDisplay2in13BV3(WaveshareEpaperStatusDisplay2in13V3):
+
+    PAPER_WIDTH = epd2in13b_V3.EPD_HEIGHT
+    PAPER_HEIGHT = epd2in13b_V3.EPD_WIDTH
+
+    def __init__(self):
+        self.epd = epd2in13b_V3.EPD()
+
+    def _display_image(self, pil_image):
+        pil_image.convert("1")  # Most screens don't support levels of grey
+        red_image = Image.new('1',
+                             (epd2in13b_V3.EPD_WIDTH, epd2in13b_V3.EPD_HEIGHT),
+                             255)  # Blank image
+        self.epd.display(self.epd.getbuffer(pil_image), red_image)
