@@ -2,7 +2,7 @@
 # SPDX-FileCopyrightText: Copyright Prolifik SARL
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-EPAPER_TYPES = ["waveshare_2.7_epaper", "waveshare_2.13_epaper_v3", "waveshare_2.13_epaperB_v3", "dfrobot_2.13_epaper_v2"]
+EPAPER_TYPES = ["waveshare_2.7_epaper", "waveshare_2.13_epaper_v3", "waveshare_2.13_epaperb_v3", "dfrobot_2.13_epaper_v2"]
 
 
 def get_epaper_instance(epaper_type):
