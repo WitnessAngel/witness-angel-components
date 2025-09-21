@@ -80,6 +80,7 @@ class WaveshareEpaperStatusDisplay2in13V3(WaveshareEpaperStatusDisplayBase):
 
 class WaveshareEpaperStatusDisplay2in13BV3(WaveshareEpaperStatusDisplay2in13V3):
 
+    # INVERTED, since we want landscape orientation!
     PAPER_WIDTH = epd2in13b_V3.EPD_HEIGHT
     PAPER_HEIGHT = epd2in13b_V3.EPD_WIDTH
 
@@ -89,6 +90,9 @@ class WaveshareEpaperStatusDisplay2in13BV3(WaveshareEpaperStatusDisplay2in13V3):
     def _display_image(self, pil_image):
         pil_image.convert("1")  # Most screens don't support levels of grey
         red_image = Image.new('1',
-                             (epd2in13b_V3.EPD_WIDTH, epd2in13b_V3.EPD_HEIGHT),
+                             (epd2in13b_V3.EPD_HEIGHT, epd2in13b_V3.EPD_WIDTH),
                              255)  # Blank image
-        self.epd.display(self.epd.getbuffer(pil_image), red_image)
+        self.epd.display(self.epd.getbuffer(pil_image), self.epd.getbuffer(red_image))
+
+    def _clear_display(self):
+        self.epd.Clear()
