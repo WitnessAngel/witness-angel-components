@@ -136,3 +136,60 @@ def patch_ctypes_module_for_android():
     import ctypes, sys
 
     ctypes.pythonapi = ctypes.PyDLL("libpython%d.%d.so" % sys.version_info[:2])
+
+
+def monitor_android_safe_area_insets(on_insets_changed):
+    """
+    Watch Android system-bar (status + navigation bar) insets and report them as
+    [left, top, right, bottom] *pixels* via ``on_insets_changed`` (called on the Kivy thread).
+
+    Correct on any Android version: on non-edge-to-edge windows the content view receives
+    already-consumed insets (zeros) -> no double margin; on edge-to-edge windows
+    (Android 15 / SDK 35+ enforced) it receives the real insets. Re-fires on rotation,
+    nav-mode change, keyboard and multi-window.
+
+    Returns the listener; the caller MUST keep a reference to it, otherwise the
+    Python/Java proxy gets garbage-collected and stops firing.
+    """
+    from jnius import autoclass, PythonJavaClass, java_method
+    from android.runnable import run_on_ui_thread
+    from kivy.clock import Clock
+
+    PythonActivity = autoclass("org.kivy.android.PythonActivity")
+    VERSION = autoclass("android.os.Build$VERSION")
+
+    def _extract(insets):
+        if insets is None:
+            return [0, 0, 0, 0]
+        if VERSION.SDK_INT >= 30:  # Android 11+ : typed insets API
+            Type = autoclass("android.view.WindowInsets$Type")
+            i = insets.getInsets(Type.systemBars())
+            return [i.left, i.top, i.right, i.bottom]
+        return [  # API 23-29 (minapi is 26 here)
+            insets.getSystemWindowInsetLeft(),
+            insets.getSystemWindowInsetTop(),
+            insets.getSystemWindowInsetRight(),
+            insets.getSystemWindowInsetBottom(),
+        ]
+
+    class _InsetsListener(PythonJavaClass):
+        __javainterfaces__ = ["android/view/View$OnApplyWindowInsetsListener"]
+        __javacontext__ = "app"
+
+        @java_method("(Landroid/view/View;Landroid/view/WindowInsets;)Landroid/view/WindowInsets;")
+        def onApplyWindowInsets(self, view, insets):
+            margins = _extract(insets)
+            Clock.schedule_once(lambda dt: on_insets_changed(margins), 0)
+            return insets  # Do not consume, let descendant views receive them too
+
+    listener = _InsetsListener()
+
+    @run_on_ui_thread
+    def _install():
+        activity = PythonActivity.mActivity
+        content = activity.findViewById(autoclass("android.R$id").content)
+        content.setOnApplyWindowInsetsListener(listener)
+        content.requestApplyInsets()  # Force an immediate first dispatch
+
+    _install()
+    return listener
