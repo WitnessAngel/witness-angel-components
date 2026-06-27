@@ -65,8 +65,11 @@ IS_RASPBERRY_PI = _is_raspberry_pi()
 WAIT_TIME_MULTIPLIER = 4 if IS_RASPBERRY_PI else 1
 
 
-def _strip_filepath_scheme(filepath):
-    # MacOSX returns file:// URLs (do not use str.removeprefix() else python retrocompatibility issues)
+def _normalize_and_strip_filepath_scheme(filepath):
+    # MacOSX returns file:// URLs as UTF8-BYTES
+    # Do not use str.removeprefix() else python retrocompatibility issues, for now
+    if isinstance(filepath, bytes):
+        filepath = filepath.decode("utf8")
     if filepath.startswith("file://"):
         filepath = filepath[len("file://") :]
         assert filepath.startswith("/")
@@ -109,7 +112,7 @@ elif IS_IOS:
     # iOS apps are SANDBOXED, no common "external folder" to write to
     from plyer import storagepath
 
-    _home_dir = Path(_strip_filepath_scheme(storagepath.get_home_dir()))
+    _home_dir = Path(_normalize_and_strip_filepath_scheme(storagepath.get_home_dir()))
 
     INTERNAL_APP_ROOT = _home_dir / "Library" / "Application Support"  # Might NOT EXIST yet
     INTERNAL_CACHE_DIR = _home_dir / "tmp"
@@ -117,8 +120,8 @@ elif IS_IOS:
     EXTERNAL_APP_ROOT = _home_dir / "Documents"  # Will be accessible to "Files" app, thanks to special xcode flags
 
 else:
-    _home_dir = _strip_filepath_scheme(storagepath.get_home_dir())
-    INTERNAL_APP_ROOT = Path(_home_dir) / ".witnessangel"
+    _home_dir = Path(_normalize_and_strip_filepath_scheme(storagepath.get_home_dir()))
+    INTERNAL_APP_ROOT = _home_dir / ".witnessangel"
     INTERNAL_CACHE_DIR = INTERNAL_APP_ROOT / "cache"
     EXTERNAL_APP_ROOT_PREFIX = None
     EXTERNAL_APP_ROOT = INTERNAL_APP_ROOT / "external"
