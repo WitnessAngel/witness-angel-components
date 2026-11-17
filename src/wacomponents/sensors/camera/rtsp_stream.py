@@ -49,6 +49,14 @@ class RtspCameraSensor(PreviewImageMixin, ActivityNotificationMixin, PeriodicSub
     sensor_name = "rtsp_camera"
     activity_notification_color = (0, 150, 0)
 
+    # Ffmpeg may hang forever on a frozen camera (its socket timeout is ineffective when the preview
+    # image output exists), so it gets terminated when it stops outputting data
+    subprocess_stdout_timeout_s = 30
+
+    # Ffmpeg exits (often with return code 0) when the camera closes the RTSP session or reboots,
+    # so it gets relaunched with an increasing delay, instead of waiting for the next periodic restart
+    subprocess_restart_on_exit = True
+
     def __init__(self, video_stream_url: str, ffmpeg_rtsp_parameters: list, ffmpeg_rtsp_output_format: str, **kwargs):
         super().__init__(**kwargs)
         assert video_stream_url, video_stream_url
@@ -104,10 +112,11 @@ class RtspCameraSensor(PreviewImageMixin, ActivityNotificationMixin, PeriodicSub
                 # "-copytb", "1", (doesn't work for timestamps)
                 "-vcodec",
                 "copy",
-                "-an",  # NO AUDIO FOR NOW, codec pcm-mulaw not supported for Bluestork cameras...
                 # "-acodec", "copy",
+                # Only video streams: NO AUDIO FOR NOW (codec pcm-mulaw not supported for Bluestork cameras...),
+                # and no data streams like ONVIF metadata, which make the MP4 muxer fail at once
                 "-map",
-                "0",
+                "0:v",
                 "-f",
                 "ismv",  # https://ffmpeg.org/ffmpeg-formats.html#mov_002c-mp4_002c-ismv necessary for non-seekable output
                 "-movflags",
